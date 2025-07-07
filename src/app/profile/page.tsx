@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { 
   User, 
@@ -18,7 +18,11 @@ import {
   Camera,
   Activity,
   Dumbbell,
-  Download
+  Download,
+  Cat,
+  Bot,
+  Star,
+  Flame
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -105,6 +109,18 @@ export default function ProfilePage() {
     "Stylé comme jamais !"
   ];
   const [avatarCongratsMsg, setAvatarCongratsMsg] = useState(avatarMessages[0]);
+  // Ajout état pour la mascotte sélectionnée
+  const [selectedMascot, setSelectedMascot] = useState<string>(() => (typeof window !== 'undefined' && localStorage.getItem('mascot') ? localStorage.getItem('mascot')! : 'ironbuddy'));
+  // Ajout d'une ref pour la section mascotte
+  const mascotSectionRef = useRef<HTMLDivElement>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [nutritionGoalsEnabled, setNutritionGoalsEnabled] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mascot', selectedMascot);
+    }
+  }, [selectedMascot]);
 
   const loadProfileData = async () => {
     setLoading(true)
@@ -257,16 +273,32 @@ export default function ProfilePage() {
     setExporting(true);
     setExportError(null);
     try {
-      // Simule l'export, à remplacer par un vrai fetch Supabase
-      const fakeData = { profile, stats };
-      const blob = new Blob([JSON.stringify(fakeData, null, 2)], { type: 'application/json' });
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Utilisateur non connecté');
+      // Récupère toutes les données importantes
+      const [profileRes, statsRes, workoutsRes, nutritionRes, settingsRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        Promise.resolve({ data: stats }), // stats déjà calculées côté front
+        supabase.from('workouts').select('*').eq('user_id', user.id),
+        supabase.from('nutrition_logs').select('*').eq('user_id', user.id),
+        supabase.from('user_settings').select('*').eq('user_id', user.id).single()
+      ]);
+      const exportData = {
+        profile: profileRes.data,
+        stats: statsRes.data,
+        workouts: workoutsRes.data,
+        nutrition_logs: nutritionRes.data,
+        user_settings: settingsRes.data
+      };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'irontrack-donnees.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
+    } catch (err) {
       setExportError("Erreur lors de l'export. Même IronBuddy ne comprend pas !");
     }
     setExporting(false);
@@ -503,6 +535,77 @@ export default function ProfilePage() {
       totalTime,
       achievements: 0,
     });
+  };
+
+  useEffect(() => {
+    // Charger la préférence depuis Supabase au chargement
+    const fetchNotifPref = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('user_settings').select('notifications_enabled').eq('user_id', user.id).single();
+      if (data && data.notifications_enabled) setNotificationsEnabled(true);
+    };
+    fetchNotifPref();
+  }, []);
+
+  const handleToggleNotifications = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    if (!notificationsEnabled) {
+      // Demande la permission
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          new Notification('IronBuddy', { body: "C'est l'heure de ta séance !" });
+          setNotificationsEnabled(true);
+          await supabase.from('user_settings').upsert(
+            [{ user_id: user.id, notifications_enabled: true }],
+            { onConflict: 'user_id' }
+          );
+        } else {
+          alert('Permission de notification refusée. IronBuddy ne pourra pas te réveiller !');
+        }
+      }
+    } else {
+      setNotificationsEnabled(false);
+      await supabase.from('user_settings').upsert(
+        [{ user_id: user.id, notifications_enabled: false }],
+        { onConflict: 'user_id' }
+      );
+    }
+  };
+
+  useEffect(() => {
+    // Charger la préférence nutritionGoalsEnabled depuis Supabase au chargement
+    const fetchNutritionPref = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('user_settings').select('nutrition_goals_enabled').eq('user_id', user.id).single();
+      if (data && data.nutrition_goals_enabled) setNutritionGoalsEnabled(true);
+    };
+    fetchNutritionPref();
+  }, []);
+
+  const handleToggleNutritionGoals = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    if (!nutritionGoalsEnabled) {
+      setNutritionGoalsEnabled(true);
+      await supabase.from('user_settings').upsert(
+        [{ user_id: user.id, nutrition_goals_enabled: true }],
+        { onConflict: 'user_id' }
+      );
+    } else {
+      setNutritionGoalsEnabled(false);
+      await supabase.from('user_settings').upsert(
+        [{ user_id: user.id, nutrition_goals_enabled: false }],
+        { onConflict: 'user_id' }
+      );
+    }
   };
 
   if (loading) {
@@ -838,8 +941,13 @@ export default function ProfilePage() {
                     <p className="font-medium text-gray-900">Rappels d&apos;entraînement</p>
                     <p className="text-sm text-gray-600">Recevoir des notifications pour tes séances</p>
                   </div>
-                  <button className="w-12 h-6 bg-orange-500 rounded-full relative">
-                    <div className="w-4 h-4 bg-white rounded-full absolute top-1 right-1 transition-transform"></div>
+                  <button
+                    className={`w-12 h-6 rounded-full relative transition-colors ${notificationsEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
+                    onClick={handleToggleNotifications}
+                    aria-pressed={notificationsEnabled}
+                    type="button"
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
                 
@@ -847,11 +955,23 @@ export default function ProfilePage() {
                   <div>
                     <p className="font-medium text-gray-900">Objectifs quotidiens</p>
                     <p className="text-sm text-gray-600">Suivi de tes objectifs nutritionnels</p>
+                    <p className="text-xs text-gray-500 mt-1">Active ce suivi pour recevoir des rappels et des conseils nutritionnels personnalisés chaque jour. IronBuddy t'aidera à ne jamais oublier ton apport en protéines, glucides et lipides !</p>
                   </div>
-                  <button className="w-12 h-6 bg-gray-300 rounded-full relative">
-                    <div className="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform"></div>
+                  <button
+                    className={`w-12 h-6 rounded-full relative transition-colors ${nutritionGoalsEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
+                    onClick={handleToggleNutritionGoals}
+                    aria-pressed={nutritionGoalsEnabled}
+                    type="button"
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${nutritionGoalsEnabled ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
+                {nutritionGoalsEnabled && (
+                  <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm flex items-center gap-2 animate-fade-in">
+                    <Flame className="h-5 w-5 text-orange-500" />
+                    <span>Rappels nutritionnels actifs : tu recevras un rappel chaque jour à 20h si tu n'as pas rempli tes objectifs nutritionnels !</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -914,7 +1034,7 @@ export default function ProfilePage() {
                         <p className="text-sm text-gray-600">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
                       </div>
                     </button>
-                    <button onClick={handleChooseMascot} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2">
+                    <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2">
                       <Dumbbell className="h-5 w-5 text-orange-400" />
                       <div>
                         <p className="font-medium text-gray-900">Choisir ma mascotte</p>
@@ -960,6 +1080,62 @@ export default function ProfilePage() {
                       </div>
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mascotte IronBuddy */}
+            <div ref={mascotSectionRef} className="bg-white rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                <Dumbbell className="h-6 w-6 text-orange-500" />
+                <span>Mascotte IronBuddy</span>
+              </h3>
+              <div className="space-y-4">
+                {/* Option pour réactiver la mascotte */}
+                {typeof window !== 'undefined' && localStorage.getItem('hideMascot') === '1' ? (
+                  <button
+                    className="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                    onClick={() => { localStorage.removeItem('hideMascot'); window.location.reload(); }}
+                  >
+                    Réactiver IronBuddy
+                  </button>
+                ) : (
+                  <span className="text-green-700 font-semibold">IronBuddy est actif et prêt à motiver !</span>
+                )}
+                {/* Sélection de mascotte */}
+                <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <span className="font-bold text-orange-600">Choisir ma mascotte</span>
+                  <div className="flex gap-4 mt-3">
+                    <button
+                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      onClick={() => setSelectedMascot('ironbuddy')}
+                    >
+                      <Dumbbell className="h-8 w-8 text-orange-600 animate-bounce" />
+                      <span className="mt-1 text-xs font-bold">IronBuddy</span>
+                    </button>
+                    <button
+                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      onClick={() => setSelectedMascot('cat')}
+                    >
+                      <Cat className="h-8 w-8 text-yellow-600 animate-pulse" />
+                      <span className="mt-1 text-xs font-bold">Félix</span>
+                    </button>
+                    <button
+                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      onClick={() => setSelectedMascot('bot')}
+                    >
+                      <Bot className="h-8 w-8 text-blue-600 animate-spin-slow" />
+                      <span className="mt-1 text-xs font-bold">RoboCoach</span>
+                    </button>
+                    <button
+                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      onClick={() => setSelectedMascot('star')}
+                    >
+                      <Star className="h-8 w-8 text-purple-600 animate-ping" />
+                      <span className="mt-1 text-xs font-bold">SuperStar</span>
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l'app et t'encouragera à chaque étape !</p>
                 </div>
               </div>
             </div>

@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Calendar, Save, ArrowLeft } from 'lucide-react'
+import { Calendar, Save, ArrowLeft, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
+import Mascot from '@/components/ui/Mascot'
 
 export default function EditWorkoutPage() {
   const router = useRouter()
@@ -13,7 +14,12 @@ export default function EditWorkoutPage() {
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
   const [notes, setNotes] = useState('')
+  const [duration, setDuration] = useState<number | ''>('')
   const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [mascotMsg, setMascotMsg] = useState<string | null>(null)
+  const [mascotType, setMascotType] = useState<'motivation' | 'success' | 'warning' | 'info'>('motivation')
+  const [showMascot, setShowMascot] = useState(false)
 
   // Charger les vraies données depuis Supabase
   useEffect(() => {
@@ -28,6 +34,7 @@ export default function EditWorkoutPage() {
         setName(data.name || '')
         setDate(data.scheduled_date ? data.scheduled_date : '')
         setNotes(data.notes || '')
+        setDuration(data.duration ?? '')
       }
     };
     if (id) fetchWorkout();
@@ -35,17 +42,43 @@ export default function EditWorkoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrorMsg(null)
+    if (!name.trim()) {
+      setErrorMsg("Pas de nom, pas de muscles ! Donne un nom à ta séance.")
+      setMascotMsg("Thierry, même Rocky n'a jamais oublié de nommer ses séances !")
+      setMascotType('warning')
+      setShowMascot(true)
+      return
+    }
+    if (!date) {
+      setErrorMsg("Sans date, ta séance va se perdre dans l'espace-temps...")
+      setMascotMsg("Thierry, même Marty McFly note ses dates d'entraînement !")
+      setMascotType('warning')
+      setShowMascot(true)
+      return
+    }
+    if (Number(duration) <= 0) {
+      setErrorMsg("La durée doit être supérieure à 0 min. Même Hulk ne fait pas des séances de 0 minute !")
+      setMascotMsg("Thierry, Hulk casse tout, mais il fait au moins 1 minute !")
+      setMascotType('warning')
+      setShowMascot(true)
+      return
+    }
     setLoading(true)
-    const supabase = createClient();
+    const supabase = createClient()
     await supabase
       .from('workouts')
       .update({
         name,
         scheduled_date: date,
-        notes
+        notes,
+        duration: duration === '' ? null : Number(duration)
       })
-      .eq('id', id);
+      .eq('id', id)
     setLoading(false)
+    setMascotMsg("Modification enregistrée, Thierry ! IronBuddy valide la perf !")
+    setMascotType('success')
+    setShowMascot(true)
     router.push('/workouts')
   }
 
@@ -81,13 +114,36 @@ export default function EditWorkoutPage() {
           <Calendar className="h-8 w-8 text-orange-500" />
           <h1 className="text-2xl font-bold text-gray-900">Modifier la séance</h1>
         </div>
+        {errorMsg && (
+          <motion.div
+            initial={{ x: -10 }}
+            animate={{ x: [0, -10, 10, -10, 10, 0] }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center justify-center bg-red-200 text-red-800 px-4 py-3 rounded-lg mb-4 text-lg font-bold shadow-lg border-2 border-red-400"
+            style={{ zIndex: 10 }}
+          >
+            <AlertTriangle className="mr-2 h-6 w-6 text-red-600 animate-bounce" />
+            {errorMsg}
+          </motion.div>
+        )}
         <div>
           <label className="block text-gray-700 font-medium mb-2">Nom de la séance</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-2">Date</label>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Durée (minutes)</label>
+          <input
+            type="number"
+            min={0}
+            value={duration}
+            onChange={e => setDuration(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            placeholder="Ex: 30"
+          />
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-2">Notes</label>
@@ -106,6 +162,7 @@ export default function EditWorkoutPage() {
           <span>🗑️ Supprimer la séance</span>
         </button>
       </motion.form>
+      <Mascot message={mascotMsg || undefined} type={mascotType} show={showMascot} onClose={() => setShowMascot(false)} />
     </div>
   )
 } 

@@ -139,6 +139,25 @@ export default function CalendarPage() {
   const days = getDaysInMonth(currentDate)
   const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
 
+  // Calculs statistiques avancés pour le mois courant
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const workoutsMonth = workouts.filter(w => {
+    const d = new Date(w.scheduled_date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const totalSeances = workoutsMonth.length;
+  const totalDurees = workoutsMonth.reduce((acc, w) => acc + (w.duration || 0), 0);
+  const moyenneDuree = totalSeances > 0 ? Math.round(totalDurees / totalSeances) : 0;
+  const maxDuree = Math.max(...workoutsMonth.map(w => w.duration || 0), 0);
+  const minDuree = Math.min(...workoutsMonth.map(w => w.duration || 0).filter(x => x > 0), 0);
+  const seanceMax = workoutsMonth.find(w => (w.duration || 0) === maxDuree);
+  const seanceMin = workoutsMonth.find(w => (w.duration || 0) === minDuree);
+  const repartitionTypes = workoutTypes.map(type => ({
+    name: type.name,
+    count: workoutsMonth.filter(w => w.type === type.name).length
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -326,6 +345,36 @@ export default function CalendarPage() {
                       .filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth())
                       .reduce((total, w) => total + (w.duration || 0), 0)} min
                   </span>
+                </div>
+                {/* Statistiques avancées */}
+                <hr className="my-2" />
+                <div className="text-sm text-gray-700 font-semibold mb-1">Statistiques avancées</div>
+                <div className="flex items-center justify-between">
+                  <span>Total séances</span>
+                  <span>{totalSeances}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Durée moyenne</span>
+                  <span>{moyenneDuree} min</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Séance la plus longue</span>
+                  <span>{maxDuree > 0 && seanceMax ? `${seanceMax.name} (${maxDuree} min)` : '-'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Séance la plus courte</span>
+                  <span>{minDuree > 0 && seanceMin ? `${seanceMin.name} (${minDuree} min)` : '-'}</span>
+                </div>
+                <div className="mt-2">
+                  <span className="font-semibold">Répartition par type :</span>
+                  <ul className="ml-2 mt-1">
+                    {repartitionTypes.map(type => (
+                      <li key={type.name} className="flex items-center text-xs">
+                        <span className="inline-block w-2 h-2 rounded-full mr-2" style={{backgroundColor: type.count > 0 ? undefined : '#e5e7eb'}}></span>
+                        {type.name} : {type.count}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>
