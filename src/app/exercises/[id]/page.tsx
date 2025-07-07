@@ -4,14 +4,28 @@ import { Dumbbell, ArrowLeft, Trophy } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
+type Exercise = {
+  id: number;
+  name: string;
+  muscle_group: string;
+  equipment: string;
+  difficulty: string;
+  sets: number;
+};
+type PerformanceLog = {
+  weight: number;
+  reps: number;
+  performed_at: string;
+};
+
 export default function ExerciseDetailPage() {
   const router = useRouter()
   const params = useParams()
   const id = params.id
 
-  const [exercise, setExercise] = useState<any | null>(null)
-  const [lastPerf, setLastPerf] = useState<any | null>(null)
-  const [perfHistory, setPerfHistory] = useState<any[]>([])
+  const [exercise, setExercise] = useState<Exercise | null>(null)
+  const [lastPerf, setLastPerf] = useState<PerformanceLog | null>(null)
+  const [perfHistory, setPerfHistory] = useState<PerformanceLog[]>([])
   useEffect(() => {
     const fetchExercise = async () => {
       const supabase = (await import('@/lib/supabase')).createClient()

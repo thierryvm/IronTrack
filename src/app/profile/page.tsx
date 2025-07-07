@@ -15,11 +15,7 @@ import {
   Bell,
   Shield,
   HelpCircle,
-  LogOut,
   Camera,
-  Mail,
-  Phone,
-  MapPin,
   Activity,
   Dumbbell,
   Download
@@ -57,6 +53,23 @@ interface UserStats {
   achievements: number
 }
 
+// Définir un type pour le profil Supabase
+interface SupabaseProfile {
+  id: string;
+  full_name?: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  avatar_url?: string;
+  height?: number;
+  weight?: number;
+  age?: number;
+  gender?: 'Homme' | 'Femme' | 'Autre';
+  goal?: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance';
+  experience?: 'Débutant' | 'Intermédiaire' | 'Avancé';
+  created_at: string;
+}
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState<UserStats | null>(null)
@@ -80,7 +93,7 @@ export default function ProfilePage() {
   const [selectedFile, setSelectedFile] = useState<File|null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   // Ajout d'un état pour l'animation et le message IronBuddy
   const [showAvatarCongrats, setShowAvatarCongrats] = useState(false);
   const [avatarAnimationKey, setAvatarAnimationKey] = useState(0);
@@ -93,11 +106,6 @@ export default function ProfilePage() {
   ];
   const [avatarCongratsMsg, setAvatarCongratsMsg] = useState(avatarMessages[0]);
 
-  useEffect(() => {
-    loadProfileData()
-    fetchSettings()
-  }, [])
-
   const loadProfileData = async () => {
     setLoading(true)
     const supabase = createClient()
@@ -108,7 +116,7 @@ export default function ProfilePage() {
       setLoading(false)
       return
     }
-    let { data: profileData, error: profileError } = await supabase
+    let { data: profileData, error: profileError }: { data: SupabaseProfile | null; error: Error | null } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
@@ -122,18 +130,25 @@ export default function ProfilePage() {
       })
       if (!insertError) {
         // Recharge le profil après création
-        ({ data: profileData, error: profileError } = await supabase
+        const result = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single())
+          .single();
+        profileData = result.data;
+        profileError = result.error;
       } else {
         setProfile(null)
         setLoading(false)
         return
       }
     }
-    const userProfile = {
+    if (!profileData) {
+      setProfile(null)
+      setLoading(false)
+      return
+    }
+    const userProfile: UserProfile = {
       id: profileData.id,
       name: profileData.full_name || '',
       email: profileData.email,
@@ -143,15 +158,21 @@ export default function ProfilePage() {
       height: profileData.height || 0,
       weight: profileData.weight || 0,
       age: profileData.age || 0,
-      gender: (profileData.gender as 'Homme' | 'Femme' | 'Autre') || 'Homme',
-      goal: (profileData.goal as 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance') || 'Prise de masse',
-      experience: (profileData.experience as 'Débutant' | 'Intermédiaire' | 'Avancé') || 'Débutant',
+      gender: profileData.gender || 'Homme',
+      goal: profileData.goal || 'Prise de masse',
+      experience: profileData.experience || 'Débutant',
       joinDate: profileData.created_at
     }
     setProfile(userProfile)
     await loadStats(user.id)
     setLoading(false)
   }
+
+  useEffect(() => {
+    loadProfileData()
+    fetchSettings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const fetchSettings = async () => {
     const supabase = createClient()
@@ -210,13 +231,6 @@ export default function ProfilePage() {
     return (profile.weight / (heightInMeters * heightInMeters)).toFixed(1)
   }
 
-  const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { category: 'Insuffisance pondérale', color: 'text-blue-600' }
-    if (bmi < 25) return { category: 'Poids normal', color: 'text-green-600' }
-    if (bmi < 30) return { category: 'Surpoids', color: 'text-yellow-600' }
-    return { category: 'Obésité', color: 'text-red-600' }
-  }
-
   const tabs = [
     { id: 'profile', name: 'Profil', icon: User },
     { id: 'stats', name: 'Statistiques', icon: TrendingUp },
@@ -235,7 +249,7 @@ export default function ProfilePage() {
     // Ici, suppression réelle du compte côté Supabase
     // (à adapter selon ta logique, ici on simule)
     setShowDeleteModal(false);
-    alert("Compte supprimé ! IronBuddy verse une larme... 😢");
+    alert("Compte supprimé ! IronBuddy verse une larme... ��");
     router.push('/auth');
   };
   // Handler : Exporter données
@@ -252,7 +266,7 @@ export default function ProfilePage() {
       a.download = 'irontrack-donnees.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch (e) {
+    } catch {
       setExportError("Erreur lors de l'export. Même IronBuddy ne comprend pas !");
     }
     setExporting(false);
@@ -276,7 +290,7 @@ export default function ProfilePage() {
     );
   }
 
-  const onCropComplete = useCallback((_: any, croppedAreaPixels: any) => {
+  const onCropComplete = useCallback((_: unknown, croppedAreaPixels: { x: number; y: number; width: number; height: number }) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -315,11 +329,10 @@ export default function ProfilePage() {
   }
 
   // Handler d'upload d'avatar modifié pour gérer le crop
-  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileChange = async (_: React.ChangeEvent<HTMLInputElement>) => {
     setAvatarError(null);
-    let file = e.target.files?.[0];
+    let file = _?.target?.files?.[0];
     if (!file) return;
-    // Conversion HEIC/HEIF si besoin
     if (isHeic(file)) {
       try {
         // Import dynamique côté client uniquement
@@ -333,7 +346,7 @@ export default function ProfilePage() {
         const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
         // On crée un File pour garder le nom et le type
         file = new File([jpegBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
-      } catch (err) {
+      } catch {
         setAvatarError("Erreur lors de la conversion HEIC/HEIF. IronBuddy est triste... Essaie de convertir manuellement !");
         return;
       }
@@ -381,8 +394,8 @@ export default function ProfilePage() {
         setAvatarAnimationKey(prev => prev + 1); // Pour relancer l'animation
         setTimeout(() => setShowAvatarCongrats(false), 2500);
       };
-    } catch (err: any) {
-      setAvatarError(err.message || "Erreur lors de l'upload");
+    } catch {
+      setAvatarError("Erreur lors de l'upload");
     }
     setAvatarUploading(false);
   };
@@ -399,7 +412,7 @@ export default function ProfilePage() {
   };
 
   // Helpers pour affichage profil
-  function displayOrDefault(val: string | number | undefined | null, label: string) {
+  function displayOrDefault(val: string | number | undefined | null) {
     if (val === undefined || val === null || val === "" || val === 0) {
       return <span className="italic text-gray-400">Non renseigné</span>;
     }
@@ -456,7 +469,7 @@ export default function ProfilePage() {
       .sort((a, b) => b.localeCompare(a)); // du plus récent au plus ancien
 
     let streak = 0;
-    let day = new Date();
+    const day = new Date();
     for (;;) {
       const dayStr = day.toISOString().slice(0, 10);
       if (dates.includes(dayStr)) {
@@ -513,9 +526,6 @@ export default function ProfilePage() {
       </div>
     )
   }
-
-  const bmi = calculateBMI()
-  const bmiCategory = getBMICategory(parseFloat(bmi))
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -652,7 +662,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base">
                   <div>
                     <span className="text-gray-500">Email</span>
-                    <div className="font-medium text-gray-900 break-all">{profile ? displayOrDefault(profile.email, "Email") : null}</div>
+                    <div className="font-medium text-gray-900 break-all">{profile ? displayOrDefault(profile.email) : null}</div>
                   </div>
                   <div>
                     <span className="text-gray-500">Objectif</span>
@@ -673,7 +683,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-500">Niveau d'expérience</span>
+                    <span className="text-gray-500">Niveau d&apos;expérience</span>
                     <div className="font-medium text-gray-900">
                       {isEditing && profile ? (
                         <select
@@ -912,7 +922,7 @@ export default function ProfilePage() {
                       </div>
                     </button>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1 font-medium">Niveau de punchlines d'IronBuddy</p>
+                      <p className="text-sm text-gray-600 mb-1 font-medium">Niveau de punchlines d&apos;IronBuddy</p>
                       <div className="flex gap-2">
                         <button
                           className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'discret' ? 'bg-gray-200 border-orange-500' : 'bg-gray-50 border-gray-300'}`}
@@ -927,7 +937,7 @@ export default function ProfilePage() {
                           onClick={() => handleIronBuddyLevelChange('ambianceur')}
                         >Ambianceur</button>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
+                      <p className="text-xs text-gray-500 mt-1">IronBuddy s&apos;adapte à ton humeur&nbsp;!</p>
                     </div>
                   </div>
                   <div>
@@ -939,14 +949,14 @@ export default function ProfilePage() {
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">Aide & support</p>
-                        <p className="text-sm text-gray-600">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
+                        <p className="text-sm text-gray-600">Besoin d&apos;un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
                     <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3">
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">FAQ</p>
-                        <p className="text-sm text-gray-600">Les questions que même IronBuddy se pose parfois…</p>
+                        <p className="text-sm text-gray-600">Les questions que m&apos;ême IronBuddy se pose parfois…</p>
                       </div>
                     </button>
                   </div>
@@ -962,7 +972,7 @@ export default function ProfilePage() {
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
             <Dialog.Title className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</Dialog.Title>
-            <Dialog.Description className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s'en remettre…</Dialog.Description>
+            <Dialog.Description className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s&apos;en remettre…</Dialog.Description>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
               <button onClick={confirmDeleteAccount} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold">Oui, supprimer</button>
@@ -975,9 +985,9 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <Dialog.Title className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d'avatar</Dialog.Title>
+            <Dialog.Title className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d&apos;avatar</Dialog.Title>
             <Dialog.Description className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</Dialog.Description>
-            <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)</div>
+            <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n&apos;est jamais partagée sans ton accord. (RGPD friendly !)</div>
             {selectedFile ? (
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative w-48 h-48 bg-gray-100 rounded-full overflow-hidden">

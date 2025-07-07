@@ -1,7 +1,4 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+// Configuration Next.js standard sans next-pwa
+const nextConfig = {};
 
 export default nextConfig;

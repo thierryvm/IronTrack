@@ -5,12 +5,19 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
+interface Workout {
+  id: string;
+  name: string;
+  scheduled_date: string;
+  notes: string;
+}
+
 export default function WorkoutDetailPage() {
   const router = useRouter()
   const params = useParams()
   const id = params.id
 
-  const [workout, setWorkout] = useState<any | null>(null)
+  const [workout, setWorkout] = useState<Workout | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

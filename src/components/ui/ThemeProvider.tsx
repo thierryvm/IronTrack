@@ -21,11 +21,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedTheme = localStorage.getItem('theme') as Theme
     if (savedTheme) {
       setTheme(savedTheme)
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark')
-      }
     }
   }, [])
+
+  // Synchronise la classe 'dark' sur <html> à chaque changement de theme
+  useEffect(() => {
+    if (!mounted) return;
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [theme, mounted])
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'

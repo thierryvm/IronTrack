@@ -32,8 +32,12 @@ export default function NewWorkoutPage() {
         setToast(null)
         router.push('/calendar')
       }, 2000)
-    } catch (err: any) {
-      alert("Erreur lors de l'enregistrement : " + (err.message || err))
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert("Erreur lors de l'enregistrement : " + (err.message || err))
+      } else {
+        alert("Erreur lors de l'enregistrement inconnue")
+      }
       setLoading(false)
     }
   }

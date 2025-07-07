@@ -10,6 +10,13 @@ const muscleGroups = [
 ]
 const difficulties = ['Débutant', 'Intermédiaire', 'Avancé']
 
+type PerformanceLog = {
+  id: number;
+  weight: number;
+  reps: number;
+  performed_at: string;
+};
+
 export default function EditExercisePage() {
   const router = useRouter()
   const params = useParams()
@@ -28,8 +35,8 @@ export default function EditExercisePage() {
   const [perfReps, setPerfReps] = useState('')
   const [perfLoading, setPerfLoading] = useState(false)
   const [perfSuccess, setPerfSuccess] = useState('')
-  const [perfHistory, setPerfHistory] = useState<any[]>([])
-  const [lastPerf, setLastPerf] = useState<any | null>(null)
+  const [perfHistory, setPerfHistory] = useState<PerformanceLog[]>([])
+  const [lastPerf, setLastPerf] = useState<PerformanceLog | null>(null)
   const [editPerfId, setEditPerfId] = useState<number | null>(null)
   const [editWeight, setEditWeight] = useState('')
   const [editReps, setEditReps] = useState('')
@@ -150,10 +157,10 @@ export default function EditExercisePage() {
     }
   }
 
-  const handleEditPerf = (perf: any) => {
+  const handleEditPerf = (perf: PerformanceLog) => {
     setEditPerfId(perf.id)
-    setEditWeight(perf.weight)
-    setEditReps(perf.reps)
+    setEditWeight(perf.weight.toString())
+    setEditReps(perf.reps.toString())
     setPerfError('')
   }
 

@@ -36,6 +36,31 @@ interface ExerciseProgress {
   trend: 'up' | 'down' | 'stable'
 }
 
+interface TrainingGoal {
+  id: number;
+  user_id: string;
+  exercise_id: number;
+  target_weight?: number | null;
+  target_reps?: number | null;
+  created_at: string;
+  exercises?: { name: string };
+}
+
+interface UserExercise {
+  id: number;
+  name: string;
+}
+
+// Définir un type pour les logs de performance
+interface PerfLog {
+  performed_at: string;
+  weight?: number;
+  reps?: number;
+  set_number?: number;
+  exercise_id: string;
+  exercises?: { name?: string; muscle_groups?: { name?: string } };
+}
+
 const muscleGroupColors = {
   'Pectoraux': '#FF6B6B',
   'Dos': '#4ECDC4',
@@ -52,14 +77,14 @@ export default function ProgressPage() {
   const [progressData, setProgressData] = useState<ProgressData[]>([])
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgress[]>([])
   const [loading, setLoading] = useState(true)
-  const [trainingGoals, setTrainingGoals] = useState<any[]>([])
+  const [trainingGoals, setTrainingGoals] = useState<TrainingGoal[]>([])
   const [showGoalModal, setShowGoalModal] = useState(false)
   const [goalExerciseId, setGoalExerciseId] = useState('')
   const [goalType, setGoalType] = useState<'kg' | 'reps'>('kg')
   const [goalValue, setGoalValue] = useState('')
   const [goalLoading, setGoalLoading] = useState(false)
   const [goalError, setGoalError] = useState('')
-  const [userExercises, setUserExercises] = useState<any[]>([])
+  const [userExercises, setUserExercises] = useState<UserExercise[]>([])
   const [userGender, setUserGender] = useState<string | null>(null)
   const lastPunchlineRef = useRef<string | null>(null)
 
@@ -83,12 +108,12 @@ export default function ProgressPage() {
         return
       }
       // Récupérer toutes les performances de l'utilisateur
-      const { data: perfLogs, error } = await supabase
+      const { data: perfLogsRaw } = await supabase
         .from('performance_logs')
         .select('*, exercise_id, exercises(name, muscle_group_id, muscle_groups(name))')
         .eq('user_id', user.id)
         .order('performed_at', { ascending: true })
-      if (error) throw error
+      const perfLogs: PerfLog[] = perfLogsRaw as PerfLog[];
       if (!perfLogs) {
         setProgressData([])
         setExerciseProgress([])
@@ -97,7 +122,7 @@ export default function ProgressPage() {
       }
       // Mise en forme des données pour les widgets
       // 1. ProgressData pour le graphique principal (par date)
-      const progressData: ProgressData[] = perfLogs.map((log: any) => ({
+      const progressData: ProgressData[] = perfLogs.map((log) => ({
         date: log.performed_at.split('T')[0],
         weight: Number(log.weight) || 0,
         reps: log.reps || 0,
@@ -106,16 +131,15 @@ export default function ProgressPage() {
       }))
       // 2. Calcul de la progression par exercice
       const exerciseMap: Record<string, { name: string, muscle_group: string, weights: number[] }> = {}
-      perfLogs.forEach((log: any) => {
-        const exId = log.exercise_id
-        const exName = log.exercises?.name || `Exercice #${exId}`
+      perfLogs.forEach((log) => {
+        const exName = log.exercises?.name || `Exercice #${log.exercise_id}`
         const mgName = log.exercises?.muscle_groups?.name || 'Autre'
-        if (!exerciseMap[exId]) {
-          exerciseMap[exId] = { name: exName, muscle_group: mgName, weights: [] }
+        if (!exerciseMap[log.exercise_id]) {
+          exerciseMap[log.exercise_id] = { name: exName, muscle_group: mgName, weights: [] }
         }
-        exerciseMap[exId].weights.push(Number(log.weight) || 0)
+        exerciseMap[log.exercise_id].weights.push(Number(log.weight) || 0)
       })
-      const exerciseProgress: ExerciseProgress[] = Object.entries(exerciseMap).map(([exId, ex]) => {
+      const exerciseProgress: ExerciseProgress[] = Object.entries(exerciseMap).map(([, ex]) => {
         const current_weight = ex.weights[ex.weights.length - 1] || 0
         const previous_weight = ex.weights[0] || 0
         const improvement = previous_weight > 0 ? ((current_weight - previous_weight) / previous_weight) * 100 : 0
@@ -134,8 +158,7 @@ export default function ProgressPage() {
       setProgressData(progressData)
       setExerciseProgress(exerciseProgress)
       setLoading(false)
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error)
+    } catch {
       setLoading(false)
     }
   }
@@ -148,14 +171,13 @@ export default function ProgressPage() {
         setTrainingGoals([])
         return
       }
-      const { data: goals, error } = await supabase
+      const { data: goals } = await supabase
         .from('training_goals')
         .select('*, exercises(name)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: true })
-      if (error) throw error
       setTrainingGoals(goals || [])
-    } catch (error) {
+    } catch {
       setTrainingGoals([])
     }
   }
@@ -164,24 +186,24 @@ export default function ProgressPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('exercises')
       .select('id, name')
       .eq('user_id', user.id)
       .order('name', { ascending: true })
-    if (!error && data) setUserExercises(data)
+    if (data) setUserExercises(data)
   }
 
   const fetchGender = async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('profiles')
       .select('gender')
       .eq('id', user.id)
       .single()
-    if (!error && data) setUserGender(data.gender)
+    if (data) setUserGender(data.gender)
   }
 
   const handleAddGoal = async (e: React.FormEvent) => {
@@ -197,7 +219,7 @@ export default function ProgressPage() {
         setGoalLoading(false)
         return
       }
-      const insertData: any = {
+      const insertData: Omit<TrainingGoal, 'id' | 'exercises'> = {
         user_id: user.id,
         exercise_id: Number(goalExerciseId),
         target_weight: goalType === 'kg' ? Number(goalValue) : null,
@@ -211,8 +233,12 @@ export default function ProgressPage() {
       setGoalType('kg')
       setGoalValue('')
       setTimeout(() => loadTrainingGoals(), 300)
-    } catch (err: any) {
-      setGoalError(err.message || 'Erreur inconnue')
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setGoalError(err.message || 'Erreur inconnue')
+      } else {
+        setGoalError('Erreur inconnue')
+      }
     }
     setGoalLoading(false)
   }
@@ -585,7 +611,7 @@ export default function ProgressPage() {
             </div>
             <div className="space-y-4">
               {trainingGoals.length === 0 && (
-                <div className="text-gray-500 text-sm">Aucun objectif défini pour l'instant. Ajoute-en un pour te challenger !</div>
+                <div className="text-gray-500 text-sm">Aucun objectif défini pour l&apos;instant. Ajoute-en un pour te challenger !</div>
               )}
               {trainingGoals.map((goal) => {
                 // Trouver la meilleure perf pour cet exercice
@@ -688,7 +714,7 @@ export default function ProgressPage() {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">Type d'objectif</label>
+                <label className="block text-gray-700 font-medium mb-2">Type d&apos;objectif</label>
                 <select
                   value={goalType}
                   onChange={e => setGoalType(e.target.value as 'kg' | 'reps')}
@@ -716,7 +742,7 @@ export default function ProgressPage() {
                 disabled={goalLoading}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
               >
-                {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l'objectif</>}
+                {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l&apos;objectif</>}
               </button>
             </form>
           </div>

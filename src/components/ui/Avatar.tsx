@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface AvatarProps {
   src?: string;
@@ -22,11 +23,12 @@ export default function Avatar({ src, name = '', size = 96, className = '', onCl
       title={name}
     >
       {src ? (
-        <img
+        <Image
           src={src}
           alt={name || 'Avatar'}
           className="object-cover w-full h-full rounded-full border-2 border-white"
-          style={{ width: size, height: size }}
+          width={size}
+          height={size}
         />
       ) : (
         <span>{initials}</span>

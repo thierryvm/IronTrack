@@ -37,7 +37,6 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [showAddModal, setShowAddModal] = useState(false)
   const router = useRouter()
 
   useEffect(() => {

@@ -14,7 +14,6 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { MascotWidget } from '@/components/ui/Mascot'
-import { QuickTimer } from '@/components/ui/Timer'
 import SessionTimer from '@/components/ui/SessionTimer'
 import SoundLibrary from '@/components/ui/SoundLibrary'
 import { createClient } from '@/lib/supabase'
@@ -30,6 +29,13 @@ interface UserSound {
 
 const SESSION_SOUNDS_KEY = 'irontrack-session-sounds';
 
+interface ExerciseItem {
+  id: number;
+  name: string;
+  muscle_group?: string;
+  last_weight?: number;
+}
+
 export default function HomePage() {
   const [stats, setStats] = useState({
     totalWorkouts: 0,
@@ -37,14 +43,24 @@ export default function HomePage() {
     currentStreak: 0,
     totalWeight: 0
   })
-  const [recentExercises, setRecentExercises] = useState<Array<{ id: number; name: string; muscle_group: string; last_weight: number }>>([])
+  const [recentExercises, setRecentExercises] = useState<ExerciseItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showSessionTimer, setShowSessionTimer] = useState(false)
-  const [sessionSteps, setSessionSteps] = useState([
-    { name: 'Rameur - Jambes', duration: 90 },
-    { name: 'Repos', duration: 30 },
-    { name: 'Rameur - Dos', duration: 60 },
-  ])
+  const [sessionSteps, setSessionSteps] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('irontrack-session-steps');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+    return [
+      { name: 'Rameur - Jambes', duration: 90 },
+      { name: 'Repos', duration: 30 },
+      { name: 'Rameur - Dos', duration: 60 },
+    ];
+  });
   const [userSounds, setUserSounds] = useState<UserSound[]>([])
   const [sessionSounds, setSessionSounds] = useState<(string | null)[]>(() => {
     if (typeof window !== 'undefined') {
@@ -66,8 +82,7 @@ export default function HomePage() {
     "Adieu petit son, tu as bien vibré dans nos oreilles ! 🎶"
   ];
   const router = useRouter();
-  type ExerciseOption = { id: number; name: string; muscle_group?: string };
-  const [allExercises, setAllExercises] = useState<ExerciseOption[]>([]);
+  const [allExercises, setAllExercises] = useState<ExerciseItem[]>([])
 
   useEffect(() => {
     loadDashboardData()
@@ -168,15 +183,27 @@ export default function HomePage() {
       if (error || !perfLogs) {
         setRecentExercises([])
       } else {
-        // Grouper par exercice, ne garder que la dernière perf de chaque
+        // Typage explicite des logs pour TypeScript
+        type PerfLog = {
+          exercise_id: number;
+          weight: number;
+          performed_at: string;
+          exercises: { name: string; muscle_group?: string } | { name: string; muscle_group?: string }[];
+        };
         const seen = new Set()
-        const recent = []
-        for (const log of perfLogs) {
-          if (!seen.has(log.exercise_id) && log.exercises) {
+        const recent: ExerciseItem[] = []
+        for (const log of perfLogs as PerfLog[]) {
+          let exerciseObj: { name: string; muscle_group?: string } | undefined;
+          if (Array.isArray(log.exercises)) {
+            exerciseObj = log.exercises[0];
+          } else {
+            exerciseObj = log.exercises;
+          }
+          if (!seen.has(log.exercise_id) && exerciseObj) {
             recent.push({
               id: log.exercise_id,
-              name: log.exercises.name,
-              muscle_group: log.exercises.muscle_group,
+              name: exerciseObj.name,
+              muscle_group: exerciseObj.muscle_group,
               last_weight: Number(log.weight) || 0
             })
             seen.add(log.exercise_id)
@@ -297,9 +324,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-12">
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -331,15 +358,15 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</p>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                    <Icon className={`h-6 w-6 ${stat.color}`} />
+                  <div className={`p-3 rounded-full ${stat.bgColor} dark:bg-gray-700`}>
+                    <Icon className={`h-6 w-6 ${stat.color} dark:text-yellow-400`} />
                   </div>
                 </div>
               </motion.div>
@@ -354,97 +381,81 @@ export default function HomePage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Actions rapides</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Actions rapides</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon
                   // Palette personnalisée
                   const tileColors = [
-                    'from-green-400 to-green-500', // Exercice
-                    'from-orange-400 to-orange-500', // Séance
-                    'from-blue-400 to-blue-500', // Nutrition
-                    'from-purple-400 to-purple-500', // Progression
-                    'from-yellow-400 to-yellow-500' // Timer
+                    'from-green-400 to-green-500 dark:from-green-700 dark:to-green-900', // Exercice
+                    'from-orange-400 to-orange-500 dark:from-orange-700 dark:to-orange-900', // Séance
+                    'from-blue-400 to-blue-500 dark:from-blue-700 dark:to-blue-900', // Nutrition
+                    'from-purple-400 to-purple-500 dark:from-purple-700 dark:to-purple-900', // Progression
+                    'from-yellow-400 to-yellow-500 dark:from-yellow-700 dark:to-yellow-900' // Timer
                   ];
                   const bg = tileColors[index % tileColors.length];
                   return (
-                    <motion.div
+                    <Link
                       key={action.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      href={action.href || '#'}
+                      onClick={action.onClick}
+                      className={`flex flex-col justify-between rounded-xl p-6 shadow-md text-white dark:text-gray-100 font-semibold text-lg transition-all duration-200 bg-gradient-to-r ${bg} hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500`}
                     >
-                      {action.href && !action.onClick ? (
-                        <Link
-                          href={action.href}
-                          className={`w-full flex flex-col items-start justify-between px-6 py-6 rounded-2xl shadow-lg bg-gradient-to-br ${bg} text-white hover:scale-[1.03] transition-transform min-h-[120px]`}
-                        >
-                          <div className="flex items-center mb-2">
-                            <Icon className="h-8 w-8 mr-3 opacity-90" />
-                            <span className="text-lg font-bold">{action.name}</span>
-                          </div>
-                          <span className="text-sm font-medium opacity-90 mt-2">{action.description}</span>
-                        </Link>
-                      ) : (
-                        <button
-                          onClick={action.onClick}
-                          className={`w-full flex flex-col items-start justify-between px-6 py-6 rounded-2xl shadow-lg bg-gradient-to-br ${bg} text-white hover:scale-[1.03] transition-transform min-h-[120px]`}
-                        >
-                          <div className="flex items-center mb-2">
-                            <Icon className="h-8 w-8 mr-3 opacity-90" />
-                            <span className="text-lg font-bold">{action.name}</span>
-                          </div>
-                          <span className="text-sm font-medium opacity-90 mt-2">{action.description}</span>
-                        </button>
-                      )}
-                    </motion.div>
+                      <div className="flex items-center mb-2">
+                        <Icon className="h-7 w-7 mr-3" />
+                        <span>{action.name}</span>
+                      </div>
+                      <span className="text-sm font-normal text-white dark:text-gray-200 opacity-80">{action.description}</span>
+                    </Link>
                   )
                 })}
               </div>
             </div>
           </motion.div>
 
-          {/* Timer et exercices récents */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
-          >
-            {/* Timer rapide */}
-            <QuickTimer />
-
-            {/* Exercices récents */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Exercices récents</h2>
-              <div className="space-y-3">
-                {recentExercises.map((exercise, index) => (
-                  <motion.div
-                    key={exercise.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div>
-                      <h3 className="font-medium text-gray-900">{exercise.name}</h3>
-                      <p className="text-sm text-gray-600">{exercise.muscle_group}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-orange-600">{exercise.last_weight === 0 ? 'Poids du corps' : `${exercise.last_weight} kg`}</p>
-                      <p className="text-xs text-gray-500">Dernier poids</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <Link
-                href="/exercises"
-                className="block text-center mt-4 text-orange-600 hover:text-orange-700 font-medium"
-              >
-                Voir tous les exercices →
-              </Link>
+          {/* Temps de repos rapide */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Temps de repos rapide</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {[30, 60, 90, 120, 180].map((t) => (
+                <button
+                  key={t}
+                  className="bg-orange-500 dark:bg-orange-700 text-white font-bold py-2 rounded-lg shadow hover:bg-orange-600 dark:hover:bg-orange-800 transition-colors"
+                >
+                  {t}s
+                </button>
+              ))}
             </div>
-          </motion.div>
+          </div>
+
+          {/* Exercices récents */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Exercices récents</h2>
+            <div className="space-y-3">
+              {recentExercises.map((exercise: ExerciseItem, index: number) => (
+                <motion.div
+                  key={exercise.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{exercise.muscle_group}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-orange-500 dark:text-orange-300 font-bold">
+                      {exercise.last_weight === 0 ? 'Poids du corps' : `${exercise.last_weight} kg`}
+                    </span>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Dernier poids</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <Link href="/exercises" className="block mt-4 text-orange-500 dark:text-orange-300 text-sm font-semibold hover:underline">Voir tous les exercices →</Link>
+          </div>
         </div>
 
         {/* Section motivation */}
@@ -498,7 +509,7 @@ export default function HomePage() {
             <div className="px-4 py-6 bg-white overflow-y-auto" style={{maxHeight:'calc(90vh - 72px)'}}>
               {/* Liste des étapes/exercices */}
               <div className="w-full max-w-2xl mx-auto space-y-2" style={{maxHeight:'260px', overflowY:'auto'}}>
-                {sessionSteps.map((step, idx) => (
+                {sessionSteps.map((step: { name: string; duration: number }, idx: number) => (
                   <div key={idx} className="flex flex-row items-center gap-1 bg-[#F6F8FA] rounded-lg p-2 shadow-sm border border-[#E5E7EB] min-h-[48px]">
                     {/* Icône à gauche */}
                     <span className="text-xl text-gray-700 flex-shrink-0">🏋️‍♂️</span>
@@ -506,9 +517,9 @@ export default function HomePage() {
                     <select
                       className="border border-[#E5E7EB] rounded px-2 py-1 text-sm min-w-[90px] max-w-[140px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white flex-shrink-0 text-gray-900"
                       style={{height:'36px', width:'130px'}} 
-                      value={allExercises.find(e => e.name === step.name)?.id ?? ''}
-                      onChange={e => {
-                        const exo = allExercises.find(ex => ex.id === Number(e.target.value));
+                      value={allExercises.find((ex: ExerciseItem) => ex.name === step.name)?.id ?? ''}
+                      onChange={(e) => {
+                        const exo = allExercises.find((ex: ExerciseItem) => ex.id === Number(e.target.value));
                         if (exo) {
                           const newSteps = [...sessionSteps];
                           newSteps[idx].name = exo.name;
@@ -517,7 +528,7 @@ export default function HomePage() {
                       }}
                     >
                       <option value="">Exercice existant...</option>
-                      {allExercises.map(ex => (
+                      {allExercises.map((ex: ExerciseItem) => (
                         <option key={ex.id} value={ex.id}>{ex.name}{ex.muscle_group ? ` (${ex.muscle_group})` : ''}</option>
                       ))}
                     </select>
@@ -525,7 +536,7 @@ export default function HomePage() {
                     <input
                       type="text"
                       value={step.name}
-                      onChange={e => {
+                      onChange={(e) => {
                         const newSteps = [...sessionSteps]
                         newSteps[idx].name = e.target.value
                         setSessionSteps(newSteps)
@@ -539,7 +550,7 @@ export default function HomePage() {
                       type="number"
                       min={1}
                       value={step.duration}
-                      onChange={e => {
+                      onChange={(e) => {
                         const newSteps = [...sessionSteps]
                         newSteps[idx].duration = Number(e.target.value)
                         setSessionSteps(newSteps)
@@ -553,7 +564,7 @@ export default function HomePage() {
                       className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-24 min-w-[60px] max-w-[100px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white flex-shrink-0 text-gray-900"
                       style={{height:'36px', width:'90px'}}
                       value={sessionSounds[idx] || ''}
-                      onChange={e => {
+                      onChange={(e) => {
                         setSessionSounds(sounds => {
                           const arr = [...sounds];
                           arr[idx] = e.target.value || null;
@@ -586,7 +597,7 @@ export default function HomePage() {
                     )}
                     {/* Bouton supprimer (croix) */}
                     <button
-                      onClick={() => setSessionSteps(steps => steps.filter((_, i) => i !== idx))}
+                      onClick={() => setSessionSteps((steps: { name: string; duration: number }[]) => steps.filter((steps: { name: string; duration: number }, i: number) => i !== idx))}
                       className="text-gray-400 hover:text-red-500 text-lg font-bold ml-1 flex-shrink-0 h-9 w-9 flex items-center justify-center"
                       title="Supprimer l'étape"
                       style={{height:'36px', width:'36px'}}
@@ -605,7 +616,7 @@ export default function HomePage() {
               {/* Timer juste en dessous des étapes */}
               <div className="w-full flex items-center justify-center mt-8 mb-8">
                 <SessionTimer
-                  steps={sessionSteps.map((step, idx) => ({ ...step, soundUrl: (userSounds.find(s => s.id === sessionSounds[idx])?.file_url) || undefined }))}
+                  steps={sessionSteps.map((step: { name: string; duration: number }, idx: number) => ({ ...step, soundUrl: (userSounds.find(s => s.id === sessionSounds[idx])?.file_url) || undefined }))}
                   autoStart={false}
                 />
               </div>
@@ -613,7 +624,6 @@ export default function HomePage() {
               <div className="w-full max-w-2xl mx-auto border-t border-[#E5E7EB] pt-6 mt-4">
                 <SoundLibrary
                   userId={userId || ''}
-                  onSelect={() => {}}
                   selectedSoundId={undefined}
                   onSoundAdded={refreshUserSounds}
                   onSoundDeleted={handleSoundDeleted}

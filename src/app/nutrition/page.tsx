@@ -14,6 +14,7 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { createClient } from '@/lib/supabase'
 
 interface Meal {
   id: number
@@ -34,6 +35,18 @@ interface NutritionGoals {
   fat: number
 }
 
+interface NutritionLogRow {
+  id: number;
+  food_name: string;
+  meal_type: 'Petit-déjeuner' | 'Déjeuner' | 'Dîner' | 'Collation';
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  time: string;
+  date: string;
+}
+
 const mealTypes = [
   { name: 'Petit-déjeuner', color: '#FF6B6B', icon: '🌅' },
   { name: 'Déjeuner', color: '#4ECDC4', icon: '☀️' },
@@ -46,6 +59,36 @@ export default function NutritionPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  // État pour le formulaire d'ajout de repas
+  const [addForm, setAddForm] = useState({
+    name: '',
+    type: 'Déjeuner',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fat: '',
+    time: '',
+  })
+  const [addLoading, setAddLoading] = useState(false)
+  const [addError, setAddError] = useState<string | null>(null)
+
+  // État pour l'édition de repas
+  const [editMeal, setEditMeal] = useState<Meal | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    type: 'Déjeuner',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fat: '',
+    time: '',
+  })
+  const [editLoading, setEditLoading] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
+
+  const supabase = createClient()
 
   const goals: NutritionGoals = {
     calories: 2500,
@@ -55,63 +98,48 @@ export default function NutritionPage() {
   }
 
   useEffect(() => {
-    loadMeals()
-  }, [selectedDate])
+    // Récupère l'utilisateur connecté au premier rendu
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUserId(user?.id || null)
+    }
+    fetchUser()
+  }, [supabase.auth])
+
+  useEffect(() => {
+    if (userId) {
+      loadMeals()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, userId])
 
   const loadMeals = async () => {
+    setLoading(true)
     try {
-      // Simuler des données pour le moment
-      const mockMeals: Meal[] = [
-        {
-          id: 1,
-          name: 'Omelette protéinée',
-          type: 'Petit-déjeuner',
-          calories: 350,
-          protein: 25,
-          carbs: 8,
-          fat: 22,
-          time: '08:00',
-          date: '2024-01-15'
-        },
-        {
-          id: 2,
-          name: 'Poulet riz brocoli',
-          type: 'Déjeuner',
-          calories: 650,
-          protein: 45,
-          carbs: 60,
-          fat: 20,
-          time: '12:30',
-          date: '2024-01-15'
-        },
-        {
-          id: 3,
-          name: 'Shake protéiné',
-          type: 'Collation',
-          calories: 200,
-          protein: 30,
-          carbs: 15,
-          fat: 5,
-          time: '16:00',
-          date: '2024-01-15'
-        },
-        {
-          id: 4,
-          name: 'Saumon quinoa',
-          type: 'Dîner',
-          calories: 550,
-          protein: 35,
-          carbs: 45,
-          fat: 25,
-          time: '19:30',
-          date: '2024-01-15'
-        }
-      ]
-
-      setMeals(mockMeals)
-      setLoading(false)
+      if (!userId) return
+      const dateString = selectedDate.toISOString().split('T')[0]
+      const { data } = await supabase
+        .from('nutrition_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', dateString)
+        .order('time', { ascending: true })
+      // Mapping des champs DB -> Meal
+      const mappedMeals: Meal[] = (data || []).map((row: NutritionLogRow) => ({
+        id: row.id,
+        name: row.food_name,
+        type: row.meal_type,
+        calories: row.calories,
+        protein: row.protein,
+        carbs: row.carbs,
+        fat: row.fat,
+        time: row.time,
+        date: row.date
+      }))
+      setMeals(mappedMeals)
     } catch (error) {
       console.error('Erreur lors du chargement des repas:', error)
+    } finally {
       setLoading(false)
     }
   }
@@ -153,6 +181,13 @@ export default function NutritionPage() {
   const todayMeals = getMealsForDate(selectedDate)
   const todayNutrition = getTotalNutrition(todayMeals)
 
+  // Génère une clé unique pour forcer le re-render (hash simple)
+  const todayMealsKey = todayMeals.map(m => `${m.id}-${m.calories}-${m.protein}-${m.carbs}-${m.fat}`).join('|')
+
+  // Log pour debug : vérifier les repas du jour utilisés pour l'affichage
+  console.log('todayMeals pour affichage:', todayMeals)
+  console.log('todayNutrition pour PieChart:', todayNutrition)
+
   const weeklyData = [
     { day: 'Lun', calories: 2400, protein: 170, carbs: 230, fat: 75 },
     { day: 'Mar', calories: 2600, protein: 185, carbs: 250, fat: 85 },
@@ -162,6 +197,109 @@ export default function NutritionPage() {
     { day: 'Sam', calories: 2800, protein: 195, carbs: 270, fat: 95 },
     { day: 'Dim', calories: 2200, protein: 155, carbs: 210, fat: 65 }
   ]
+
+  // Ajout d'un repas dans Supabase
+  const handleAddMeal = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddLoading(true)
+    setAddError(null)
+    try {
+      if (!userId) throw new Error('Utilisateur non connecté')
+      if (!addForm.name || !addForm.type || !addForm.calories || !addForm.protein || !addForm.carbs || !addForm.fat || !addForm.time) {
+        setAddError('Tous les champs sont obligatoires')
+        setAddLoading(false)
+        return
+      }
+      const dateString = selectedDate.toISOString().split('T')[0]
+      const { error } = await supabase.from('nutrition_logs').insert({
+        user_id: userId,
+        date: dateString,
+        meal_type: addForm.type,
+        food_name: addForm.name,
+        calories: Number(addForm.calories),
+        protein: Number(addForm.protein),
+        carbs: Number(addForm.carbs),
+        fat: Number(addForm.fat),
+        time: addForm.time,
+      })
+      if (error) throw error
+      setShowAddModal(false)
+      setAddForm({ name: '', type: 'Déjeuner', calories: '', protein: '', carbs: '', fat: '', time: '' })
+      await loadMeals()
+    } catch (err: unknown) {
+      setAddError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setAddLoading(false)
+    }
+  }
+
+  // Suppression d'un repas
+  const handleDeleteMeal = async (id: number | string) => {
+    if (!userId) return
+    if (!window.confirm('Supprimer ce repas ?')) return
+    try {
+      const { error } = await supabase.from('nutrition_logs').delete().eq('id', id)
+      if (error) throw error
+      await loadMeals()
+    } catch {
+      alert('Erreur lors de la suppression du repas')
+    }
+  }
+
+  // Ouvre le modal d'édition avec les valeurs du repas
+  const openEditModal = (meal: Meal) => {
+    setEditMeal(meal)
+    setEditForm({
+      name: meal.name,
+      type: meal.type,
+      calories: meal.calories.toString(),
+      protein: meal.protein.toString(),
+      carbs: meal.carbs.toString(),
+      fat: meal.fat.toString(),
+      time: meal.time,
+    })
+  }
+
+  // Met à jour le repas dans Supabase
+  const handleEditMeal = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEditLoading(true)
+    setEditError(null)
+    try {
+      if (!userId || !editMeal) throw new Error('Utilisateur ou repas manquant')
+      if (!editForm.name || !editForm.type || !editForm.calories || !editForm.protein || !editForm.carbs || !editForm.fat || !editForm.time) {
+        setEditError('Tous les champs sont obligatoires')
+        setEditLoading(false)
+        return
+      }
+      const updatePayload = {
+        meal_type: editForm.type,
+        food_name: editForm.name,
+        calories: Number(editForm.calories),
+        protein: Number(editForm.protein),
+        carbs: Number(editForm.carbs),
+        fat: Number(editForm.fat),
+        time: editForm.time,
+      }
+      const updateId = String(editMeal.id)
+      console.log('Update Supabase:', { id: updateId, ...updatePayload })
+      const { error } = await supabase.from('nutrition_logs').update(updatePayload).eq('id', updateId)
+      if (error) throw error
+      await loadMeals() // Recharge la liste avant de fermer le modal
+      setEditMeal(null)
+    } catch (err: unknown) {
+      setEditError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  // Ajoute un log après chaque chargement de repas
+  useEffect(() => {
+    if (!loading) {
+      console.log('Repas chargés:', meals)
+    }
+  }, [meals, loading])
 
   if (loading) {
     return (
@@ -322,6 +460,7 @@ export default function NutritionPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Répartition des macronutriments */}
           <motion.div
+            key={todayMealsKey + '-pie'}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-white rounded-xl shadow-md p-6"
@@ -329,7 +468,7 @@ export default function NutritionPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Répartition des macronutriments</h2>
             
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+              <PieChart key={todayMealsKey}>
                 <Pie
                   data={[
                     { name: 'Protéines', value: todayNutrition.protein * 4, color: '#3B82F6' },
@@ -383,6 +522,7 @@ export default function NutritionPage() {
 
         {/* Liste des repas */}
         <motion.div
+          key={todayMealsKey + '-cards'}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -436,10 +576,10 @@ export default function NutritionPage() {
                             </div>
                             
                             <div className="flex items-center space-x-1">
-                              <button className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors">
+                              <button className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" onClick={() => openEditModal(meal)}>
                                 <Edit className="h-4 w-4" />
                               </button>
-                              <button className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
+                              <button className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" onClick={() => handleDeleteMeal(meal.id)}>
                                 <Trash2 className="h-4 w-4" />
                               </button>
                             </div>
@@ -488,18 +628,106 @@ export default function NutritionPage() {
         </motion.div>
       </div>
 
-      {/* Modal d'ajout de repas (à implémenter) */}
+      {/* Modal d'ajout de repas */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Ajouter un repas</h3>
-            <p className="text-gray-600 mb-4">Fonctionnalité à venir...</p>
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors"
-            >
-              Fermer
-            </button>
+            <form onSubmit={handleAddMeal} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Nom du repas</label>
+                <input type="text" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <select className="mt-1 block w-full border rounded px-3 py-2" value={addForm.type} onChange={e => setAddForm(f => ({ ...f, type: e.target.value }))}>
+                  {mealTypes.map(mt => <option key={mt.name} value={mt.name}>{mt.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Calories</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.calories} onChange={e => setAddForm(f => ({ ...f, calories: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Heure</label>
+                  <input type="time" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.time} onChange={e => setAddForm(f => ({ ...f, time: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Protéines (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.protein} onChange={e => setAddForm(f => ({ ...f, protein: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Glucides (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.carbs} onChange={e => setAddForm(f => ({ ...f, carbs: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Lipides (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={addForm.fat} onChange={e => setAddForm(f => ({ ...f, fat: e.target.value }))} />
+                </div>
+              </div>
+              {addError && <div className="text-red-600 text-sm">{addError}</div>}
+              <button type="submit" className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors" disabled={addLoading}>
+                {addLoading ? 'Ajout en cours...' : 'Ajouter'}
+              </button>
+              <button type="button" onClick={() => setShowAddModal(false)} className="w-full mt-2 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                Annuler
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal d'édition de repas */}
+      {editMeal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Modifier le repas</h3>
+            <form onSubmit={handleEditMeal} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Nom du repas</label>
+                <input type="text" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <select className="mt-1 block w-full border rounded px-3 py-2" value={editForm.type} onChange={e => setEditForm(f => ({ ...f, type: e.target.value }))}>
+                  {mealTypes.map(mt => <option key={mt.name} value={mt.name}>{mt.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Calories</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.calories} onChange={e => setEditForm(f => ({ ...f, calories: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Heure</label>
+                  <input type="time" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.time} onChange={e => setEditForm(f => ({ ...f, time: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Protéines (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.protein} onChange={e => setEditForm(f => ({ ...f, protein: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Glucides (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.carbs} onChange={e => setEditForm(f => ({ ...f, carbs: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Lipides (g)</label>
+                  <input type="number" className="mt-1 block w-full border rounded px-3 py-2" value={editForm.fat} onChange={e => setEditForm(f => ({ ...f, fat: e.target.value }))} />
+                </div>
+              </div>
+              {editError && <div className="text-red-600 text-sm">{editError}</div>}
+              <button type="submit" className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors" disabled={editLoading}>
+                {editLoading ? 'Modification...' : 'Enregistrer'}
+              </button>
+              <button type="button" onClick={() => setEditMeal(null)} className="w-full mt-2 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                Annuler
+              </button>
+            </form>
           </div>
         </div>
       )}

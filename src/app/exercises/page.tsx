@@ -81,9 +81,9 @@ export default function ExercisesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
@@ -92,7 +92,7 @@ export default function ExercisesPage() {
             </div>
             <Link
               href="/exercises/new"
-              className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
+              className="bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors flex items-center space-x-2"
             >
               <Plus className="h-5 w-5" />
               <span>Nouvel exercice</span>
@@ -106,7 +106,7 @@ export default function ExercisesPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-md p-6 mb-8"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8"
         >
           <div className="flex flex-col md:flex-row gap-4">
             {/* Recherche */}
@@ -145,39 +145,39 @@ export default function ExercisesPage() {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
         >
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total exercices</p>
-                <p className="text-2xl font-bold text-gray-900">{exercises.length}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total exercices</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{exercises.length}</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-full">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
                 <Dumbbell className="h-6 w-6 text-blue-500" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Groupes musculaires</p>
-                <p className="text-2xl font-bold text-gray-900">{new Set(exercises.map(e => e.muscle_group)).size}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Groupes musculaires</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{new Set(exercises.map(e => e.muscle_group)).size}</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-full">
+              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
                 <Target className="h-6 w-6 text-green-500" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Exercices récents</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Exercices récents</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {exercises.filter(e => e.last_date && new Date(e.last_date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length}
                 </p>
               </div>
-              <div className="p-3 bg-orange-100 rounded-full">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
                 <TrendingUp className="h-6 w-6 text-orange-500" />
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function ExercisesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-md overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
         >
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">

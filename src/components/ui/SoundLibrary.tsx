@@ -11,13 +11,12 @@ interface UserSound {
 
 interface SoundLibraryProps {
   userId: string;
-  onSelect?: (sound: UserSound) => void;
   selectedSoundId?: string;
   onSoundAdded?: () => void;
   onSoundDeleted?: (sound: UserSound) => void;
 }
 
-export default function SoundLibrary({ userId, onSelect, selectedSoundId, onSoundAdded, onSoundDeleted }: SoundLibraryProps) {
+export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, onSoundDeleted }: SoundLibraryProps) {
   const [sounds, setSounds] = useState<UserSound[]>([]);
   const [uploading, setUploading] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);

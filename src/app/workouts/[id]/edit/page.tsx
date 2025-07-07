@@ -19,7 +19,7 @@ export default function EditWorkoutPage() {
   useEffect(() => {
     const fetchWorkout = async () => {
       const supabase = createClient();
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('workouts')
         .select('*')
         .eq('id', id)
