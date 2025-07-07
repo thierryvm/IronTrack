@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes avatar-pop {
+  0% { transform: scale(1) rotate(-2deg); filter: brightness(1.2) drop-shadow(0 0 8px #a855f7); }
+  60% { transform: scale(1.15) rotate(2deg); filter: brightness(1.4) drop-shadow(0 0 16px #a855f7); }
+  100% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 0 #a855f7); }
+}
+.animate-avatar-pop {
+  animation: avatar-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+.animate-fade-in-out {
+  animation: fade-in-out 2.5s both;
+}
+@keyframes timer-bg {
+  0% { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(1.1) saturate(1.2) hue-rotate(10deg); }
+}
+.animate-timer-bg {
+  animation: timer-bg 8s linear infinite alternate;
+}
+@keyframes timer-glow {
+  0% { text-shadow: 0 0 0 #fff, 0 0 0 #facc15; }
+  60% { text-shadow: 0 0 32px #fff, 0 0 64px #facc15; }
+  100% { text-shadow: 0 0 16px #fff, 0 0 32px #facc15; }
+}
+.animate-timer-glow {
+  animation: timer-glow 1.2s ease-in-out;
+}
+@keyframes timer-step {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-timer-step {
+  animation: timer-step 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes timer-congrats {
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-timer-congrats {
+  animation: timer-congrats 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+}
