@@ -298,15 +298,13 @@ export default function ProfilePage() {
       a.download = 'irontrack-donnees.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      setExportError("Erreur lors de l'export. Même IronBuddy ne comprend pas !");
+    } catch {
+      setExportError("Erreur lors de l&apos;export. Même IronBuddy ne comprend pas !");
     }
     setExporting(false);
   };
   // Handler : Changer avatar
   const handleChangeAvatar = () => setShowAvatarModal(true);
-  // Handler : Choisir mascotte
-  const handleChooseMascot = () => setShowMascotModal(true);
   // Handler : Support
   const handleSupport = () => window.open('https://irontrack-support.example.com', '_blank');
   // Handler : FAQ
@@ -955,7 +953,7 @@ export default function ProfilePage() {
                   <div>
                     <p className="font-medium text-gray-900">Objectifs quotidiens</p>
                     <p className="text-sm text-gray-600">Suivi de tes objectifs nutritionnels</p>
-                    <p className="text-xs text-gray-500 mt-1">Active ce suivi pour recevoir des rappels et des conseils nutritionnels personnalisés chaque jour. IronBuddy t'aidera à ne jamais oublier ton apport en protéines, glucides et lipides !</p>
+                    <p className="text-xs text-gray-500 mt-1">Active ce suivi pour recevoir des rappels et des conseils nutritionnels personnalisés chaque jour. IronBuddy t&apos;aidera à ne jamais oublier ton apport en protéines, glucides et lipides !</p>
                   </div>
                   <button
                     className={`w-12 h-6 rounded-full relative transition-colors ${nutritionGoalsEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
@@ -969,7 +967,7 @@ export default function ProfilePage() {
                 {nutritionGoalsEnabled && (
                   <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm flex items-center gap-2 animate-fade-in">
                     <Flame className="h-5 w-5 text-orange-500" />
-                    <span>Rappels nutritionnels actifs : tu recevras un rappel chaque jour à 20h si tu n'as pas rempli tes objectifs nutritionnels !</span>
+                    <span>Rappels nutritionnels actifs : tu recevras un rappel chaque jour à 20h si tu n&apos;as pas rempli tes objectifs nutritionnels !</span>
                   </div>
                 )}
               </div>
@@ -1135,7 +1133,7 @@ export default function ProfilePage() {
                       <span className="mt-1 text-xs font-bold">SuperStar</span>
                     </button>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l'app et t'encouragera à chaque étape !</p>
+                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l&apos;app et t&apos;encouragera à chaque étape !</p>
                 </div>
               </div>
             </div>

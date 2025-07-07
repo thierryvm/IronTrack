@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Plus, 
@@ -118,16 +118,9 @@ export default function NutritionPage() {
       setLoadingPref(false)
     }
     fetchUser()
-  }, [supabase.auth])
+  }, [supabase])
 
-  useEffect(() => {
-    if (userId) {
-      loadMeals()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, userId])
-
-  const loadMeals = async () => {
+  const loadMeals = useCallback(async () => {
     setLoading(true)
     try {
       if (!userId) return
@@ -156,7 +149,13 @@ export default function NutritionPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId, selectedDate, supabase])
+
+  useEffect(() => {
+    if (userId) {
+      loadMeals()
+    }
+  }, [selectedDate, userId, loadMeals])
 
   const getMealsForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0]
@@ -334,7 +333,7 @@ export default function NutritionPage() {
           <span role="img" aria-label="mascotte">🤖</span>
           <div>
             <b>Le suivi nutritionnel est désactivé !</b><br />
-            IronBuddy dit : « Active le suivi pour voir tes objectifs, tes progrès et recevoir des rappels motivants ! »<br />
+            IronBuddy dit : « Active le suivi pour voir tes objectifs, tes progrès et recevoir des rappels motivants ! »<br />
             (Va dans ton profil pour activer le suivi, champion 🏆)
           </div>
         </div>

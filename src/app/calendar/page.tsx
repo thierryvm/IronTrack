@@ -321,60 +321,64 @@ export default function CalendarPage() {
 
             {/* Statistiques du mois */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Ce mois</h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Séances terminées</span>
-                  <span className="font-bold text-green-600">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
+              </h3>
+              <div className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-500" />
+                  <span className="text-gray-700">Séances terminées</span>
+                  <span className="ml-auto bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-lg shadow">
                     {workouts.filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).length}
                   </span>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Séances planifiées</span>
-                  <span className="font-bold text-blue-600">
+                <div className="flex items-center gap-3">
+                  <Target className="h-6 w-6 text-blue-500" />
+                  <span className="text-gray-700">Séances planifiées</span>
+                  <span className="ml-auto bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-lg shadow">
                     {workouts.filter(w => w.status === 'Planifié' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).length}
                   </span>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Temps total</span>
-                  <span className="font-bold text-orange-600">
-                    {workouts
-                      .filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth())
-                      .reduce((total, w) => total + (w.duration || 0), 0)} min
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-orange-500" />
+                  <span className="text-gray-700">Temps total</span>
+                  <span className="ml-auto bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full text-lg shadow">
+                    {workouts.filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).reduce((total, w) => total + (w.duration || 0), 0)} min
                   </span>
                 </div>
-                {/* Statistiques avancées */}
                 <hr className="my-2" />
                 <div className="text-sm text-gray-700 font-semibold mb-1">Statistiques avancées</div>
-                <div className="flex items-center justify-between">
-                  <span>Total séances</span>
-                  <span>{totalSeances}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Durée moyenne</span>
-                  <span>{moyenneDuree} min</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Séance la plus longue</span>
-                  <span>{maxDuree > 0 && seanceMax ? `${seanceMax.name} (${maxDuree} min)` : '-'}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Séance la plus courte</span>
-                  <span>{minDuree > 0 && seanceMin ? `${seanceMin.name} (${minDuree} min)` : '-'}</span>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-500">Total séances</span>
+                    <span className="font-bold text-gray-900 text-lg">{totalSeances}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-500">Durée moyenne</span>
+                    <span className="font-bold text-gray-900 text-lg">{moyenneDuree} min</span>
+                  </div>
+                  <div className="flex flex-col col-span-2">
+                    <span className="text-xs text-gray-500">Séance la plus longue</span>
+                    <span className="font-bold text-orange-700 text-base">{maxDuree > 0 && seanceMax ? `${seanceMax.name} (${maxDuree} min)` : '-'}</span>
+                  </div>
+                  <div className="flex flex-col col-span-2">
+                    <span className="text-xs text-gray-500">Séance la plus courte</span>
+                    <span className="font-bold text-orange-700 text-base">{minDuree > 0 && seanceMin ? `${seanceMin.name} (${minDuree} min)` : '-'}</span>
+                  </div>
                 </div>
                 <div className="mt-2">
                   <span className="font-semibold">Répartition par type :</span>
-                  <ul className="ml-2 mt-1">
-                    {repartitionTypes.map(type => (
-                      <li key={type.name} className="flex items-center text-xs">
-                        <span className="inline-block w-2 h-2 rounded-full mr-2" style={{backgroundColor: type.count > 0 ? undefined : '#e5e7eb'}}></span>
-                        {type.name} : {type.count}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {repartitionTypes.map(type => {
+                      const typeObj = workoutTypes.find(t => t.name === type.name)
+                      const Icon = typeObj?.icon
+                      return (
+                        <span key={type.name} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold shadow ${typeObj?.color} bg-opacity-20 text-gray-800`}>
+                          {Icon && <Icon className="h-4 w-4 mr-1" />} {type.name} : {type.count}
+                        </span>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
