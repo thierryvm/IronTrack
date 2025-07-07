@@ -47,7 +47,7 @@ Ton coach muscu personnel ! Une application complète de suivi de musculation av
 
 ### 1. Cloner le projet
 ```bash
-git clone <votre-repo>
+git clone https://github.com/thierryvm/IronTrack.git
 cd irontrack
 ```
 
@@ -253,15 +253,16 @@ NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
 - [ ] Coaching vocal IA
 - [ ] Marketplace d'exercices
 
-## 🤝 Contribution
+## 🔒 Sécurité
 
-Les contributions sont les bienvenues ! 
+Aucune information sensible (clés, tokens, secrets) n'est stockée dans ce dépôt. Toutes les variables confidentielles doivent être placées dans le fichier `.env.local` (non versionné). **Ne partage jamais tes clés Supabase ou autres secrets publiquement !**
 
-1. Fork le projet
-2. Crée une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tes changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvre une Pull Request
+## 🤝 Contribuer
+
+Les contributions sont les bienvenues !
+- Fork le projet, crée une branche, propose une Pull Request.
+- Ne mets jamais de secrets ou de données personnelles dans tes commits.
+- Respecte la structure du projet et la philosophie IronBuddy : code propre, humour muscu, et bienveillance !
 
 ## 📄 Licence
 
