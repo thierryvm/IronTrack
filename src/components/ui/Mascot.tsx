@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dumbbell, Trophy, Flame, Target, Zap, Cat, Bot, Star } from 'lucide-react'
+import { Dumbbell, Trophy, Flame, Target, Zap, Cat, Bot, Star, X } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 interface MascotProps {
   message?: string
@@ -296,11 +297,51 @@ export function MascotWidget() {
 
 // Composant global pour afficher la mascotte partout
 export function MascotGlobal() {
-  const [showMascot, setShowMascot] = useState(false)
+  const [minimized, setMinimized] = useState(false)
+  const [joke, setJoke] = useState<string | null>(null)
+  const pathname = usePathname();
   useEffect(() => {
     const hide = localStorage.getItem('hideMascot')
-    if (hide === '1') return
-    setShowMascot(true)
-  }, [])
-  return <Mascot show={showMascot} onClose={() => setShowMascot(false)} />
+    setMinimized(hide === '1')
+    // Affiche une blague à chaque navigation
+    const randomJoke = jokes[Math.floor(Math.random() * jokes.length)]
+    setJoke(randomJoke)
+  }, [pathname])
+
+  const handleMinimize = () => {
+    localStorage.setItem('hideMascot', '1')
+    setMinimized(true)
+  }
+  const handleRestore = () => {
+    localStorage.removeItem('hideMascot')
+    setMinimized(false)
+  }
+
+  // Rendu minimisé : petit avatar mascotte en bas à droite
+  if (minimized) {
+    return (
+      <div className="fixed bottom-4 right-4 z-[60] cursor-pointer" onClick={handleRestore} title="Afficher la mascotte">
+        <div className="bg-white rounded-full shadow-2xl p-2 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
+          <Dumbbell className="h-8 w-8 text-orange-600" />
+        </div>
+      </div>
+    )
+  }
+
+  // Rendu mascotte complète avec bouton réduire
+  return (
+    <div className="fixed bottom-4 right-4 z-[60]">
+      <div className="relative">
+        <button
+          onClick={handleMinimize}
+          className="absolute -top-3 -right-3 bg-orange-600 text-white rounded-full p-1 shadow hover:bg-orange-700 transition-all"
+          aria-label="Réduire la mascotte"
+          style={{ zIndex: 70 }}
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <Mascot show={true} message={joke || undefined} type="success" onClose={handleMinimize} />
+      </div>
+    </div>
+  )
 } 
