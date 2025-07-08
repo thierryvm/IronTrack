@@ -188,7 +188,7 @@ export function QuickTimer() {
 
   if (showTimer) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         <Timer 
           initialTime={selectedTime} 
           onComplete={() => setShowTimer(false)}
@@ -205,8 +205,8 @@ export function QuickTimer() {
   }
 
   return (
-    <div className="bg-white rounded-lg p-4 shadow-md">
-      <h3 className="text-lg font-semibold mb-4 text-gray-800">Temps de repos rapide</h3>
+    <div className="bg-white rounded-xl p-6 shadow-md w-full">
+      <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">Temps de repos rapide</h2>
       <div className="grid grid-cols-3 gap-2">
         {quickTimes.map((time) => (
           <button
@@ -215,7 +215,8 @@ export function QuickTimer() {
               setSelectedTime(time)
               setShowTimer(true)
             }}
-            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-3 rounded-lg transition-colors text-sm"
+            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
+            style={{minWidth: 0}}
           >
             {time}s
           </button>

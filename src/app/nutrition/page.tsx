@@ -251,11 +251,19 @@ export default function NutritionPage() {
     if (!userId) return
     if (!window.confirm('Supprimer ce repas ?')) return
     try {
-      const { error } = await supabase.from('nutrition_logs').delete().eq('id', id)
+      // On force l'ID en string pour éviter les soucis de typage
+      const mealId = String(id)
+      const { error, data } = await supabase.from('nutrition_logs').delete().eq('id', mealId)
+      console.log('Résultat suppression Supabase:', { error, data, mealId })
       if (error) throw error
       await loadMeals()
-    } catch {
-      alert('Erreur lors de la suppression du repas')
+    } catch (error) {
+      if (error instanceof Error) {
+        alert('Erreur lors de la suppression du repas : ' + error.message)
+      } else {
+        alert('Erreur lors de la suppression du repas (type inconnu)')
+      }
+      console.error('Erreur Supabase:', error)
     }
   }
 
@@ -327,6 +335,7 @@ export default function NutritionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <button onClick={() => alert('Test bouton général')} style={{position: 'fixed', top: 10, left: 10, zIndex: 9999, background: '#f97316', color: 'white', padding: '8px 16px', borderRadius: '8px'}}>Test Alerte</button>
       {/* Message d'incitation si le suivi est désactivé */}
       {!nutritionGoalsEnabled && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-lg flex items-center gap-3">
@@ -606,7 +615,7 @@ export default function NutritionPage() {
                                   <button className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" onClick={() => openEditModal(meal)}>
                                     <Edit className="h-4 w-4" />
                                   </button>
-                                  <button className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" onClick={() => handleDeleteMeal(meal.id)}>
+                                  <button type="button" className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" onClick={() => handleDeleteMeal(meal.id)}>
                                     <Trash2 className="h-4 w-4" />
                                   </button>
                                 </div>

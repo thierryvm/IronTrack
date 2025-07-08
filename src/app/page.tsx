@@ -19,6 +19,7 @@ import SoundLibrary from '@/components/ui/SoundLibrary'
 import { createClient } from '@/lib/supabase'
 import Mascot from '@/components/ui/Mascot'
 import { useRouter } from 'next/navigation'
+import { QuickTimer } from '@/components/ui/Timer'
 
 interface UserSound {
   id: string;
@@ -174,16 +175,68 @@ export default function HomePage() {
         setLoading(false)
         return
       }
-      // Récupérer les 3 derniers exercices avec leur dernière perf
-      const { data: perfLogs, error } = await supabase
+      // Récupérer toutes les séances réalisées
+      const { data: workouts, error: workoutsError } = await supabase
+        .from('workouts')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'Réalisé');
+      // Récupérer toutes les performances
+      const { data: perfLogs, error: perfError } = await supabase
+        .from('performance_logs')
+        .select('weight, reps, set_number, performed_at')
+        .eq('user_id', user.id);
+      // Récupérer les 3 derniers exercices avec leur dernière perf (conserve l'ancien code)
+      const { data: perfLogsRecent } = await supabase
         .from('performance_logs')
         .select('exercise_id, weight, performed_at, exercises(name, muscle_group)')
         .eq('user_id', user.id)
-        .order('performed_at', { ascending: false })
-      if (error || !perfLogs) {
+        .order('performed_at', { ascending: false });
+      if (workoutsError || !workouts) {
+        setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 });
+      } else {
+        // 1. Total séances réalisées
+        const totalWorkouts = workouts.length;
+        // 2. Série en cours (current streak)
+        const dates = workouts
+          .map(w => w.scheduled_date)
+          .filter(Boolean)
+          .map(d => new Date(d).toISOString().slice(0, 10))
+          .sort((a, b) => b.localeCompare(a));
+        let streak = 0;
+        const day = new Date();
+        for (;;) {
+          const dayStr = day.toISOString().slice(0, 10);
+          if (dates.includes(dayStr)) {
+            streak++;
+            day.setDate(day.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+        // 3. Séances/semaine (7 derniers jours)
+        const now = new Date();
+        const weekAgo = new Date();
+        weekAgo.setDate(now.getDate() - 6);
+        const workoutsThisWeek = dates.filter(d => d >= weekAgo.toISOString().slice(0, 10) && d <= now.toISOString().slice(0, 10)).length;
+        // 4. Poids total soulevé (toutes perfs)
+        let totalWeight = 0;
+        if (perfLogs && Array.isArray(perfLogs)) {
+          totalWeight = perfLogs
+            .filter((p) => p.weight > 0 && p.reps > 0 && p.set_number > 0)
+            .reduce((acc, p) => acc + (p.weight * p.reps * p.set_number), 0);
+        }
+        setStats({
+          totalWorkouts,
+          thisWeek: workoutsThisWeek,
+          currentStreak: streak,
+          totalWeight: Math.round(totalWeight)
+        });
+      }
+      // Exercices récents (conserve l'ancien code)
+      if (!perfLogsRecent) {
         setRecentExercises([])
       } else {
-        // Typage explicite des logs pour TypeScript
         type PerfLog = {
           exercise_id: number;
           weight: number;
@@ -192,7 +245,7 @@ export default function HomePage() {
         };
         const seen = new Set()
         const recent: ExerciseItem[] = []
-        for (const log of perfLogs as PerfLog[]) {
+        for (const log of perfLogsRecent as PerfLog[]) {
           let exerciseObj: { name: string; muscle_group?: string } | undefined;
           if (Array.isArray(log.exercises)) {
             exerciseObj = log.exercises[0];
@@ -212,11 +265,11 @@ export default function HomePage() {
         }
         setRecentExercises(recent)
       }
-      // (Optionnel) Récupérer les stats réelles ici aussi si besoin
       setLoading(false)
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
       setRecentExercises([])
+      setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
       setLoading(false)
     }
   }
@@ -414,47 +467,37 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Temps de repos rapide */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Temps de repos rapide</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {[30, 60, 90, 120, 180].map((t) => (
-                <button
-                  key={t}
-                  className="bg-orange-500 dark:bg-orange-700 text-white font-bold py-2 rounded-lg shadow hover:bg-orange-600 dark:hover:bg-orange-800 transition-colors"
-                >
-                  {t}s
-                </button>
-              ))}
+          {/* Colonne de droite : timer + exercices récents */}
+          <div className="flex flex-col gap-6 w-full">
+            {/* Temps de repos rapide (réduit) */}
+            <QuickTimer />
+            {/* Exercices récents */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 w-full">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Exercices récents</h2>
+              <div className="space-y-3">
+                {recentExercises.map((exercise: ExerciseItem, index: number) => (
+                  <motion.div
+                    key={exercise.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <div>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{exercise.muscle_group}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-orange-500 dark:text-orange-300 font-bold">
+                        {exercise.last_weight === 0 ? 'Poids du corps' : `${exercise.last_weight} kg`}
+                      </span>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">Dernier poids</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <Link href="/exercises" className="block mt-4 text-orange-500 dark:text-orange-300 text-sm font-semibold hover:underline">Voir tous les exercices →</Link>
             </div>
-          </div>
-
-          {/* Exercices récents */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Exercices récents</h2>
-            <div className="space-y-3">
-              {recentExercises.map((exercise: ExerciseItem, index: number) => (
-                <motion.div
-                  key={exercise.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div>
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">{exercise.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{exercise.muscle_group}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-orange-500 dark:text-orange-300 font-bold">
-                      {exercise.last_weight === 0 ? 'Poids du corps' : `${exercise.last_weight} kg`}
-                    </span>
-                    <p className="text-xs text-gray-500 dark:text-gray-300">Dernier poids</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <Link href="/exercises" className="block mt-4 text-orange-500 dark:text-orange-300 text-sm font-semibold hover:underline">Voir tous les exercices →</Link>
           </div>
         </div>
 

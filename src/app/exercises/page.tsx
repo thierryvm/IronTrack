@@ -69,6 +69,21 @@ export default function ExercisesPage() {
     }
   }
 
+  // Fonction utilitaire pour normaliser (enlever accents et mettre en minuscule)
+  function normalize(str: string) {
+    return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  }
+
+  // Filtrage des exercices selon la recherche et le groupe musculaire
+  const filteredExercises = exercises.filter(ex => {
+    const search = normalize(searchTerm);
+    const name = normalize(ex.name);
+    const muscle = normalize(ex.muscle_group);
+    const matchSearch = search === '' || name.includes(search) || muscle.includes(search);
+    const matchGroup = selectedMuscleGroup === 'Tous' || ex.muscle_group === selectedMuscleGroup;
+    return matchGroup && matchSearch;
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -118,8 +133,18 @@ export default function ExercisesPage() {
                   placeholder="Rechercher un exercice..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 focus:outline-none"
+                    aria-label="Effacer la recherche"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -193,12 +218,12 @@ export default function ExercisesPage() {
         >
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">
-              {exercises.length} exercice{exercises.length > 1 ? 's' : ''} trouvé{exercises.length > 1 ? 's' : ''}
+              {filteredExercises.length} exercice{filteredExercises.length > 1 ? 's' : ''} trouvé{filteredExercises.length > 1 ? 's' : ''}
             </h2>
           </div>
 
           <div className="divide-y divide-gray-200">
-            {exercises.map((exercise, index) => (
+            {filteredExercises.map((exercise, index) => (
               <motion.div
                 key={exercise.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -262,7 +287,7 @@ export default function ExercisesPage() {
             ))}
           </div>
 
-          {exercises.length === 0 && (
+          {filteredExercises.length === 0 && (
             <div className="p-12 text-center">
               <Dumbbell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun exercice trouvé</h3>
