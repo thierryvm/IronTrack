@@ -29,6 +29,7 @@ export default function Avatar({ src, name = '', size = 96, className = '', onCl
           className="object-cover w-full h-full rounded-full border-2 border-white"
           width={size}
           height={size}
+          priority
         />
       ) : (
         <span>{initials}</span>

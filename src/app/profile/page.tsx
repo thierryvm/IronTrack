@@ -22,7 +22,9 @@ import {
   Cat,
   Bot,
   Star,
-  Flame
+  Flame,
+  Award,
+  Info
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -74,6 +76,17 @@ interface SupabaseProfile {
   created_at: string;
 }
 
+// Ajout du type Achievement
+interface Achievement {
+  id: number;
+  user_id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  unlocked_at: string;
+}
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState<UserStats | null>(null)
@@ -115,6 +128,12 @@ export default function ProfilePage() {
   const mascotSectionRef = useRef<HTMLDivElement>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [nutritionGoalsEnabled, setNutritionGoalsEnabled] = useState(false);
+  const [sharePlanning, setSharePlanning] = useState(false);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const badgesSectionRef = useRef<HTMLDivElement>(null);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [modalBadge, setModalBadge] = useState<Achievement | null>(null);
+  const [achievedGoals, setAchievedGoals] = useState<any[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -122,6 +141,30 @@ export default function ProfilePage() {
     }
   }, [selectedMascot]);
 
+  // Récupérer les badges de l'utilisateur
+  const loadAchievements = async (userId: string) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('achievements')
+      .select('*')
+      .eq('user_id', userId)
+      .order('unlocked_at', { ascending: false });
+    if (!error && data) setAchievements(data as Achievement[]);
+  };
+
+  // Récupérer les objectifs atteints (status = 'Atteint')
+  const loadAchievedGoals = async (userId: string) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('training_goals')
+      .select('*, exercises(name)')
+      .eq('user_id', userId)
+      .eq('status', 'Atteint')
+      .order('updated_at', { ascending: false });
+    if (!error && data) setAchievedGoals(data);
+  };
+
+  // Charger les badges en même temps que le profil
   const loadProfileData = async () => {
     setLoading(true)
     const supabase = createClient()
@@ -181,33 +224,24 @@ export default function ProfilePage() {
     }
     setProfile(userProfile)
     await loadStats(user.id)
+    await loadAchievements(user.id)
+    await loadAchievedGoals(user.id)
     setLoading(false)
   }
 
   useEffect(() => {
     loadProfileData()
-    fetchSettings()
+    // fetchSettings() supprimé car obsolète
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const fetchSettings = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data, error } = await supabase
-      .from('user_settings')
-      .select('ironbuddy_level')
-      .eq('user_id', user.id)
-      .single()
-    if (!error && data && data.ironbuddy_level) setIronBuddyLevel(data.ironbuddy_level)
-  }
 
   const handleIronBuddyLevelChange = async (level: 'discret' | 'normal' | 'ambianceur') => {
     setIronBuddyLevel(level)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    await supabase.from('user_settings').update({ ironbuddy_level: level }).eq('user_id', user.id)
+    const { error } = await supabase.from('user_settings').update({ ironbuddy_level: level }).eq('user_id', user.id)
+    if (error) console.error('[DEBUG] handleIronBuddyLevelChange error:', error)
   }
 
   const handleProfileChange = (field: keyof UserProfile, value: string | number | boolean) => {
@@ -277,6 +311,7 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté');
       // Récupère toutes les données importantes
+      console.log('[DEBUG] handleExportData: select user_settings')
       const [profileRes, statsRes, workoutsRes, nutritionRes, settingsRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         Promise.resolve({ data: stats }), // stats déjà calculées côté front
@@ -298,8 +333,9 @@ export default function ProfilePage() {
       a.download = 'irontrack-donnees.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      setExportError("Erreur lors de l&apos;export. Même IronBuddy ne comprend pas !");
+    } catch (err) {
+      setExportError("Erreur lors de l'export. Même IronBuddy ne comprend pas !");
+      console.error('[DEBUG] handleExportData error:', err)
     }
     setExporting(false);
   };
@@ -576,35 +612,110 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    // Charger la préférence nutritionGoalsEnabled depuis Supabase au chargement
-    const fetchNutritionPref = async () => {
+    // Charger la préférence de partage de planning depuis Supabase au chargement
+    const fetchSharePlanning = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase.from('user_settings').select('nutrition_goals_enabled').eq('user_id', user.id).single();
-      if (data && data.nutrition_goals_enabled) setNutritionGoalsEnabled(true);
+      const { data } = await supabase.from('user_settings').select('share_planning').eq('user_id', user.id).single();
+      if (data && data.share_planning) setSharePlanning(true);
     };
-    fetchNutritionPref();
+    fetchSharePlanning();
   }, []);
 
-  const handleToggleNutritionGoals = async () => {
+  const handleToggleSharePlanning = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    if (!nutritionGoalsEnabled) {
-      setNutritionGoalsEnabled(true);
-      await supabase.from('user_settings').upsert(
-        [{ user_id: user.id, nutrition_goals_enabled: true }],
-        { onConflict: 'user_id' }
-      );
-    } else {
-      setNutritionGoalsEnabled(false);
-      await supabase.from('user_settings').upsert(
-        [{ user_id: user.id, nutrition_goals_enabled: false }],
-        { onConflict: 'user_id' }
-      );
-    }
+    setSharePlanning((prev) => !prev);
+    const newValue = !sharePlanning;
+    console.log('Switch partage planning cliqué, nouvelle valeur:', newValue);
+    await supabase.from('user_settings').upsert(
+      [{ user_id: user.id, share_planning: newValue }],
+      { onConflict: 'user_id' }
+    );
+    alert('Préférence de partage sauvegardée !');
   };
+
+  // Fonction utilitaire pour choisir une icône selon l'exercice
+  function getBadgeIcon(badge: Achievement) {
+    if (badge.name.toLowerCase().includes('rameur')) return '🚣';
+    if (badge.name.toLowerCase().includes('militaire')) return '💂';
+    if (badge.name.toLowerCase().includes('biceps')) return '💪';
+    if (badge.name.toLowerCase().includes('triceps')) return '🦾';
+    if (badge.name.includes('Développé couché')) return '🏋️';
+    if (badge.name.toLowerCase().includes('pompe')) return '🤸';
+    if (badge.name.toLowerCase().includes('squat')) return '🦵';
+    if (badge.name.toLowerCase().includes('traction')) return '🧗';
+    if (badge.name.toLowerCase().includes('abdo')) return '💪';
+    if (badge.name.toLowerCase().includes('course')) return '🏃';
+    if (badge.name.toLowerCase().includes('vélo')) return '🚴';
+    if (badge.name.toLowerCase().includes('gainage')) return '🧘';
+    // Ajoute d'autres mappings si besoin
+    return badge.icon || '🏅';
+  }
+
+  // Fonction utilitaire pour formater le titre du badge
+  function formatBadgeTitle(badge: Achievement) {
+    // Recherche d'un pattern "Objectif atteint: [exercice] [valeur][unité]"
+    const match = badge.name.match(/Objectif atteint:?\s*(.*?)(\d+)(\s?kg|\s?reps)?$/i);
+    if (match) {
+      const exo = match[1].trim();
+      const val = match[2];
+      const unit = match[3] ? match[3].trim() : '';
+      return `Objectif atteint : ${exo} ${val}${unit}`;
+    }
+    // Sinon, fallback sur le nom brut
+    return badge.name;
+  }
+
+  // Génération des badges généraux
+  const generalBadges = [
+    {
+      key: 'determined',
+      icon: <Trophy className="h-8 w-8 mx-auto mb-2 text-yellow-500" />,
+      title: 'Déterminé',
+      subtitle: '10 séances consécutives',
+      achieved: stats?.currentStreak && stats.currentStreak >= 10,
+      color: 'bg-yellow-50',
+      colorIcon: 'text-yellow-500',
+    },
+    {
+      key: 'force',
+      icon: <Flame className="h-8 w-8 mx-auto mb-2 text-orange-500" />,
+      title: 'Force brute',
+      subtitle: '+50kg au total',
+      achieved: stats?.totalWeight && stats.totalWeight >= 50,
+      color: 'bg-orange-50',
+      colorIcon: 'text-orange-500',
+    },
+    {
+      key: 'regular',
+      icon: <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-500" />,
+      title: 'Régulier',
+      subtitle: '30 jours consécutifs',
+      achieved: stats?.currentStreak && stats.currentStreak >= 30,
+      color: 'bg-gray-50',
+      colorIcon: 'text-gray-500',
+    },
+  ];
+
+  // Génération des badges objectifs à partir des objectifs atteints
+  const objectiveBadges = achievedGoals.map(goal => {
+    const isReps = goal.target_reps && goal.target_reps > 1;
+    const value = isReps ? goal.target_reps : goal.target_weight;
+    const unit = isReps ? 'reps' : 'kg';
+    return {
+      key: `goal-${goal.id}`,
+      icon: getBadgeIcon({ name: goal.exercises?.name || '', icon: '', id: 0, user_id: '', description: '', category: '', unlocked_at: '' }),
+      title: 'Objectif atteint',
+      subtitle: `${value} ${unit} ${goal.exercises?.name || ''}`.trim(),
+      achieved: true,
+      date: goal.updated_at || goal.created_at,
+      color: isReps ? 'bg-green-50' : 'bg-orange-50',
+      colorIcon: isReps ? 'text-green-500' : 'text-orange-500',
+    };
+  });
 
   if (loading) {
     return (
@@ -824,6 +935,53 @@ export default function ProfilePage() {
                   <div className="flex justify-between"><span>Temps total</span><span>{stats?.totalTime ? `${Math.floor(stats.totalTime / 60)}h${stats.totalTime % 60 ? ' ' + (stats.totalTime % 60) + 'min' : ''}` : '0h'}</span></div>
                 </div>
               </div>
+              {/* Résumé des badges */}
+              {achievements.length > 0 && (
+                <div className="bg-white rounded-xl shadow-md p-4 md:p-6 mt-4">
+                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-base md:text-lg">
+                    <Award className="h-5 w-5 text-yellow-500" />
+                    Badges récents
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-x-5 gap-y-4 justify-center items-center mb-2">
+                    {achievements.slice(0, 6).map(badge => (
+                      <div
+                        key={badge.id}
+                        className={`relative group rounded-xl shadow-md flex flex-col items-center justify-between p-4 w-full min-w-[140px] max-w-[180px] h-[150px] transition-transform hover:scale-105 cursor-pointer border-2 ${badge.unlocked_at ? 'bg-orange-50 border-orange-300' : 'bg-gray-100 border-gray-200 opacity-60'}`}
+                      >
+                        <span className={`text-4xl mb-2 ${badge.unlocked_at ? '' : 'grayscale'}`}>{getBadgeIcon(badge)}</span>
+                        <span className="font-bold text-base text-gray-900 text-center leading-tight mb-1 line-clamp-2" title={formatBadgeTitle(badge)}>{formatBadgeTitle(badge)}</span>
+                        <span className="text-xs text-gray-500 text-center mb-1">{badge.unlocked_at ? `Atteint le ${new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}` : 'Non débloqué'}</span>
+                        <button
+                          className="absolute top-2 right-2 p-1 rounded-full hover:bg-orange-100 focus:bg-orange-200 focus:outline-none"
+                          aria-label="Infos badge"
+                          onClick={() => { setModalBadge(badge); setShowBadgeModal(true); }}
+                          tabIndex={0}
+                          type="button"
+                        >
+                          <Info className="h-4 w-4 text-gray-400" />
+                        </button>
+                        {/* Tooltip desktop */}
+                        <div className="hidden md:block pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-14 w-48 bg-white text-gray-800 text-xs rounded-lg shadow-lg p-2 border border-orange-200 whitespace-pre-line">
+                          <div className="font-bold mb-1">{formatBadgeTitle(badge)}</div>
+                          <div>{badge.description}</div>
+                          {badge.unlocked_at && <div className="mt-1 text-[10px] text-gray-500">Atteint le {new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    className="text-orange-600 hover:underline text-xs md:text-sm font-semibold mt-2"
+                    onClick={() => {
+                      setActiveTab('stats');
+                      setTimeout(() => {
+                        badgesSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }, 200);
+                    }}
+                  >
+                    Voir tous mes badges
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -917,6 +1075,67 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
+            {/* Section Badges */}
+            <div ref={badgesSectionRef} className="bg-white rounded-xl shadow-md p-6 mt-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Award className="h-6 w-6 text-yellow-500" />
+                Tous mes badges
+              </h3>
+              {achievements.length === 0 ? (
+                <div className="text-gray-500 text-sm">Aucun badge débloqué pour l'instant. Mais IronBuddy croit en toi !</div>
+              ) : (
+                <div className="flex flex-row gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-yellow-200">
+                  {achievements.map(badge => (
+                    <div
+                      key={badge.id}
+                      className={`relative group rounded-xl shadow-md flex flex-col items-center justify-between p-4 min-w-[140px] max-w-[180px] h-[150px] transition-transform hover:scale-105 cursor-pointer border-2 ${badge.unlocked_at ? 'bg-orange-50 border-orange-300' : 'bg-gray-100 border-gray-200 opacity-60'}`}
+                      style={{ minHeight: '150px' }}
+                    >
+                      <span className={`text-4xl mb-2 ${badge.unlocked_at ? '' : 'grayscale'}`}>{getBadgeIcon(badge)}</span>
+                      <span className="font-bold text-base text-gray-900 text-center leading-tight mb-1 line-clamp-2" title={badge.name}>{badge.name}</span>
+                      <div className="flex items-center justify-center w-full mt-1">
+                        <span className="text-xs text-gray-500 text-center flex-1">{badge.unlocked_at ? `Atteint le ${new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}` : 'Non débloqué'}</span>
+                        <button
+                          className="ml-1 p-1 rounded-full hover:bg-orange-100 focus:bg-orange-200 focus:outline-none"
+                          aria-label="Infos badge"
+                          onClick={() => { setModalBadge(badge); setShowBadgeModal(true); }}
+                          tabIndex={0}
+                          type="button"
+                        >
+                          <Info className="h-4 w-4 text-gray-400" />
+                        </button>
+                      </div>
+                      {/* Tooltip desktop */}
+                      <div className="hidden md:block pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-14 w-48 bg-white text-gray-800 text-xs rounded-lg shadow-lg p-2 border border-orange-200 whitespace-pre-line">
+                        <div className="font-bold mb-1">{formatBadgeTitle(badge)}</div>
+                        <div>{badge.description}</div>
+                        {badge.unlocked_at && <div className="mt-1 text-[10px] text-gray-500">Atteint le {new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}</div>}
+                      </div>
+                    </div>
+                  ))}
+                  {/* Modal badge mobile */}
+                  {showBadgeModal && modalBadge && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                      <div className="bg-white rounded-xl shadow-lg p-6 w-80 max-w-full relative animate-fade-in">
+                        <button
+                          className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+                          onClick={() => setShowBadgeModal(false)}
+                          aria-label="Fermer"
+                        >
+                          <span className="text-xl">×</span>
+                        </button>
+                        <div className="flex flex-col items-center">
+                          <span className="text-5xl mb-2">{getBadgeIcon(modalBadge)}</span>
+                          <div className="font-bold text-gray-900 text-center mb-1">{modalBadge.name}</div>
+                          <div className="text-gray-700 text-sm text-center mb-2">{modalBadge.description}</div>
+                          <div className="text-xs text-gray-500">{modalBadge.unlocked_at ? new Date(modalBadge.unlocked_at).toLocaleDateString('fr-FR') : ''}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
 
@@ -936,7 +1155,7 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Rappels d&apos;entraînement</p>
+                    <p className="font-medium text-gray-900">Rappels d'entraînement</p>
                     <p className="text-sm text-gray-600">Recevoir des notifications pour tes séances</p>
                   </div>
                   <button
@@ -948,28 +1167,20 @@ export default function ProfilePage() {
                     <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
-                
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Objectifs quotidiens</p>
-                    <p className="text-sm text-gray-600">Suivi de tes objectifs nutritionnels</p>
-                    <p className="text-xs text-gray-500 mt-1">Active ce suivi pour recevoir des rappels et des conseils nutritionnels personnalisés chaque jour. IronBuddy t&apos;aidera à ne jamais oublier ton apport en protéines, glucides et lipides !</p>
+                    <p className="font-medium text-gray-900">Partager mon planning d'entraînement</p>
+                    <p className="text-sm text-gray-600">Permet à d'autres membres de voir tes créneaux pour s'entraîner ensemble (option désactivable à tout moment).</p>
                   </div>
                   <button
-                    className={`w-12 h-6 rounded-full relative transition-colors ${nutritionGoalsEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
-                    onClick={handleToggleNutritionGoals}
-                    aria-pressed={nutritionGoalsEnabled}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${sharePlanning ? 'bg-orange-500' : 'bg-gray-300'}`}
+                    onClick={handleToggleSharePlanning}
+                    aria-pressed={sharePlanning}
                     type="button"
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${nutritionGoalsEnabled ? 'right-1' : 'left-1'}`}></div>
+                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${sharePlanning ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
-                {nutritionGoalsEnabled && (
-                  <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm flex items-center gap-2 animate-fade-in">
-                    <Flame className="h-5 w-5 text-orange-500" />
-                    <span>Rappels nutritionnels actifs : tu recevras un rappel chaque jour à 20h si tu n&apos;as pas rempli tes objectifs nutritionnels !</span>
-                  </div>
-                )}
               </div>
             </div>
 

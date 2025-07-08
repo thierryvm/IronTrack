@@ -37,11 +37,17 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
+  const [sharedWorkouts, setSharedWorkouts] = useState<any[]>([])
   const router = useRouter()
 
   useEffect(() => {
     loadWorkouts()
+    loadSharedWorkouts()
   }, [])
+
+  useEffect(() => {
+    console.log('Créneaux partagés récupérés:', sharedWorkouts)
+  }, [sharedWorkouts])
 
   const loadWorkouts = async () => {
     try {
@@ -58,6 +64,16 @@ export default function CalendarPage() {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des séances:', error)
+    }
+  }
+
+  const loadSharedWorkouts = async () => {
+    try {
+      const res = await fetch('/calendar/shared')
+      const { workouts } = await res.json()
+      setSharedWorkouts(workouts || [])
+    } catch (error) {
+      console.error('Erreur lors du chargement des créneaux partagés:', error)
     }
   }
 
@@ -100,6 +116,18 @@ export default function CalendarPage() {
         wDate.getFullYear() === date.getFullYear() &&
         wDate.getMonth() === date.getMonth() &&
         wDate.getDate() === date.getDate()
+      )
+    })
+  }
+
+  // Ajout d'une fonction pour récupérer les créneaux partagés d'une date
+  const getSharedForDate = (date: Date) => {
+    return sharedWorkouts.filter(sw => {
+      const d = new Date(sw.scheduled_date)
+      return (
+        d.getFullYear() === date.getFullYear() &&
+        d.getMonth() === date.getMonth() &&
+        d.getDate() === date.getDate()
       )
     })
   }
@@ -197,12 +225,20 @@ export default function CalendarPage() {
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <h2 className="text-xl font-bold text-gray-900 capitalize">{monthName}</h2>
-                <button
-                  onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentDate(new Date())}
+                    className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
+                  >
+                    Aujourd'hui
+                  </button>
+                  <button
+                    onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Grille du calendrier */}
@@ -217,6 +253,7 @@ export default function CalendarPage() {
                 {/* Jours du mois */}
                 {days.map((day, index) => {
                   const dayWorkouts = getWorkoutsForDate(day.date)
+                  const sharedForDay = getSharedForDate(day.date)
                   const isCurrentDay = isToday(day.date)
                   const isSelectedDay = isSelected(day.date)
 
@@ -251,6 +288,20 @@ export default function CalendarPage() {
                         {dayWorkouts.length > 2 && (
                           <div className="text-xs text-gray-500 text-center">
                             +{dayWorkouts.length - 2}
+                          </div>
+                        )}
+                        {/* Indicateur créneaux partagés (avatars) */}
+                        {sharedForDay.length > 0 && (
+                          <div className="flex flex-row gap-1 mt-1">
+                            {sharedForDay.map((sw, i) => (
+                              <img
+                                key={i}
+                                src={sw.profiles?.avatar_url || '/window.svg'}
+                                alt={sw.profiles?.full_name || 'Buddy'}
+                                title={sw.name}
+                                className="w-6 h-6 rounded-full border-2 border-fuchsia-500 object-cover bg-white shadow"
+                              />
+                            ))}
                           </div>
                         )}
                       </div>

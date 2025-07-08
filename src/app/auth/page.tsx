@@ -34,6 +34,14 @@ function AuthContent() {
       if (user) {
         setIsLoggedIn(true)
         setUserEmail(user.email ?? null)
+        // Synchronisation du nom dans le profil si disponible
+        const fullName = user.user_metadata?.full_name || user.user_metadata?.name || null;
+        if (fullName) {
+          await supabase
+            .from('profiles')
+            .update({ full_name: fullName })
+            .eq('id', user.id);
+        }
       } else {
         setIsLoggedIn(false)
         setUserEmail(null)

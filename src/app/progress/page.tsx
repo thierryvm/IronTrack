@@ -72,6 +72,28 @@ const muscleGroupColors = {
   'Fessiers': '#F7DC6F'
 }
 
+// Ajout d'une fonction utilitaire pour attribuer un badge si objectif atteint
+async function awardGoalBadge(goal: TrainingGoal, userId: string) {
+  const supabase = createClient();
+  // Vérifie si le badge existe déjà
+  const { data: existing } = await supabase
+    .from('achievements')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('name', `Objectif atteint: ${goal.exercises?.name}`)
+    .single();
+  if (!existing) {
+    await supabase.from('achievements').insert({
+      user_id: userId,
+      name: `Objectif atteint: ${goal.exercises?.name}`,
+      description: `Tu as atteint ton objectif sur ${goal.exercises?.name} !`,
+      icon: '🏅',
+      category: 'Objectifs',
+      unlocked_at: new Date().toISOString(),
+    });
+  }
+}
+
 export default function ProgressPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('30j')
   const [progressData, setProgressData] = useState<ProgressData[]>([])
@@ -259,8 +281,28 @@ export default function ProgressPage() {
     }
   }
 
+  // Ajout du filtrage selon la période sélectionnée
+  const getStartDate = () => {
+    const now = new Date();
+    switch (selectedPeriod) {
+      case '7j':
+        return new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
+      case '30j':
+        return new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
+      case '90j':
+        return new Date(Date.now() - 89 * 24 * 60 * 60 * 1000);
+      case '1an':
+        return new Date(new Date().setFullYear(now.getFullYear() - 1));
+      default:
+        return null;
+    }
+  };
+  const startDate = getStartDate();
+  const filteredProgressData = startDate
+    ? progressData.filter(d => new Date(d.date) >= startDate)
+    : progressData;
   // Nouveau calcul : ne prendre en compte que les perfs avec poids > 0
-  const weightedSessions = progressData.filter((session) => session.weight > 0)
+  const weightedSessions = filteredProgressData.filter((session) => session.weight > 0)
   const totalWeightLiftedKg = weightedSessions.reduce((total, session) =>
     total + (session.weight * session.reps * session.sets), 0
   )
@@ -480,33 +522,39 @@ export default function ProgressPage() {
                 <option value="1an">1 an</option>
               </select>
             </div>
-
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={progressData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
-                />
-                <YAxis />
-                <Tooltip 
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                  formatter={(value: number | string) => [`${value} kg`, 'Poids']}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="weight" 
-                  stroke="#f97316" 
-                  strokeWidth={3}
-                  dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {filteredProgressData.length < 2 ? (
+              <div className="text-center text-gray-500 py-8">
+                <span>Pas assez de données pour afficher une courbe de progression.</span>
+                <span className="block">Ajoute plus de séances pour voir ta progression !</span>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={filteredProgressData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                    formatter={(value: number | string) => [`${value} kg`, 'Poids']}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="weight" 
+                    stroke="#f97316" 
+                    strokeWidth={3}
+                    dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </motion.div>
 
           {/* Répartition par groupe musculaire */}
@@ -613,24 +661,49 @@ export default function ProgressPage() {
               {trainingGoals.length === 0 && (
                 <div className="text-gray-500 text-sm">Aucun objectif défini pour l&apos;instant. Ajoute-en un pour te challenger !</div>
               )}
-              {trainingGoals.map((goal) => {
-                // Trouver la meilleure perf pour cet exercice
+              {trainingGoals.filter(goal => {
                 let bestPerf: ProgressData | null = null;
                 if (goal.target_reps && goal.target_reps > 1) {
-                  // Objectif de répétitions (ex: tractions)
-                  bestPerf = progressData
-                    .filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name)
-                    .reduce<ProgressData | null>((max: ProgressData | null, p: ProgressData) => !max || p.reps > max.reps ? p : max, null)
+                  const filtered = progressData
+                    .filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
                 } else {
-                  // Objectif de poids
-                  bestPerf = progressData
-                    .filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name)
-                    .reduce<ProgressData | null>((max: ProgressData | null, p: ProgressData) => !max || p.weight > max.weight ? p : max, null)
+                  const filtered = progressData
+                    .filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
                 }
-                const current = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0
-                const target = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight
-                const unit = goal.target_reps && goal.target_reps > 1 ? 'reps' : 'kg'
-                const percent = target ? Math.min((current / target) * 100, 100) : 0
+                const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
+                const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
+                if (typeof targetVal === 'number' && currentVal >= targetVal && targetVal) {
+                  createClient().auth.getUser().then(async ({ data: { user } }) => {
+                    if (user) {
+                      // Mettre à jour le statut de l'objectif à 'Atteint' dans Supabase
+                      await createClient()
+                        .from('training_goals')
+                        .update({ status: 'Atteint', updated_at: new Date().toISOString() })
+                        .eq('id', goal.id);
+                      // Attribuer le badge
+                      awardGoalBadge(goal, user.id);
+                    }
+                  });
+                  return false;
+                }
+                return true;
+              }).map((goal) => {
+                let bestPerf: ProgressData | null = null;
+                if (goal.target_reps && goal.target_reps > 1) {
+                  const filtered = progressData
+                    .filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
+                } else {
+                  const filtered = progressData
+                    .filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+                }
+                const current = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
+                const target = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
+                const unit = goal.target_reps && goal.target_reps > 1 ? 'reps' : 'kg';
+                const percent = typeof target === 'number' && target ? Math.min((current / target) * 100, 100) : 0;
                 return (
                   <div key={goal.id} className={`p-4 rounded-lg ${unit === 'kg' ? 'bg-orange-50' : 'bg-green-50'}`}>
                     <div className="flex items-center justify-between mb-2">
