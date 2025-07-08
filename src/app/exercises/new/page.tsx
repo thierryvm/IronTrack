@@ -88,12 +88,12 @@ export default function NewExercisePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-start justify-center p-4 overflow-auto max-h-screen">
       <motion.form
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={handleSubmit}
-        className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
+        className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg sm:max-w-3xl sm:w-[98%] lg:max-w-2xl mx-auto space-y-6 relative"
       >
         <div className="flex items-center space-x-3 mb-6">
           <Dumbbell className="h-8 w-8 text-orange-500" />
@@ -180,10 +180,19 @@ export default function NewExercisePage() {
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
           />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
-          <Save className="h-5 w-5 mr-2" />
-          <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
-        </button>
+        <div className="max-sm:sticky max-sm:bottom-0 max-sm:left-0 max-sm:w-full max-sm:bg-white max-sm:pt-2 max-sm:z-20 max-sm:shadow-[0_-2px_12px_0_rgba(0,0,0,0.07)] space-y-2">
+          <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+            <Save className="h-5 w-5 mr-2" />
+            <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/exercises')}
+            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+          >
+            <span>Annuler</span>
+          </button>
+        </div>
       </motion.form>
     </div>
   )

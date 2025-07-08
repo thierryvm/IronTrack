@@ -139,7 +139,7 @@ export default function HeaderClient() {
               <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center space-x-2">
                   <Dumbbell className="h-7 w-7 text-orange-500" />
-                  <span className="font-bold text-lg text-orange-600">IronTrack</span>
+                  <a href="/" className="font-bold text-lg text-orange-600 hover:text-orange-700 focus:outline-none font-extrabold transition-colors">IronTrack</a>
                 </div>
                 <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
                   <X className="h-6 w-6 text-gray-500" />

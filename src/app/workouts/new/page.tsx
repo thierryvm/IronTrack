@@ -130,6 +130,13 @@ export default function NewWorkoutPage() {
           <Save className="h-5 w-5 mr-2" />
           <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
         </button>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+        >
+          Annuler
+        </button>
       </motion.form>
       <Mascot message={mascotMsg || undefined} type={mascotType} show={showMascot} onClose={() => setShowMascot(false)} />
     </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dumbbell, Trophy, Flame, Target, Zap, Cat, Bot, Star, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import ClientOnly from './ClientOnly';
 
 interface MascotProps {
   message?: string
@@ -105,6 +106,8 @@ const advices = [
 ];
 
 export default function Mascot({ message, type = 'motivation', show = false, onClose }: MascotProps) {
+  // TOUS les hooks en haut, dans le même ordre à chaque rendu
+  const [isMounted, setIsMounted] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(message || messages.motivation[0])
   const [isVisible, setIsVisible] = useState(show)
   const Icon = icons[type]
@@ -116,32 +119,30 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
   const lastJokes = useRef<string[]>([]);
   const lastAdvices = useRef<string[]>([]);
 
-  useEffect(() => {
-    setIsVisible(show)
-  }, [show])
-
+  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => { setIsVisible(show) }, [show])
   useEffect(() => {
     if (!message) {
       const interval = setInterval(() => {
         const messageList = messages[type]
         const randomIndex = Math.floor(Math.random() * messageList.length)
         setCurrentMessage(messageList[randomIndex])
-      }, 10000) // Change de message toutes les 10 secondes
-
+      }, 10000)
       return () => clearInterval(interval)
     }
   }, [message, type])
-
   useEffect(() => {
     const hide = localStorage.getItem('hideMascot')
     setHideMascot(hide === '1')
   }, [])
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setSelectedMascot(localStorage.getItem('mascot') || 'ironbuddy');
     }
   }, [show]);
+
+  // SEULEMENT APRÈS tous les hooks :
+  if (!isMounted) return null;
 
   const handleClose = () => {
     setIsVisible(false)
@@ -204,16 +205,16 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0, ...contextAnim }}
           exit={{ opacity: 0, scale: 0.8, y: 50 }}
-          className="fixed bottom-4 right-4 z-50"
+          className="fixed bottom-4 right-4 z-50 max-w-sm w-full sm:max-w-sm sm:bottom-4 sm:right-4 max-sm:left-1/2 max-sm:bottom-2 max-sm:right-auto max-sm:-translate-x-1/2 max-sm:w-[95vw]"
           ref={mascotRef}
         >
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-2xl p-4 max-w-sm"
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-2xl p-4 max-w-sm max-sm:p-2 max-sm:text-sm max-sm:rounded-xl"
           >
             {/* Mascotte */}
-            <div className="flex items-center space-x-3 mb-3">
+            <div className="flex items-center space-x-2 mb-2 max-sm:space-x-1">
               <motion.div
                 animate={{ 
                   rotate: [0, -10, 10, 0],
@@ -224,15 +225,15 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
                   repeat: Infinity,
                   repeatDelay: 3
                 }}
-                className={`${mascotBgColor} rounded-full p-2`}
+                className={`${mascotBgColor} rounded-full p-2 max-sm:p-1`}
               >
-                <MascotIcon className="h-6 w-6 text-orange-600" />
+                <MascotIcon className="h-6 w-6 text-orange-600 max-sm:h-5 max-sm:w-5" />
               </motion.div>
               <div>
-                <h3 className="font-bold text-lg">{mascotName}</h3>
-                <p className="text-xs text-orange-100">Ton coach personnel</p>
+                <h3 className="font-bold text-lg max-sm:text-base">{mascotName}</h3>
+                <p className="text-xs text-orange-100 max-sm:text-[10px]">Ton coach personnel</p>
               </div>
-              <Icon className="h-5 w-5 text-yellow-300" />
+              <Icon className="h-5 w-5 text-yellow-300 max-sm:h-4 max-sm:w-4" />
             </div>
 
             {/* Message */}
@@ -241,15 +242,15 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="text-sm mb-3"
+              className="text-sm mb-3 max-sm:text-xs max-sm:mb-2"
             >
               {extraMsg ? extraMsg : currentMessage}
             </motion.p>
 
             {/* Boutons interactifs */}
-            <div className="flex gap-2 mb-2">
-              <button onClick={handleJoke} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold">Blague</button>
-              <button onClick={handleAdvice} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold">Conseil</button>
+            <div className="flex gap-2 mb-2 max-sm:gap-1">
+              <button onClick={handleJoke} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
+              <button onClick={handleAdvice} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
             </div>
 
             {/* Boutons fermer/masquer */}
@@ -317,31 +318,29 @@ export function MascotGlobal() {
     setMinimized(false)
   }
 
-  // Rendu minimisé : petit avatar mascotte en bas à droite
-  if (minimized) {
-    return (
-      <div className="fixed bottom-4 right-4 z-[60] cursor-pointer" onClick={handleRestore} title="Afficher la mascotte">
-        <div className="bg-white rounded-full shadow-2xl p-2 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
-          <Dumbbell className="h-8 w-8 text-orange-600" />
-        </div>
-      </div>
-    )
-  }
-
-  // Rendu mascotte complète avec bouton réduire
   return (
-    <div className="fixed bottom-4 right-4 z-[60]">
-      <div className="relative">
-        <button
-          onClick={handleMinimize}
-          className="absolute -top-3 -right-3 bg-orange-600 text-white rounded-full p-1 shadow hover:bg-orange-700 transition-all"
-          aria-label="Réduire la mascotte"
-          style={{ zIndex: 70 }}
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <Mascot show={true} message={joke || undefined} type="success" onClose={handleMinimize} />
-      </div>
-    </div>
-  )
+    <ClientOnly>
+      {minimized ? (
+        <div className="fixed bottom-4 right-4 z-[60] cursor-pointer" onClick={handleRestore} title="Afficher la mascotte">
+          <div className="bg-white rounded-full shadow-2xl p-2 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
+            <Dumbbell className="h-8 w-8 text-orange-600" />
+          </div>
+        </div>
+      ) : (
+        <div className="fixed bottom-4 right-4 z-[60]">
+          <div className="relative">
+            <button
+              onClick={handleMinimize}
+              className="absolute -top-3 -right-3 bg-orange-600 text-white rounded-full p-1 shadow hover:bg-orange-700 transition-all"
+              aria-label="Réduire la mascotte"
+              style={{ zIndex: 70 }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <Mascot show={true} message={joke || undefined} type="success" onClose={handleMinimize} />
+          </div>
+        </div>
+      )}
+    </ClientOnly>
+  );
 } 
