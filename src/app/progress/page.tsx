@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { createClient } from '@/lib/supabase'
+import type { TrainingGoal } from '@/types/training-goal';
 
 interface ProgressData {
   date: string
@@ -34,16 +35,6 @@ interface ExerciseProgress {
   previous_weight: number
   improvement: number
   trend: 'up' | 'down' | 'stable'
-}
-
-interface TrainingGoal {
-  id: number;
-  user_id: string;
-  exercise_id: number;
-  target_weight?: number | null;
-  target_reps?: number | null;
-  created_at: string;
-  exercises?: { name: string };
 }
 
 interface UserExercise {
@@ -725,30 +716,36 @@ export default function ProgressPage() {
               <Award className="h-6 w-6 text-yellow-500" />
               <span>Badges</span>
             </h2>
-            
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                <h3 className="font-medium text-gray-900">Déterminé</h3>
-                <p className="text-sm text-gray-600">10 séances consécutives</p>
+              {/* Badge Déterminé */}
+              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'bg-yellow-50' : 'bg-gray-50 opacity-50'}`}>
+                <Trophy className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-yellow-500' : 'text-gray-400'}`} />
+                <h3 className={`font-medium ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-gray-900' : 'text-gray-500'}`}>Déterminé</h3>
+                <p className={`text-sm ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-gray-600' : 'text-gray-400'}`}>10 séances consécutives</p>
+                {(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
               </div>
-
-              <div className="text-center p-4 bg-orange-50 rounded-lg">
-                <Flame className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-                <h3 className="font-medium text-gray-900">Force brute</h3>
-                <p className="text-sm text-gray-600">+50kg au total</p>
+              {/* Badge Force brute */}
+              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
+                <Flame className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-orange-500' : 'text-gray-400'}`} />
+                <h3 className={`font-medium ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-gray-900' : 'text-gray-500'}`}>Force brute</h3>
+                <p className={`text-sm ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-gray-600' : 'text-gray-400'}`}>+50kg au total</p>
+                {(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
               </div>
-
-              <div className="text-center p-4 bg-gray-50 rounded-lg opacity-50">
-                <Target className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <h3 className="font-medium text-gray-500">Objectif atteint</h3>
-                <p className="text-sm text-gray-400">100kg développé couché</p>
+              {/* Badge Objectif atteint (exemple : 100kg développé couché) */}
+              <div className={`text-center p-4 rounded-lg ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'bg-blue-50' : 'bg-gray-50 opacity-50'}`}>
+                <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? '' : 'grayscale text-gray-400'}`}>🏋️‍♂️</span>
+                <h3 className={`font-medium ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'text-gray-900' : 'text-gray-500'}`}>Objectif atteint</h3>
+                <p className={`text-sm ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'text-gray-600' : 'text-gray-400'}`}>100kg développé couché</p>
+                {trainingGoals.filter(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint').map(g => (
+                  <div key={g.id} className="text-xs text-gray-500 mt-1">Atteint le {new Date(g.updated_at || g.created_at).toLocaleDateString('fr-FR')}</div>
+                ))}
               </div>
-
-              <div className="text-center p-4 bg-gray-50 rounded-lg opacity-50">
-                <Calendar className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <h3 className="font-medium text-gray-500">Régulier</h3>
-                <p className="text-sm text-gray-400">30 jours consécutifs</p>
+              {/* Badge Régulier */}
+              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'bg-gray-100' : 'bg-gray-50 opacity-50'}`}>
+                <Calendar className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-700' : 'text-gray-400'}`} />
+                <h3 className={`font-medium ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-900' : 'text-gray-500'}`}>Régulier</h3>
+                <p className={`text-sm ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-600' : 'text-gray-400'}`}>30 jours consécutifs</p>
+                {(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
               </div>
             </div>
           </div>
