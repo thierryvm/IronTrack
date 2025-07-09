@@ -15,11 +15,13 @@ import {
 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { createClient } from '@/lib/supabase'
+// Importer les conseils de la mascotte
+import { advices as mascotAdvices } from '../../components/ui/Mascot';
 
 interface Meal {
   id: number
   name: string
-  type: 'Petit-déjeuner' | 'Déjeuner' | 'Dîner' | 'Collation'
+  type: 'Petit-déjeuner' | 'Déjeuner' | 'Dîner' | 'Souper' | 'Collation'
   calories: number
   protein: number
   carbs: number
@@ -38,7 +40,7 @@ interface NutritionGoals {
 interface NutritionLogRow {
   id: number;
   food_name: string;
-  meal_type: 'Petit-déjeuner' | 'Déjeuner' | 'Dîner' | 'Collation';
+  meal_type: 'Petit-déjeuner' | 'Déjeuner' | 'Dîner' | 'Souper' | 'Collation';
   calories: number;
   protein: number;
   carbs: number;
@@ -51,7 +53,8 @@ const mealTypes = [
   { name: 'Petit-déjeuner', color: '#FF6B6B', icon: '🌅' },
   { name: 'Déjeuner', color: '#4ECDC4', icon: '☀️' },
   { name: 'Dîner', color: '#45B7D1', icon: '🌙' },
-  { name: 'Collation', color: '#96CEB4', icon: '🍎' }
+  { name: 'Collation', color: '#96CEB4', icon: '🍎' },
+  { name: 'Souper', color: '#FFD700', icon: '🍲' }
 ]
 
 export default function NutritionPage() {
@@ -87,6 +90,9 @@ export default function NutritionPage() {
   })
   const [editLoading, setEditLoading] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
+
+  // Ajout d'un état pour afficher les erreurs globales
+  const [globalError, setGlobalError] = useState<string | null>(null);
 
   const supabase = createClient()
 
@@ -202,6 +208,7 @@ export default function NutritionPage() {
     e.preventDefault()
     setAddLoading(true)
     setAddError(null)
+    setGlobalError(null);
     try {
       if (!userId) throw new Error('Utilisateur non connecté')
       if (!addForm.name || !addForm.type || !addForm.calories || !addForm.protein || !addForm.carbs || !addForm.fat || !addForm.time) {
@@ -225,8 +232,11 @@ export default function NutritionPage() {
       setShowAddModal(false)
       setAddForm({ name: '', type: 'Déjeuner', calories: '', protein: '', carbs: '', fat: '', time: '' })
       await loadMeals()
+      console.log('Liste des repas après ajout:', meals);
     } catch (err: unknown) {
       setAddError(err instanceof Error ? err.message : String(err))
+      setGlobalError('Erreur lors de l\'ajout du repas : ' + (err instanceof Error ? err.message : String(err)));
+      alert('Erreur lors de l\'ajout du repas : ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setAddLoading(false)
     }
@@ -234,16 +244,21 @@ export default function NutritionPage() {
 
   // Suppression d'un repas
   const handleDeleteMeal = async (id: number | string) => {
+    setGlobalError(null);
     if (!userId) return
     if (!window.confirm('Supprimer ce repas ?')) return
     try {
       // On force l'ID en string pour éviter les soucis de typage
       const mealId = String(id)
+      console.log('Tentative suppression repas, id:', mealId);
       const { error, data } = await supabase.from('nutrition_logs').delete().eq('id', mealId)
       console.log('Résultat suppression Supabase:', { error, data, mealId })
       if (error) throw error
       await loadMeals()
+      console.log('Liste des repas après suppression:', meals);
     } catch (error) {
+      setGlobalError('Erreur lors de la suppression du repas : ' + (error instanceof Error ? error.message : String(error)));
+      alert('Erreur lors de la suppression du repas : ' + (error instanceof Error ? error.message : String(error)));
       if (error instanceof Error) {
         alert('Erreur lors de la suppression du repas : ' + error.message)
       } else {
@@ -272,6 +287,7 @@ export default function NutritionPage() {
     e.preventDefault()
     setEditLoading(true)
     setEditError(null)
+    setGlobalError(null);
     try {
       if (!userId || !editMeal) throw new Error('Utilisateur ou repas manquant')
       if (!editForm.name || !editForm.type || !editForm.calories || !editForm.protein || !editForm.carbs || !editForm.fat || !editForm.time) {
@@ -294,8 +310,11 @@ export default function NutritionPage() {
       if (error) throw error
       await loadMeals() // Recharge la liste avant de fermer le modal
       setEditMeal(null)
+      console.log('Liste des repas après édition:', meals);
     } catch (err: unknown) {
       setEditError(err instanceof Error ? err.message : String(err))
+      setGlobalError('Erreur lors de la modification du repas : ' + (err instanceof Error ? err.message : String(err)));
+      alert('Erreur lors de la modification du repas : ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setEditLoading(false)
     }
@@ -307,6 +326,21 @@ export default function NutritionPage() {
       console.log('Repas chargés:', meals)
     }
   }, [meals, loading])
+
+  // Conseil du jour dynamique
+  const [adviceIndex, setAdviceIndex] = useState(() => Math.floor(Math.random() * mascotAdvices.length));
+  const [adviceAnim, setAdviceAnim] = useState(false);
+  const handleNewAdvice = () => {
+    setAdviceAnim(true);
+    setTimeout(() => {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * mascotAdvices.length);
+      } while (newIndex === adviceIndex && mascotAdvices.length > 1);
+      setAdviceIndex(newIndex);
+      setAdviceAnim(false);
+    }, 200);
+  };
 
   if (loading) {
     return (
@@ -321,7 +355,6 @@ export default function NutritionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <button onClick={() => alert('Test bouton général')} style={{position: 'fixed', top: 10, left: 10, zIndex: 9999, background: '#f97316', color: 'white', padding: '8px 16px', borderRadius: '8px'}}>Test Alerte</button>
       {/* Message d'incitation si le suivi est désactivé */}
       {/* Objectifs, barres et rappels affichés seulement si activé */}
       {/* Header */}
@@ -342,6 +375,12 @@ export default function NutritionPage() {
           </div>
         </div>
       </div>
+
+      {globalError && (
+        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center font-semibold">
+          {globalError}
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6 max-sm:py-3">
         {/* Sélecteur de date */}
@@ -618,11 +657,23 @@ export default function NutritionPage() {
         >
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Conseil du jour</h2>
-            <p className="text-green-100 mb-4">
-              Pour optimiser ta prise de masse musculaire, assure-toi de consommer suffisamment de protéines 
-              (1.6-2.2g par kg de poids corporel) et de bien répartir tes repas sur la journée.
-            </p>
-            <div className="flex items-center justify-center space-x-4">
+            <motion.p
+              key={adviceIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: adviceAnim ? 0 : 1, y: adviceAnim ? 10 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-green-100 mb-4 min-h-[48px] flex items-center justify-center"
+            >
+              <span className="mr-2">💡</span>{mascotAdvices[adviceIndex]}
+            </motion.p>
+            <button
+              onClick={handleNewAdvice}
+              className="inline-flex items-center px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-white font-semibold text-sm transition-colors"
+              title="Nouveau conseil"
+            >
+              <span role="img" aria-label="refresh" className="mr-1">🔄</span>Nouveau conseil
+            </button>
+            <div className="flex items-center justify-center space-x-4 mt-4">
               <div className="text-center">
                 <p className="text-3xl font-bold">{getProgressPercentage(todayNutrition.protein, goals.protein).toFixed(0)}%</p>
                 <p className="text-sm text-green-100">Objectif protéines</p>
@@ -640,7 +691,7 @@ export default function NutritionPage() {
 
       {/* Modal d'ajout de repas */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Ajouter un repas</h3>
             <form onSubmit={handleAddMeal} className="space-y-4">

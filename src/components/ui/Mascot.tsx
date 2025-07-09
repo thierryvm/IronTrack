@@ -87,7 +87,7 @@ const jokes = [
   "Pourquoi Thierry ne craint pas la pluie ? Parce qu'il s'entraîne même sous les gouttes !"
 ];
 
-const advices = [
+export const advices = [
   "Pense à bien t'hydrater avant, pendant et après l'effort !",
   "Un bon échauffement, c'est la clé pour éviter les blessures.",
   "La récupération fait partie de l'entraînement, ne la néglige pas !",
@@ -102,7 +102,19 @@ const advices = [
   "N'hésite pas à demander conseil à un pro pour progresser.",
   "Un bon sommeil, c'est la base pour récupérer.",
   "Change de routine régulièrement pour éviter la stagnation.",
-  "Fais confiance à IronBuddy, il a toujours une astuce en réserve !"
+  "Fais confiance à IronBuddy, il a toujours une astuce en réserve !",
+  // Nouveaux conseils
+  "Le petit-déjeuner est le repas le plus important pour bien démarrer la journée !",
+  "Prends le temps de savourer tes repas, ça aide la digestion et le moral.",
+  "Prépare tes repas à l'avance pour éviter les craquages.",
+  "Ne saute pas de repas, ton corps a besoin d'énergie pour progresser.",
+  "Ajoute des légumes à chaque repas pour faire le plein de vitamines.",
+  "Un souper léger favorise un bon sommeil.",
+  "Boire de l'eau régulièrement booste ta performance et ta récupération.",
+  "Manger en pleine conscience aide à mieux écouter tes sensations de faim.",
+  "Fais-toi plaisir de temps en temps, la frustration n'est pas un bon coach !",
+  "Un fruit en collation, c'est le combo énergie + vitamines !",
+  "Planifie tes repas comme tes entraînements pour rester sur la bonne voie."
 ];
 
 export default function Mascot({ message, type = 'motivation', show = false, onClose }: MascotProps) {

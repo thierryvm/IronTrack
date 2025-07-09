@@ -31,33 +31,10 @@ import { useRouter } from 'next/navigation'
 import { Dialog } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
-
-interface UserProfile {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  location?: string
-  avatar?: string
-  height: number
-  weight: number
-  age: number
-  gender: 'Homme' | 'Femme' | 'Autre'
-  goal: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance'
-  experience: 'Débutant' | 'Intermédiaire' | 'Avancé'
-  joinDate: string
-}
-
-interface UserStats {
-  totalWorkouts: number
-  totalWeight: number
-  currentStreak: number
-  longestStreak: number
-  averageWorkoutsPerWeek: number
-  favoriteExercise: string
-  totalTime: number
-  achievements: number
-}
+import type { TrainingGoal } from '@/types/training-goal'; // Adapter le chemin si besoin
+import type { UserProfile } from '@/types/user-profile';
+import type { UserStats } from '@/types/user-stats';
+import type { Achievement } from '@/types/achievement';
 
 // Définir un type pour le profil Supabase
 interface SupabaseProfile {
@@ -76,16 +53,102 @@ interface SupabaseProfile {
   created_at: string;
 }
 
-// Ajout du type Achievement
-interface Achievement {
-  id: number;
-  user_id: string;
-  name: string;
-  description: string;
-  icon: string;
-  category: string;
-  unlocked_at: string;
-}
+// Définition des badges par défaut
+const defaultBadges = [
+  {
+    key: 'bench-50',
+    icon: '🏋️‍♂️',
+    title: 'Développé couché',
+    description: '50kg développé couché',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Développé couché' && (g.target_weight ?? 0) >= 50),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Développé couché' && (g.target_weight ?? 0) >= 50);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'bench-100',
+    icon: '🏋️‍♂️',
+    title: 'Développé couché',
+    description: '100kg développé couché',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Développé couché' && (g.target_weight ?? 0) >= 100),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Développé couché' && (g.target_weight ?? 0) >= 100);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'squat-100',
+    icon: '🏋️‍♀️',
+    title: 'Squat',
+    description: '100kg squat',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Squat' && (g.target_weight ?? 0) >= 100),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Squat' && (g.target_weight ?? 0) >= 100);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'pompes-20',
+    icon: '🤸‍♂️',
+    title: 'Pompes',
+    description: '20 pompes d\'affilée',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Pompes' && (g.target_reps ?? 0) >= 20),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Pompes' && (g.target_reps ?? 0) >= 20);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'tractions-10',
+    icon: '🧗‍♂️',
+    title: 'Tractions',
+    description: '10 tractions',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Tractions' && (g.target_reps ?? 0) >= 10),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Tractions' && (g.target_reps ?? 0) >= 10);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'abdos-100',
+    icon: '💪',
+    title: 'Abdos',
+    description: '100 crunchs',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => g.exercises?.name === 'Abdos' && (g.target_reps ?? 0) >= 100),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => g.exercises?.name === 'Abdos' && (g.target_reps ?? 0) >= 100);
+      return g?.updated_at || g?.created_at;
+    }
+  },
+  {
+    key: 'force-brute',
+    icon: '🔥',
+    title: 'Force brute',
+    description: '+1000kg soulevés au total',
+    validate: (_goals: TrainingGoal[], stats?: UserStats) => (stats?.totalWeight ?? 0) >= 1000,
+    getDate: () => null // À améliorer si tu stockes la date
+  },
+  {
+    key: 'regulier',
+    icon: '📅',
+    title: 'Régulier',
+    description: '30 jours consécutifs',
+    validate: (_goals: TrainingGoal[], stats?: UserStats) => (stats?.currentStreak ?? 0) >= 30,
+    getDate: () => null // À améliorer si tu stockes la date
+  },
+  {
+    key: 'polyvalent',
+    icon: '🌟',
+    title: 'Polyvalent',
+    description: 'Objectif atteint sur 3 exercices différents',
+    validate: (goals: TrainingGoal[]) => {
+      const unique = new Set(goals.map((g: TrainingGoal) => g.exercises?.name));
+      return unique.size >= 3;
+    },
+    getDate: () => null // À améliorer si tu veux la date du 3e objectif
+  },
+];
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -935,53 +998,6 @@ export default function ProfilePage() {
                   <div className="flex justify-between"><span>Temps total</span><span>{stats?.totalTime ? `${Math.floor(stats.totalTime / 60)}h${stats.totalTime % 60 ? ' ' + (stats.totalTime % 60) + 'min' : ''}` : '0h'}</span></div>
                 </div>
               </div>
-              {/* Résumé des badges */}
-              {achievements.length > 0 && (
-                <div className="bg-white rounded-xl shadow-md p-4 md:p-6 mt-4">
-                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-base md:text-lg">
-                    <Award className="h-5 w-5 text-yellow-500" />
-                    Badges récents
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-x-5 gap-y-4 justify-center items-center mb-2">
-                    {achievements.slice(0, 6).map(badge => (
-                      <div
-                        key={badge.id}
-                        className={`relative group rounded-xl shadow-md flex flex-col items-center justify-between p-4 w-full min-w-[140px] max-w-[180px] h-[150px] transition-transform hover:scale-105 cursor-pointer border-2 ${badge.unlocked_at ? 'bg-orange-50 border-orange-300' : 'bg-gray-100 border-gray-200 opacity-60'}`}
-                      >
-                        <span className={`text-4xl mb-2 ${badge.unlocked_at ? '' : 'grayscale'}`}>{getBadgeIcon(badge)}</span>
-                        <span className="font-bold text-base text-gray-900 text-center leading-tight mb-1 line-clamp-2" title={formatBadgeTitle(badge)}>{formatBadgeTitle(badge)}</span>
-                        <span className="text-xs text-gray-500 text-center mb-1">{badge.unlocked_at ? `Atteint le ${new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}` : 'Non débloqué'}</span>
-                        <button
-                          className="absolute top-2 right-2 p-1 rounded-full hover:bg-orange-100 focus:bg-orange-200 focus:outline-none"
-                          aria-label="Infos badge"
-                          onClick={() => { setModalBadge(badge); setShowBadgeModal(true); }}
-                          tabIndex={0}
-                          type="button"
-                        >
-                          <Info className="h-4 w-4 text-gray-400" />
-                        </button>
-                        {/* Tooltip desktop */}
-                        <div className="hidden md:block pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-14 w-48 bg-white text-gray-800 text-xs rounded-lg shadow-lg p-2 border border-orange-200 whitespace-pre-line">
-                          <div className="font-bold mb-1">{formatBadgeTitle(badge)}</div>
-                          <div>{badge.description}</div>
-                          {badge.unlocked_at && <div className="mt-1 text-[10px] text-gray-500">Atteint le {new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}</div>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    className="text-orange-600 hover:underline text-xs md:text-sm font-semibold mt-2"
-                    onClick={() => {
-                      setActiveTab('stats');
-                      setTimeout(() => {
-                        badgesSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                      }, 200);
-                    }}
-                  >
-                    Voir tous mes badges
-                  </button>
-                </div>
-              )}
             </div>
           </motion.div>
         )}
@@ -1075,66 +1091,26 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            {/* Section Badges */}
-            <div ref={badgesSectionRef} className="bg-white rounded-xl shadow-md p-6 mt-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            {/* Section Badges validés */}
+            <div className="bg-white rounded-xl shadow-md p-6 mt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
                 <Award className="h-6 w-6 text-yellow-500" />
-                Tous mes badges
-              </h3>
-              {achievements.length === 0 ? (
-                <div className="text-gray-500 text-sm">Aucun badge débloqué pour l'instant. Mais IronBuddy croit en toi !</div>
-              ) : (
-                <div className="flex flex-row gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-yellow-200">
-                  {achievements.map(badge => (
-                    <div
-                      key={badge.id}
-                      className={`relative group rounded-xl shadow-md flex flex-col items-center justify-between p-4 min-w-[140px] max-w-[180px] h-[150px] transition-transform hover:scale-105 cursor-pointer border-2 ${badge.unlocked_at ? 'bg-orange-50 border-orange-300' : 'bg-gray-100 border-gray-200 opacity-60'}`}
-                      style={{ minHeight: '150px' }}
-                    >
-                      <span className={`text-4xl mb-2 ${badge.unlocked_at ? '' : 'grayscale'}`}>{getBadgeIcon(badge)}</span>
-                      <span className="font-bold text-base text-gray-900 text-center leading-tight mb-1 line-clamp-2" title={badge.name}>{badge.name}</span>
-                      <div className="flex items-center justify-center w-full mt-1">
-                        <span className="text-xs text-gray-500 text-center flex-1">{badge.unlocked_at ? `Atteint le ${new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}` : 'Non débloqué'}</span>
-                        <button
-                          className="ml-1 p-1 rounded-full hover:bg-orange-100 focus:bg-orange-200 focus:outline-none"
-                          aria-label="Infos badge"
-                          onClick={() => { setModalBadge(badge); setShowBadgeModal(true); }}
-                          tabIndex={0}
-                          type="button"
-                        >
-                          <Info className="h-4 w-4 text-gray-400" />
-                        </button>
-                      </div>
-                      {/* Tooltip desktop */}
-                      <div className="hidden md:block pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-14 w-48 bg-white text-gray-800 text-xs rounded-lg shadow-lg p-2 border border-orange-200 whitespace-pre-line">
-                        <div className="font-bold mb-1">{formatBadgeTitle(badge)}</div>
-                        <div>{badge.description}</div>
-                        {badge.unlocked_at && <div className="mt-1 text-[10px] text-gray-500">Atteint le {new Date(badge.unlocked_at).toLocaleDateString('fr-FR')}</div>}
-                      </div>
+                <span>Badges validés</span>
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {defaultBadges.map(badge => {
+                  const isValid = badge.validate(achievedGoals, stats ?? undefined);
+                  const date = badge.getDate(achievedGoals);
+                  return (
+                    <div key={badge.key} className={`text-center p-4 rounded-lg ${isValid ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
+                      <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${isValid ? '' : 'grayscale text-gray-400'}`}>{badge.icon}</span>
+                      <h3 className={`font-medium ${isValid ? 'text-gray-900' : 'text-gray-500'}`}>{badge.title}</h3>
+                      <p className={`text-sm ${isValid ? 'text-gray-600' : 'text-gray-400'}`}>{badge.description}</p>
+                      {isValid && date && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date(date).toLocaleDateString('fr-FR')}</div>}
                     </div>
-                  ))}
-                  {/* Modal badge mobile */}
-                  {showBadgeModal && modalBadge && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-                      <div className="bg-white rounded-xl shadow-lg p-6 w-80 max-w-full relative animate-fade-in">
-                        <button
-                          className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
-                          onClick={() => setShowBadgeModal(false)}
-                          aria-label="Fermer"
-                        >
-                          <span className="text-xl">×</span>
-                        </button>
-                        <div className="flex flex-col items-center">
-                          <span className="text-5xl mb-2">{getBadgeIcon(modalBadge)}</span>
-                          <div className="font-bold text-gray-900 text-center mb-1">{modalBadge.name}</div>
-                          <div className="text-gray-700 text-sm text-center mb-2">{modalBadge.description}</div>
-                          <div className="text-xs text-gray-500">{modalBadge.unlocked_at ? new Date(modalBadge.unlocked_at).toLocaleDateString('fr-FR') : ''}</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
         )}
