@@ -43,7 +43,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className="relative h-24 p-1 pb-8 border border-gray-200 rounded-md bg-white flex flex-col overflow-hidden">
+    <div className="relative h-24 p-1 pb-14 border border-gray-200 rounded-md bg-white flex flex-col overflow-hidden">
       <div className="text-xs font-semibold mb-1 text-gray-700">{date}</div>
       <div className="flex-1 flex flex-col gap-1">
         {displayedSessions.map((session) => (
@@ -63,6 +63,15 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 if (isMobile) setMobileSessionDetail(session);
               }}
             >
+              {/* Avatar à gauche si séance partagée */}
+              {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
+                <Avatar
+                  src={session.participants[0].avatarUrl}
+                  name={session.participants[0].name}
+                  size={20}
+                  className="mr-1 border-2 border-white shadow-sm bg-white"
+                />
+              )}
               <span className="truncate">{session.name}{session.time && <span className="opacity-80"> à {session.time}</span>}</span>
             </div>
           </div>
@@ -76,33 +85,16 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           </button>
         )}
       </div>
-      {/* Pile d'avatars unique pour tous les participants du jour, placée en bas à droite */}
-      <div className="absolute bottom-1 right-1 flex -space-x-2">
-        {uniqueParticipants.slice(0, MAX_AVATARS_DISPLAY).map((p, idx) => {
-          if (!p) return null;
-          const avatarKey = `${String(p.id ?? idx).trim()}|${(p.name || '').trim()}|${(p.avatarUrl || '').trim()}`;
-          return (
-            <Avatar
-              key={avatarKey}
-              src={p.avatarUrl}
-              name={p.name}
-              size={28}
-              className="border-2 border-white shadow-sm"
-            />
-          );
-        })}
-        {uniqueParticipants.length > MAX_AVATARS_DISPLAY && (
-          <span className="w-7 h-7 flex items-center justify-center bg-orange-200 text-orange-700 text-xs rounded-full border-2 border-white shadow-sm">+{uniqueParticipants.length - MAX_AVATARS_DISPLAY}</span>
-        )}
-      </div>
+      {/* Espace réservé pour l'avatar en bas */}
+      <div className="h-8 w-full" />
       {/* Popover pour afficher toutes les séances du jour */}
       {showPopover && (
-        <div className="absolute z-20 top-8 left-1/2 -translate-x-1/2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-3 animate-fade-in">
-          <div className="flex justify-between items-center mb-2">
+        <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-72 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">
+          <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
             <span className="font-semibold text-sm">Séances du {date}</span>
             <button className="text-gray-400 hover:text-gray-700" onClick={() => setShowPopover(false)}>✕</button>
           </div>
-          <ul className="space-y-2 max-h-48 overflow-y-auto">
+          <ul className="space-y-2">
             {sessions.map((session) => (
               <li key={session.id} className="flex items-center gap-2">
                 <div
@@ -120,6 +112,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                         key={avatarKey}
                         src={p.avatarUrl}
                         name={p.name}
+                        size={20}
                         className="w-5 h-5 border-2 border-white shadow-sm"
                       />
                     );

@@ -21,6 +21,7 @@ export default function EditWorkoutPage() {
   const [mascotMsg, setMascotMsg] = useState<string | null>(null)
   const [mascotType, setMascotType] = useState<'motivation' | 'success' | 'warning' | 'info'>('motivation')
   const [showMascot, setShowMascot] = useState(false)
+  const [startTime, setStartTime] = useState('');
 
   // Charger les vraies données depuis Supabase
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function EditWorkoutPage() {
         setNotes(data.notes || '')
         setDuration(data.duration ?? '')
         setStatus(data.status || 'Planifié')
+        setStartTime(data.start_time || '')
       }
     };
     if (id) fetchWorkout();
@@ -73,6 +75,7 @@ export default function EditWorkoutPage() {
       .update({
         name,
         scheduled_date: date,
+        start_time: startTime,
         notes,
         duration: duration === '' ? null : Number(duration),
         status
@@ -136,6 +139,16 @@ export default function EditWorkoutPage() {
         <div>
           <label className="block text-gray-700 font-medium mb-2">Date</label>
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Heure prévue</label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={e => setStartTime(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            placeholder="Ex: 18:00"
+          />
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-2">Durée (minutes)</label>
