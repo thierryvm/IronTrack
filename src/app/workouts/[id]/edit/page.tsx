@@ -15,6 +15,7 @@ export default function EditWorkoutPage() {
   const [date, setDate] = useState('')
   const [notes, setNotes] = useState('')
   const [duration, setDuration] = useState<number | ''>('')
+  const [status, setStatus] = useState<'Planifié' | 'Réalisé' | 'Annulé'>('Planifié');
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [mascotMsg, setMascotMsg] = useState<string | null>(null)
@@ -35,6 +36,7 @@ export default function EditWorkoutPage() {
         setDate(data.scheduled_date ? data.scheduled_date : '')
         setNotes(data.notes || '')
         setDuration(data.duration ?? '')
+        setStatus(data.status || 'Planifié')
       }
     };
     if (id) fetchWorkout();
@@ -72,7 +74,8 @@ export default function EditWorkoutPage() {
         name,
         scheduled_date: date,
         notes,
-        duration: duration === '' ? null : Number(duration)
+        duration: duration === '' ? null : Number(duration),
+        status
       })
       .eq('id', id)
     setLoading(false)
@@ -144,6 +147,18 @@ export default function EditWorkoutPage() {
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
             placeholder="Ex: 30"
           />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Statut de la séance</label>
+          <select
+            value={status}
+            onChange={e => setStatus(e.target.value as 'Planifié' | 'Réalisé' | 'Annulé')}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="Planifié">Planifiée</option>
+            <option value="Réalisé">Réalisée</option>
+            <option value="Annulé">Annulée</option>
+          </select>
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-2">Notes</label>

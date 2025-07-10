@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import CalendarDayCell from '@/components/ui/CalendarDayCell';
 
 interface Workout {
   id: number
@@ -33,11 +34,51 @@ const workoutTypes = [
   { name: 'Repos', color: 'bg-gray-500', icon: CheckCircle }
 ]
 
+// Ajouter l'interface SharedWorkout
+interface SharedWorkout {
+  id: number;
+  user_id: string;
+  name: string;
+  type: string;
+  status: string;
+  scheduled_date: string;
+  start_time?: string;
+  end_time?: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+  profiles?: {
+    avatar_url?: string;
+    full_name?: string;
+    id?: string;
+  };
+}
+
+// Fonction utilitaire pour formater en DD-MM-YYYY
+function toDDMMYYYY(date: Date | string): string {
+  if (typeof date === 'string') {
+    // Si déjà au format DD-MM-YYYY
+    if (/^\d{2}-\d{2}-\d{4}$/.test(date)) return date;
+    // Si format YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(date)) {
+      const [y, m, d] = date.split('-');
+      return `${d}-${m}-${y}`;
+    }
+    // Sinon, tenter de parser
+    date = new Date(date);
+  }
+  const d = date instanceof Date ? date : new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [sharedWorkouts, setSharedWorkouts] = useState<any[]>([])
+  const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -110,26 +151,14 @@ export default function CalendarPage() {
   }
 
   const getWorkoutsForDate = (date: Date) => {
-    return workouts.filter(workout => {
-      const wDate = new Date(workout.scheduled_date)
-      return (
-        wDate.getFullYear() === date.getFullYear() &&
-        wDate.getMonth() === date.getMonth() &&
-        wDate.getDate() === date.getDate()
-      )
-    })
+    const selected = toDDMMYYYY(date);
+    return workouts.filter(workout => toDDMMYYYY(workout.scheduled_date) === selected);
   }
 
   // Ajout d'une fonction pour récupérer les créneaux partagés d'une date
   const getSharedForDate = (date: Date) => {
-    return sharedWorkouts.filter(sw => {
-      const d = new Date(sw.scheduled_date)
-      return (
-        d.getFullYear() === date.getFullYear() &&
-        d.getMonth() === date.getMonth() &&
-        d.getDate() === date.getDate()
-      )
-    })
+    const selected = toDDMMYYYY(date);
+    return sharedWorkouts.filter(sw => toDDMMYYYY(sw.scheduled_date) === selected);
   }
 
   const getStatusColor = (status: string) => {
@@ -230,7 +259,7 @@ export default function CalendarPage() {
                     onClick={() => setCurrentDate(new Date())}
                     className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
                   >
-                    Aujourd'hui
+                    Aujourd&apos;hui
                   </button>
                   <button
                     onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
@@ -252,61 +281,36 @@ export default function CalendarPage() {
 
                 {/* Jours du mois */}
                 {days.map((day, index) => {
-                  const dayWorkouts = getWorkoutsForDate(day.date)
                   const sharedForDay = getSharedForDate(day.date)
                   const isCurrentDay = isToday(day.date)
                   const isSelectedDay = isSelected(day.date)
 
-                  return (
-                    <motion.div
+                  // Adapter les données pour CalendarDayCell :
+                  // sessions = sharedForDay.map(...) pour correspondre à l'interface attendue
+                  const sessions = sharedForDay.map(sw => ({
+                    id: String(sw.id),
+                    name: sw.name || '',
+                    time: sw.start_time || '',
+                    color: undefined, // ou une couleur selon le type si tu veux
+                    participants: [
+                      {
+                        id: sw.user_id || sw.profiles?.id || '',
+                        name: sw.profiles?.full_name || '',
+                        avatarUrl: sw.profiles?.avatar_url || '/window.svg',
+                      }
+                    ]
+                  }));
+
+                  const cell = (
+                    <div
                       key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.01 }}
                       onClick={() => setSelectedDate(day.date)}
-                      className={`
-                        min-h-[80px] p-2 border border-gray-200 cursor-pointer transition-all
-                        ${day.isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                        ${isCurrentDay ? 'ring-2 ring-orange-500' : ''}
-                        ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
-                        hover:bg-gray-50
-                      `}
+                      className={`cursor-pointer transition-all ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
                     >
-                      <div className="text-sm font-medium text-gray-900 mb-1">
-                        {day.date.getDate()}
-                      </div>
-                      
-                      {/* Indicateurs de séances */}
-                      <div className="space-y-1">
-                        {dayWorkouts.slice(0, 2).map((workout) => (
-                          <div
-                            key={workout.id}
-                            className={`h-2 rounded-full ${getTypeColor(workout.type)}`}
-                            title={`${workout.name} - ${workout.status}`}
-                          />
-                        ))}
-                        {dayWorkouts.length > 2 && (
-                          <div className="text-xs text-gray-500 text-center">
-                            +{dayWorkouts.length - 2}
-                          </div>
-                        )}
-                        {/* Indicateur créneaux partagés (avatars) */}
-                        {sharedForDay.length > 0 && (
-                          <div className="flex flex-row gap-1 mt-1">
-                            {sharedForDay.map((sw, i) => (
-                              <img
-                                key={i}
-                                src={sw.profiles?.avatar_url || '/window.svg'}
-                                alt={sw.profiles?.full_name || 'Buddy'}
-                                title={sw.name}
-                                className="w-6 h-6 rounded-full border-2 border-fuchsia-500 object-cover bg-white shadow"
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )
+                      <CalendarDayCell date={day.date.getDate()} sessions={sessions} />
+                    </div>
+                  );
+                  return cell;
                 })}
               </div>
             </div>
@@ -324,42 +328,110 @@ export default function CalendarPage() {
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   {formatDate(selectedDate)}
                 </h3>
-                
                 <div className="space-y-3">
-                  {getWorkoutsForDate(selectedDate).map(workout => (
-                    <div key={workout.id} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900">{workout.name}</h4>
-                        <div className={`w-3 h-3 rounded-full ${getStatusColor(workout.status)}`} />
-                      </div>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(workout.type)}`}>
-                          {workout.type}
-                        </span>
-                        {workout.duration && (
-                          <span className="flex items-center space-x-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{workout.duration} min</span>
-                          </span>
+                  {/* Fusion des séances persos et partagées */}
+                  {(() => {
+                    // Récupérer les deux listes
+                    const personal = getWorkoutsForDate(selectedDate).map(workout => ({
+                      id: `perso-${workout.id}`,
+                      name: workout.name,
+                      type: workout.type,
+                      status: workout.status,
+                      duration: workout.duration,
+                      isShared: false,
+                      participants: [],
+                      time: '', // à compléter si tu as l'heure
+                      exercises: workout.exercises || [],
+                    }));
+                    const shared = getSharedForDate(selectedDate).map(sw => ({
+                      id: `shared-${sw.id}`,
+                      name: sw.name,
+                      type: sw.type,
+                      status: sw.status,
+                      duration: undefined,
+                      isShared: true,
+                      participants: [sw.profiles?.full_name || ''],
+                      time: sw.start_time || '',
+                      exercises: [],
+                    }));
+                    // Déduplication : la version partagée écrase la perso si doublon (clé = nom|type|date|heure)
+                    const allMap = new Map();
+                    // Ajout d'un helper pour extraire la date (DD-MM-YYYY)
+                    function getDateKey(item: any) {
+                      // On utilise toDDMMYYYY déjà défini plus haut
+                      return toDDMMYYYY(item.scheduled_date);
+                    }
+                    // D'abord, on ajoute toutes les persos
+                    personal.forEach(item => {
+                      const name = (item.name || '').trim();
+                      const type = (item.type || '').trim();
+                      const dateKey = getDateKey(item);
+                      const time = (item.time || '').trim();
+                      const key = `${name}|${type}|${dateKey}|${time}`;
+                      console.log('[DEBUG] Clé séance perso:', key, item);
+                      allMap.set(key, item);
+                    });
+                    // Ensuite, on écrase avec les partagées
+                    shared.forEach(item => {
+                      const name = (item.name || '').trim();
+                      const type = (item.type || '').trim();
+                      const dateKey = getDateKey(item);
+                      const time = (item.time || '').trim();
+                      const key = `${name}|${type}|${dateKey}|${time}`;
+                      console.log('[DEBUG] Clé séance partagée:', key, item);
+                      allMap.set(key, item); // écrase la perso si même clé
+                    });
+                    const all = Array.from(allMap.values()).sort((a, b) => {
+                      if (a.time && b.time) return a.time.localeCompare(b.time);
+                      if (a.time) return -1;
+                      if (b.time) return 1;
+                      return a.name.localeCompare(b.name);
+                    });
+                    if (all.length === 0) {
+                      return (
+                        <div className="text-center py-6 text-gray-500">
+                          <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                          <p>Aucune séance planifiée</p>
+                        </div>
+                      );
+                    }
+                    return all.map(item => (
+                      <div key={item.id} className="p-3 bg-gray-50 rounded-lg flex flex-col gap-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                            {item.name}
+                            {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
+                          </h4>
+                          <div className={`w-3 h-3 rounded-full ${getStatusColor(item.status)}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(item.type)}`}>{item.type}</span>
+                          {item.duration && (
+                            <span className="flex items-center space-x-1">
+                              <Clock className="h-3 w-3" />
+                              <span>{item.duration} min</span>
+                            </span>
+                          )}
+                          {item.time && (
+                            <span className="flex items-center space-x-1">
+                              <Clock className="h-3 w-3" />
+                              <span>{item.time}</span>
+                            </span>
+                          )}
+                          {item.participants && item.participants.length > 0 && item.participants[0] && (
+                            <span className="ml-2 text-xs text-gray-500">avec {item.participants.join(', ')}</span>
+                          )}
+                        </div>
+                        {item.exercises && item.exercises.length > 0 && (
+                          <div className="mt-1 text-xs text-gray-500">
+                            {item.exercises.slice(0, 2).join(', ')}
+                            {item.exercises.length > 2 && ` +${item.exercises.length - 2}`}
+                          </div>
                         )}
                       </div>
-                      {workout.exercises && (
-                        <div className="mt-2 text-xs text-gray-500">
-                          {workout.exercises.slice(0, 2).join(', ')}
-                          {workout.exercises.length > 2 && ` +${workout.exercises.length - 2}`}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  
-                  {getWorkoutsForDate(selectedDate).length === 0 && (
-                    <div className="text-center py-6 text-gray-500">
-                      <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                      <p>Aucune séance planifiée</p>
-                    </div>
-                  )}
+                    ));
+                  })()}
                 </div>
-
                 <button
                   onClick={() => router.push('/workouts/new')}
                   className="w-full mt-4 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
