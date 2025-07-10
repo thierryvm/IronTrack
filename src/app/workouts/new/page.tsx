@@ -17,6 +17,7 @@ export default function NewWorkoutPage() {
   const [mascotMsg, setMascotMsg] = useState<string | null>(null)
   const [mascotType, setMascotType] = useState<'motivation' | 'success' | 'warning' | 'info'>('motivation')
   const [showMascot, setShowMascot] = useState(false)
+  const [startTime, setStartTime] = useState('');
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,6 +53,7 @@ export default function NewWorkoutPage() {
         user_id: user.id,
         name,
         scheduled_date: date,
+        start_time: startTime,
         notes,
         duration: duration === '' ? null : Number(duration)
       })
@@ -110,6 +112,16 @@ export default function NewWorkoutPage() {
         <div>
           <label className="block text-gray-700 font-medium mb-2">Date</label>
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Heure prévue</label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={e => setStartTime(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            placeholder="Ex: 18:00"
+          />
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-2">Durée (minutes)</label>

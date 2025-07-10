@@ -54,6 +54,20 @@ interface SharedWorkout {
   };
 }
 
+// Type commun pour les séances du calendrier
+interface CalendarSession {
+  id: string;
+  name: string;
+  type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos';
+  status: 'Planifié' | 'Terminé' | 'Annulé';
+  duration?: number;
+  isShared: boolean;
+  participants: { id: string; name: string; avatarUrl: string }[];
+  time: string;
+  exercises: string[];
+  scheduled_date: string;
+}
+
 // Fonction utilitaire pour formater en DD-MM-YYYY
 function toDDMMYYYY(date: Date | string): string {
   if (typeof date === 'string') {
@@ -74,16 +88,34 @@ function toDDMMYYYY(date: Date | string): string {
   return `${day}-${month}-${year}`;
 }
 
+// Fonction utilitaire pour formater la date en DD-MM-YYYY
+function getDateKey(item: { scheduled_date: string }): string {
+  return toDDMMYYYY(item.scheduled_date);
+}
+
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
   const router = useRouter()
+  const [userProfile, setUserProfile] = useState<{ avatar_url?: string; full_name?: string }>({});
 
   useEffect(() => {
     loadWorkouts()
     loadSharedWorkouts()
+    const fetchProfile = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', user.id)
+        .single();
+      if (profile) setUserProfile(profile);
+    };
+    fetchProfile();
   }, [])
 
   useEffect(() => {
@@ -281,26 +313,60 @@ export default function CalendarPage() {
 
                 {/* Jours du mois */}
                 {days.map((day, index) => {
-                  const sharedForDay = getSharedForDate(day.date)
-                  const isCurrentDay = isToday(day.date)
-                  const isSelectedDay = isSelected(day.date)
-
-                  // Adapter les données pour CalendarDayCell :
-                  // sessions = sharedForDay.map(...) pour correspondre à l'interface attendue
-                  const sessions = sharedForDay.map(sw => ({
-                    id: String(sw.id),
-                    name: sw.name || '',
-                    time: sw.start_time || '',
-                    color: undefined, // ou une couleur selon le type si tu veux
+                  // Récupérer les deux listes pour ce jour
+                  const personal: CalendarSession[] = getWorkoutsForDate(day.date).map(workout => ({
+                    id: `perso-${workout.id}`,
+                    name: workout.name,
+                    type: workout.type,
+                    status: workout.status,
+                    duration: workout.duration,
+                    isShared: false,
+                    participants: [],
+                    time: '',
+                    exercises: workout.exercises || [],
+                    scheduled_date: workout.scheduled_date
+                  }));
+                  const shared: CalendarSession[] = getSharedForDate(day.date).map(sw => ({
+                    id: `shared-${sw.id}`,
+                    name: sw.name,
+                    type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                    status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                    duration: undefined,
+                    isShared: true,
                     participants: [
                       {
                         id: sw.user_id || sw.profiles?.id || '',
                         name: sw.profiles?.full_name || '',
                         avatarUrl: sw.profiles?.avatar_url || '/window.svg',
                       }
-                    ]
+                    ],
+                    time: sw.start_time || '',
+                    exercises: [],
+                    scheduled_date: sw.scheduled_date
                   }));
-
+                  // Fusion/déduplication :
+                  const allMap = new Map<string, CalendarSession>();
+                  // Pour les persos, clé logique
+                  personal.forEach(item => {
+                    const key = item.isShared ? item.id : `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
+                    allMap.set(key, { ...item, participants: [] });
+                  });
+                  // Pour les partagées, clé = id unique
+                  shared.forEach(item => {
+                    const key = item.id;
+                    allMap.set(key, item); // écrase la perso si même id (shared-xxx)
+                  });
+                  const all = Array.from(allMap.values());
+                  // Adapter les données pour CalendarDayCell
+                  const sessions = all.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    time: item.time || '',
+                    color: undefined,
+                    participants: item.isShared ? item.participants || [] : [], // Avatar seulement si partagé
+                  }));
+                  const isCurrentDay = isToday(day.date);
+                  const isSelectedDay = isSelected(day.date);
                   const cell = (
                     <div
                       key={index}
@@ -332,7 +398,7 @@ export default function CalendarPage() {
                   {/* Fusion des séances persos et partagées */}
                   {(() => {
                     // Récupérer les deux listes
-                    const personal = getWorkoutsForDate(selectedDate).map(workout => ({
+                    const personal: CalendarSession[] = getWorkoutsForDate(selectedDate).map(workout => ({
                       id: `perso-${workout.id}`,
                       name: workout.name,
                       type: workout.type,
@@ -342,43 +408,34 @@ export default function CalendarPage() {
                       participants: [],
                       time: '', // à compléter si tu as l'heure
                       exercises: workout.exercises || [],
+                      scheduled_date: workout.scheduled_date // Ajouté pour la clé
                     }));
-                    const shared = getSharedForDate(selectedDate).map(sw => ({
+                    const shared: CalendarSession[] = getSharedForDate(selectedDate).map(sw => ({
                       id: `shared-${sw.id}`,
                       name: sw.name,
-                      type: sw.type,
-                      status: sw.status,
+                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                      status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
                       duration: undefined,
                       isShared: true,
-                      participants: [sw.profiles?.full_name || ''],
+                      participants: [
+                        {
+                          id: sw.user_id || sw.profiles?.id || '',
+                          name: sw.profiles?.full_name || '',
+                          avatarUrl: sw.profiles?.avatar_url || '/window.svg',
+                        }
+                      ],
                       time: sw.start_time || '',
                       exercises: [],
+                      scheduled_date: sw.scheduled_date // Ajouté pour la clé
                     }));
-                    // Déduplication : la version partagée écrase la perso si doublon (clé = nom|type|date|heure)
-                    const allMap = new Map();
-                    // Ajout d'un helper pour extraire la date (DD-MM-YYYY)
-                    function getDateKey(item: any) {
-                      // On utilise toDDMMYYYY déjà défini plus haut
-                      return toDDMMYYYY(item.scheduled_date);
-                    }
-                    // D'abord, on ajoute toutes les persos
+                    // Fusion/déduplication : la partagée écrase la perso (clé logique)
+                    const allMap = new Map<string, typeof personal[0]>();
                     personal.forEach(item => {
-                      const name = (item.name || '').trim();
-                      const type = (item.type || '').trim();
-                      const dateKey = getDateKey(item);
-                      const time = (item.time || '').trim();
-                      const key = `${name}|${type}|${dateKey}|${time}`;
-                      console.log('[DEBUG] Clé séance perso:', key, item);
-                      allMap.set(key, item);
+                      const key = `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
+                      allMap.set(key, { ...item, participants: [] }); // jamais d'avatar pour perso
                     });
-                    // Ensuite, on écrase avec les partagées
                     shared.forEach(item => {
-                      const name = (item.name || '').trim();
-                      const type = (item.type || '').trim();
-                      const dateKey = getDateKey(item);
-                      const time = (item.time || '').trim();
-                      const key = `${name}|${type}|${dateKey}|${time}`;
-                      console.log('[DEBUG] Clé séance partagée:', key, item);
+                      const key = `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
                       allMap.set(key, item); // écrase la perso si même clé
                     });
                     const all = Array.from(allMap.values()).sort((a, b) => {
@@ -419,7 +476,7 @@ export default function CalendarPage() {
                             </span>
                           )}
                           {item.participants && item.participants.length > 0 && item.participants[0] && (
-                            <span className="ml-2 text-xs text-gray-500">avec {item.participants.join(', ')}</span>
+                            <span className="ml-2 text-xs text-gray-500">avec {item.participants.map(p => p.name).join(', ')}</span>
                           )}
                         </div>
                         {item.exercises && item.exercises.length > 0 && (

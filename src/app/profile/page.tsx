@@ -22,9 +22,7 @@ import {
   Cat,
   Bot,
   Star,
-  Flame,
-  Award,
-  Info
+  Award
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -200,7 +198,6 @@ export default function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [modalBadge, setModalBadge] = useState<any>(null);
   const [achievedGoals, setAchievedGoals] = useState<any[]>([]);
 
   useEffect(() => {
