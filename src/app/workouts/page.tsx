@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Plus, Eye, Edit } from 'lucide-react'
+import { Plus, Eye, Edit, X as LucideX } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 interface Workout {
@@ -90,6 +90,18 @@ export default function WorkoutsPage() {
                       <span className="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800">
                         {new Date(workout.scheduled_date).toLocaleDateString('fr-FR')}
                       </span>
+                      {/* Badge statut */}
+                      {workout.status === 'Réalisé' && (
+                        <span className="ml-2 px-2 py-1 text-xs font-semibold rounded bg-green-500 text-white flex items-center">✅ Réalisé</span>
+                      )}
+                      {workout.status === 'Planifié' && (
+                        <span className="ml-2 px-2 py-1 text-xs font-semibold rounded bg-blue-500 text-white flex items-center">⏳ Planifiée</span>
+                      )}
+                      {workout.status === 'Annulé' && (
+                        <span className="ml-2 px-2 py-1 text-xs font-semibold rounded bg-red-500 text-white flex items-center">
+                          <LucideX className="h-4 w-4 mr-1 text-white" /> Annulée
+                        </span>
+                      )}
                     </div>
                     <div className="text-sm text-gray-600">{workout.notes}</div>
                   </div>
@@ -108,7 +120,8 @@ export default function WorkoutsPage() {
                     >
                       <Edit className="h-5 w-5" />
                     </Link>
-                    {workout.status !== 'Réalisé' && (
+                    {/* Bouton marquer comme réalisé uniquement si pas déjà réalisé ou annulé */}
+                    {workout.status !== 'Réalisé' && workout.status !== 'Annulé' && (
                       <button
                         onClick={() => markAsDone(workout.id)}
                         className="p-2 text-white bg-green-500 hover:bg-green-600 rounded-lg font-semibold text-xs transition-colors"

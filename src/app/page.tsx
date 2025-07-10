@@ -182,7 +182,7 @@ export default function HomePage() {
         .eq('user_id', user.id)
         .eq('status', 'Réalisé');
       // Récupérer toutes les performances
-      const { data: perfLogs, error: perfError } = await supabase
+      const { data: perfLogs } = await supabase
         .from('performance_logs')
         .select('weight, reps, set_number, performed_at')
         .eq('user_id', user.id);
@@ -365,12 +365,38 @@ export default function HomePage() {
     setTimeout(()=>setShowMascot(false), 4000);
   }
 
+  // 1. Ajout de skeletons pendant le loading
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement de ton dashboard...</p>
+        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Skeleton stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] animate-pulse">
+                <div className="h-4 w-1/3 bg-gray-200 rounded mb-2" />
+                <div className="h-8 w-2/3 bg-gray-200 rounded" />
+              </div>
+            ))}
+          </div>
+          {/* Skeleton quickActions */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-xl shadow-md p-6 min-h-[220px] animate-pulse">
+                <div className="h-6 w-1/4 bg-gray-200 rounded mb-6" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="rounded-xl p-6 shadow-md bg-gray-100 min-h-[90px]" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-6 w-full">
+              <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            </div>
+          </div>
+          {/* Skeleton barre de progression */}
+          <div className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 min-h-[120px] animate-pulse" />
         </div>
       </div>
     )
@@ -411,7 +437,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow min-h-[110px] min-w-[180px]"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -453,7 +479,7 @@ export default function HomePage() {
                       key={action.name}
                       href={action.href || '#'}
                       onClick={action.onClick}
-                      className={`flex flex-col justify-between rounded-xl p-6 shadow-md text-white dark:text-gray-100 font-semibold text-lg transition-all duration-200 bg-gradient-to-r ${bg} hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500`}
+                      className={`flex flex-col justify-between rounded-xl p-6 shadow-md text-white dark:text-gray-100 font-semibold text-lg transition-all duration-200 bg-gradient-to-r ${bg} hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 min-h-[90px] min-w-[180px]`}
                     >
                       <div className="flex items-center mb-2">
                         <Icon className="h-7 w-7 mr-3" />
@@ -472,7 +498,7 @@ export default function HomePage() {
             {/* Temps de repos rapide (réduit) */}
             <QuickTimer />
             {/* Exercices récents */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 w-full">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 w-full min-h-[180px]">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Exercices récents</h2>
               <div className="space-y-3">
                 {recentExercises.map((exercise: ExerciseItem, index: number) => (
@@ -506,7 +532,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white"
+          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[120px]"
         >
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Objectif de la semaine</h2>

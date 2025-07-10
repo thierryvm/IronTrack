@@ -7,4 +7,7 @@ export interface UserStats {
   favoriteExercise: string;
   totalTime: number;
   achievements: number;
+  totalWorkoutsDone: number;
+  totalWorkoutsPlanned: number;
+  totalWorkoutsCancelled: number;
 } 

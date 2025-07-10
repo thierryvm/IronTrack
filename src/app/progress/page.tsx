@@ -416,9 +416,27 @@ export default function ProgressPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement de tes progrès...</p>
+        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Skeleton header */}
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8 rounded-xl mb-8 animate-pulse min-h-[80px]" />
+          {/* Skeleton stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] animate-pulse" />
+            ))}
+          </div>
+          {/* Skeleton graphiques */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div className="bg-white rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+            <div className="bg-white rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+          </div>
+          {/* Skeleton progression par exercice */}
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+          {/* Skeleton objectifs et badges */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+          </div>
         </div>
       </div>
     )
@@ -443,7 +461,7 @@ export default function ProgressPage() {
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Poids moyen</p>
@@ -455,7 +473,7 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total soulevé</p>
@@ -468,7 +486,7 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Séances</p>
@@ -480,7 +498,7 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Amélioration</p>
@@ -498,7 +516,7 @@ export default function ProgressPage() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-md p-6"
+            className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Progression du poids</h2>
@@ -552,7 +570,7 @@ export default function ProgressPage() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-md p-6"
+            className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <h2 className="text-xl font-bold text-gray-900 mb-6">Répartition par groupe musculaire</h2>
             
@@ -585,7 +603,7 @@ export default function ProgressPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-md p-6"
+          className="bg-white rounded-xl shadow-md p-6 min-h-[180px]"
         >
           <h2 className="text-xl font-bold text-gray-900 mb-6">Progression par exercice</h2>
           
@@ -635,7 +653,7 @@ export default function ProgressPage() {
           className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8"
         >
           {/* Objectifs */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
                 <Target className="h-6 w-6 text-orange-500" />
@@ -711,7 +729,7 @@ export default function ProgressPage() {
           </div>
 
           {/* Badges */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
               <Award className="h-6 w-6 text-yellow-500" />
               <span>Badges</span>
