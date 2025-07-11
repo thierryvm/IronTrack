@@ -2,13 +2,17 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Dumbbell, Save, ArrowLeft, Trophy, Pencil, Check, X, Trash2 } from 'lucide-react'
+import { Dumbbell, Save, ArrowLeft, Trophy, Pencil, Check, X, Trash2, Clock, Target } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 const muscleGroups = [
   'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 'Jambes', 'Abdominaux', 'Fessiers'
 ]
 const difficulties = ['Débutant', 'Intermédiaire', 'Avancé']
+const exerciseTypes = [
+  { value: 'Musculation', label: 'Musculation', icon: Dumbbell, color: 'text-orange-500' },
+  { value: 'Cardio', label: 'Cardio', icon: Clock, color: 'text-blue-500' }
+]
 
 type PerformanceLog = {
   id: number;
@@ -25,14 +29,30 @@ export default function EditExercisePage() {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
   const [muscle, setMuscle] = useState(muscleGroups[0])
+  const [exerciseType, setExerciseType] = useState('Musculation')
   const [equipmentId, setEquipmentId] = useState<number | null>(null)
   const [equipmentList, setEquipmentList] = useState<{id: number, name: string}[]>([])
   const [difficulty, setDifficulty] = useState(difficulties[0])
   const [newEquipment, setNewEquipment] = useState('')
   const [newEquipmentDescription, setNewEquipmentDescription] = useState('')
   const [addingEquipment, setAddingEquipment] = useState(false)
+  
+  // Champs pour Musculation
   const [perfWeight, setPerfWeight] = useState('')
   const [perfReps, setPerfReps] = useState('')
+  const [sets, setSets] = useState(3)
+  
+  // Champs pour Cardio
+  const [distance, setDistance] = useState('')
+  const [distanceUnit, setDistanceUnit] = useState('km')
+  const [speed, setSpeed] = useState('')
+  const [speedUnit, setSpeedUnit] = useState('km/h')
+  const [calories, setCalories] = useState('')
+  
+  // Champs communs
+  const [minutes, setMinutes] = useState('')
+  const [seconds, setSeconds] = useState('')
+  
   const [perfLoading, setPerfLoading] = useState(false)
   const [perfSuccess, setPerfSuccess] = useState('')
   const [perfHistory, setPerfHistory] = useState<PerformanceLog[]>([])
@@ -41,7 +61,6 @@ export default function EditExercisePage() {
   const [editWeight, setEditWeight] = useState('')
   const [editReps, setEditReps] = useState('')
   const [perfError, setPerfError] = useState('')
-  const [sets, setSets] = useState(3)
 
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -64,9 +83,23 @@ export default function EditExercisePage() {
       if (!error && data) {
         setName(data.name || '')
         setMuscle(data.muscle_group || muscleGroups[0])
+        setExerciseType(data.exercise_type || 'Musculation')
         setEquipmentId(data.equipment_id || null)
         setDifficulty(data.difficulty || difficulties[0])
         setSets(data.sets || 3)
+        
+        // Charger les champs cardio si applicable
+        if (data.exercise_type === 'Cardio') {
+          setDistance(data.distance?.toString() || '')
+          setDistanceUnit(data.distance_unit || 'km')
+          setSpeed(data.speed?.toString() || '')
+          setSpeedUnit(data.speed_unit || 'km/h')
+          setCalories(data.calories?.toString() || '')
+        }
+        
+        // Charger les champs de durée
+        setMinutes(data.duration_minutes?.toString() || '')
+        setSeconds(data.duration_seconds?.toString() || '')
       }
       setLoading(false)
     }
@@ -93,15 +126,31 @@ export default function EditExercisePage() {
     e.preventDefault()
     setSaving(true)
     const supabase = createClient()
+    
+    // Préparer les données selon le type d'exercice
+    const updateData: any = {
+      name,
+      muscle_group: muscle,
+      exercise_type: exerciseType,
+      equipment_id: equipmentId,
+      difficulty,
+      sets: exerciseType === 'Musculation' ? sets : null,
+      duration_minutes: minutes ? Number(minutes) : null,
+      duration_seconds: seconds ? Number(seconds) : null
+    }
+    
+    // Ajouter les champs spécifiques au cardio
+    if (exerciseType === 'Cardio') {
+      updateData.distance = distance ? Number(distance) : null
+      updateData.distance_unit = distanceUnit
+      updateData.speed = speed ? Number(speed) : null
+      updateData.speed_unit = speedUnit
+      updateData.calories = calories ? Number(calories) : null
+    }
+    
     const { error } = await supabase
       .from('exercises')
-      .update({
-        name,
-        muscle_group: muscle,
-        equipment_id: equipmentId,
-        difficulty,
-        sets
-      })
+      .update(updateData)
       .eq('id', id)
     setSaving(false)
     if (error) {
@@ -228,16 +277,43 @@ export default function EditExercisePage() {
           <Dumbbell className="h-8 w-8 text-orange-500" />
           <h1 className="text-2xl font-bold text-gray-900">Modifier l&apos;exercice</h1>
         </div>
+        
         <div>
           <label className="block text-gray-700 font-medium mb-2">Nom de l&apos;exercice</label>
           <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
+        
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Type d&apos;exercice</label>
+          <div className="grid grid-cols-2 gap-3">
+            {exerciseTypes.map(type => {
+              const Icon = type.icon
+              return (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => setExerciseType(type.value)}
+                  className={`flex items-center justify-center space-x-2 p-4 rounded-lg border-2 transition-all ${
+                    exerciseType === type.value
+                      ? 'border-orange-500 bg-orange-50 text-orange-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                  }`}
+                >
+                  <Icon className={`h-5 w-5 ${type.color}`} />
+                  <span className="font-medium">{type.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+        
         <div>
           <label className="block text-gray-700 font-medium mb-2">Groupe musculaire</label>
           <select value={muscle} onChange={e => setMuscle(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
             {muscleGroups.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
         </div>
+        
         <div>
           <label className="block text-gray-700 font-medium mb-2">Équipement</label>
           <select value={equipmentId ?? ''} onChange={e => setEquipmentId(Number(e.target.value))} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
@@ -269,105 +345,202 @@ export default function EditExercisePage() {
             </button>
           </div>
         </div>
+        
         <div>
           <label className="block text-gray-700 font-medium mb-2">Difficulté</label>
           <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
             {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Nombre de séries</label>
-          <input
-            type="number"
-            min="1"
-            step="1"
-            value={sets}
-            onChange={e => setSets(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-        {/* SECTION PERFORMANCES */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            <span className="font-semibold text-gray-800">Performances</span>
-          </div>
-          {lastPerf ? (
-            <div className="mb-2 text-sm text-gray-700">
-              Dernière performance : <span className="font-bold">{lastPerf.weight === 0 ? 'Poids du corps' : lastPerf.weight + ' kg'} x {lastPerf.reps} reps x {sets} séries</span> <span className="text-gray-400">({new Date(lastPerf.performed_at).toLocaleDateString()})</span>
-            </div>
-          ) : (
-            <div className="mb-2 text-sm text-gray-500">Aucune performance enregistrée.</div>
-          )}
-          <div className="flex flex-col sm:flex-row gap-2 items-center mb-2">
-            <input
-              type="number"
-              min="0"
-              step="0.5"
-              value={perfWeight}
-              onChange={e => setPerfWeight(e.target.value)}
-              placeholder="Poids (kg)"
-              className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
-            />
+        
+        {/* Champs spécifiques à la Musculation */}
+        {exerciseType === 'Musculation' && (
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Nombre de séries</label>
             <input
               type="number"
               min="1"
               step="1"
-              value={perfReps}
-              onChange={e => setPerfReps(e.target.value)}
-              placeholder="Répétitions"
-              className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
+              value={sets}
+              onChange={e => setSets(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
             />
-            <button type="button" onClick={handleAddPerf} disabled={perfLoading} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-              <Save className="h-4 w-4" />
-              {perfLoading ? 'Ajout...' : 'Ajouter'}
-            </button>
           </div>
-          {perfSuccess && <div className="text-green-600 text-sm mb-2">{perfSuccess}</div>}
-          <div className="mt-2">
-            <div className="text-xs text-gray-500 mb-1">Historique :</div>
-            <ul className="max-h-32 overflow-y-auto text-sm divide-y divide-gray-200">
-              {perfHistory.length === 0 && <li className="text-gray-400">Aucune performance enregistrée.</li>}
-              {perfHistory.map((perf) => (
-                <li key={perf.id} className="mb-1 flex items-center gap-2">
-                  {editPerfId === perf.id ? (
-                    <>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        value={editWeight}
-                        onChange={e => setEditWeight(e.target.value)}
-                        className="w-20 border rounded px-2 py-1"
-                      />
-                      <span>kg x</span>
-                      <input
-                        type="number"
-                        min="1"
-                        step="1"
-                        value={editReps}
-                        onChange={e => setEditReps(e.target.value)}
-                        className="w-14 border rounded px-2 py-1"
-                      />
-                      <span>reps x {sets} séries</span>
-                      <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
-                      <button onClick={handleSaveEditPerf} className="text-green-600 ml-2" title="Valider"><Check className="h-4 w-4" /></button>
-                      <button onClick={handleCancelEdit} className="text-gray-400 ml-1" title="Annuler"><X className="h-4 w-4" /></button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-semibold">{perf.weight === 0 ? 'Poids du corps' : perf.weight + ' kg'} x {perf.reps} reps x {sets} séries</span>
-                      <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
-                      <button onClick={() => handleEditPerf(perf)} className="text-yellow-500 ml-2" title="Modifier"><Pencil className="h-4 w-4" /></button>
-                      <button onClick={() => handleDeletePerf(perf.id)} className="text-red-500 ml-1" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-            {perfError && <div className="text-red-500 text-xs mt-1">{perfError}</div>}
+        )}
+        
+        {/* Champs spécifiques au Cardio */}
+        {exerciseType === 'Cardio' && (
+          <>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Distance (optionnel)</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={distance}
+                  onChange={e => setDistance(e.target.value)}
+                  placeholder="Distance"
+                  className="w-2/3 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                />
+                <select
+                  value={distanceUnit}
+                  onChange={e => setDistanceUnit(e.target.value)}
+                  className="w-1/3 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="km">km</option>
+                  <option value="m">m</option>
+                  <option value="miles">miles</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Vitesse (optionnel)</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={speed}
+                  onChange={e => setSpeed(e.target.value)}
+                  placeholder="Vitesse"
+                  className="w-2/3 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                />
+                <select
+                  value={speedUnit}
+                  onChange={e => setSpeedUnit(e.target.value)}
+                  className="w-1/3 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="km/h">km/h</option>
+                  <option value="m/s">m/s</option>
+                  <option value="mph">mph</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Calories (optionnel)</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={calories}
+                onChange={e => setCalories(e.target.value)}
+                placeholder="Calories"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+          </>
+        )}
+        
+        {/* Champs communs */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Temps d&apos;exécution (optionnel)</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              min="0"
+              value={minutes}
+              onChange={e => setMinutes(e.target.value)}
+              placeholder="Minutes"
+              className="w-1/2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            />
+            <input
+              type="number"
+              min="0"
+              max="59"
+              value={seconds}
+              onChange={e => setSeconds(e.target.value)}
+              placeholder="Secondes"
+              className="w-1/2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            />
           </div>
         </div>
+        
+        {/* SECTION PERFORMANCES - Uniquement pour Musculation */}
+        {exerciseType === 'Musculation' && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              <span className="font-semibold text-gray-800">Performances</span>
+            </div>
+            {lastPerf ? (
+              <div className="mb-2 text-sm text-gray-700">
+                Dernière performance : <span className="font-bold">{lastPerf.weight === 0 ? 'Poids du corps' : lastPerf.weight + ' kg'} x {lastPerf.reps} reps x {sets} séries</span> <span className="text-gray-400">({new Date(lastPerf.performed_at).toLocaleDateString()})</span>
+              </div>
+            ) : (
+              <div className="mb-2 text-sm text-gray-500">Aucune performance enregistrée.</div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-2 items-center mb-2">
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                value={perfWeight}
+                onChange={e => setPerfWeight(e.target.value)}
+                placeholder="Poids (kg)"
+                className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={perfReps}
+                onChange={e => setPerfReps(e.target.value)}
+                placeholder="Répétitions"
+                className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <button type="button" onClick={handleAddPerf} disabled={perfLoading} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                <Save className="h-4 w-4" />
+                {perfLoading ? 'Ajout...' : 'Ajouter'}
+              </button>
+            </div>
+            {perfSuccess && <div className="text-green-600 text-sm mb-2">{perfSuccess}</div>}
+            <div className="mt-2">
+              <div className="text-xs text-gray-500 mb-1">Historique :</div>
+              <ul className="max-h-32 overflow-y-auto text-sm divide-y divide-gray-200">
+                {perfHistory.length === 0 && <li className="text-gray-400">Aucune performance enregistrée.</li>}
+                {perfHistory.map((perf) => (
+                  <li key={perf.id} className="mb-1 flex items-center gap-2">
+                    {editPerfId === perf.id ? (
+                      <>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.5"
+                          value={editWeight}
+                          onChange={e => setEditWeight(e.target.value)}
+                          className="w-20 border rounded px-2 py-1"
+                        />
+                        <span>kg x</span>
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={editReps}
+                          onChange={e => setEditReps(e.target.value)}
+                          className="w-14 border rounded px-2 py-1"
+                        />
+                        <span>reps x {sets} séries</span>
+                        <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
+                        <button onClick={handleSaveEditPerf} className="text-green-600 ml-2" title="Valider"><Check className="h-4 w-4" /></button>
+                        <button onClick={handleCancelEdit} className="text-gray-400 ml-1" title="Annuler"><X className="h-4 w-4" /></button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold">{perf.weight === 0 ? 'Poids du corps' : perf.weight + ' kg'} x {perf.reps} reps x {sets} séries</span>
+                        <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
+                        <button onClick={() => handleEditPerf(perf)} className="text-yellow-500 ml-2" title="Modifier"><Pencil className="h-4 w-4" /></button>
+                        <button onClick={() => handleDeletePerf(perf.id)} className="text-red-500 ml-1" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {perfError && <div className="text-red-500 text-xs mt-1">{perfError}</div>}
+            </div>
+          </div>
+        )}
+        
         <button type="submit" disabled={saving} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
           <Save className="h-5 w-5 mr-2" />
           <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
