@@ -10,7 +10,17 @@ type Exercise = {
   muscle_group: string;
   equipment: string;
   difficulty: string;
-  sets: number;
+  sets?: number | null;
+  exercise_type?: string;
+  distance?: number | null;
+  distance_unit?: string | null;
+  speed?: number | null;
+  speed_unit?: string | null;
+  calories?: number | null;
+  duration_minutes?: number | null;
+  duration_seconds?: number | null;
+  reps?: number | null; // Pour compatibilité éventuelle
+  weight?: number | null; // Pour compatibilité éventuelle
 };
 type PerformanceLog = {
   weight: number;
@@ -31,7 +41,7 @@ export default function ExerciseDetailPage() {
       const supabase = (await import('@/lib/supabase')).createClient()
       const { data, error } = await supabase
         .from('exercises')
-        .select('id, name, muscle_group, equipment_id, difficulty, sets')
+        .select('id, name, muscle_group, equipment_id, difficulty, sets, exercise_type, distance, distance_unit, speed, speed_unit, calories, duration_minutes, duration_seconds')
         .eq('id', id)
         .single()
       if (!error && data) {
@@ -85,6 +95,95 @@ export default function ExerciseDetailPage() {
           <Dumbbell className="h-8 w-8 text-orange-500" />
           <h1 className="text-2xl font-bold text-gray-900">{exercise ? exercise.name : 'Exercice'}</h1>
         </div>
+        {/* Résumé dynamique façon objectif */}
+        {exercise && (
+          <>
+            <div className="mb-2 text-lg font-semibold text-gray-700">
+              {(() => {
+                // Phrase muscu
+                if (exercise.exercise_type === 'Musculation' || !exercise.exercise_type) {
+                  let phrase = '';
+                  if (exercise.sets && exercise.sets > 1) phrase += `${exercise.sets} séries de `;
+                  if (exercise.reps) phrase += `${exercise.reps} reps`;
+                  if (exercise.weight) phrase += (phrase ? ' à ' : '') + `${exercise.weight} kg`;
+                  // Durée
+                  if (exercise.duration_minutes || exercise.duration_seconds) {
+                    let d = '';
+                    if (exercise.duration_minutes) d += `${exercise.duration_minutes} min`;
+                    if (exercise.duration_seconds) d += (d ? ' ' : '') + `${exercise.duration_seconds} sec`;
+                    phrase += (phrase ? ' en ' : '') + d;
+                  }
+                  return phrase || 'Exercice de musculation';
+                }
+                // Phrase cardio
+                if (exercise.exercise_type === 'Cardio') {
+                  let phrase = '';
+                  if (exercise.distance) phrase += `${exercise.distance} ${exercise.distance_unit || 'km'}`;
+                  if (exercise.duration_minutes || exercise.duration_seconds) {
+                    let d = '';
+                    if (exercise.duration_minutes) d += `${exercise.duration_minutes} min`;
+                    if (exercise.duration_seconds) d += (d ? ' ' : '') + `${exercise.duration_seconds} sec`;
+                    phrase += (phrase ? ' en ' : '') + d;
+                  }
+                  if (exercise.speed) phrase += (phrase ? ' à ' : '') + `${exercise.speed} ${exercise.speed_unit || 'km/h'}`;
+                  if (exercise.calories) phrase += (phrase ? ', ' : '') + `${exercise.calories} kcal`;
+                  return phrase || 'Exercice cardio';
+                }
+                return '';
+              })()}
+            </div>
+            {/* Punchline motivante */}
+            <div className="mb-2 text-sm italic text-orange-600">
+              {(() => {
+                if (!exercise) return null;
+                // Punchlines par groupe musculaire ou type
+                const muscuPunchlines: Record<string, string[]> = {
+                  'Pectoraux': ["Fais gonfler le torse, c'est l'heure du show !", "Un développé couché de légende commence ici."],
+                  'Dos': ["Un dos large, c'est la cape du super-héros !", "Chaque traction te rapproche du gorille intérieur."],
+                  'Épaules': ["Des épaules en béton, pour porter le monde !"],
+                  'Biceps': ["Plus gros que tes problèmes !"],
+                  'Triceps': ["Pour des bras qui font peur aux t-shirts !"],
+                  'Jambes': ["On ne saute jamais le leg day !", "Des jambes d'acier, c'est la base."],
+                  'Abdominaux': ["Le six-pack ne se fait pas tout seul !"],
+                  'Fessiers': ["Pour un booty qui claque !"],
+                };
+                const cardioPunchlines = [
+                  "Le cardio, c'est la clé pour tenir la distance !",
+                  "Plus vite, plus loin, plus fort !",
+                  "Ton cœur te dira merci !"
+                ];
+                // Si muscu
+                if (exercise.exercise_type === 'Musculation' || !exercise.exercise_type) {
+                  const group = exercise.muscle_group || '';
+                  const punchs = muscuPunchlines[group];
+                  if (punchs) {
+                    return punchs[Math.floor(Math.random() * punchs.length)];
+                  }
+                  return "Chaque rep te rapproche de la légende !";
+                }
+                // Si cardio
+                if (exercise.exercise_type === 'Cardio') {
+                  return cardioPunchlines[Math.floor(Math.random() * cardioPunchlines.length)];
+                }
+                return null;
+              })()}
+            </div>
+          </>
+        )}
+        {/* Badges infos */}
+        {exercise && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {exercise.muscle_group && (
+              <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-medium">{exercise.muscle_group}</span>
+            )}
+            {exercise.difficulty && (
+              <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">{exercise.difficulty}</span>
+            )}
+            {exercise.equipment && (
+              <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium">{exercise.equipment}</span>
+            )}
+          </div>
+        )}
         <div className="space-y-2">
           <div><span className="font-medium">Groupe musculaire :</span> {exercise ? exercise.muscle_group : ''}</div>
           <div><span className="font-medium">Équipement :</span> {exercise ? exercise.equipment : ''}</div>
