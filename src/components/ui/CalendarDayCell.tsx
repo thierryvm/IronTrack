@@ -89,38 +89,49 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
       <div className="h-8 w-full" />
       {/* Popover pour afficher toutes les séances du jour */}
       {showPopover && (
-        <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-72 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">
+        <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">
           <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
             <span className="font-semibold text-sm">Séances du {date}</span>
             <button className="text-gray-400 hover:text-gray-700" onClick={() => setShowPopover(false)}>✕</button>
           </div>
           <ul className="space-y-2">
             {sessions.map((session) => (
-              <li key={session.id} className="flex items-center gap-2">
-                <div
-                  className="h-5 w-5 rounded-full flex-shrink-0"
-                  style={{ background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)' }}
-                ></div>
-                <span className="truncate text-sm font-medium">{session.name}</span>
-                <span className="text-xs text-gray-500 ml-auto">{session.time}</span>
-                <div className="flex -space-x-2 ml-2">
-                  {(session.participants || []).slice(0, MAX_AVATARS_DISPLAY).map((p, idx) => {
-                    if (!p) return null;
-                    const avatarKey = `${String(p.id ?? idx).trim()}|${(p.name || '').trim()}|${(p.avatarUrl || '').trim()}`;
-                    return (
-                      <Avatar
-                        key={avatarKey}
-                        src={p.avatarUrl}
-                        name={p.name}
-                        size={20}
-                        className="w-5 h-5 border-2 border-white shadow-sm"
-                      />
-                    );
-                  })}
-                  {session.participants && session.participants.length > MAX_AVATARS_DISPLAY && (
-                    <span className="w-5 h-5 flex items-center justify-center bg-orange-200 text-orange-700 text-xs rounded-full border-2 border-white shadow-sm">+{session.participants.length - MAX_AVATARS_DISPLAY}</span>
+              <li key={session.id} className="flex flex-col gap-1 p-2 border-b last:border-b-0">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="h-5 w-5 rounded-full flex-shrink-0"
+                    style={{ background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)' }}
+                  ></div>
+                  <span className="truncate text-sm font-medium">{session.name}</span>
+                  {session.time && (
+                    <span className="text-xs text-gray-500 ml-2">{session.time}</span>
                   )}
                 </div>
+                <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
+                  {session.type && (
+                    <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-semibold">{session.type}</span>
+                  )}
+                  {session.status && (
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">{session.status}</span>
+                  )}
+                  {session.duration && (
+                    <span className="flex items-center gap-1">
+                      <span>⏱</span>
+                      <span>{session.duration} min</span>
+                    </span>
+                  )}
+                </div>
+                {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Avatar
+                      src={session.participants[0].avatarUrl}
+                      name={session.participants[0].name}
+                      size={20}
+                      className="border-2 border-white shadow-sm"
+                    />
+                    <span className="text-xs text-gray-500">Partagée par {session.participants[0].name}</span>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -138,24 +149,31 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             {mobileSessionDetail.time && (
               <div className="text-sm text-gray-600 mb-2">Heure : {mobileSessionDetail.time}</div>
             )}
-            <div className="flex -space-x-2 mt-2">
-              {(mobileSessionDetail.participants || []).slice(0, MAX_AVATARS_DISPLAY).map((p, idx) => {
-                if (!p) return null;
-                const avatarKey = `${String(p.id ?? idx).trim()}|${(p.name || '').trim()}|${(p.avatarUrl || '').trim()}`;
-                return (
-                  <Avatar
-                    key={avatarKey}
-                    src={p.avatarUrl}
-                    name={p.name}
-                    size={28}
-                    className="border-2 border-white shadow-sm"
-                  />
-                );
-              })}
-              {mobileSessionDetail.participants && mobileSessionDetail.participants.length > MAX_AVATARS_DISPLAY && (
-                <span className="w-7 h-7 flex items-center justify-center bg-orange-200 text-orange-700 text-xs rounded-full border-2 border-white shadow-sm">+{mobileSessionDetail.participants.length - MAX_AVATARS_DISPLAY}</span>
+            <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+              {mobileSessionDetail.type && (
+                <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-semibold">{mobileSessionDetail.type}</span>
+              )}
+              {mobileSessionDetail.status && (
+                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">{mobileSessionDetail.status}</span>
+              )}
+              {mobileSessionDetail.duration && (
+                <span className="flex items-center gap-1">
+                  <span>⏱</span>
+                  <span>{mobileSessionDetail.duration} min</span>
+                </span>
               )}
             </div>
+            {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
+              <div className="flex items-center gap-2 mt-2">
+                <Avatar
+                  src={mobileSessionDetail.participants[0].avatarUrl}
+                  name={mobileSessionDetail.participants[0].name}
+                  size={24}
+                  className="border-2 border-white shadow-sm"
+                />
+                <span className="text-xs text-gray-500">Partagée par {mobileSessionDetail.participants[0].name}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

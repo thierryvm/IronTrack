@@ -13,25 +13,38 @@ interface Workout {
   status?: string
 }
 
+const PAGE_SIZE = 10;
+
 export default function WorkoutsPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    loadWorkouts()
-  }, [])
+    loadWorkouts();
+  }, [page]);
 
   const loadWorkouts = async () => {
-    setLoading(true)
-    const supabase = createClient()
+    setLoading(true);
+    const supabase = createClient();
+    // Récupérer le nombre total de séances pour la pagination
+    const { count } = await supabase
+      .from('workouts')
+      .select('*', { count: 'exact', head: true });
+    setTotalCount(count || 0);
+    // Charger uniquement les séances de la page courante
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     const { data, error } = await supabase
       .from('workouts')
       .select('*')
       .order('scheduled_date', { ascending: false })
+      .range(from, to);
     if (!error && data) {
-      setWorkouts(data)
+      setWorkouts(data);
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   // Fonction pour marquer une séance comme réalisée
@@ -72,7 +85,7 @@ export default function WorkoutsPage() {
           >
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">
-                {workouts.length} séance{workouts.length > 1 ? 's' : ''} trouvée{workouts.length > 1 ? 's' : ''}
+                {totalCount} séance{totalCount > 1 ? 's' : ''} trouvée{totalCount > 1 ? 's' : ''}
               </h2>
             </div>
             <div className="divide-y divide-gray-200">
@@ -139,6 +152,24 @@ export default function WorkoutsPage() {
             </div>
           </motion.div>
         )}
+        {/* Pagination déplacée ici, sous le bloc principal */}
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className={`px-4 py-2 rounded-lg font-semibold ${page === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+          >
+            Précédent
+          </button>
+          <span className="font-semibold">Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}</span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
+            className={`px-4 py-2 rounded-lg font-semibold ${page >= Math.ceil(totalCount / PAGE_SIZE) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+          >
+            Suivant
+          </button>
+        </div>
       </div>
     </div>
   )
