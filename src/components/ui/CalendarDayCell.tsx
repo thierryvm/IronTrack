@@ -12,6 +12,10 @@ interface Session {
     name: string;
     avatarUrl: string;
   }>;
+  scheduled_date?: string; // Ajouté pour la date de la séance
+  type?: string; // Ajouté pour le type de séance
+  status?: string; // Ajouté pour le statut de la séance
+  duration?: number; // Ajouté pour la durée de la séance
 }
 
 interface CalendarDayCellProps {
@@ -21,6 +25,15 @@ interface CalendarDayCellProps {
 
 const MAX_SESSIONS_DISPLAY = 2;
 const MAX_AVATARS_DISPLAY = 3;
+
+// Ajoute une fonction utilitaire pour formater la date et l'heure
+function formatDateTime(dateStr: string, timeStr: string) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr + (timeStr ? 'T' + timeStr : ''));
+  const d = date.toLocaleDateString('fr-FR');
+  const t = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return `${d} - ${t}`;
+}
 
 const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
   const [showPopover, setShowPopover] = useState(false);
@@ -58,7 +71,13 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
               }}
-              title={!isMobile ? `${session.name}${session.time ? ' à ' + session.time : ''}` : undefined}
+              title={
+                !isMobile && session.participants && session.participants.length > 0
+                  ? `Séance partagée : ${session.name}\n${formatDateTime(session.scheduled_date || '', session.time || '')}\nPartagée par : ${session.participants[0].name} ${session.participants[0].avatarUrl ? '[Avatar]' : ''}`
+                  : !isMobile
+                  ? `${session.name}${session.time ? ' à ' + session.time : ''}`
+                  : undefined
+              }
               onClick={() => {
                 if (isMobile) setMobileSessionDetail(session);
               }}
@@ -72,7 +91,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                   className="mr-1 border-2 border-white shadow-sm bg-white"
                 />
               )}
-              <span className="truncate">{session.name}{session.time && <span className="opacity-80"> à {session.time}</span>}</span>
+              <span className="truncate">{session.name}{session.time && <span className="opacity-80"> à {session.time.slice(0,5)}</span>}</span>
             </div>
           </div>
         ))}
@@ -94,7 +113,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             <span className="font-semibold text-sm">Séances du {date}</span>
             <button className="text-gray-400 hover:text-gray-700" onClick={() => setShowPopover(false)}>✕</button>
           </div>
-          <ul className="space-y-2">
+          <ul>
             {sessions.map((session) => (
               <li key={session.id} className="flex flex-col gap-1 p-2 border-b last:border-b-0">
                 <div className="flex items-center gap-2">
@@ -104,7 +123,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                   ></div>
                   <span className="truncate text-sm font-medium">{session.name}</span>
                   {session.time && (
-                    <span className="text-xs text-gray-500 ml-2">{session.time}</span>
+                    <span className="text-xs text-gray-500 ml-2">{session.time.slice(0,5)}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
@@ -121,16 +140,22 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                     </span>
                   )}
                 </div>
+                {/* Affichage résumé partagé : avatar après le texte */}
                 {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
                   <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-500">Partagée par</span>
                     <Avatar
                       src={session.participants[0].avatarUrl}
                       name={session.participants[0].name}
                       size={20}
                       className="border-2 border-white shadow-sm"
                     />
-                    <span className="text-xs text-gray-500">Partagée par {session.participants[0].name}</span>
+                    <span className="text-xs text-gray-500">{session.participants[0].name}</span>
                   </div>
+                )}
+                {/* Affichage date/heure formatée */}
+                {session.scheduled_date && (
+                  <div className="text-xs text-gray-500 mt-1">{formatDateTime(session.scheduled_date, session.time)}</div>
                 )}
               </li>
             ))}
@@ -140,14 +165,15 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
       {/* Popover mobile pour détail séance */}
       {mobileSessionDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-          <div className="bg-white rounded-xl shadow-lg p-6 max-w-xs w-full relative">
+          <div className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative">
             <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-700" onClick={() => setMobileSessionDetail(null)}>✕</button>
             <div className="flex items-center gap-2 mb-2">
               <div className="h-6 w-6 rounded-full" style={{ background: (mobileSessionDetail.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)') }}></div>
               <span className="font-semibold text-base">{mobileSessionDetail.name || 'Séance'}</span>
             </div>
-            {mobileSessionDetail.time && (
-              <div className="text-sm text-gray-600 mb-2">Heure : {mobileSessionDetail.time}</div>
+            {/* Affichage date/heure formatée */}
+            {mobileSessionDetail.scheduled_date && (
+              <div className="text-sm text-gray-600 mb-2">{formatDateTime(mobileSessionDetail.scheduled_date, mobileSessionDetail.time)}</div>
             )}
             <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
               {mobileSessionDetail.type && (
@@ -163,15 +189,17 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 </span>
               )}
             </div>
+            {/* Affichage résumé partagé : avatar après le texte */}
             {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
               <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs text-gray-500">Partagée par</span>
                 <Avatar
                   src={mobileSessionDetail.participants[0].avatarUrl}
                   name={mobileSessionDetail.participants[0].name}
                   size={24}
                   className="border-2 border-white shadow-sm"
                 />
-                <span className="text-xs text-gray-500">Partagée par {mobileSessionDetail.participants[0].name}</span>
+                <span className="text-xs text-gray-500">{mobileSessionDetail.participants[0].name}</span>
               </div>
             )}
           </div>
