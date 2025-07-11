@@ -29,12 +29,16 @@ const muscleGroups = [
   'Fessiers'
 ]
 
+const PAGE_SIZE = 10;
+
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('Tous')
   const [loading, setLoading] = useState(true)
   const [equipmentList, setEquipmentList] = useState<{id: number, name: string}[]>([])
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     loadExercises()
@@ -45,19 +49,28 @@ export default function ExercisesPage() {
       if (!error && data) setEquipmentList(data)
     }
     fetchEquipment()
-  }, [])
+  }, [page])
 
   const loadExercises = async () => {
     setLoading(true)
     const supabase = createClient()
+    // Récupérer le nombre total d'exercices pour la pagination
+    const { count } = await supabase
+      .from('exercises')
+      .select('*', { count: 'exact', head: true });
+    setTotalCount(count || 0);
+    // Charger uniquement les exercices de la page courante
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     const { data, error } = await supabase
       .from('exercises')
       .select('*')
       .order('created_at', { ascending: false })
+      .range(from, to);
     if (!error && data) {
-      setExercises(data)
+      setExercises(data);
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   const getDifficultyColor = (difficulty: string) => {
@@ -174,7 +187,7 @@ export default function ExercisesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total exercices</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{exercises.length}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</p>
               </div>
               <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
                 <Dumbbell className="h-6 w-6 text-blue-500" />
@@ -309,6 +322,24 @@ export default function ExercisesPage() {
             </div>
           )}
         </motion.div>
+        {/* Pagination */}
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className={`px-4 py-2 rounded-lg font-semibold ${page === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+          >
+            Précédent
+          </button>
+          <span className="font-semibold">Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}</span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
+            className={`px-4 py-2 rounded-lg font-semibold ${page >= Math.ceil(totalCount / PAGE_SIZE) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+          >
+            Suivant
+          </button>
+        </div>
       </div>
     </div>
   )

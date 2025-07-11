@@ -100,6 +100,7 @@ export default function CalendarPage() {
   const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<{ avatar_url?: string; full_name?: string }>({});
+  const [sharePlanning, setSharePlanning] = useState(false);
 
   useEffect(() => {
     loadWorkouts()
@@ -114,6 +115,13 @@ export default function CalendarPage() {
         .eq('id', user.id)
         .single();
       if (profile) setUserProfile(profile);
+      // Récupérer la préférence de partage
+      const { data: settings } = await supabase
+        .from('user_settings')
+        .select('share_planning')
+        .eq('user_id', user.id)
+        .single();
+      setSharePlanning(!!settings?.share_planning);
     };
     fetchProfile();
   }, [])
@@ -313,58 +321,40 @@ export default function CalendarPage() {
 
                 {/* Jours du mois */}
                 {days.map((day, index) => {
-                  // Récupérer les deux listes pour ce jour
-                  const personal: CalendarSession[] = getWorkoutsForDate(day.date).map(workout => ({
-                    id: `perso-${workout.id}`,
-                    name: workout.name,
-                    type: workout.type,
-                    status: workout.status,
-                    duration: workout.duration,
-                    isShared: false,
-                    participants: [],
-                    time: '',
-                    exercises: workout.exercises || [],
-                    scheduled_date: workout.scheduled_date
-                  }));
-                  const shared: CalendarSession[] = getSharedForDate(day.date).map(sw => ({
-                    id: `shared-${sw.id}`,
-                    name: sw.name,
-                    type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
-                    status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
-                    duration: undefined,
-                    isShared: true,
-                    participants: [
-                      {
-                        id: sw.user_id || sw.profiles?.id || '',
-                        name: sw.profiles?.full_name || '',
-                        avatarUrl: sw.profiles?.avatar_url || '/window.svg',
-                      }
-                    ],
-                    time: sw.start_time || '',
-                    exercises: [],
-                    scheduled_date: sw.scheduled_date
-                  }));
-                  // Fusion/déduplication :
-                  const allMap = new Map<string, CalendarSession>();
-                  // Pour les persos, clé logique
-                  personal.forEach(item => {
-                    const key = item.isShared ? item.id : `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
-                    allMap.set(key, { ...item, participants: [] });
-                  });
-                  // Pour les partagées, clé = id unique
-                  shared.forEach(item => {
-                    const key = item.id;
-                    allMap.set(key, item); // écrase la perso si même id (shared-xxx)
-                  });
-                  const all = Array.from(allMap.values());
-                  // Adapter les données pour CalendarDayCell
-                  const sessions = all.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    time: item.time || '',
-                    color: undefined,
-                    participants: item.isShared ? item.participants || [] : [], // Avatar seulement si partagé
-                  }));
+                  let sessions: CalendarSession[] = [];
+                  if (sharePlanning) {
+                    sessions = getSharedForDate(day.date).map(sw => ({
+                      id: `shared-${sw.id}`,
+                      name: sw.name,
+                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                      status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                      duration: undefined,
+                      isShared: true,
+                      participants: [
+                        {
+                          id: sw.user_id || sw.profiles?.id || '',
+                          name: sw.profiles?.full_name || '',
+                          avatarUrl: sw.profiles?.avatar_url || '/window.svg',
+                        }
+                      ],
+                      time: sw.start_time || '',
+                      exercises: [],
+                      scheduled_date: sw.scheduled_date
+                    }));
+                  } else {
+                    sessions = getWorkoutsForDate(day.date).map(workout => ({
+                      id: `perso-${workout.id}`,
+                      name: workout.name,
+                      type: workout.type,
+                      status: workout.status,
+                      duration: workout.duration,
+                      isShared: false,
+                      participants: [],
+                      time: '',
+                      exercises: workout.exercises || [],
+                      scheduled_date: workout.scheduled_date
+                    }));
+                  }
                   const isCurrentDay = isToday(day.date);
                   const isSelectedDay = isSelected(day.date);
                   const cell = (
@@ -395,56 +385,42 @@ export default function CalendarPage() {
                   {formatDate(selectedDate)}
                 </h3>
                 <div className="space-y-3">
-                  {/* Fusion des séances persos et partagées */}
                   {(() => {
-                    // Récupérer les deux listes
-                    const personal: CalendarSession[] = getWorkoutsForDate(selectedDate).map(workout => ({
-                      id: `perso-${workout.id}`,
-                      name: workout.name,
-                      type: workout.type,
-                      status: workout.status,
-                      duration: workout.duration,
-                      isShared: false,
-                      participants: [],
-                      time: '', // à compléter si tu as l'heure
-                      exercises: workout.exercises || [],
-                      scheduled_date: workout.scheduled_date // Ajouté pour la clé
-                    }));
-                    const shared: CalendarSession[] = getSharedForDate(selectedDate).map(sw => ({
-                      id: `shared-${sw.id}`,
-                      name: sw.name,
-                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
-                      status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
-                      duration: undefined,
-                      isShared: true,
-                      participants: [
-                        {
-                          id: sw.user_id || sw.profiles?.id || '',
-                          name: sw.profiles?.full_name || '',
-                          avatarUrl: sw.profiles?.avatar_url || '/window.svg',
-                        }
-                      ],
-                      time: sw.start_time || '',
-                      exercises: [],
-                      scheduled_date: sw.scheduled_date // Ajouté pour la clé
-                    }));
-                    // Fusion/déduplication : la partagée écrase la perso (clé logique)
-                    const allMap = new Map<string, typeof personal[0]>();
-                    personal.forEach(item => {
-                      const key = `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
-                      allMap.set(key, { ...item, participants: [] }); // jamais d'avatar pour perso
-                    });
-                    shared.forEach(item => {
-                      const key = `${(item.name || '').trim()}|${(item.type || '').trim()}|${getDateKey(item)}|${(item.time || '').trim()}`;
-                      allMap.set(key, item); // écrase la perso si même clé
-                    });
-                    const all = Array.from(allMap.values()).sort((a, b) => {
-                      if (a.time && b.time) return a.time.localeCompare(b.time);
-                      if (a.time) return -1;
-                      if (b.time) return 1;
-                      return a.name.localeCompare(b.name);
-                    });
-                    if (all.length === 0) {
+                    let sessions: CalendarSession[] = [];
+                    if (sharePlanning) {
+                      sessions = getSharedForDate(selectedDate).map(sw => ({
+                        id: `shared-${sw.id}`,
+                        name: sw.name,
+                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                        status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                        duration: undefined,
+                        isShared: true,
+                        participants: [
+                          {
+                            id: sw.user_id || sw.profiles?.id || '',
+                            name: sw.profiles?.full_name || '',
+                            avatarUrl: sw.profiles?.avatar_url || '/window.svg',
+                          }
+                        ],
+                        time: sw.start_time || '',
+                        exercises: [],
+                        scheduled_date: sw.scheduled_date
+                      }));
+                    } else {
+                      sessions = getWorkoutsForDate(selectedDate).map(workout => ({
+                        id: `perso-${workout.id}`,
+                        name: workout.name,
+                        type: workout.type,
+                        status: workout.status,
+                        duration: workout.duration,
+                        isShared: false,
+                        participants: [],
+                        time: '',
+                        exercises: workout.exercises || [],
+                        scheduled_date: workout.scheduled_date
+                      }));
+                    }
+                    if (sessions.length === 0) {
                       return (
                         <div className="text-center py-6 text-gray-500">
                           <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
@@ -452,7 +428,7 @@ export default function CalendarPage() {
                         </div>
                       );
                     }
-                    return all.map(item => (
+                    return sessions.map(item => (
                       <div key={item.id} className="p-3 bg-gray-50 rounded-lg flex flex-col gap-1">
                         <div className="flex items-center justify-between mb-1">
                           <h4 className="font-medium text-gray-900 flex items-center gap-2">
@@ -461,24 +437,22 @@ export default function CalendarPage() {
                           </h4>
                           <div className={`w-3 h-3 rounded-full ${getStatusColor(item.status)}`} />
                         </div>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(item.type)}`}>{item.type}</span>
-                          {item.duration && (
-                            <span className="flex items-center space-x-1">
-                              <Clock className="h-3 w-3" />
-                              <span>{item.duration} min</span>
-                            </span>
-                          )}
-                          {item.time && (
-                            <span className="flex items-center space-x-1">
-                              <Clock className="h-3 w-3" />
-                              <span>{item.time}</span>
-                            </span>
-                          )}
-                          {item.participants && item.participants.length > 0 && item.participants[0] && (
-                            <span className="ml-2 text-xs text-gray-500">avec {item.participants.map(p => p.name).join(', ')}</span>
-                          )}
-                        </div>
+                        <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(item.type)}`}>{item.type}</span>
+                        {item.duration && (
+                          <span className="flex items-center space-x-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{item.duration} min</span>
+                          </span>
+                        )}
+                        {item.time && (
+                          <span className="flex items-center space-x-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{item.time}</span>
+                          </span>
+                        )}
+                        {item.participants && item.participants.length > 0 && item.participants[0] && (
+                          <span className="ml-2 text-xs text-gray-500">avec {item.participants.map(p => p.name).join(', ')}</span>
+                        )}
                         {item.exercises && item.exercises.length > 0 && (
                           <div className="mt-1 text-xs text-gray-500">
                             {item.exercises.slice(0, 2).join(', ')}
