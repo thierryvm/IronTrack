@@ -14,6 +14,147 @@ const exerciseTypes = [
   { value: 'Cardio', label: 'Cardio', icon: Clock, color: 'text-blue-500' }
 ]
 
+// Table d’exercices standards par groupe musculaire
+const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>> = {
+  'Pectoraux': [
+    {
+      name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '8 reps à 40kg (débutant)', values: { firstReps: '8', firstWeight: '40', sets: 3 } },
+        { label: '10 reps à 60kg (intermédiaire)', values: { firstReps: '10', firstWeight: '60', sets: 4 } },
+        { label: '12 reps à 80kg (avancé)', values: { firstReps: '12', firstWeight: '80', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Pompes', label: 'Pompes', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps (débutant)', values: { firstReps: '15', sets: 3 } },
+        { label: '30 reps (intermédiaire)', values: { firstReps: '30', sets: 4 } },
+        { label: '50 reps (IronBuddy)', values: { firstReps: '50', sets: 5 } },
+      ]
+    },
+    {
+      name: 'Développé incliné', label: 'Développé incliné', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 30kg', values: { firstReps: '10', firstWeight: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Dos': [
+    {
+      name: 'Tractions', label: 'Tractions', type: 'Musculation', equipment: 'Barre de traction', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '5 reps (débutant)', values: { firstReps: '5', sets: 3 } },
+        { label: '10 reps (intermédiaire)', values: { firstReps: '10', sets: 4 } },
+        { label: '10 reps lestées (avancé)', values: { firstReps: '10', firstWeight: '10', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Rowing barre', label: 'Rowing barre', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 40kg', values: { firstReps: '10', firstWeight: '40', sets: 3 } },
+        { label: '12 reps à 60kg', values: { firstReps: '12', firstWeight: '60', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Tirage horizontal', label: 'Tirage horizontal', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '12 reps à 30kg', values: { firstReps: '12', firstWeight: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Jambes': [
+    {
+      name: 'Squat', label: 'Squat', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 40kg (débutant)', values: { firstReps: '10', firstWeight: '40', sets: 3 } },
+        { label: '12 reps à 80kg (intermédiaire)', values: { firstReps: '12', firstWeight: '80', sets: 4 } },
+        { label: '10 reps à 120kg (avancé)', values: { firstReps: '10', firstWeight: '120', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Presse à jambes', label: 'Presse à jambes', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 60kg', values: { firstReps: '15', firstWeight: '60', sets: 3 } },
+      ]
+    },
+    {
+      name: 'Fentes', label: 'Fentes', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '10 reps/jambe', values: { firstReps: '10', sets: 3 } },
+      ]
+    },
+  ],
+  'Épaules': [
+    {
+      name: 'Développé militaire', label: 'Développé militaire', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 20kg', values: { firstReps: '10', firstWeight: '20', sets: 3 } },
+        { label: '12 reps à 40kg', values: { firstReps: '12', firstWeight: '40', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Élévations latérales', label: 'Élévations latérales', type: 'Musculation', equipment: 'Haltères', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 6kg', values: { firstReps: '15', firstWeight: '6', sets: 3 } },
+      ]
+    },
+  ],
+  'Biceps': [
+    {
+      name: 'Curl haltère', label: 'Curl haltère', type: 'Musculation', equipment: 'Haltères', difficulty: 'Débutant',
+      suggestions: [
+        { label: '12 reps à 8kg', values: { firstReps: '12', firstWeight: '8', sets: 3 } },
+        { label: '10 reps à 12kg', values: { firstReps: '10', firstWeight: '12', sets: 4 } },
+      ]
+    },
+  ],
+  'Triceps': [
+    {
+      name: 'Dips', label: 'Dips', type: 'Musculation', equipment: 'Barre de traction', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '8 reps (débutant)', values: { firstReps: '8', sets: 3 } },
+        { label: '12 reps lestées', values: { firstReps: '12', firstWeight: '10', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Extensions poulie', label: 'Extensions poulie', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 20kg', values: { firstReps: '15', firstWeight: '20', sets: 3 } },
+      ]
+    },
+  ],
+  'Abdominaux': [
+    {
+      name: 'Crunchs', label: 'Crunchs', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '20 reps', values: { firstReps: '20', sets: 3 } },
+      ]
+    },
+    {
+      name: 'Gainage', label: 'Gainage', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '3x30s', values: { firstReps: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Fessiers': [
+    {
+      name: 'Hip Thrust', label: 'Hip Thrust', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '12 reps à 40kg', values: { firstReps: '12', firstWeight: '40', sets: 3 } },
+        { label: '15 reps à 70kg', values: { firstReps: '15', firstWeight: '70', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Glute kickback', label: 'Glute kickback', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '20 reps/jambe', values: { firstReps: '20', sets: 3 } },
+      ]
+    },
+  ],
+};
+
 // Ajout de la fonction de suggestions dynamiques
 function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: any}> {
   // Table de correspondance nom -> groupe musculaire
@@ -190,6 +331,9 @@ export default function NewExercisePage() {
   // Ajout d’un état pour le nom de l’exercice (pour suggestions dynamiques)
   const [suggestionName, setSuggestionName] = useState('');
   
+  // Ajout d’un état pour l’exercice suggéré
+  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>>([]);
+  
   const router = useRouter()
 
   useEffect(() => {
@@ -200,6 +344,15 @@ export default function NewExercisePage() {
     }
     fetchEquipment()
   }, [])
+
+  // Quand le groupe musculaire change, on propose automatiquement des exercices adaptés
+  useEffect(() => {
+    if (muscle && standardExercises[muscle]) {
+      setAutoExerciseSuggestions(standardExercises[muscle]);
+    } else {
+      setAutoExerciseSuggestions([]);
+    }
+  }, [muscle]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -367,6 +520,45 @@ export default function NewExercisePage() {
           </select>
         </div>
         
+        {/* Suggestions automatiques d’exercices par groupe musculaire */}
+        {autoExerciseSuggestions.length > 0 && (
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">Exercices recommandés pour {muscle}</label>
+            <div className="flex flex-col gap-2">
+              {autoExerciseSuggestions.map((ex, idx) => (
+                <div key={idx} className="bg-orange-50 rounded-lg p-3">
+                  <div className="font-semibold text-orange-700 mb-1">{ex.label}</div>
+                  <div className="flex flex-wrap gap-2 mb-1">
+                    {ex.suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
+                        onClick={() => {
+                          setName(ex.name);
+                          setSuggestionName(ex.name);
+                          setMuscle(muscle);
+                          // Sélectionner l'équipement si possible
+                          if (ex.equipment) {
+                            const eq = equipmentList.find(e => e.name.toLowerCase() === ex.equipment.toLowerCase());
+                            setEquipmentId(eq ? eq.id : null);
+                          }
+                          setDifficulty(ex.difficulty);
+                          setFirstReps(s.values.firstReps || '');
+                          setFirstWeight(s.values.firstWeight || '');
+                          setSets(s.values.sets || 3);
+                        }}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Suggestions dynamiques */}
         {(() => {
           const suggestions = getExerciseSuggestions(exerciseType, muscle, suggestionName || name);
