@@ -14,7 +14,9 @@ import {
   Award,
   Activity,
   Plus,
-  X as Close
+  X as Close,
+  Pencil,
+  Trash2
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { createClient } from '@/lib/supabase'
@@ -63,25 +65,203 @@ const muscleGroupColors = {
   'Fessiers': '#F7DC6F'
 }
 
+// Helper pour générer un nom de badge unique
+function getGoalBadgeName(goal: TrainingGoal) {
+  if (goal.target_weight && goal.exercises?.name) {
+    return `Objectif atteint: ${goal.exercises.name} ${goal.target_weight}kg`;
+  }
+  if (goal.target_reps && goal.exercises?.name) {
+    return `Objectif atteint: ${goal.exercises.name} ${goal.target_reps} reps`;
+  }
+  return `Objectif atteint: ${goal.exercises?.name || 'Exercice inconnu'}`;
+}
+
 // Ajout d'une fonction utilitaire pour attribuer un badge si objectif atteint
 async function awardGoalBadge(goal: TrainingGoal, userId: string) {
   const supabase = createClient();
-  // Vérifie si le badge existe déjà
-  const { data: existing } = await supabase
-    .from('achievements')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('name', `Objectif atteint: ${goal.exercises?.name}`)
-    .single();
-  if (!existing) {
-    await supabase.from('achievements').insert({
-      user_id: userId,
-      name: `Objectif atteint: ${goal.exercises?.name}`,
-      description: `Tu as atteint ton objectif sur ${goal.exercises?.name} !`,
-      icon: '🏅',
-      category: 'Objectifs',
-      unlocked_at: new Date().toISOString(),
-    });
+  const badgeName = getGoalBadgeName(goal);
+  console.log('[DEBUG] awardGoalBadge userId:', userId, 'badgeName:', badgeName);
+  try {
+    // Vérifie si le badge existe déjà
+    const { data: existing, error: selectError } = await supabase
+      .from('achievements')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('name', badgeName)
+      .maybeSingle();
+    if (selectError) {
+      console.error('[DEBUG] awardGoalBadge select error (peut être ignoré si no rows):', selectError.message);
+    }
+    if (!existing) {
+      // Double check anti-doublon (au cas où)
+      const { data: already, error: alreadyError } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('name', badgeName);
+      if (alreadyError) {
+        console.error('[DEBUG] awardGoalBadge double-check error:', alreadyError.message);
+      }
+      if (!already || already.length === 0) {
+        const { error: insertError } = await supabase.from('achievements').insert({
+          user_id: userId,
+          name: badgeName,
+          description: `Tu as atteint ton objectif sur ${goal.exercises?.name} !`,
+          icon: '🏅',
+          category: 'Objectifs',
+          unlocked_at: new Date().toISOString(),
+        });
+        if (insertError) {
+          console.error('[DEBUG] awardGoalBadge insert error:', insertError.message);
+        }
+      } else {
+        console.log('[DEBUG] awardGoalBadge: badge déjà existant, pas d\'insertion.');
+      }
+    }
+  } catch (err) {
+    console.error('[DEBUG] awardGoalBadge global error:', err);
+  }
+}
+
+// Ajout d'une fonction pour recalculer le status d'un objectif après modification
+async function recalculateGoalStatus(goal: TrainingGoal, progressData: ProgressData[]) {
+  let bestPerf: ProgressData | null = null;
+  if (goal.target_reps && goal.target_reps > 1) {
+    const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+    bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
+  } else {
+    const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+    bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+  }
+  const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
+  const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
+  const supabase = createClient();
+  if (typeof targetVal === 'number' && currentVal < targetVal && goal.status === 'Atteint') {
+    // Si la nouvelle valeur n'est plus atteinte, repasser à 'En cours'
+    await supabase.from('training_goals').update({ status: 'En cours' }).eq('id', goal.id);
+  } else if (typeof targetVal === 'number' && currentVal >= targetVal && goal.status !== 'Atteint') {
+    // Si la nouvelle valeur est atteinte, repasser à 'Atteint'
+    await supabase.from('training_goals').update({ status: 'Atteint', updated_at: new Date().toISOString() }).eq('id', goal.id);
+  }
+}
+
+// Fonction utilitaire pour icône et texte badge selon l'objectif
+function getBadgeIconAndText(goal: TrainingGoal) {
+  if (!goal.exercises?.name) return { icon: '🏅', title: 'Objectif', desc: '' };
+  const name = goal.exercises.name.toLowerCase();
+  // Attribution d'icônes spécifiques selon l'exercice ou le type d'objectif
+  if (name.includes('vélo')) {
+    return {
+      icon: '🚴‍♂️',
+      title: goal.exercises.name,
+      desc: badgeDesc(goal)
+    };
+  }
+  if (name.includes('tapis')) {
+    return {
+      icon: '🏃‍♂️',
+      title: goal.exercises.name,
+      desc: badgeDesc(goal)
+    };
+  }
+  if (name.includes('rameur')) {
+    return {
+      icon: '🚣‍♂️',
+      title: goal.exercises.name,
+      desc: badgeDesc(goal)
+    };
+  }
+  if (name.includes('course')) {
+    return {
+      icon: '🏃‍♂️',
+      title: goal.exercises.name,
+      desc: badgeDesc(goal)
+    };
+  }
+  if (name.includes('marche')) {
+    return {
+      icon: '🚶‍♂️',
+      title: goal.exercises.name,
+      desc: badgeDesc(goal)
+    };
+  }
+  // Muscu classiques
+  if (goal.exercises.name === 'Développé couché') {
+    return {
+      icon: '🏋️‍♂️',
+      title: 'Développé couché',
+      desc: badgeDesc(goal)
+    };
+  }
+  if (goal.exercises.name === 'Pompes') {
+    return {
+      icon: '🤸‍♂️',
+      title: 'Pompes',
+      desc: badgeDesc(goal)
+    };
+  }
+  if (goal.exercises.name === 'Squat') {
+    return {
+      icon: '🏋️‍♀️',
+      title: 'Squat',
+      desc: badgeDesc(goal)
+    };
+  }
+  if (goal.exercises.name === 'Tractions') {
+    return {
+      icon: '🧗‍♂️',
+      title: 'Tractions',
+      desc: badgeDesc(goal)
+    };
+  }
+  if (goal.exercises.name === 'Abdos') {
+    return {
+      icon: '💪',
+      title: 'Abdos',
+      desc: badgeDesc(goal)
+    };
+  }
+  // Par défaut
+  return {
+    icon: '🏅',
+    title: goal.exercises.name,
+    desc: badgeDesc(goal)
+  };
+}
+// Helper pour la description dynamique
+function badgeDesc(goal: TrainingGoal) {
+  if (goal.target_weight) return `${goal.target_weight} kg`;
+  if (goal.target_reps) {
+    const kg = (goal as any).extra_kg;
+    const dur = (goal as any).extra_duration;
+    if (kg && dur) return `${goal.target_reps} reps à ${kg} kg en ${dur} min`;
+    if (kg) return `${goal.target_reps} reps à ${kg} kg`;
+    if (dur) return `${goal.target_reps} reps en ${dur} min`;
+    return `${goal.target_reps} reps`;
+  }
+  if ((goal as any).target_distance) {
+    const dur = (goal as any).extra_duration;
+    const speed = (goal as any).extra_speed;
+    if (dur && speed) return `${(goal as any).target_distance} km en ${dur} min à ${speed} km/h`;
+    if (dur) return `${(goal as any).target_distance} km en ${dur} min`;
+    if (speed) return `${(goal as any).target_distance} km à ${speed} km/h`;
+    return `${(goal as any).target_distance} km`;
+  }
+  if ((goal as any).target_duration) return `${(goal as any).target_duration} min`;
+  if ((goal as any).target_calories) return `${(goal as any).target_calories} kcal`;
+  return '';
+}
+
+// Helper pour obtenir l'unité d'un objectif selon le type
+function getGoalUnit(goalType: string) {
+  switch (goalType) {
+    case 'duration': return 'min';
+    case 'distance': return 'km';
+    case 'speed': return 'km/h';
+    case 'calories': return 'kcal';
+    case 'reps': return 'reps';
+    case 'kg': return 'kg';
+    default: return '';
   }
 }
 
@@ -93,7 +273,8 @@ export default function ProgressPage() {
   const [trainingGoals, setTrainingGoals] = useState<TrainingGoal[]>([])
   const [showGoalModal, setShowGoalModal] = useState(false)
   const [goalExerciseId, setGoalExerciseId] = useState('')
-  const [goalType, setGoalType] = useState<'kg' | 'reps'>('kg')
+  type GoalType = 'kg' | 'reps' | 'duration' | 'distance' | 'speed' | 'calories';
+  const [goalType, setGoalType] = useState<GoalType>('kg')
   const [goalValue, setGoalValue] = useState('')
   const [goalLoading, setGoalLoading] = useState(false)
   const [goalError, setGoalError] = useState('')
@@ -101,12 +282,75 @@ export default function ProgressPage() {
   const [userGender, setUserGender] = useState<string | null>(null)
   const lastPunchlineRef = useRef<string | null>(null)
 
+  // Ajout d'un état pour l'animation de félicitations
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [congratsMsg, setCongratsMsg] = useState('');
+
+  // Ajout d'un état pour l'édition et la suppression d'objectifs
+  const [editGoalId, setEditGoalId] = useState<number | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<TrainingGoal | null>(null);
+
+  // Ajout d'un champ poids additionnel si besoin
+  const [goalExtraKg, setGoalExtraKg] = useState('');
+  // Ajout d'un champ durée additionnelle si besoin
+  const [goalExtraDuration, setGoalExtraDuration] = useState('');
+  // Ajout d'un champ vitesse additionnelle si besoin
+  const [goalExtraSpeed, setGoalExtraSpeed] = useState('');
+
+  // Muscu : liste d'exos où reps + kg est pertinent (déclaré en dehors de la fonction)
+  const muscuRepsKg = [
+    'développé couché', 'squat', 'tractions', 'dips', 'soulevé de terre', 'rowing', 'développé militaire', 'curl', 'presse', 'fentes', 'hip thrust', 'mollets', 'abdos lestés'
+  ];
+
+  // Suggestions muscu avancées avec durée
+  const muscuRepsKgDuration = [
+    'développé couché', 'squat', 'tractions', 'dips', 'soulevé de terre', 'rowing', 'développé militaire', 'curl', 'presse', 'fentes', 'hip thrust', 'mollets', 'abdos lestés'
+  ];
+
+  // Suggestions cardio avancées
+  const cardioTypes = ['tapis', 'vélo', 'rameur', 'course', 'marche'];
+
   useEffect(() => {
     loadProgressData()
     loadTrainingGoals()
     fetchExercises()
     fetchGender()
   }, [selectedPeriod])
+
+  // useEffect pour recalculer le statut des objectifs après modification ou changement de performances
+  useEffect(() => {
+    async function checkAndUpdateGoals() {
+      const supabase = createClient();
+      for (const goal of trainingGoals) {
+        let bestPerf: ProgressData | null = null;
+        if (goal.target_reps && goal.target_reps > 1) {
+          const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+          bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
+        } else {
+          const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+          bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+        }
+        const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
+        const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
+        if (typeof targetVal === 'number' && currentVal < targetVal && goal.status === 'Atteint') {
+          await supabase.from('training_goals').update({ status: 'En cours' }).eq('id', goal.id);
+        } else if (typeof targetVal === 'number' && currentVal >= targetVal && goal.status !== 'Atteint') {
+          await supabase.from('training_goals').update({ status: 'Atteint', updated_at: new Date().toISOString() }).eq('id', goal.id);
+          // Attribuer le badge et animation seulement lors du passage à Atteint
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await awardGoalBadge(goal, user.id);
+            handleGoalAchieved(goal);
+          }
+        }
+      }
+    }
+    if (trainingGoals.length > 0 && progressData.length > 0) {
+      checkAndUpdateGoals();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trainingGoals, progressData]);
 
   const loadProgressData = async () => {
     setLoading(true)
@@ -232,19 +476,57 @@ export default function ProgressPage() {
         setGoalLoading(false)
         return
       }
-      const insertData: Omit<TrainingGoal, 'id' | 'exercises'> = {
+      // Construction dynamique selon le type d'objectif
+      const insertData: any = {
         user_id: user.id,
         exercise_id: Number(goalExerciseId),
-        target_weight: goalType === 'kg' ? Number(goalValue) : null,
-        target_reps: goalType === 'reps' ? Number(goalValue) : null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        target_weight: null,
+        target_reps: null,
+        target_duration: null,
+        target_distance: null,
+        target_speed: null,
+        target_calories: null,
+        extra_kg: null,
+        extra_duration: null,
       }
-      const { error } = await supabase.from('training_goals').insert(insertData)
+      if (goalType === 'kg') {
+        insertData.target_weight = Number(goalValue);
+      } else if (goalType === 'reps') {
+        insertData.target_reps = Number(goalValue);
+        if (goalExtraKg) insertData.extra_kg = Number(goalExtraKg);
+        if (goalExtraDuration) insertData.extra_duration = Number(goalExtraDuration);
+      } else if (goalType === 'duration') {
+        insertData.target_duration = Number(goalValue);
+      } else if (goalType === 'distance') {
+        insertData.target_distance = Number(goalValue);
+        if (goalExtraDuration) insertData.extra_duration = Number(goalExtraDuration);
+        if (goalExtraSpeed) insertData.extra_speed = Number(goalExtraSpeed);
+      } else if (goalType === 'speed') {
+        insertData.target_speed = Number(goalValue);
+      } else if (goalType === 'calories') {
+        insertData.target_calories = Number(goalValue);
+      }
+
+      let error = null;
+      if (editGoalId) {
+        // Edition d'un objectif existant
+        const { error: updateError } = await supabase.from('training_goals').update(insertData).eq('id', editGoalId)
+        error = updateError
+      } else {
+        // Création d'un nouvel objectif
+        const { error: insertError } = await supabase.from('training_goals').insert(insertData)
+        error = insertError
+      }
       if (error) throw error
       setShowGoalModal(false)
       setGoalExerciseId('')
       setGoalType('kg')
       setGoalValue('')
+      setGoalExtraKg('') // Reset extra_kg
+      setGoalExtraDuration('') // Reset extra_duration
+      setGoalExtraSpeed('') // Reset extra_speed
+      setEditGoalId(null)
       setTimeout(() => loadTrainingGoals(), 300)
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -411,6 +693,249 @@ export default function ProgressPage() {
     ironBuddyMsg = getRandomPunchline(punchlines.regression)
   } else {
     ironBuddyMsg = getRandomPunchline(punchlines.default)
+  }
+
+  // Dans la logique où un objectif passe à 'Atteint', déclencher l'animation
+  const handleGoalAchieved = (goal: TrainingGoal) => {
+    setCongratsMsg(`Bravo Thierry, badge débloqué : ${goal.exercises?.name} ${goal.target_weight ? goal.target_weight + 'kg' : goal.target_reps ? goal.target_reps + ' reps' : ''} ! 🏅`);
+    setShowCongrats(true);
+    setTimeout(() => setShowCongrats(false), 3500);
+  };
+
+  // Ajout d'un helper pour détecter si un exercice est cardio
+  function isCardioExercise(name: string) {
+    const n = name.toLowerCase();
+    return (
+      n.includes('tapis') || n.includes('vélo') || n.includes('rameur') || n.includes('course') || n.includes('marche')
+    );
+  }
+
+  // Pré-remplir le formulaire pour l'édition
+  const handleEditGoal = (goal: TrainingGoal) => {
+    setEditGoalId(goal.id);
+    setGoalExerciseId(goal.exercise_id.toString());
+    // Déduire le type d'objectif et la valeur
+    if ((goal as any).target_duration) {
+      setGoalType('duration');
+      setGoalValue((goal as any).target_duration.toString());
+    } else if ((goal as any).target_distance) {
+      setGoalType('distance');
+      setGoalValue((goal as any).target_distance.toString());
+    } else if ((goal as any).target_speed) {
+      setGoalType('speed');
+      setGoalValue((goal as any).target_speed.toString());
+    } else if ((goal as any).target_calories) {
+      setGoalType('calories');
+      setGoalValue((goal as any).target_calories.toString());
+    } else if (goal.target_weight) {
+      setGoalType('kg');
+      setGoalValue(goal.target_weight.toString());
+    } else if (goal.target_reps) {
+      setGoalType('reps');
+      setGoalValue(goal.target_reps.toString());
+      if ((goal as any).extra_kg) setGoalExtraKg((goal as any).extra_kg.toString());
+      if ((goal as any).extra_duration) setGoalExtraDuration((goal as any).extra_duration.toString());
+      if ((goal as any).extra_speed) setGoalExtraSpeed((goal as any).extra_speed.toString());
+    }
+    setShowGoalModal(true);
+  };
+
+  // Suppression d'un objectif
+  const handleDeleteGoal = (goal: TrainingGoal) => {
+    setGoalToDelete(goal);
+    setShowDeleteModal(true);
+  };
+  const confirmDeleteGoal = async () => {
+    if (!goalToDelete) return;
+    const supabase = createClient();
+    await supabase.from('training_goals').delete().eq('id', goalToDelete.id);
+    setShowDeleteModal(false);
+    setGoalToDelete(null);
+    loadTrainingGoals();
+  };
+  const cancelDeleteGoal = () => {
+    setShowDeleteModal(false);
+    setGoalToDelete(null);
+  };
+
+  // Générateur de suggestions d'objectifs selon l'exercice sélectionné
+  function getGoalSuggestions(exerciseName: string | undefined): Array<{label: string, type: GoalType, value: number, extraKg?: number, extraDuration?: number, extraSpeed?: number}> {
+    if (!exerciseName) return [];
+    const name = exerciseName.toLowerCase();
+    // Cardio avancé
+    for (const c of cardioTypes) {
+      if (name.includes(c)) {
+        return [
+          { label: '3 km en 15 min', type: 'distance', value: 3, extraDuration: 15 },
+          { label: '5 km à 10 km/h', type: 'distance', value: 5, extraSpeed: 10 },
+          { label: '30 min de ' + c, type: 'duration', value: 30 },
+          { label: '10 km de ' + c, type: 'distance', value: 10 },
+        ];
+      }
+    }
+    // Muscu avancé
+    for (const exo of muscuRepsKgDuration) {
+      if (name.includes(exo)) {
+        return [
+          { label: `10 reps à 80 kg en 2 min`, type: 'reps', value: 10, extraKg: 80, extraDuration: 2 },
+          { label: `20 reps à 60 kg`, type: 'reps', value: 20, extraKg: 60 },
+          { label: `100 kg ${exo}`, type: 'kg', value: 100 },
+        ];
+      }
+    }
+    // Pompes, abdos, gainage, etc. (reps only)
+    if (name.includes('pompes') || name.includes('abdos') || name.includes('gainage')) {
+      return [
+        { label: '20 pompes', type: 'reps', value: 20 },
+        { label: '50 pompes', type: 'reps', value: 50 },
+      ];
+    }
+    // Cardio
+    if (name.includes('course')) {
+      return [
+        { label: '5 km de course', type: 'distance', value: 5 },
+        { label: '30 min de course', type: 'duration', value: 30 },
+        { label: '10 km/h sur 20 min', type: 'speed', value: 10 },
+      ];
+    }
+    if (name.includes('tapis')) {
+      return [
+        { label: '30 min de tapis', type: 'duration', value: 30 },
+        { label: '3 km sur tapis', type: 'distance', value: 3 },
+      ];
+    }
+    if (name.includes('vélo')) {
+      return [
+        { label: '10 km de vélo', type: 'distance', value: 10 },
+        { label: '45 min de vélo', type: 'duration', value: 45 },
+      ];
+    }
+    if (name.includes('rameur')) {
+      return [
+        { label: '2000 m rameur', type: 'distance', value: 2 },
+        { label: '20 min rameur', type: 'duration', value: 20 },
+      ];
+    }
+    // Suggestions génériques
+    return [
+      { label: '30 min d’activité', type: 'duration', value: 30 },
+      { label: '100 kcal brûlées', type: 'calories', value: 100 },
+    ];
+  }
+
+  // Préparation du JSX conditionnel pour le formulaire d'objectif
+  let dynamicGoalFields: React.ReactNode = null;
+  if (showGoalModal) {
+    const selected = userExercises.find(ex => String(ex.id) === String(goalExerciseId));
+    const suggestions = getGoalSuggestions(selected?.name);
+    dynamicGoalFields = (
+      <>
+        {/* Suggestions d’objectifs dynamiques */}
+        {suggestions.length > 0 && (
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">Suggestions d’objectifs</label>
+            <p className="text-xs text-gray-500 mb-2">Clique sur une suggestion pour pré-remplir le formulaire automatiquement et gagner du temps (et de la motivation) ! 💡</p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
+                  onClick={() => {
+                    setGoalType(s.type);
+                    setGoalValue(s.value.toString());
+                    if (s.extraDuration) setGoalExtraDuration(s.extraDuration.toString());
+                    if (s.extraSpeed) setGoalExtraSpeed(s.extraSpeed.toString());
+                    if (s.extraKg) setGoalExtraKg(s.extraKg.toString());
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Type d&apos;objectif</label>
+          <select
+            value={goalType}
+            onChange={e => setGoalType(e.target.value as GoalType)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="kg">Poids (kg)</option>
+            <option value="reps">Répétitions (reps)</option>
+            <option value="duration">Durée (minutes)</option>
+            <option value="distance">Distance (km)</option>
+            <option value="speed">Vitesse (km/h)</option>
+            <option value="calories">Calories</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Valeur cible</label>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={goalValue}
+            onChange={e => setGoalValue(e.target.value)}
+            placeholder={
+              goalType === 'kg' ? 'Ex: 100 (kg)' :
+              goalType === 'reps' ? 'Ex: 20 (répétitions)' :
+              goalType === 'duration' ? 'Ex: 30 (minutes)' :
+              goalType === 'distance' ? 'Ex: 5 (km)' :
+              goalType === 'speed' ? 'Ex: 6 (km/h)' :
+              goalType === 'calories' ? 'Ex: 200' :
+              ''
+            }
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        {/* Champ poids additionnel si objectif reps + kg généralisé */}
+        {goalType === 'reps' && selected && muscuRepsKgDuration.some(exo => selected.name.toLowerCase().includes(exo)) && (
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">Durée max (minutes)</label>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              value={goalExtraDuration}
+              onChange={e => setGoalExtraDuration(e.target.value)}
+              placeholder="Ex: 2 (minutes)"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        )}
+        {goalType === 'distance' && selected && cardioTypes.some(c => selected.name.toLowerCase().includes(c)) && (
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Durée max (minutes)</label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={goalExtraDuration}
+                onChange={e => setGoalExtraDuration(e.target.value)}
+                placeholder="Ex: 15 (minutes)"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Vitesse cible (km/h)</label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={goalExtraSpeed}
+                onChange={e => setGoalExtraSpeed(e.target.value)}
+                placeholder="Ex: 10 (km/h)"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+          </>
+        )}
+      </>
+    );
   }
 
   if (loading) {
@@ -684,43 +1209,75 @@ export default function ProgressPage() {
                 const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
                 const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
                 if (typeof targetVal === 'number' && currentVal >= targetVal && targetVal) {
-                  createClient().auth.getUser().then(async ({ data: { user } }) => {
-                    if (user) {
-                      // Mettre à jour le statut de l'objectif à 'Atteint' dans Supabase
-                      await createClient()
-                        .from('training_goals')
-                        .update({ status: 'Atteint', updated_at: new Date().toISOString() })
-                        .eq('id', goal.id);
-                      // Attribuer le badge
-                      awardGoalBadge(goal, user.id);
-                    }
-                  });
+                  // Le recalcul est déjà géré par le useEffect, mais on peut le forcer ici si nécessaire
+                  // createClient().auth.getUser().then(async ({ data: { user } }) => {
+                  //   if (user) {
+                  //     // Mettre à jour le statut de l'objectif à 'Atteint' dans Supabase
+                  //     await createClient()
+                  //       .from('training_goals')
+                  //       .update({ status: 'Atteint', updated_at: new Date().toISOString() })
+                  //       .eq('id', goal.id);
+                  //     // Attribuer le badge
+                  //     awardGoalBadge(goal, user.id);
+                  //     handleGoalAchieved(goal);
+                  //   }
+                  // });
                   return false;
                 }
                 return true;
               }).map((goal) => {
-                let bestPerf: ProgressData | null = null;
-                if (goal.target_reps && goal.target_reps > 1) {
-                  const filtered = progressData
-                    .filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
-                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
-                } else {
-                  const filtered = progressData
-                    .filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
-                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+                // Détection dynamique du type d'objectif et des valeurs
+                let target: number | null = null;
+                let current: number | null = null;
+                let unit = '';
+                let extraKg: number | null = null;
+                let extraDuration: number | null = null;
+                let extraSpeed: number | null = null;
+                if (goal.target_weight) {
+                  target = goal.target_weight;
+                  unit = 'kg';
+                  const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+                  current = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]).weight : 0;
+                } else if (goal.target_reps) {
+                  target = goal.target_reps;
+                  unit = 'reps';
+                  const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+                  current = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]).reps : 0;
+                  if ((goal as any).extra_kg) extraKg = (goal as any).extra_kg;
+                  if ((goal as any).extra_duration) extraDuration = (goal as any).extra_duration;
+                } else if ((goal as any).target_duration) {
+                  target = (goal as any).target_duration;
+                  unit = 'min';
+                  current = 0;
+                } else if ((goal as any).target_distance) {
+                  target = (goal as any).target_distance;
+                  unit = 'km';
+                  current = 0;
+                } else if ((goal as any).target_speed) {
+                  target = (goal as any).target_speed;
+                  unit = 'km/h';
+                  current = 0;
+                } else if ((goal as any).target_calories) {
+                  target = (goal as any).target_calories;
+                  unit = 'kcal';
+                  current = 0;
                 }
-                const current = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
-                const target = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
-                const unit = goal.target_reps && goal.target_reps > 1 ? 'reps' : 'kg';
-                const percent = typeof target === 'number' && target ? Math.min((current / target) * 100, 100) : 0;
+                const percent = typeof target === 'number' && target ? Math.min((current! / target) * 100, 100) : 0;
+                const bgClass = goal.status !== 'Atteint' ? 'bg-gray-100' : (unit === 'kg' ? 'bg-orange-50' : 'bg-green-50');
+                const barClass = goal.status !== 'Atteint' ? 'bg-gray-300' : (unit === 'kg' ? 'bg-orange-500' : 'bg-green-500');
+                const textClass = goal.status !== 'Atteint' ? 'text-gray-500' : (unit === 'kg' ? 'text-orange-600' : 'text-green-600');
                 return (
-                  <div key={goal.id} className={`p-4 rounded-lg ${unit === 'kg' ? 'bg-orange-50' : 'bg-green-50'}`}>
+                  <div key={goal.id} className={`p-4 rounded-lg ${bgClass}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-gray-900">{goal.exercises?.name} {target}{unit}</h3>
-                      <span className={`text-sm ${unit === 'kg' ? 'text-orange-600' : 'text-green-600'}`}>{current}/{target} {unit}</span>
+                      <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-500' : 'text-gray-900'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600">{badgeDesc(goal)}</span></h3>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${textClass}`}>{current}/{target} {unit}{extraKg ? ` à ${extraKg} kg` : ''}{extraDuration ? ` en ${extraDuration} min` : ''}{extraSpeed ? ` à ${extraSpeed} km/h` : ''}</span>
+                        <button title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-blue-500 hover:text-blue-700"><Pencil className="h-4 w-4" /></button>
+                        <button title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-red-500 hover:text-red-700"><Trash2 className="h-4 w-4" /></button>
+                      </div>
                     </div>
-                    <div className={`w-full ${unit === 'kg' ? 'bg-orange-200' : 'bg-green-200'} rounded-full h-2`}>
-                      <div className={`${unit === 'kg' ? 'bg-orange-500' : 'bg-green-500'} h-2 rounded-full`} style={{ width: `${percent}%` }}></div>
+                    <div className={`w-full rounded-full h-2 ${goal.status !== 'Atteint' ? 'bg-gray-200' : (unit === 'kg' ? 'bg-orange-200' : 'bg-green-200')}`}> 
+                      <div className={`${barClass} h-2 rounded-full`} style={{ width: `${percent}%` }}></div>
                     </div>
                   </div>
                 )
@@ -728,50 +1285,36 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          {/* Badges */}
+          {/* Badges à valider */}
           <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
               <Award className="h-6 w-6 text-yellow-500" />
-              <span>Badges</span>
+              <span>Badges à valider</span>
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {/* Badge Déterminé */}
-              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'bg-yellow-50' : 'bg-gray-50 opacity-50'}`}>
-                <Trophy className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-yellow-500' : 'text-gray-400'}`} />
-                <h3 className={`font-medium ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-gray-900' : 'text-gray-500'}`}>Déterminé</h3>
-                <p className={`text-sm ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 ? 'text-gray-600' : 'text-gray-400'}`}>10 séances consécutives</p>
-                {(trainingGoals.filter(g => g.status === 'Atteint').length) >= 10 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
-              </div>
-              {/* Badge Force brute */}
-              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
-                <Flame className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-orange-500' : 'text-gray-400'}`} />
-                <h3 className={`font-medium ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-gray-900' : 'text-gray-500'}`}>Force brute</h3>
-                <p className={`text-sm ${(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 ? 'text-gray-600' : 'text-gray-400'}`}>+50kg au total</p>
-                {(trainingGoals.filter(g => (g.target_weight ?? 0) >= 50).length) >= 1 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
-              </div>
-              {/* Badge Objectif atteint (exemple : 100kg développé couché) */}
-              <div className={`text-center p-4 rounded-lg ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'bg-blue-50' : 'bg-gray-50 opacity-50'}`}>
-                <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? '' : 'grayscale text-gray-400'}`}>🏋️‍♂️</span>
-                <h3 className={`font-medium ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'text-gray-900' : 'text-gray-500'}`}>Objectif atteint</h3>
-                <p className={`text-sm ${trainingGoals.some(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint') ? 'text-gray-600' : 'text-gray-400'}`}>100kg développé couché</p>
-                {trainingGoals.filter(g => (g.target_weight ?? 0) >= 100 && g.exercises?.name === 'Développé couché' && g.status === 'Atteint').map(g => (
-                  <div key={g.id} className="text-xs text-gray-500 mt-1">Atteint le {new Date(g.updated_at || g.created_at).toLocaleDateString('fr-FR')}</div>
-                ))}
-              </div>
-              {/* Badge Régulier */}
-              <div className={`text-center p-4 rounded-lg ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'bg-gray-100' : 'bg-gray-50 opacity-50'}`}>
-                <Calendar className={`h-8 w-8 mx-auto mb-2 ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-700' : 'text-gray-400'}`} />
-                <h3 className={`font-medium ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-900' : 'text-gray-500'}`}>Régulier</h3>
-                <p className={`text-sm ${(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 ? 'text-gray-600' : 'text-gray-400'}`}>30 jours consécutifs</p>
-                {(trainingGoals.filter(g => g.status === 'Atteint').length) >= 30 && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date().toLocaleDateString('fr-FR')}</div>}
-              </div>
+              {trainingGoals.filter(g => g.status !== 'Atteint').map(g => {
+                const { icon, title, desc } = getBadgeIconAndText(g);
+                return (
+                  <div key={g.id} className="text-center p-4 rounded-lg bg-gray-50 opacity-50">
+                    <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{icon}</span>
+                    <h3 className="font-medium text-gray-500">{title}</h3>
+                    <p className="text-sm text-gray-400">{desc || badgeDesc(g) || 'Non atteint'}</p>
+                  </div>
+                );
+              })}
+              {trainingGoals.filter(g => g.status !== 'Atteint').length === 0 && (
+                <div className="col-span-2 text-center text-gray-400 italic">Aucun badge à valider, lance-toi un nouveau défi !</div>
+              )}
             </div>
           </div>
         </motion.div>
 
         {/* Modal ajout objectif */}
         {showGoalModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm modal-backdrop"
+            style={{ backdropFilter: 'blur(8px)' }}
+          >
             <form
               onSubmit={handleAddGoal}
               className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative"
@@ -801,29 +1344,7 @@ export default function ProgressPage() {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">Type d&apos;objectif</label>
-                <select
-                  value={goalType}
-                  onChange={e => setGoalType(e.target.value as 'kg' | 'reps')}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="kg">Poids (kg)</option>
-                  <option value="reps">Répétitions (reps)</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">Valeur cible</label>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={goalValue}
-                  onChange={e => setGoalValue(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
+              {dynamicGoalFields}
               {goalError && <div className="text-red-500 text-sm mb-2">{goalError}</div>}
               <button
                 type="submit"
@@ -833,6 +1354,31 @@ export default function ProgressPage() {
                 {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l&apos;objectif</>}
               </button>
             </form>
+          </div>
+        )}
+
+        {/* Modal de confirmation suppression */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Trash2 className="h-6 w-6 text-red-500" /> Supprimer l'objectif ?</h2>
+              <p className="mb-6">Tu es sûr de vouloir supprimer cet objectif ? IronBuddy va pleurer un peu…</p>
+              <div className="flex justify-end gap-2">
+                <button onClick={cancelDeleteGoal} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
+                <button onClick={confirmDeleteGoal} className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold">Supprimer</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Animation/message de félicitations */}
+        {showCongrats && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+            <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
+              <span className="text-5xl mb-4">🏅</span>
+              <h2 className="text-2xl font-bold text-orange-600 mb-2">Félicitations !</h2>
+              <p className="text-lg text-gray-800">{congratsMsg}</p>
+            </div>
           </div>
         )}
       </div>

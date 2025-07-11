@@ -12,10 +12,16 @@ function AuthContent() {
   const [supabase] = useState(() => createClient())
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [showSignUp, setShowSignUp] = useState(false)
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  // Champs custom pour inscription
+  const [signupEmail, setSignupEmail] = useState('')
+  const [signupPassword, setSignupPassword] = useState('')
+  const [signupConfirm, setSignupConfirm] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams();
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     // Gestion des messages d'erreur dans l'URL
@@ -48,9 +54,11 @@ function AuthContent() {
       }
     }
     checkUser()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setIsLoggedIn(true)
+        const user = session?.user
+        setUserEmail(user?.email ?? null)
         router.push('/')
       }
       if (event === 'SIGNED_OUT') {
@@ -67,11 +75,59 @@ function AuthContent() {
     return () => subscription.unsubscribe()
   }, [supabase, router, searchParams])
 
+  useEffect(() => {
+    // Détection du mode inscription via le DOM (champ de confirmation de mot de passe)
+    const observer = new MutationObserver(() => {
+      const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
+      // This state is no longer used for the custom signup form, but kept for potential future use or if the Auth component itself manages it.
+      // setShowPseudo(!!confirmInput); 
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Initial check
+    const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
+    // setShowPseudo(!!confirmInput); // This state is no longer used for the custom signup form
+    return () => observer.disconnect();
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     setIsLoggedIn(false)
     setUserEmail(null)
     router.push('/auth') // Toujours rediriger vers la page de connexion
+  }
+
+  // Gestion inscription custom
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrorMsg(null)
+    if (!signupEmail || !signupPassword || !signupConfirm) {
+      setErrorMsg('Tous les champs sont obligatoires.')
+      return
+    }
+    if (signupPassword !== signupConfirm) {
+      setErrorMsg('Les mots de passe ne correspondent pas.')
+      return
+    }
+    setLoading(true)
+    const { data, error } = await supabase.auth.signUp({
+      email: signupEmail,
+      password: signupPassword
+    })
+    if (error) {
+      setErrorMsg(error.message)
+      setLoading(false)
+      return
+    }
+    // Ajoute le pseudo dans la table profiles
+    if (data.user) {
+      await supabase.from('profiles').update({ pseudo: signupEmail }).eq('id', data.user.id)
+    }
+    setLoading(false)
+    setShowSignUp(false)
+    setSignupEmail('')
+    setSignupPassword('')
+    setSignupConfirm('')
+    setErrorMsg('Inscription réussie ! Vérifie tes emails pour valider ton compte.')
   }
 
   return (
@@ -91,67 +147,51 @@ function AuthContent() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">IronTrack</h1>
           <p className="text-gray-600">Ton coach muscu personnel</p>
         </div>
-
         {/* Affichage des messages d'erreur */}
         {errorMsg && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-center">
             {errorMsg}
           </div>
         )}
-
         {/* Formulaire changement mot de passe prioritaire */}
         {showChangePassword ? (
-          <>
-            <Auth
-              supabaseClient={supabase}
-              view="update_password"
-              appearance={{
-                theme: ThemeSupa,
-                variables: {
-                  default: {
-                    colors: {
-                      brand: '#f97316',
-                      brandAccent: '#ea580c',
-                    },
+          <Auth
+            supabaseClient={supabase}
+            view="update_password"
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#f97316',
+                    brandAccent: '#ea580c',
                   },
                 },
-                style: {
-                  button: {
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    padding: '12px 24px',
-                  },
-                  input: {
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    padding: '12px 16px',
-                  },
+              },
+              style: {
+                button: {
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  padding: '12px 24px',
                 },
-              }}
-              localization={{
-                variables: {
-                  update_password: {
-                    password_label: 'Nouveau mot de passe',
-                    button_label: 'Mettre à jour le mot de passe',
-                    confirmation_text: 'Mot de passe mis à jour avec succès',
-                  },
+                input: {
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  padding: '12px 16px',
                 },
-              }}
-            />
-            <button
-              onClick={() => {
-                if (window.history.length > 1) {
-                  window.history.back();
-                } else {
-                  router.push('/');
-                }
-              }}
-              className="mt-4 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors"
-            >
-              Retour
-            </button>
-          </>
+              },
+            }}
+            localization={{
+              variables: {
+                update_password: {
+                  password_label: 'Nouveau mot de passe',
+                  button_label: 'Mettre à jour le mot de passe',
+                  confirmation_text: 'Mot de passe mis à jour avec succès',
+                },
+              },
+            }}
+          />
         ) : isLoggedIn ? (
           <div className="text-center space-y-6">
             <div>
@@ -166,9 +206,64 @@ function AuthContent() {
               <span>Se déconnecter</span>
             </button>
           </div>
+        ) : showSignUp ? (
+          <form onSubmit={handleSignUp} className="space-y-6">
+            <div>
+              <label htmlFor="signupEmail" className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                id="signupEmail"
+                type="email"
+                autoComplete="email"
+                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
+                value={signupEmail}
+                onChange={e => setSignupEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="signupPassword" className="block text-sm font-medium text-gray-700">Mot de passe</label>
+              <input
+                id="signupPassword"
+                type="password"
+                autoComplete="new-password"
+                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
+                value={signupPassword}
+                onChange={e => setSignupPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="signupConfirm" className="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
+              <input
+                id="signupConfirm"
+                type="password"
+                autoComplete="new-password"
+                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
+                value={signupConfirm}
+                onChange={e => setSignupConfirm(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-base"
+              disabled={loading}
+            >
+              {loading ? 'Inscription...' : 'S\'inscrire'}
+            </button>
+            <div className="text-center mt-2">
+              <button
+                type="button"
+                className="text-orange-600 hover:underline text-sm"
+                onClick={() => setShowSignUp(false)}
+              >
+                Déjà un compte ? Se connecter
+              </button>
+            </div>
+          </form>
         ) : (
           <>
-            {/* Formulaire d'authentification */}
+            {/* Formulaire d'authentification (connexion) */}
             <Auth
               supabaseClient={supabase}
               appearance={{
@@ -196,7 +291,7 @@ function AuthContent() {
                 },
               }}
               providers={['google']}
-              redirectTo={process.env.NEXT_PUBLIC_SITE_URL + '/auth/callback'}
+              redirectTo={process.env.NEXT_PUBLIC_SITE_URL + '/'}
               localization={{
                 variables: {
                   sign_in: {
@@ -235,17 +330,25 @@ function AuthContent() {
                 },
               }}
             />
-            {/* Informations supplémentaires */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500">
-                En continuant, tu acceptes nos{' '}
-                <a href="#" className="text-orange-600 hover:text-orange-700 font-medium">
-                  conditions d&apos;utilisation
-                </a>
-              </p>
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                className="text-orange-600 hover:underline text-sm"
+                onClick={() => setShowSignUp(true)}
+              >
+                Pas de compte ? S'inscrire
+              </button>
             </div>
           </>
         )}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            En continuant, tu acceptes nos{' '}
+            <a href="#" className="text-orange-600 hover:text-orange-700 font-medium">
+              conditions d&apos;utilisation
+            </a>
+          </p>
+        </div>
       </motion.div>
     </div>
   )

@@ -49,6 +49,7 @@ interface SupabaseProfile {
   goal?: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance';
   experience?: 'Débutant' | 'Intermédiaire' | 'Avancé';
   created_at: string;
+  pseudo?: string; // Ajout du champ pseudo
 }
 
 // Définition des badges par défaut
@@ -146,6 +147,32 @@ const defaultBadges = [
     },
     getDate: () => null // À améliorer si tu veux la date du 3e objectif
   },
+  {
+    key: 'cardio-libre',
+    icon: '🚴‍♂️', // À remplacer par une icône SVG plus tard si besoin
+    title: 'Cardio Libre',
+    description: 'Séance cardio sans séries !',
+    validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => {
+      const nom = g.exercises?.name?.toLowerCase() || '';
+      // On tente d'accéder à g.exercises?.sets, sinon on considère 0 si non défini
+      const sets = (g as any).exercises?.sets ?? 0;
+      return (
+        (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
+        (sets === 0)
+      );
+    }),
+    getDate: (goals: TrainingGoal[]) => {
+      const g = goals.find((g: TrainingGoal) => {
+        const nom = g.exercises?.name?.toLowerCase() || '';
+        const sets = (g as any).exercises?.sets ?? 0;
+        return (
+          (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
+          (sets === 0)
+        );
+      });
+      return g?.updated_at || g?.created_at;
+    }
+  },
 ];
 
 export default function ProfilePage() {
@@ -200,11 +227,68 @@ export default function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [achievedGoals, setAchievedGoals] = useState<any[]>([]);
 
+  // useEffect pour la mascotte (OK)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('mascot', selectedMascot);
     }
   }, [selectedMascot]);
+
+  // useEffect pour charger le profil (OK)
+  useEffect(() => {
+    loadProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useEffect pour charger la préférence notification (OK)
+  useEffect(() => {
+    const fetchNotifPref = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      try {
+        const res = await supabase.from('user_settings').select('notifications_enabled').eq('user_id', user.id).single();
+        if (!res.data) {
+          await supabase.from('user_settings').upsert([{ user_id: user.id }], { onConflict: 'user_id' });
+        }
+        if (res.data && res.data.notifications_enabled) setNotificationsEnabled(true);
+      } catch (err) {
+        console.error('[user_settings] fetchNotifPref error:', err);
+      }
+    };
+    fetchNotifPref();
+  }, []);
+
+  // useEffect pour charger la préférence de partage de planning (OK)
+  useEffect(() => {
+    const fetchSharePlanning = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      try {
+        const res = await supabase.from('user_settings').select('share_planning').eq('user_id', user.id).single();
+        if (!res.data) {
+          await supabase.from('user_settings').upsert([{ user_id: user.id }], { onConflict: 'user_id' });
+        }
+        if (res.data && res.data.share_planning) setSharePlanning(true);
+      } catch (err) {
+        console.error('[user_settings] fetchSharePlanning error:', err);
+      }
+    };
+    fetchSharePlanning();
+  }, []);
+
+  // useEffect pour la redirection si non connecté (OK)
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   // Récupérer les badges de l'utilisateur
   const loadAchievements = async (userId: string) => {
@@ -285,7 +369,8 @@ export default function ProfilePage() {
       gender: profileData.gender || 'Homme',
       goal: profileData.goal || 'Prise de masse',
       experience: profileData.experience || 'Débutant',
-      joinDate: profileData.created_at
+      joinDate: profileData.created_at,
+      pseudo: profileData.pseudo || ''
     }
     setProfile(userProfile)
     await loadWorkoutStats(user.id)
@@ -293,12 +378,6 @@ export default function ProfilePage() {
     await loadAchievedGoals(user.id)
     setLoading(false)
   }
-
-  useEffect(() => {
-    loadProfileData()
-    // fetchSettings() supprimé car obsolète
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const handleIronBuddyLevelChange = async (level: 'discret' | 'normal' | 'ambianceur') => {
     setIronBuddyLevel(level)
@@ -330,7 +409,8 @@ export default function ProfilePage() {
         age: profile.age,
         gender: profile.gender,
         goal: profile.goal,
-        experience: profile.experience
+        experience: profile.experience,
+        pseudo: profile.pseudo // Ajout de la sauvegarde du pseudo
       })
       .eq('id', profile.id)
     setIsEditing(false)
@@ -640,70 +720,45 @@ export default function ProfilePage() {
     });
   };
 
-  useEffect(() => {
-    // Charger la préférence depuis Supabase au chargement
-    const fetchNotifPref = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from('user_settings').select('notifications_enabled').eq('user_id', user.id).single();
-      if (data && data.notifications_enabled) setNotificationsEnabled(true);
-    };
-    fetchNotifPref();
-  }, []);
-
   const handleToggleNotifications = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    if (!notificationsEnabled) {
-      // Demande la permission
-      if ('Notification' in window) {
+    try {
+      const newValue = !notificationsEnabled;
+      setNotificationsEnabled(newValue);
+      await supabase.from('user_settings').upsert(
+        [{ user_id: user.id, notifications_enabled: newValue }],
+        { onConflict: 'user_id' }
+      );
+      if (newValue && 'Notification' in window) {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
           new Notification('IronBuddy', { body: "C'est l'heure de ta séance !" });
-          setNotificationsEnabled(true);
-          await supabase.from('user_settings').upsert(
-            [{ user_id: user.id, notifications_enabled: true }],
-            { onConflict: 'user_id' }
-          );
         } else {
           alert('Permission de notification refusée. IronBuddy ne pourra pas te réveiller !');
         }
       }
-    } else {
-      setNotificationsEnabled(false);
-      await supabase.from('user_settings').upsert(
-        [{ user_id: user.id, notifications_enabled: false }],
-        { onConflict: 'user_id' }
-      );
+    } catch (err) {
+      console.error('[user_settings] handleToggleNotifications error:', err);
     }
   };
-
-  useEffect(() => {
-    // Charger la préférence de partage de planning depuis Supabase au chargement
-    const fetchSharePlanning = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from('user_settings').select('share_planning').eq('user_id', user.id).single();
-      if (data && data.share_planning) setSharePlanning(true);
-    };
-    fetchSharePlanning();
-  }, []);
 
   const handleToggleSharePlanning = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    setSharePlanning((prev) => !prev);
-    const newValue = !sharePlanning;
-    console.log('Switch partage planning cliqué, nouvelle valeur:', newValue);
-    await supabase.from('user_settings').upsert(
-      [{ user_id: user.id, share_planning: newValue }],
-      { onConflict: 'user_id' }
-    );
-    alert('Préférence de partage sauvegardée !');
+    try {
+      const newValue = !sharePlanning;
+      setSharePlanning(newValue);
+      await supabase.from('user_settings').upsert(
+        [{ user_id: user.id, share_planning: newValue }],
+        { onConflict: 'user_id' }
+      );
+      alert('Préférence de partage sauvegardée !');
+    } catch (err) {
+      console.error('[user_settings] handleToggleSharePlanning error:', err);
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -851,15 +906,39 @@ export default function ProfilePage() {
                     <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
                       <div className="flex flex-col items-center md:items-start w-full">
                         <span className="text-xs text-gray-500">Âge</span>
-                        <input type="number" className="w-full md:w-20 px-2 py-1 rounded border border-gray-200 text-center md:text-left" value={profile.age} readOnly={!isEditing} onChange={e => handleProfileChange('age', Number(e.target.value))} />
+                        {isEditing ? (
+                          <div className="flex items-center gap-2">
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('age', Math.max(0, (profile.age || 0) - 1))}>-</button>
+                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.age} maxLength={3} onChange={e => handleProfileChange('age', Number(e.target.value.replace(/\D/g, '')))} aria-label="Âge" />
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('age', Math.min(120, (profile.age || 0) + 1))}>+</button>
+                          </div>
+                        ) : (
+                          <div>{profile.age}</div>
+                        )}
                       </div>
                       <div className="flex flex-col items-center md:items-start w-full">
                         <span className="text-xs text-gray-500">Taille</span>
-                        <input type="number" className="w-full md:w-20 px-2 py-1 rounded border border-gray-200 text-center md:text-left" value={profile.height} readOnly={!isEditing} onChange={e => handleProfileChange('height', Number(e.target.value))} />
+                        {isEditing ? (
+                          <div className="flex items-center gap-2">
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.max(0, (profile.height || 0) - 1))}>-</button>
+                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.height} maxLength={3} onChange={e => handleProfileChange('height', Number(e.target.value.replace(/\D/g, '')))} aria-label="Taille" />
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.min(250, (profile.height || 0) + 1))}>+</button>
+                          </div>
+                        ) : (
+                          <div>{profile.height}</div>
+                        )}
                       </div>
                       <div className="flex flex-col items-center md:items-start w-full">
                         <span className="text-xs text-gray-500">Poids</span>
-                        <input type="number" className="w-full md:w-20 px-2 py-1 rounded border border-gray-200 text-center md:text-left" value={profile.weight} readOnly={!isEditing} onChange={e => handleProfileChange('weight', Number(e.target.value))} />
+                        {isEditing ? (
+                          <div className="flex items-center gap-2">
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.max(0, (profile.weight || 0) - 1))}>-</button>
+                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.weight} maxLength={3} onChange={e => handleProfileChange('weight', Number(e.target.value.replace(/\D/g, '')))} aria-label="Poids" />
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.min(300, (profile.weight || 0) + 1))}>+</button>
+                          </div>
+                        ) : (
+                          <div>{profile.weight}</div>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col items-center md:items-end w-full md:w-auto mt-2 md:mt-0">
@@ -877,6 +956,24 @@ export default function ProfilePage() {
                     <span className="text-gray-500">Email</span>
                     <div className="font-medium text-gray-900 break-all">{profile ? displayOrDefault(profile.email) : null}</div>
                   </div>
+                  {isEditing ? (
+                    <div className="mb-4">
+                      <label htmlFor="pseudo" className="block text-sm font-medium text-gray-700">Pseudo</label>
+                      <input
+                        id="pseudo"
+                        type="text"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                        value={profile?.pseudo || ''}
+                        onChange={e => handleProfileChange('pseudo', e.target.value)}
+                        placeholder="Ton pseudo (affiché publiquement)"
+                      />
+                    </div>
+                  ) : (
+                    <div className="mb-4">
+                      <span className="block text-sm font-medium text-gray-700">Pseudo</span>
+                      <span className="mt-1 block text-gray-900">{profile?.pseudo || profile?.name || profile?.email}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="text-gray-500">Objectif</span>
                     <div className="font-medium text-gray-900">

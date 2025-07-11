@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { createClient } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 // Importer les conseils de la mascotte
 import { advices as mascotAdvices } from '../../components/ui/Mascot';
 
@@ -58,6 +59,18 @@ const mealTypes = [
 ]
 
 export default function NutritionPage() {
+  const router = useRouter();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+  }, []);
+
   const [meals, setMeals] = useState<Meal[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddModal, setShowAddModal] = useState(false)

@@ -23,6 +23,8 @@ export default function NewExercisePage() {
   const [firstWeight, setFirstWeight] = useState('')
   const [firstReps, setFirstReps] = useState('')
   const [sets, setSets] = useState(3)
+  const [minutes, setMinutes] = useState('')
+  const [seconds, setSeconds] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function NewExercisePage() {
       muscle_group: muscle,
       equipment_id: equipmentId,
       difficulty,
-      sets
+      sets,
+      duration_minutes: minutes ? Number(minutes) : null,
+      duration_seconds: seconds ? Number(seconds) : null
     }).select('id').single()
     if (error || !exerciseData) {
       setLoading(false)
@@ -74,8 +78,14 @@ export default function NewExercisePage() {
     if (!newEquipment.trim()) return
     setAddingEquipment(true)
     const supabase = createClient()
-    const description = newEquipmentDescription.trim() || `Équipement ajouté par l&apos;utilisateur`
-    const { data, error } = await supabase.from('equipment').insert({ name: newEquipment.trim(), description }).select('id, name, description').single()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert("Utilisateur non connecté !")
+      setAddingEquipment(false)
+      return
+    }
+    const description = newEquipmentDescription.trim() || `Équipement ajouté par l'utilisateur`
+    const { data, error } = await supabase.from('equipment').insert({ name: newEquipment.trim(), description, user_id: user.id }).select('id, name, description').single()
     setAddingEquipment(false)
     if (!error && data) {
       setEquipmentList(prev => [...prev, data])
@@ -83,7 +93,7 @@ export default function NewExercisePage() {
       setNewEquipment('')
       setNewEquipmentDescription('')
     } else {
-      alert("Erreur lors de l&apos;ajout de l&apos;équipement : " + (error?.message || ''))
+      alert("Erreur lors de l'ajout de l'équipement : " + (error?.message || ''))
     }
   }
 
@@ -173,12 +183,34 @@ export default function NewExercisePage() {
           <label className="block text-gray-700 font-medium mb-2">Nombre de séries</label>
           <input
             type="number"
-            min="1"
+            min="0"
             step="1"
             value={sets}
             onChange={e => setSets(Number(e.target.value))}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
           />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Temps d'exécution (optionnel)</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              min="0"
+              value={minutes}
+              onChange={e => setMinutes(e.target.value)}
+              placeholder="Minutes"
+              className="w-1/2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            />
+            <input
+              type="number"
+              min="0"
+              max="59"
+              value={seconds}
+              onChange={e => setSeconds(e.target.value)}
+              placeholder="Secondes"
+              className="w-1/2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
         </div>
         <div className="max-sm:sticky max-sm:bottom-0 max-sm:left-0 max-sm:w-full max-sm:bg-white max-sm:pt-2 max-sm:z-20 max-sm:shadow-[0_-2px_12px_0_rgba(0,0,0,0.07)] space-y-2">
           <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
