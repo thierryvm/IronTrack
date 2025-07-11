@@ -16,65 +16,146 @@ const exerciseTypes = [
 
 // Ajout de la fonction de suggestions dynamiques
 function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: any}> {
+  // Table de correspondance nom -> groupe musculaire
+  const muscleMap: Record<string, string> = {
+    'pompe': 'Pectoraux',
+    'traction': 'Dos',
+    'squat': 'Jambes',
+    'course': 'Jambes',
+    'vélo': 'Jambes',
+    'rameur': 'Dos',
+    'abdo': 'Abdominaux',
+    'fente': 'Jambes',
+    'dips': 'Triceps',
+    'développé': 'Pectoraux',
+    'rowing': 'Dos',
+    'soulevé': 'Jambes',
+    'curl': 'Biceps',
+    'presse': 'Jambes',
+    'hip thrust': 'Fessiers',
+    'gainage': 'Abdominaux',
+  };
+  // Table de correspondance nom -> équipement
+  const equipmentMap: Record<string, string> = {
+    'pompe': 'Poids du corps',
+    'traction': 'Barre de traction',
+    'squat': 'Barre libre',
+    'course': 'Poids du corps',
+    'vélo': 'Machine',
+    'rameur': 'Machine',
+    'abdo': 'Poids du corps',
+    'fente': 'Poids du corps',
+    'dips': 'Barre de traction',
+    'développé': 'Barre + banc',
+    'rowing': 'Barre libre',
+    'soulevé': 'Barre libre',
+    'curl': 'Haltères',
+    'presse': 'Machine',
+    'hip thrust': 'Barre libre',
+    'gainage': 'Poids du corps',
+  };
+  // Table de correspondance nom -> difficulté
+  const difficultyMap: Record<string, string> = {
+    'pompe': 'Débutant',
+    'traction': 'Intermédiaire',
+    'squat': 'Intermédiaire',
+    'course': 'Débutant',
+    'vélo': 'Débutant',
+    'rameur': 'Débutant',
+    'abdo': 'Débutant',
+    'fente': 'Débutant',
+    'dips': 'Intermédiaire',
+    'développé': 'Intermédiaire',
+    'rowing': 'Intermédiaire',
+    'soulevé': 'Avancé',
+    'curl': 'Débutant',
+    'presse': 'Débutant',
+    'hip thrust': 'Intermédiaire',
+    'gainage': 'Débutant',
+  };
+  // Table de correspondance nom -> suggestion label
+  const labelMap: Record<string, string> = {
+    'pompe': 'Pompes',
+    'traction': 'Tractions',
+    'squat': 'Squat',
+    'course': 'Course',
+    'vélo': 'Vélo',
+    'rameur': 'Rameur',
+    'abdo': 'Abdos',
+    'fente': 'Fentes',
+    'dips': 'Dips',
+    'développé': 'Développé couché',
+    'rowing': 'Rowing',
+    'soulevé': 'Soulevé de terre',
+    'curl': 'Curl',
+    'presse': 'Presse',
+    'hip thrust': 'Hip Thrust',
+    'gainage': 'Gainage',
+  };
+  // Utilitaire pour trouver la clé correspondante
+  function findKey(n: string) {
+    return Object.keys(muscleMap).find(k => n.includes(k));
+  }
   const n = name.toLowerCase();
+  const key = findKey(n) || '';
   // Suggestions muscu
   if (type === 'Musculation') {
-    if (n.includes('pompe')) {
+    if (key === 'pompe') {
       return [
-        { label: '20 pompes', values: { firstReps: '20', firstWeight: '', sets: 3 } },
-        { label: '50 pompes', values: { firstReps: '50', firstWeight: '', sets: 4 } },
-        { label: '100 pompes (IronBuddy)', values: { firstReps: '100', firstWeight: '', sets: 5 } },
+        { label: '20 pompes', values: { name: 'Pompes', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '20', firstWeight: '', sets: 3 } },
+        { label: '50 pompes', values: { name: 'Pompes', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '50', firstWeight: '', sets: 4 } },
+        { label: '100 pompes (IronBuddy)', values: { name: 'Pompes', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '100', firstWeight: '', sets: 5 } },
       ];
     }
-    if (n.includes('traction')) {
+    if (key === 'traction') {
       return [
-        { label: '10 tractions', values: { firstReps: '10', firstWeight: '', sets: 3 } },
-        { label: '20 tractions lestées', values: { firstReps: '20', firstWeight: '10', sets: 4 } },
+        { label: '10 tractions', values: { name: 'Tractions', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '10', firstWeight: '', sets: 3 } },
+        { label: '20 tractions lestées', values: { name: 'Tractions', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '20', firstWeight: '10', sets: 4 } },
       ];
     }
-    if (n.includes('squat')) {
+    if (key === 'squat') {
       return [
-        { label: '20 squats à 60kg', values: { firstReps: '20', firstWeight: '60', sets: 3 } },
-        { label: '10 squats à 100kg', values: { firstReps: '10', firstWeight: '100', sets: 4 } },
+        { label: '20 squats à 60kg', values: { name: 'Squat', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '20', firstWeight: '60', sets: 3 } },
+        { label: '10 squats à 100kg', values: { name: 'Squat', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], firstReps: '10', firstWeight: '100', sets: 4 } },
       ];
     }
     // Suggestions génériques muscu
     return [
-      { label: '10 reps à 50kg', values: { firstReps: '10', firstWeight: '50', sets: 3 } },
-      { label: '20 reps au poids du corps', values: { firstReps: '20', firstWeight: '', sets: 3 } },
-      { label: '100 reps (challenge)', values: { firstReps: '100', firstWeight: '', sets: 5 } },
+      { label: '10 reps à 50kg', values: { name: 'Développé couché', muscle: 'Pectoraux', equipment: 'Barre + banc', difficulty: 'Intermédiaire', firstReps: '10', firstWeight: '50', sets: 3 } },
+      { label: '20 reps au poids du corps', values: { name: 'Pompes', muscle: 'Pectoraux', equipment: 'Poids du corps', difficulty: 'Débutant', firstReps: '20', firstWeight: '', sets: 3 } },
+      { label: '100 reps (challenge)', values: { name: 'Pompes', muscle: 'Pectoraux', equipment: 'Poids du corps', difficulty: 'Débutant', firstReps: '100', firstWeight: '', sets: 5 } },
     ];
   }
   // Suggestions cardio
   if (type === 'Cardio') {
-    if (n.includes('course')) {
+    if (key === 'course') {
       return [
-        { label: '5 km en 30 min', values: { distance: '5', distanceUnit: 'km', minutes: '30', speed: '10', speedUnit: 'km/h', calories: '350' } },
-        { label: '10 km en 1h', values: { distance: '10', distanceUnit: 'km', minutes: '60', speed: '10', speedUnit: 'km/h', calories: '700' } },
+        { label: '5 km en 30 min', values: { name: 'Course', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], distance: '5', distanceUnit: 'km', minutes: '30', speed: '10', speedUnit: 'km/h', calories: '350' } },
+        { label: '10 km en 1h', values: { name: 'Course', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], distance: '10', distanceUnit: 'km', minutes: '60', speed: '10', speedUnit: 'km/h', calories: '700' } },
       ];
     }
-    if (n.includes('vélo')) {
+    if (key === 'vélo') {
       return [
-        { label: '20 km en 1h', values: { distance: '20', distanceUnit: 'km', minutes: '60', speed: '20', speedUnit: 'km/h', calories: '500' } },
-        { label: '10 km en 30 min', values: { distance: '10', distanceUnit: 'km', minutes: '30', speed: '20', speedUnit: 'km/h', calories: '250' } },
+        { label: '20 km en 1h', values: { name: 'Vélo', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], distance: '20', distanceUnit: 'km', minutes: '60', speed: '20', speedUnit: 'km/h', calories: '500' } },
+        { label: '10 km en 30 min', values: { name: 'Vélo', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], distance: '10', distanceUnit: 'km', minutes: '30', speed: '20', speedUnit: 'km/h', calories: '250' } },
       ];
     }
-    if (n.includes('rameur')) {
+    if (key === 'rameur') {
       return [
-        { label: '2000 m en 8 min', values: { distance: '2', distanceUnit: 'km', minutes: '8', speed: '15', speedUnit: 'km/h', calories: '150' } },
+        { label: '2000 m en 8 min', values: { name: 'Rameur', muscle: muscleMap[key], equipment: equipmentMap[key], difficulty: difficultyMap[key], distance: '2', distanceUnit: 'km', minutes: '8', speed: '15', speedUnit: 'km/h', calories: '150' } },
       ];
     }
     // Suggestions génériques cardio
     return [
-      { label: '30 min à 10 km/h', values: { minutes: '30', speed: '10', speedUnit: 'km/h', calories: '300' } },
-      { label: '5 km en 25 min', values: { distance: '5', distanceUnit: 'km', minutes: '25', speed: '12', speedUnit: 'km/h', calories: '350' } },
-      { label: '300 calories', values: { calories: '300', minutes: '30' } },
+      { label: '30 min à 10 km/h', values: { name: 'Course', muscle: 'Jambes', equipment: 'Poids du corps', difficulty: 'Débutant', minutes: '30', speed: '10', speedUnit: 'km/h', calories: '300' } },
+      { label: '5 km en 25 min', values: { name: 'Course', muscle: 'Jambes', equipment: 'Poids du corps', difficulty: 'Débutant', distance: '5', distanceUnit: 'km', minutes: '25', speed: '12', speedUnit: 'km/h', calories: '350' } },
+      { label: '300 calories', values: { name: 'Course', muscle: 'Jambes', equipment: 'Poids du corps', difficulty: 'Débutant', calories: '300', minutes: '30' } },
     ];
   }
   // Suggestions fun
   return [
-    { label: '10 burpees en chantant la Marseillaise', values: { firstReps: '10', sets: 1 } },
-    { label: 'Séance déguisé (optionnel)', values: {} },
+    { label: '10 burpees en chantant la Marseillaise', values: { name: 'Burpees', muscle: 'Jambes', equipment: 'Poids du corps', difficulty: 'Débutant', firstReps: '10', sets: 1 } },
+    { label: 'Séance déguisé (optionnel)', values: { name: 'Cardio déguisé', muscle: 'Jambes', equipment: 'Poids du corps', difficulty: 'Débutant' } },
   ];
 }
 
@@ -300,7 +381,16 @@ export default function NewExercisePage() {
                     type="button"
                     className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
                     onClick={() => {
-                      // Pré-remplir les champs dynamiques selon la suggestion
+                      // Pré-remplir tous les champs nécessaires selon la suggestion
+                      setName(s.values.name || '');
+                      setSuggestionName(s.values.name || '');
+                      setMuscle(s.values.muscle || muscleGroups[0]);
+                      // Sélectionner l'équipement si possible
+                      if (s.values.equipment) {
+                        const eq = equipmentList.find(e => e.name.toLowerCase() === s.values.equipment.toLowerCase());
+                        setEquipmentId(eq ? eq.id : null);
+                      }
+                      setDifficulty(s.values.difficulty || difficulties[0]);
                       if (exerciseType === 'Musculation') {
                         setFirstReps(s.values.firstReps || '');
                         setFirstWeight(s.values.firstWeight || '');
