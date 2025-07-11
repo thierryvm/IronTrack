@@ -14,6 +14,70 @@ const exerciseTypes = [
   { value: 'Cardio', label: 'Cardio', icon: Clock, color: 'text-blue-500' }
 ]
 
+// Ajout de la fonction de suggestions dynamiques
+function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: any}> {
+  const n = name.toLowerCase();
+  // Suggestions muscu
+  if (type === 'Musculation') {
+    if (n.includes('pompe')) {
+      return [
+        { label: '20 pompes', values: { firstReps: '20', firstWeight: '', sets: 3 } },
+        { label: '50 pompes', values: { firstReps: '50', firstWeight: '', sets: 4 } },
+        { label: '100 pompes (IronBuddy)', values: { firstReps: '100', firstWeight: '', sets: 5 } },
+      ];
+    }
+    if (n.includes('traction')) {
+      return [
+        { label: '10 tractions', values: { firstReps: '10', firstWeight: '', sets: 3 } },
+        { label: '20 tractions lestées', values: { firstReps: '20', firstWeight: '10', sets: 4 } },
+      ];
+    }
+    if (n.includes('squat')) {
+      return [
+        { label: '20 squats à 60kg', values: { firstReps: '20', firstWeight: '60', sets: 3 } },
+        { label: '10 squats à 100kg', values: { firstReps: '10', firstWeight: '100', sets: 4 } },
+      ];
+    }
+    // Suggestions génériques muscu
+    return [
+      { label: '10 reps à 50kg', values: { firstReps: '10', firstWeight: '50', sets: 3 } },
+      { label: '20 reps au poids du corps', values: { firstReps: '20', firstWeight: '', sets: 3 } },
+      { label: '100 reps (challenge)', values: { firstReps: '100', firstWeight: '', sets: 5 } },
+    ];
+  }
+  // Suggestions cardio
+  if (type === 'Cardio') {
+    if (n.includes('course')) {
+      return [
+        { label: '5 km en 30 min', values: { distance: '5', distanceUnit: 'km', minutes: '30', speed: '10', speedUnit: 'km/h', calories: '350' } },
+        { label: '10 km en 1h', values: { distance: '10', distanceUnit: 'km', minutes: '60', speed: '10', speedUnit: 'km/h', calories: '700' } },
+      ];
+    }
+    if (n.includes('vélo')) {
+      return [
+        { label: '20 km en 1h', values: { distance: '20', distanceUnit: 'km', minutes: '60', speed: '20', speedUnit: 'km/h', calories: '500' } },
+        { label: '10 km en 30 min', values: { distance: '10', distanceUnit: 'km', minutes: '30', speed: '20', speedUnit: 'km/h', calories: '250' } },
+      ];
+    }
+    if (n.includes('rameur')) {
+      return [
+        { label: '2000 m en 8 min', values: { distance: '2', distanceUnit: 'km', minutes: '8', speed: '15', speedUnit: 'km/h', calories: '150' } },
+      ];
+    }
+    // Suggestions génériques cardio
+    return [
+      { label: '30 min à 10 km/h', values: { minutes: '30', speed: '10', speedUnit: 'km/h', calories: '300' } },
+      { label: '5 km en 25 min', values: { distance: '5', distanceUnit: 'km', minutes: '25', speed: '12', speedUnit: 'km/h', calories: '350' } },
+      { label: '300 calories', values: { calories: '300', minutes: '30' } },
+    ];
+  }
+  // Suggestions fun
+  return [
+    { label: '10 burpees en chantant la Marseillaise', values: { firstReps: '10', sets: 1 } },
+    { label: 'Séance déguisé (optionnel)', values: {} },
+  ];
+}
+
 export default function NewExercisePage() {
   const [name, setName] = useState('')
   const [muscle, setMuscle] = useState(muscleGroups[0])
@@ -41,6 +105,9 @@ export default function NewExercisePage() {
   // Champs communs
   const [minutes, setMinutes] = useState('')
   const [seconds, setSeconds] = useState('')
+  
+  // Ajout d’un état pour le nom de l’exercice (pour suggestions dynamiques)
+  const [suggestionName, setSuggestionName] = useState('');
   
   const router = useRouter()
 
@@ -146,7 +213,7 @@ export default function NewExercisePage() {
         
         <div>
           <label className="block text-gray-700 font-medium mb-2">Nom de l&apos;exercice</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <input type="text" value={name} onChange={e => { setName(e.target.value); setSuggestionName(e.target.value); }} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
         
         <div>
@@ -219,6 +286,43 @@ export default function NewExercisePage() {
           </select>
         </div>
         
+        {/* Suggestions dynamiques */}
+        {(() => {
+          const suggestions = getExerciseSuggestions(exerciseType, muscle, suggestionName || name);
+          if (!suggestions.length) return null;
+          return (
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Suggestions rapides</label>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
+                    onClick={() => {
+                      // Pré-remplir les champs dynamiques selon la suggestion
+                      if (exerciseType === 'Musculation') {
+                        setFirstReps(s.values.firstReps || '');
+                        setFirstWeight(s.values.firstWeight || '');
+                        setSets(s.values.sets || 3);
+                      } else if (exerciseType === 'Cardio') {
+                        setDistance(s.values.distance || '');
+                        setDistanceUnit(s.values.distanceUnit || 'km');
+                        setMinutes(s.values.minutes || '');
+                        setSpeed(s.values.speed || '');
+                        setSpeedUnit(s.values.speedUnit || 'km/h');
+                        setCalories(s.values.calories || '');
+                      }
+                    }}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Champs spécifiques à la Musculation */}
         {exerciseType === 'Musculation' && (
           <>

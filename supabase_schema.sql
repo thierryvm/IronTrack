@@ -50,9 +50,27 @@ CREATE TABLE public.exercises (
     id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
+    exercise_type TEXT CHECK (exercise_type IN ('Musculation', 'Cardio')) DEFAULT 'Musculation',
+    muscle_group TEXT, -- Groupe musculaire en texte (pour compatibilité avec l'UI actuelle)
     muscle_group_id INTEGER REFERENCES public.muscle_groups(id),
     equipment_id INTEGER REFERENCES public.equipment(id),
     difficulty TEXT CHECK (difficulty IN ('Débutant', 'Intermédiaire', 'Avancé')) DEFAULT 'Intermédiaire',
+    
+    -- Champs pour Musculation
+    sets INTEGER DEFAULT 3,
+    
+    -- Champs pour Cardio
+    distance DECIMAL(8,2), -- Distance (km, m, miles)
+    distance_unit TEXT DEFAULT 'km',
+    speed DECIMAL(6,2), -- Vitesse (km/h, m/s, mph)
+    speed_unit TEXT DEFAULT 'km/h',
+    calories INTEGER, -- Calories brûlées
+    
+    -- Champs communs
+    duration_minutes INTEGER, -- Durée en minutes
+    duration_seconds INTEGER, -- Durée en secondes
+    
+    -- Champs existants
     description TEXT,
     instructions TEXT,
     video_url TEXT,
@@ -363,4 +381,44 @@ COMMENT ON TABLE public.workouts IS 'Séances d''entraînement';
 COMMENT ON TABLE public.performance_logs IS 'Historique des performances';
 COMMENT ON TABLE public.meals IS 'Repas et nutrition';
 COMMENT ON TABLE public.training_goals IS 'Objectifs d''entraînement';
-COMMENT ON TABLE public.achievements IS 'Badges et récompenses'; 
+COMMENT ON TABLE public.achievements IS 'Badges et récompenses';
+
+-- =====================================================
+-- MIGRATIONS POUR LES NOUVEAUX CHAMPS EXERCISES
+-- =====================================================
+
+-- Ajouter les nouveaux champs à la table exercises existante
+-- (À exécuter si la table existe déjà)
+
+-- Type d'exercice
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS exercise_type TEXT CHECK (exercise_type IN ('Musculation', 'Cardio')) DEFAULT 'Musculation';
+
+-- Groupe musculaire en texte (pour compatibilité avec l'UI actuelle)
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS muscle_group TEXT;
+
+-- Champs pour Musculation
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS sets INTEGER DEFAULT 3;
+
+-- Champs pour Cardio
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS distance DECIMAL(8,2);
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS distance_unit TEXT DEFAULT 'km';
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS speed DECIMAL(6,2);
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS speed_unit TEXT DEFAULT 'km/h';
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS calories INTEGER;
+
+-- Champs communs pour durée
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS duration_minutes INTEGER;
+ALTER TABLE public.exercises ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
+
+-- Mettre à jour les exercices existants pour avoir un type par défaut
+UPDATE public.exercises SET exercise_type = 'Musculation' WHERE exercise_type IS NULL;
+
+-- Mettre à jour les groupes musculaires existants
+UPDATE public.exercises SET muscle_group = 'Pectoraux' WHERE muscle_group IS NULL AND muscle_group_id IS NOT NULL;
+UPDATE public.exercises SET muscle_group = 'Dos' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Dos');
+UPDATE public.exercises SET muscle_group = 'Épaules' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Épaules');
+UPDATE public.exercises SET muscle_group = 'Biceps' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Biceps');
+UPDATE public.exercises SET muscle_group = 'Triceps' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Triceps');
+UPDATE public.exercises SET muscle_group = 'Jambes' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Jambes');
+UPDATE public.exercises SET muscle_group = 'Abdominaux' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Abdominaux');
+UPDATE public.exercises SET muscle_group = 'Fessiers' WHERE muscle_group IS NULL AND muscle_group_id = (SELECT id FROM public.muscle_groups WHERE name = 'Fessiers'); 
