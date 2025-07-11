@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Plus, Eye, Edit, X as LucideX } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 interface Workout {
@@ -16,12 +17,21 @@ interface Workout {
 const PAGE_SIZE = 10;
 
 export default function WorkoutsPage() {
+  const router = useRouter();
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
     loadWorkouts();
   }, [page]);
 

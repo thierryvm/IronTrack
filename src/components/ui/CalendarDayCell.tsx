@@ -35,6 +35,32 @@ function formatDateTime(dateStr: string, timeStr: string) {
   return `${d} - ${t}`;
 }
 
+// Ajoute un composant Tooltip simple
+const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => {
+  const [show, setShow] = useState(false);
+  // Détection mobile simple
+  const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  if (isMobile) return <>{children}</>;
+  return (
+    <span
+      className="relative"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+      tabIndex={0}
+      style={{ outline: 'none' }}
+    >
+      {children}
+      {show && (
+        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap" style={{ minWidth: '80px' }}>
+          {text}
+        </div>
+      )}
+    </span>
+  );
+};
+
 const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
   const [showPopover, setShowPopover] = useState(false);
   const [mobileSessionDetail, setMobileSessionDetail] = useState<null | Session>(null);
@@ -73,7 +99,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
               }}
               title={
                 !isMobile && session.participants && session.participants.length > 0
-                  ? `Séance partagée : ${session.name}\n${formatDateTime(session.scheduled_date || '', session.time || '')}\nPartagée par : ${session.participants[0].name} ${session.participants[0].avatarUrl ? '[Avatar]' : ''}`
+                  ? `Séance partagée : ${session.name}\n${formatDateTime(session.scheduled_date || '', session.time || '')}\nPartagée par : ${session.participants[0].name}`
                   : !isMobile
                   ? `${session.name}${session.time ? ' à ' + session.time : ''}`
                   : undefined
@@ -84,12 +110,14 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             >
               {/* Avatar à gauche si séance partagée */}
               {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
-                <Avatar
-                  src={session.participants[0].avatarUrl}
-                  name={session.participants[0].name}
-                  size={20}
-                  className="mr-1 border-2 border-white shadow-sm bg-white"
-                />
+                <Tooltip text={session.participants[0].name}>
+                  <Avatar
+                    src={session.participants[0].avatarUrl}
+                    name={session.participants[0].name}
+                    size={20}
+                    className="mr-1 border-2 border-white shadow-sm bg-white"
+                  />
+                </Tooltip>
               )}
               <span className="truncate">{session.name}{session.time && <span className="opacity-80"> à {session.time.slice(0,5)}</span>}</span>
             </div>
@@ -144,12 +172,14 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-gray-500">Partagée par</span>
-                    <Avatar
-                      src={session.participants[0].avatarUrl}
-                      name={session.participants[0].name}
-                      size={20}
-                      className="border-2 border-white shadow-sm"
-                    />
+                    <Tooltip text={session.participants[0].name}>
+                      <Avatar
+                        src={session.participants[0].avatarUrl}
+                        name={session.participants[0].name}
+                        size={20}
+                        className="border-2 border-white shadow-sm"
+                      />
+                    </Tooltip>
                     <span className="text-xs text-gray-500">{session.participants[0].name}</span>
                   </div>
                 )}
@@ -193,12 +223,14 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-gray-500">Partagée par</span>
-                <Avatar
-                  src={mobileSessionDetail.participants[0].avatarUrl}
-                  name={mobileSessionDetail.participants[0].name}
-                  size={24}
-                  className="border-2 border-white shadow-sm"
-                />
+                <Tooltip text={mobileSessionDetail.participants[0].name}>
+                  <Avatar
+                    src={mobileSessionDetail.participants[0].avatarUrl}
+                    name={mobileSessionDetail.participants[0].name}
+                    size={24}
+                    className="border-2 border-white shadow-sm"
+                  />
+                </Tooltip>
                 <span className="text-xs text-gray-500">{mobileSessionDetail.participants[0].name}</span>
               </div>
             )}

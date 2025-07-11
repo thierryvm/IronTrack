@@ -26,7 +26,7 @@ export async function GET() {
   // Étape 2 : Récupérer les workouts de ces users avec jointure sur profiles
   const query = supabase
     .from('workouts')
-    .select('id, user_id, name, type, status, scheduled_date, start_time, end_time, notes, created_at, updated_at, profiles:profiles(avatar_url, full_name)')
+    .select('id, user_id, name, type, status, scheduled_date, start_time, end_time, notes, created_at, updated_at, profiles:profiles(avatar_url, full_name, pseudo, email)')
     .in('user_id', userIds)
     .in('status', ['Planifié', 'Réalisé']);
 

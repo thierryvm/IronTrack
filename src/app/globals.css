@@ -74,3 +74,14 @@ body {
 .animate-timer-congrats {
   animation: timer-congrats 1.2s cubic-bezier(.68,-0.55,.27,1.55);
 }
+
+/* Fallback flou modale IronBuddy */
+.modal-backdrop {
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+}
+@supports not (backdrop-filter: blur(8px)) {
+  .modal-backdrop {
+    background: #000 !important;
+  }
+}

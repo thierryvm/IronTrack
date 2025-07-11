@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2 } from 'lucide-react'
 
@@ -32,6 +33,18 @@ const muscleGroups = [
 const PAGE_SIZE = 10;
 
 export default function ExercisesPage() {
+  const router = useRouter();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+  }, []);
+
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('Tous')

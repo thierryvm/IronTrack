@@ -12,4 +12,5 @@ export interface UserProfile {
   goal: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance';
   experience: 'Débutant' | 'Intermédiaire' | 'Avancé';
   joinDate: string;
+  pseudo?: string;
 } 

@@ -51,6 +51,8 @@ interface SharedWorkout {
     avatar_url?: string;
     full_name?: string;
     id?: string;
+    pseudo?: string; // Added pseudo to the interface
+    email?: string; // Added email to the interface
   };
 }
 
@@ -88,18 +90,36 @@ function toDDMMYYYY(date: Date | string): string {
   return `${day}-${month}-${year}`;
 }
 
+// Ajoute une fonction utilitaire pour formater une date JS en 'YYYY-MM-DD' en local (pas UTC)
+function formatDateToYMD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const dayNum = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${dayNum}`;
+}
+
 // Fonction utilitaire pour formater la date en DD-MM-YYYY
 function getDateKey(item: { scheduled_date: string }): string {
   return toDDMMYYYY(item.scheduled_date);
 }
 
 export default function CalendarPage() {
+  const router = useRouter();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+  }, []);
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
-  const router = useRouter()
-  const [userProfile, setUserProfile] = useState<{ avatar_url?: string; full_name?: string }>({});
+  const [userProfile, setUserProfile] = useState<{ avatar_url?: string; full_name?: string; pseudo?: string }>( {} );
   const [sharePlanning, setSharePlanning] = useState(false);
 
   useEffect(() => {
@@ -111,10 +131,22 @@ export default function CalendarPage() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('avatar_url, full_name')
+        .select('avatar_url, full_name, email, pseudo')
         .eq('id', user.id)
         .single();
-      if (profile) setUserProfile(profile);
+      if (profile) {
+        // Si pseudo est vide, on le remplit automatiquement
+        if (!profile.pseudo || profile.pseudo.trim() === '') {
+          const pseudo = (profile.email && profile.email.split('@')[0]) || 'Utilisateur IronTrack';
+          await supabase
+            .from('profiles')
+            .update({ pseudo })
+            .eq('id', user.id);
+          setUserProfile({ ...profile, pseudo });
+        } else {
+          setUserProfile(profile);
+        }
+      }
       // Récupérer la préférence de partage
       const { data: settings } = await supabase
         .from('user_settings')
@@ -127,7 +159,6 @@ export default function CalendarPage() {
   }, [])
 
   useEffect(() => {
-    console.log('Créneaux partagés récupérés:', sharedWorkouts)
   }, [sharedWorkouts])
 
   const loadWorkouts = async () => {
@@ -157,6 +188,8 @@ export default function CalendarPage() {
       console.error('Erreur lors du chargement des créneaux partagés:', error)
     }
   }
+
+  // Après avoir récupéré les séances (workouts et sharedWorkouts)
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -322,37 +355,41 @@ export default function CalendarPage() {
                 {/* Jours du mois */}
                 {days.map((day, index) => {
                   let sessions: CalendarSession[] = [];
+                  const dayYMD = formatDateToYMD(day.date);
                   if (sharePlanning) {
-                    sessions = getSharedForDate(day.date).map(sw => ({
-                      id: `shared-${sw.id}`,
-                      name: sw.name,
-                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
-                      status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
-                      duration: undefined,
-                      isShared: true,
-                      participants: [
-                        {
-                          id: sw.user_id || sw.profiles?.id || '',
-                          name: sw.profiles?.full_name || '',
-                          avatarUrl: sw.profiles?.avatar_url || '/window.svg',
-                        }
-                      ],
-                      time: sw.start_time || '',
-                      exercises: [],
-                      scheduled_date: sw.scheduled_date
-                    }));
+                    const sharedForDate = sharedWorkouts.filter(sw => sw.scheduled_date === dayYMD);
+                    sessions = sharedForDate.map(sw => {
+                      const participant = {
+                        id: sw.user_id || sw.profiles?.id || '',
+                        name: sw.profiles?.pseudo || sw.profiles?.full_name || (sw.profiles?.email && sw.profiles.email.split('@')[0]) || '',
+                        avatarUrl: sw.profiles?.avatar_url || '/window.svg',
+                      };
+                      return {
+                        id: `shared-${String(sw.id)}`,
+                        name: sw.name,
+                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                        status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                        duration: undefined,
+                        isShared: true,
+                        participants: [participant],
+                        scheduled_date: sw.scheduled_date,
+                        time: sw.start_time || '',
+                        exercises: [],
+                      };
+                    });
                   } else {
-                    sessions = getWorkoutsForDate(day.date).map(workout => ({
-                      id: `perso-${workout.id}`,
-                      name: workout.name,
-                      type: workout.type,
-                      status: workout.status,
-                      duration: workout.duration,
+                    const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
+                    sessions = workoutsForDate.map(w => ({
+                      id: String(w.id),
+                      name: w.name,
+                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(w.type) ? w.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                      status: w.status as 'Planifié' | 'Terminé' | 'Annulé',
+                      duration: w.duration,
                       isShared: false,
                       participants: [],
-                      time: '',
-                      exercises: workout.exercises || [],
-                      scheduled_date: workout.scheduled_date
+                      scheduled_date: w.scheduled_date,
+                      time: (w as any).time || '',
+                      exercises: w.exercises || [],
                     }));
                   }
                   const isCurrentDay = isToday(day.date);
@@ -389,7 +426,7 @@ export default function CalendarPage() {
                     let sessions: CalendarSession[] = [];
                     if (sharePlanning) {
                       sessions = getSharedForDate(selectedDate).map(sw => ({
-                        id: `shared-${sw.id}`,
+                        id: `shared-${String(sw.id)}`,
                         name: sw.name,
                         type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
                         status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
@@ -398,7 +435,7 @@ export default function CalendarPage() {
                         participants: [
                           {
                             id: sw.user_id || sw.profiles?.id || '',
-                            name: sw.profiles?.full_name || '',
+                            name: sw.profiles?.pseudo || sw.profiles?.full_name || (sw.profiles?.email && sw.profiles.email.split('@')[0]) || '',
                             avatarUrl: sw.profiles?.avatar_url || '/window.svg',
                           }
                         ],
@@ -408,16 +445,16 @@ export default function CalendarPage() {
                       }));
                     } else {
                       sessions = getWorkoutsForDate(selectedDate).map(workout => ({
-                        id: `perso-${workout.id}`,
+                        id: `perso-${String(workout.id)}`,
                         name: workout.name,
                         type: workout.type,
                         status: workout.status,
                         duration: workout.duration,
                         isShared: false,
                         participants: [],
-                        time: '',
+                        scheduled_date: workout.scheduled_date,
+                        time: (workout as any).time || '',
                         exercises: workout.exercises || [],
-                        scheduled_date: workout.scheduled_date
                       }));
                     }
                     if (sessions.length === 0) {
