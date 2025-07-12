@@ -98,11 +98,6 @@ function formatDateToYMD(date: Date): string {
   return `${year}-${month}-${dayNum}`;
 }
 
-// Fonction utilitaire pour formater la date en DD-MM-YYYY
-function getDateKey(item: { scheduled_date: string }): string {
-  return toDDMMYYYY(item.scheduled_date);
-}
-
 export default function CalendarPage() {
   const router = useRouter();
   useEffect(() => {
@@ -142,9 +137,9 @@ export default function CalendarPage() {
             .from('profiles')
             .update({ pseudo })
             .eq('id', user.id);
-          setUserProfile({ ...profile, pseudo });
+          // setUserProfile({ ...profile, pseudo }); // Variable inutilisée
         } else {
-          setUserProfile(profile);
+          // setUserProfile(profile); // Variable inutilisée
         }
       }
       // Récupérer la préférence de partage
@@ -156,7 +151,7 @@ export default function CalendarPage() {
       setSharePlanning(!!settings?.share_planning);
     };
     fetchProfile();
-  }, [])
+  }, [router])
 
   useEffect(() => {
   }, [sharedWorkouts])
@@ -388,7 +383,7 @@ export default function CalendarPage() {
                       isShared: false,
                       participants: [],
                       scheduled_date: w.scheduled_date,
-                      time: (w as any).time || '',
+                      time: (w as { time?: string }).time || '',
                       exercises: w.exercises || [],
                     }));
                   }
@@ -453,7 +448,7 @@ export default function CalendarPage() {
                         isShared: false,
                         participants: [],
                         scheduled_date: workout.scheduled_date,
-                        time: (workout as any).time || '',
+                        time: (workout as { time?: string }).time || '',
                         exercises: workout.exercises || [],
                       }));
                     }

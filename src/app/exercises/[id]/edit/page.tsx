@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Dumbbell, Save, ArrowLeft, Trophy, Pencil, Check, X, Trash2, Clock, Target } from 'lucide-react'
+import { Dumbbell, Save, Trophy, Pencil, Check, X, Trash2, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 const muscleGroups = [

@@ -78,14 +78,14 @@ function AuthContent() {
   useEffect(() => {
     // Détection du mode inscription via le DOM (champ de confirmation de mot de passe)
     const observer = new MutationObserver(() => {
-      const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
-      // This state is no longer used for the custom signup form, but kept for potential future use or if the Auth component itself manages it.
+      // Cette variable était inutilisée :
+      // const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
       // setShowPseudo(!!confirmInput); 
     });
     observer.observe(document.body, { childList: true, subtree: true });
     // Initial check
-    const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
-    // setShowPseudo(!!confirmInput); // This state is no longer used for the custom signup form
+    // const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
+    // setShowPseudo(!!confirmInput); // Cette variable était inutilisée
     return () => observer.disconnect();
   }, []);
 
