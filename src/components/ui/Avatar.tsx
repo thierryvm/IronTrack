@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import Image from 'next/image';
 
 interface AvatarProps {
@@ -9,11 +9,12 @@ interface AvatarProps {
   onClick?: () => void;
 }
 
-export default function Avatar({ src, name = '', size = 96, className = '', onClick }: AvatarProps) {
-  // Génère les initiales à partir du nom
-  const initials = name
-    ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : '?';
+const Avatar = memo(function Avatar({ src, name = '', size = 96, className = '', onClick }: AvatarProps) {
+  // Génère les initiales à partir du nom (memoized)
+  const initials = useMemo(() => 
+    name ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : '?',
+    [name]
+  );
 
   return (
     <div
@@ -36,4 +37,6 @@ export default function Avatar({ src, name = '', size = 96, className = '', onCl
       )}
     </div>
   );
-} 
+});
+
+export default Avatar; 

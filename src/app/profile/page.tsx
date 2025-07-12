@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Dialog } from '@headlessui/react'
+import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
 import type { TrainingGoal } from '@/types/training-goal.d'; // Adapter le chemin si besoin
@@ -215,15 +215,8 @@ export default function ProfilePage() {
   // Ajout d'une ref pour la section mascotte
   const mascotSectionRef = useRef<HTMLDivElement>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [nutritionGoalsEnabled, setNutritionGoalsEnabled] = useState(false);
   const [sharePlanning, setSharePlanning] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const badgesSectionRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [showBadgeModal, setShowBadgeModal] = useState(false);
    
   const [achievedGoals, setAchievedGoals] = useState<TrainingGoal[]>([]);
 
@@ -289,6 +282,7 @@ export default function ProfilePage() {
     };
     checkAuth();
   }, [router]);
+
 
   // Récupérer les badges de l'utilisateur
   const loadAchievements = async (userId: string) => {
@@ -456,7 +450,6 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté');
       // Récupère toutes les données importantes
-      console.log('[DEBUG] handleExportData: select user_settings')
       const [profileRes, statsRes, workoutsRes, nutritionRes, settingsRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         Promise.resolve({ data: stats }), // stats déjà calculées côté front
@@ -761,17 +754,6 @@ export default function ProfilePage() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function getBadgeIcon(badge: Achievement) { return null; }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function formatBadgeTitle(title: string) { return title; }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const generalBadges = [];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const objectiveBadges = [];
 
   if (loading) {
     return (
@@ -1137,19 +1119,46 @@ export default function ProfilePage() {
                 <Award className="h-6 w-6 text-yellow-500" />
                 <span>Badges validés</span>
               </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {defaultBadges.map(badge => {
-                  const isValid = badge.validate(achievedGoals, stats ?? undefined);
-                  const date = badge.getDate(achievedGoals);
-                  return (
-                    <div key={badge.key} className={`text-center p-4 rounded-lg ${isValid ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
-                      <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${isValid ? '' : 'grayscale text-gray-400'}`}>{badge.icon}</span>
-                      <h3 className={`font-medium ${isValid ? 'text-gray-900' : 'text-gray-500'}`}>{badge.title}</h3>
-                      <p className={`text-sm ${isValid ? 'text-gray-600' : 'text-gray-400'}`}>{badge.description}</p>
-                      {isValid && date && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date(date).toLocaleDateString('fr-FR')}</div>}
+              <div className="space-y-6">
+                {/* Badges automatiques (de la base de données) */}
+                {achievements.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-3">Badges débloqués automatiquement</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {achievements.map(achievement => (
+                        <div key={achievement.id} className="text-center p-4 rounded-lg bg-green-50 border border-green-200">
+                          <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl">{achievement.icon || '🏆'}</span>
+                          <h3 className="font-medium text-gray-900">{achievement.name}</h3>
+                          <p className="text-sm text-gray-600">{achievement.description}</p>
+                          {achievement.unlocked_at && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Débloqué le {new Date(achievement.unlocked_at).toLocaleDateString('fr-FR')}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  );
-                })}
+                  </div>
+                )}
+
+                {/* Badges par défaut (basés sur les objectifs) */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">Badges de progression</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {defaultBadges.map(badge => {
+                      const isValid = badge.validate(achievedGoals, stats ?? undefined);
+                      const date = badge.getDate(achievedGoals);
+                      return (
+                        <div key={badge.key} className={`text-center p-4 rounded-lg ${isValid ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
+                          <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${isValid ? '' : 'grayscale text-gray-400'}`}>{badge.icon}</span>
+                          <h3 className={`font-medium ${isValid ? 'text-gray-900' : 'text-gray-500'}`}>{badge.title}</h3>
+                          <p className={`text-sm ${isValid ? 'text-gray-600' : 'text-gray-400'}`}>{badge.description}</p>
+                          {isValid && date && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date(date).toLocaleDateString('fr-FR')}</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -1372,8 +1381,8 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <Dialog.Title className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</Dialog.Title>
-            <Dialog.Description className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s&apos;en remettre…</Dialog.Description>
+            <DialogTitle className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</DialogTitle>
+            <DialogDescription className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s&apos;en remettre…</DialogDescription>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
               <button onClick={confirmDeleteAccount} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold">Oui, supprimer</button>
@@ -1386,8 +1395,8 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <Dialog.Title className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d&apos;avatar</Dialog.Title>
-            <Dialog.Description className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</Dialog.Description>
+            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d&apos;avatar</DialogTitle>
+            <DialogDescription className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</DialogDescription>
             <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n&apos;est jamais partagée sans ton accord. (RGPD friendly !)</div>
             {selectedFile ? (
               <div className="flex flex-col items-center space-y-4">
@@ -1466,8 +1475,8 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <Dialog.Title className="text-2xl font-bold text-orange-600 mb-2 flex items-center"><Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</Dialog.Title>
-            <Dialog.Description className="mb-4 text-gray-700">Fonctionnalité à venir&nbsp;! IronBuddy révise son plus beau sourire…</Dialog.Description>
+            <DialogTitle className="text-2xl font-bold text-orange-600 mb-2 flex items-center"><Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
+            <DialogDescription className="mb-4 text-gray-700">Fonctionnalité à venir&nbsp;! IronBuddy révise son plus beau sourire…</DialogDescription>
             <div className="flex justify-end">
               <button onClick={() => setShowMascotModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Fermer</button>
             </div>

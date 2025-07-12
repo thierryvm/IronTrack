@@ -313,7 +313,6 @@ export default function HomePage() {
     },
   ]
 
-  console.log('quickActions:', quickActions);
 
   const statCards = [
     {

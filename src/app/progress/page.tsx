@@ -78,7 +78,6 @@ function getGoalBadgeName(goal: TrainingGoal) {
 async function awardGoalBadge(goal: TrainingGoal, userId: string) {
   const supabase = createClient();
   const badgeName = getGoalBadgeName(goal);
-  console.log('[DEBUG] awardGoalBadge userId:', userId, 'badgeName:', badgeName);
   try {
     // Vérifie si le badge existe déjà
     const { data: existing, error: selectError } = await supabase
@@ -113,7 +112,6 @@ async function awardGoalBadge(goal: TrainingGoal, userId: string) {
           console.error('[DEBUG] awardGoalBadge insert error:', insertError.message);
         }
       } else {
-        console.log('[DEBUG] awardGoalBadge: badge déjà existant, pas d\'insertion.');
       }
     }
   } catch (err) {
