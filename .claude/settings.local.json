@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ide__getDiagnostics",
+      "Bash(npm run lint)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:context7.com)",
+      "Bash(npm audit:*)",
+      "Bash(npm run build:*)",
+      "Bash(rmdir:*)",
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)"
+    ],
+    "deny": []
+  }
+}
