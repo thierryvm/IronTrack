@@ -190,7 +190,7 @@ const standardExercises: Record<string, Array<{name: string, label: string, type
 };
 
 // Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
-function getPerfLabel(perf: any, type: string, sets?: number): string {
+function getPerfLabel(perf: Record<string, any>, type: string, sets?: number): string {
   if (type === 'Cardio') {
     let phrase = '';
     if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
@@ -363,7 +363,7 @@ export default function EditExercisePage() {
     const supabase = createClient()
     
     // Préparer les données selon le type d'exercice
-    const updateData: any = {
+    const updateData: Record<string, any> = {
       name,
       muscle_group: muscle,
       exercise_type: exerciseType,
@@ -424,7 +424,7 @@ export default function EditExercisePage() {
       setPerfLoading(false);
       return;
     }
-    let perfData: any = {
+    let perfData: Record<string, any> = {
       user_id: user.id,
       exercise_id: id,
       performed_at: new Date().toISOString(),

@@ -29,7 +29,7 @@ import { useRouter } from 'next/navigation'
 import { Dialog } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
-import type { TrainingGoal } from '@/types/training-goal'; // Adapter le chemin si besoin
+import type { TrainingGoal } from '@/types/training-goal.d'; // Adapter le chemin si besoin
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
 import type { Achievement } from '@/types/achievement';
@@ -155,7 +155,7 @@ const defaultBadges = [
     validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => {
       const nom = g.exercises?.name?.toLowerCase() || '';
       // On tente d'accéder à g.exercises?.sets, sinon on considère 0 si non défini
-      const sets = (g as any).exercises?.sets ?? 0;
+      const sets = (g as Record<string, any>).exercises?.sets ?? 0;
       return (
         (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
         (sets === 0)
@@ -164,7 +164,7 @@ const defaultBadges = [
     getDate: (goals: TrainingGoal[]) => {
       const g = goals.find((g: TrainingGoal) => {
         const nom = g.exercises?.name?.toLowerCase() || '';
-        const sets = (g as any).exercises?.sets ?? 0;
+        const sets = (g as Record<string, any>).exercises?.sets ?? 0;
         return (
           (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
           (sets === 0)
@@ -225,7 +225,7 @@ export default function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [achievedGoals, setAchievedGoals] = useState<any[]>([]);
+  const [achievedGoals, setAchievedGoals] = useState<TrainingGoal[]>([]);
 
   // useEffect pour la mascotte (OK)
   useEffect(() => {

@@ -24,7 +24,6 @@ interface CalendarDayCellProps {
 }
 
 const MAX_SESSIONS_DISPLAY = 2;
-const MAX_AVATARS_DISPLAY = 3;
 
 // Ajoute une fonction utilitaire pour formater la date et l'heure
 function formatDateTime(dateStr: string, timeStr: string) {
@@ -69,14 +68,6 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
 
   // Déduplication robuste : clé unique basée sur id, name et avatarUrl
   const allParticipants = sessions.flatMap((s) => s.participants);
-  const uniqueParticipants = Array.from(
-    new Map(
-      allParticipants.map((p) => [
-        `${String(p.id).trim()}|${(p.name || '').trim()}|${(p.avatarUrl || '').trim()}`,
-        p
-      ])
-    ).values()
-  );
 
   // Détection mobile simple
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;

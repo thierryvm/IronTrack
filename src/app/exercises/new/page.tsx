@@ -15,7 +15,7 @@ const exerciseTypes = [
 ]
 
 // Table d’exercices standards par groupe musculaire
-const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>> = {
+const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, any>}>}>> = {
   'Pectoraux': [
     {
       name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
@@ -156,7 +156,7 @@ const standardExercises: Record<string, Array<{name: string, label: string, type
 };
 
 // Ajout de la fonction de suggestions dynamiques
-function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: any}> {
+function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: Record<string, any>}> {
   // Table de correspondance nom -> groupe musculaire
   const muscleMap: Record<string, string> = {
     'pompe': 'Pectoraux',
@@ -332,7 +332,7 @@ export default function NewExercisePage() {
   const [suggestionName, setSuggestionName] = useState('');
   
   // Ajout d’un état pour l’exercice suggéré
-  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>>([]);
+  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, any>}>}>>([]);
   
   const router = useRouter()
 
@@ -366,7 +366,7 @@ export default function NewExercisePage() {
     }
     
     // Préparer les données selon le type d'exercice
-    const exerciseData: any = {
+    const exerciseData: Record<string, any> = {
       user_id: user.id,
       name,
       muscle_group: muscle,

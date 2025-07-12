@@ -232,23 +232,23 @@ function getBadgeIconAndText(goal: TrainingGoal) {
 function badgeDesc(goal: TrainingGoal) {
   if (goal.target_weight) return `${goal.target_weight} kg`;
   if (goal.target_reps) {
-    const kg = (goal as any).extra_kg;
-    const dur = (goal as any).extra_duration;
+    const kg = (goal as Record<string, any>).extra_kg;
+    const dur = (goal as Record<string, any>).extra_duration;
     if (kg && dur) return `${goal.target_reps} reps à ${kg} kg en ${dur} min`;
     if (kg) return `${goal.target_reps} reps à ${kg} kg`;
     if (dur) return `${goal.target_reps} reps en ${dur} min`;
     return `${goal.target_reps} reps`;
   }
-  if ((goal as any).target_distance) {
-    const dur = (goal as any).extra_duration;
-    const speed = (goal as any).extra_speed;
-    if (dur && speed) return `${(goal as any).target_distance} km en ${dur} min à ${speed} km/h`;
-    if (dur) return `${(goal as any).target_distance} km en ${dur} min`;
-    if (speed) return `${(goal as any).target_distance} km à ${speed} km/h`;
-    return `${(goal as any).target_distance} km`;
+  if ((goal as Record<string, any>).target_distance) {
+    const dur = (goal as Record<string, any>).extra_duration;
+    const speed = (goal as Record<string, any>).extra_speed;
+    if (dur && speed) return `${(goal as Record<string, any>).target_distance} km en ${dur} min à ${speed} km/h`;
+    if (dur) return `${(goal as Record<string, any>).target_distance} km en ${dur} min`;
+    if (speed) return `${(goal as Record<string, any>).target_distance} km à ${speed} km/h`;
+    return `${(goal as Record<string, any>).target_distance} km`;
   }
-  if ((goal as any).target_duration) return `${(goal as any).target_duration} min`;
-  if ((goal as any).target_calories) return `${(goal as any).target_calories} kcal`;
+  if ((goal as Record<string, any>).target_duration) return `${(goal as Record<string, any>).target_duration} min`;
+  if ((goal as Record<string, any>).target_calories) return `${(goal as Record<string, any>).target_calories} kcal`;
   return '';
 }
 
@@ -477,7 +477,7 @@ export default function ProgressPage() {
         return
       }
       // Construction dynamique selon le type d'objectif
-      const insertData: any = {
+      const insertData: Record<string, any> = {
         user_id: user.id,
         exercise_id: Number(goalExerciseId),
         created_at: new Date().toISOString(),
@@ -715,27 +715,27 @@ export default function ProgressPage() {
     setEditGoalId(goal.id);
     setGoalExerciseId(goal.exercise_id.toString());
     // Déduire le type d'objectif et la valeur
-    if ((goal as any).target_duration) {
+    if ((goal as Record<string, any>).target_duration) {
       setGoalType('duration');
-      setGoalValue((goal as any).target_duration.toString());
-    } else if ((goal as any).target_distance) {
+      setGoalValue((goal as Record<string, any>).target_duration.toString());
+    } else if ((goal as Record<string, any>).target_distance) {
       setGoalType('distance');
-      setGoalValue((goal as any).target_distance.toString());
-    } else if ((goal as any).target_speed) {
+      setGoalValue((goal as Record<string, any>).target_distance.toString());
+    } else if ((goal as Record<string, any>).target_speed) {
       setGoalType('speed');
-      setGoalValue((goal as any).target_speed.toString());
-    } else if ((goal as any).target_calories) {
+      setGoalValue((goal as Record<string, any>).target_speed.toString());
+    } else if ((goal as Record<string, any>).target_calories) {
       setGoalType('calories');
-      setGoalValue((goal as any).target_calories.toString());
+      setGoalValue((goal as Record<string, any>).target_calories.toString());
     } else if (goal.target_weight) {
       setGoalType('kg');
       setGoalValue(goal.target_weight.toString());
     } else if (goal.target_reps) {
       setGoalType('reps');
       setGoalValue(goal.target_reps.toString());
-      if ((goal as any).extra_kg) setGoalExtraKg((goal as any).extra_kg.toString());
-      if ((goal as any).extra_duration) setGoalExtraDuration((goal as any).extra_duration.toString());
-      if ((goal as any).extra_speed) setGoalExtraSpeed((goal as any).extra_speed.toString());
+      if ((goal as Record<string, any>).extra_kg) setGoalExtraKg((goal as Record<string, any>).extra_kg.toString());
+      if ((goal as Record<string, any>).extra_duration) setGoalExtraDuration((goal as Record<string, any>).extra_duration.toString());
+      if ((goal as Record<string, any>).extra_speed) setGoalExtraSpeed((goal as Record<string, any>).extra_speed.toString());
     }
     setShowGoalModal(true);
   };
@@ -1243,22 +1243,22 @@ export default function ProgressPage() {
                   unit = 'reps';
                   const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
                   current = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]).reps : 0;
-                  if ((goal as any).extra_kg) extraKg = (goal as any).extra_kg;
-                  if ((goal as any).extra_duration) extraDuration = (goal as any).extra_duration;
-                } else if ((goal as any).target_duration) {
-                  target = (goal as any).target_duration;
+                  if ((goal as Record<string, any>).extra_kg) extraKg = (goal as Record<string, any>).extra_kg;
+                  if ((goal as Record<string, any>).extra_duration) extraDuration = (goal as Record<string, any>).extra_duration;
+                } else if ((goal as Record<string, any>).target_duration) {
+                  target = (goal as Record<string, any>).target_duration;
                   unit = 'min';
                   current = 0;
-                } else if ((goal as any).target_distance) {
-                  target = (goal as any).target_distance;
+                } else if ((goal as Record<string, any>).target_distance) {
+                  target = (goal as Record<string, any>).target_distance;
                   unit = 'km';
                   current = 0;
-                } else if ((goal as any).target_speed) {
-                  target = (goal as any).target_speed;
+                } else if ((goal as Record<string, any>).target_speed) {
+                  target = (goal as Record<string, any>).target_speed;
                   unit = 'km/h';
                   current = 0;
-                } else if ((goal as any).target_calories) {
-                  target = (goal as any).target_calories;
+                } else if ((goal as Record<string, any>).target_calories) {
+                  target = (goal as Record<string, any>).target_calories;
                   unit = 'kcal';
                   current = 0;
                 }
