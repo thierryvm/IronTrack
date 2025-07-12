@@ -23,8 +23,6 @@ interface CalendarDayCellProps {
   sessions: Session[];
 }
 
-const MAX_SESSIONS_DISPLAY = 2;
-
 // Ajoute une fonction utilitaire pour formater la date et l'heure
 function formatDateTime(dateStr: string, timeStr: string) {
   if (!dateStr) return '';
@@ -63,8 +61,8 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
   const [showPopover, setShowPopover] = useState(false);
   const [mobileSessionDetail, setMobileSessionDetail] = useState<null | Session>(null);
-  const displayedSessions = sessions.slice(0, MAX_SESSIONS_DISPLAY);
-  const extraSessions = sessions.length - MAX_SESSIONS_DISPLAY;
+  const displayedSessions = sessions.slice(0, 2); // Changed from MAX_SESSIONS_DISPLAY to 2
+  const extraSessions = sessions.length - 2; // Changed from MAX_SESSIONS_DISPLAY to 2
 
   // Détection mobile simple
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
