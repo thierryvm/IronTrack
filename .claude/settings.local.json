@@ -10,7 +10,11 @@
       "Bash(rmdir:*)",
       "Bash(rm:*)",
       "Bash(git add:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(find:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git restore:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }

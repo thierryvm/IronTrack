@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Plus, 
@@ -197,14 +197,12 @@ export default function NutritionPage() {
   }
 
   const todayMeals = getMealsForDate(selectedDate)
-  const todayNutrition = getTotalNutrition(todayMeals)
+  const todayNutrition = useMemo(() => getTotalNutrition(todayMeals), [todayMeals])
 
   // Génère une clé unique pour forcer le re-render (hash simple)
   const todayMealsKey = todayMeals.map(m => `${m.id}-${m.calories}-${m.protein}-${m.carbs}-${m.fat}`).join('|')
 
   // Log pour debug : vérifier les repas du jour utilisés pour l'affichage
-  console.log('todayMeals pour affichage:', todayMeals)
-  console.log('todayNutrition pour PieChart:', todayNutrition)
 
   const weeklyData = [
     { day: 'Lun', calories: 2400, protein: 170, carbs: 230, fat: 75 },
@@ -245,7 +243,6 @@ export default function NutritionPage() {
       setShowAddModal(false)
       setAddForm({ name: '', type: 'Déjeuner', calories: '', protein: '', carbs: '', fat: '', time: '' })
       await loadMeals()
-      console.log('Liste des repas après ajout:', meals);
     } catch (err: unknown) {
       setAddError(err instanceof Error ? err.message : String(err))
       setGlobalError('Erreur lors de l\'ajout du repas : ' + (err instanceof Error ? err.message : String(err)));
@@ -263,12 +260,9 @@ export default function NutritionPage() {
     try {
       // On force l'ID en string pour éviter les soucis de typage
       const mealId = String(id)
-      console.log('Tentative suppression repas, id:', mealId);
-      const { error, data } = await supabase.from('nutrition_logs').delete().eq('id', mealId)
-      console.log('Résultat suppression Supabase:', { error, data, mealId })
+      const { error } = await supabase.from('nutrition_logs').delete().eq('id', mealId)
       if (error) throw error
       await loadMeals()
-      console.log('Liste des repas après suppression:', meals);
     } catch (error) {
       setGlobalError('Erreur lors de la suppression du repas : ' + (error instanceof Error ? error.message : String(error)));
       alert('Erreur lors de la suppression du repas : ' + (error instanceof Error ? error.message : String(error)));
@@ -318,12 +312,10 @@ export default function NutritionPage() {
         time: editForm.time,
       }
       const updateId = String(editMeal.id)
-      console.log('Update Supabase:', { id: updateId, ...updatePayload })
       const { error } = await supabase.from('nutrition_logs').update(updatePayload).eq('id', updateId)
       if (error) throw error
       await loadMeals() // Recharge la liste avant de fermer le modal
       setEditMeal(null)
-      console.log('Liste des repas après édition:', meals);
     } catch (err: unknown) {
       setEditError(err instanceof Error ? err.message : String(err))
       setGlobalError('Erreur lors de la modification du repas : ' + (err instanceof Error ? err.message : String(err)));
@@ -336,7 +328,6 @@ export default function NutritionPage() {
   // Ajoute un log après chaque chargement de repas
   useEffect(() => {
     if (!loading) {
-      console.log('Repas chargés:', meals)
     }
   }, [meals, loading])
 
