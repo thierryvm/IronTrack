@@ -29,7 +29,7 @@ type PerformanceLog = {
 };
 
 // Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
-function getPerfLabel(perf: any, type: string, sets?: number): string {
+function getPerfLabel(perf: Record<string, any>, type: string, sets?: number): string {
   if (type === 'Cardio') {
     let phrase = '';
     if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
