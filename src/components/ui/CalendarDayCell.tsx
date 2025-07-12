@@ -66,9 +66,6 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const displayedSessions = sessions.slice(0, MAX_SESSIONS_DISPLAY);
   const extraSessions = sessions.length - MAX_SESSIONS_DISPLAY;
 
-  // Déduplication robuste : clé unique basée sur id, name et avatarUrl
-  const allParticipants = sessions.flatMap((s) => s.participants);
-
   // Détection mobile simple
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 

@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Plus, Eye, Edit, X as LucideX } from 'lucide-react'
@@ -23,19 +23,7 @@ export default function WorkoutsPage() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.replace('/auth');
-      }
-    };
-    checkAuth();
-    loadWorkouts();
-  }, [page]);
-
-  const loadWorkouts = async () => {
+  const loadWorkouts = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
     // Récupérer le nombre total de séances pour la pagination
@@ -55,7 +43,19 @@ export default function WorkoutsPage() {
       setWorkouts(data);
     }
     setLoading(false);
-  }
+  }, [page]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+    loadWorkouts();
+  }, [page, router, loadWorkouts]);
 
   // Fonction pour marquer une séance comme réalisée
   const markAsDone = async (workoutId: string) => {

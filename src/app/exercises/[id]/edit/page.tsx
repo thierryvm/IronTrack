@@ -22,7 +22,9 @@ type PerformanceLog = {
 };
 
 // Table d’exercices standards par groupe musculaire (enrichie avec Cardio)
-const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>> = {
+type ExerciseSuggestion = { label: string, values: Record<string, unknown> };
+type StandardExercise = { name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: ExerciseSuggestion[] };
+const standardExercises: Record<string, StandardExercise[]> = {
   'Pectoraux': [
     {
       name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
@@ -190,25 +192,25 @@ const standardExercises: Record<string, Array<{name: string, label: string, type
 };
 
 // Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
-function getPerfLabel(perf: Record<string, any>, type: string, sets?: number): string {
+function getPerfLabel(perf: Record<string, unknown>, type: string, sets?: number): string {
   if (type === 'Cardio') {
     let phrase = '';
-    if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
+    if (perf.distance) phrase += String(perf.distance) + (perf.distance_unit ? String(perf.distance_unit) : ' km');
     if (perf.duration_minutes || perf.duration_seconds) {
       let d = '';
-      if (perf.duration_minutes) d += perf.duration_minutes + ' min';
-      if (perf.duration_seconds) d += (d ? ' ' : '') + perf.duration_seconds + ' sec';
+      if (perf.duration_minutes) d += String(perf.duration_minutes) + ' min';
+      if (perf.duration_seconds) d += (d ? ' ' : '') + String(perf.duration_seconds) + ' sec';
       phrase += (phrase ? ' en ' : '') + d;
     }
-    if (perf.speed) phrase += (phrase ? ' à ' : '') + perf.speed + (perf.speed_unit || ' km/h');
-    if (perf.calories) phrase += (phrase ? ', ' : '') + perf.calories + ' kcal';
+    if (perf.speed) phrase += (phrase ? ' à ' : '') + String(perf.speed) + (perf.speed_unit ? String(perf.speed_unit) : ' km/h');
+    if (perf.calories) phrase += (phrase ? ', ' : '') + String(perf.calories) + ' kcal';
     return phrase || 'Performance cardio';
   }
   // Muscu
   let phrase = '';
-  if (perf.weight) phrase += perf.weight + ' kg';
-  if (perf.reps) phrase += (phrase ? ' x ' : '') + perf.reps + ' reps';
-  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + sets + ' séries';
+  if (perf.weight) phrase += String(perf.weight) + ' kg';
+  if (perf.reps) phrase += (phrase ? ' x ' : '') + String(perf.reps) + ' reps';
+  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + String(sets) + ' séries';
   return phrase || 'Performance muscu';
 }
 
@@ -224,14 +226,11 @@ export default function EditExercisePage() {
   const [equipmentId, setEquipmentId] = useState<number | null>(null)
   const [equipmentList, setEquipmentList] = useState<{id: number, name: string}[]>([])
   const [difficulty, setDifficulty] = useState(difficulties[0])
-  const [newEquipment, setNewEquipment] = useState('')
-  const [newEquipmentDescription, setNewEquipmentDescription] = useState('')
-  const [addingEquipment, setAddingEquipment] = useState(false)
+  const [sets, setSets] = useState(3)
   
   // Champs pour Musculation
   const [perfWeight, setPerfWeight] = useState('')
   const [perfReps, setPerfReps] = useState('')
-  const [sets, setSets] = useState(3)
   
   // Champs pour Cardio
   const [distance, setDistance] = useState('')
@@ -256,8 +255,7 @@ export default function EditExercisePage() {
   // Ajout des états pour suggestions et valeurs dynamiques
   const [firstWeight, setFirstWeight] = useState('');
   const [firstReps, setFirstReps] = useState('');
-  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>>([]);
-  const [suggestionName, setSuggestionName] = useState('');
+  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<StandardExercise[]>([]);
 
   // Helpers dynamiques pour la validation du bouton Ajouter
   const canAddPerfCardio = () => {
@@ -343,7 +341,7 @@ export default function EditExercisePage() {
     } else {
       setAutoExerciseSuggestions([]);
     }
-  }, [muscle, exerciseType, name, equipmentId, equipmentList.length]);
+  }, [muscle, exerciseType, name, equipmentId, equipmentList.length, equipmentList]);
 
   // 2. Suggestions dynamiques pour le cardio aussi
   // (déjà géré par le filtre ex.type === exerciseType dans le useEffect suggestions)
@@ -363,7 +361,7 @@ export default function EditExercisePage() {
     const supabase = createClient()
     
     // Préparer les données selon le type d'exercice
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, unknown> = {
       name,
       muscle_group: muscle,
       exercise_type: exerciseType,
@@ -395,23 +393,6 @@ export default function EditExercisePage() {
     router.push('/exercises')
   }
 
-  const handleAddEquipment = async () => {
-    if (!newEquipment.trim()) return
-    setAddingEquipment(true)
-    const supabase = createClient()
-    const description = newEquipmentDescription.trim() || `Équipement ajouté par l'utilisateur`
-    const { data, error } = await supabase.from('equipment').insert({ name: newEquipment.trim(), description }).select('id, name, description').single()
-    setAddingEquipment(false)
-    if (!error && data) {
-      setEquipmentList(prev => [...prev, data])
-      setEquipmentId(data.id)
-      setNewEquipment('')
-      setNewEquipmentDescription('')
-    } else {
-      alert("Erreur lors de l'ajout de l'équipement : " + (error?.message || ''))
-    }
-  }
-
   const handleAddPerf = async () => {
     if (exerciseType === 'Musculation' && !canAddPerfMuscu()) return;
     if (exerciseType === 'Cardio' && !canAddPerfCardio()) return;
@@ -424,7 +405,7 @@ export default function EditExercisePage() {
       setPerfLoading(false);
       return;
     }
-    let perfData: Record<string, any> = {
+    const perfData: Record<string, unknown> = {
       user_id: user.id,
       exercise_id: id,
       performed_at: new Date().toISOString(),
@@ -543,7 +524,7 @@ export default function EditExercisePage() {
       >
         {/* Dans le formulaire, afficher le champ nom de l'exercice et le pré-remplir */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Nom de l'exercice</label>
+          <label className="block text-gray-700 font-medium mb-2">Nom de l&apos;exercice</label>
           <input
             type="text"
             value={name}
@@ -558,8 +539,8 @@ export default function EditExercisePage() {
           <div className="mb-4">
             <div className="font-medium text-gray-700 mb-2">Suggestions rapides</div>
             <div className="flex flex-wrap gap-2">
-              {autoExerciseSuggestions.map((ex, idx) => (
-                ex.suggestions.map((s, i) => {
+              {autoExerciseSuggestions.map((ex) => (
+                ex.suggestions.map((s, j) => {
                   // Construire un label explicite
                   let label = s.label;
                   if (!label.toLowerCase().includes(ex.name.toLowerCase())) {
@@ -568,7 +549,7 @@ export default function EditExercisePage() {
                   }
                   return (
                     <button
-                      key={ex.name + '-' + i}
+                      key={ex.name + '-' + j}
                       type="button"
                       className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1 rounded text-xs font-semibold border border-orange-200"
                       onClick={() => {
@@ -576,16 +557,16 @@ export default function EditExercisePage() {
                         setMuscle(muscle);
                         setExerciseType(ex.type);
                         setDifficulty(ex.difficulty);
-                        setFirstReps(s.values.firstReps || '');
-                        setFirstWeight(s.values.firstWeight || '');
-                        setSets(s.values.sets || 3);
+                        setFirstReps(typeof s.values.firstReps === 'string' ? s.values.firstReps : '');
+                        setFirstWeight(typeof s.values.firstWeight === 'string' ? s.values.firstWeight : '');
+                        setSets(typeof s.values.sets === 'number' ? s.values.sets : 3);
                         setEquipmentId(equipmentList.find(eq => eq.name === ex.equipment)?.id || null);
-                        setDistance(s.values.distance || '');
-                        setDistanceUnit(s.values.distanceUnit || 'km');
-                        setMinutes(s.values.minutes || '');
-                        setSpeed(s.values.speed || '');
-                        setSpeedUnit(s.values.speedUnit || 'km/h');
-                        setCalories(s.values.calories || '');
+                        setDistance(typeof s.values.distance === 'string' ? s.values.distance : '');
+                        setDistanceUnit(typeof s.values.distanceUnit === 'string' ? s.values.distanceUnit : 'km');
+                        setMinutes(typeof s.values.minutes === 'string' ? s.values.minutes : '');
+                        setSpeed(typeof s.values.speed === 'string' ? s.values.speed : '');
+                        setSpeedUnit(typeof s.values.speedUnit === 'string' ? s.values.speedUnit : 'km/h');
+                        setCalories(typeof s.values.calories === 'string' ? s.values.calories : '');
                       }}
                     >
                       {label}
@@ -598,7 +579,7 @@ export default function EditExercisePage() {
         )}
         {/* Champs dynamiques selon le type d'exercice */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Type d'exercice</label>
+          <label className="block text-gray-700 font-medium mb-2">Type d&apos;exercice</label>
           <div className="flex gap-4 mb-2">
             {exerciseTypes.map((type) => (
               <button
