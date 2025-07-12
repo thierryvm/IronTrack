@@ -14,7 +14,7 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 // Importer les conseils de la mascotte
 import { advices as mascotAdvices } from '../../components/ui/Mascot';

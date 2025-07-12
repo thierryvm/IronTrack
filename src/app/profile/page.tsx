@@ -24,7 +24,7 @@ import {
   Star,
   Award
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Dialog } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
@@ -224,7 +224,7 @@ export default function ProfilePage() {
   const badgesSectionRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showBadgeModal, setShowBadgeModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [achievedGoals, setAchievedGoals] = useState<TrainingGoal[]>([]);
 
   // useEffect pour la mascotte (OK)

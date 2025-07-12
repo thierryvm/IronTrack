@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Plus, Eye, Edit, X as LucideX } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 
 interface Workout {
   id: string

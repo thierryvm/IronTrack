@@ -17,7 +17,7 @@ import {
   Trash2
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import type { TrainingGoal } from '@/types/training-goal';
 
 interface ProgressData {

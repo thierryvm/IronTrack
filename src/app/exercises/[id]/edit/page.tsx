@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Dumbbell, Save, Trophy, Pencil, Check, X, Trash2, Clock } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 
 const muscleGroups = [
   'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 'Jambes', 'Abdominaux', 'Fessiers'

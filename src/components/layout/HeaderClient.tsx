@@ -15,7 +15,7 @@ import {
   LogIn
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import Mascot from '@/components/ui/Mascot'
 
 export default function HeaderClient() {

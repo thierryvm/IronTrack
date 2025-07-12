@@ -61,7 +61,7 @@ export default function ExerciseDetailPage() {
   const [perfHistory, setPerfHistory] = useState<PerformanceLog[]>([])
   useEffect(() => {
     const fetchExercise = async () => {
-      const supabase = (await import('@/lib/supabase')).createClient()
+      const supabase = (await import('@/utils/supabase/client')).createClient()
       const { data, error } = await supabase
         .from('exercises')
         .select('id, name, muscle_group, equipment_id, difficulty, sets, exercise_type, distance, distance_unit, speed, speed_unit, calories, duration_minutes, duration_seconds')
@@ -86,7 +86,7 @@ export default function ExerciseDetailPage() {
 
   useEffect(() => {
     const fetchPerfHistory = async () => {
-      const supabase = (await import('@/lib/supabase')).createClient()
+      const supabase = (await import('@/utils/supabase/client')).createClient()
       const { data, error } = await supabase
         .from('performance_logs')
         .select('weight, reps, distance, distance_unit, duration_minutes, duration_seconds, speed, speed_unit, calories, performed_at')

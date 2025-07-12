@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2 } from 'lucide-react'
 
 interface Exercise {

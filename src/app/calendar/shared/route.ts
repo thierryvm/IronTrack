@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
-const supabase = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || '***REDACTED_SERVICE_ROLE_KEY***'
-);
+import { createServerSupabaseClient } from '@/utils/supabase/server';
 
 export async function GET() {
+  const supabase = createServerSupabaseClient();
   // Supprimer les variables searchParams et userError non utilisées
 
   // Étape 1 : Récupérer les user_id qui partagent leur planning

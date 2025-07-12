@@ -12,7 +12,7 @@ import {
   CheckCircle,
   Target
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import CalendarDayCell from '@/components/ui/CalendarDayCell';
 
