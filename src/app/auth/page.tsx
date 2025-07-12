@@ -76,16 +76,11 @@ function AuthContent() {
   }, [supabase, router, searchParams])
 
   useEffect(() => {
-    // Détection du mode inscription via le DOM (champ de confirmation de mot de passe)
+    // Détection du mode inscription via le DOM
     const observer = new MutationObserver(() => {
-      // Cette variable était inutilisée :
-      // const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
-      // setShowPseudo(!!confirmInput); 
+      // Observer pour détecter les changements dans le formulaire
     });
     observer.observe(document.body, { childList: true, subtree: true });
-    // Initial check
-    // const confirmInput = document.querySelector('input[type="password"][name*="confirm"]');
-    // setShowPseudo(!!confirmInput); // Cette variable était inutilisée
     return () => observer.disconnect();
   }, []);
 
@@ -308,7 +303,7 @@ function AuthContent() {
                     button_label: 'S\'inscrire',
                     loading_button_label: 'Inscription...',
                     social_provider_text: 'S\'inscrire avec {{provider}}',
-                    link_text: 'Pas de compte ? S\'inscrire',
+                    link_text: 'Pas de compte ? S&apos;inscrire',
                   },
                   forgotten_password: {
                     email_label: 'Email',

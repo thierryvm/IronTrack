@@ -145,8 +145,7 @@ export default function CalendarPage() {
     fetchProfile();
   }, [router])
 
-  useEffect(() => {
-  }, [sharedWorkouts])
+  // useEffect vide supprimé
 
   // Supprime les variables inutilisées loadWorkouts et loadSharedWorkouts
 

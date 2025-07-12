@@ -565,9 +565,9 @@ export default function ProgressPage() {
 
   // Punchlines spéciales lundi
   const mondayPunchlines = [
-    "C'est lundi, on bosse les jambes ! (Personne n'y échappe, même pas IronBuddy) 🦵",
-    "Lundi motivation : la fonte n'attend pas !",
-    "Si tu t'entraînes un lundi, tu peux tout affronter cette semaine !",
+    "C\'est lundi, on bosse les jambes ! (Personne n\'y échappe, même pas IronBuddy) 🦵",
+    "Lundi motivation : la fonte n\'attend pas !",
+    "Si tu t\'entraînes un lundi, tu peux tout affronter cette semaine !",
     "Lundi = gains garantis. IronBuddy surveille tes squats !"
   ]
 
@@ -581,26 +581,26 @@ export default function ProgressPage() {
     ],
     midWeight: [
       `La fonte commence à chauffer, bientôt tu soulèveras ${getSouleverPhrase()} ! 🏋️‍♂️`,
-      "On sent que ça progresse, la fonte n'a qu'à bien se tenir !",
+      "On sent que ça progresse, la fonte n\'a qu\'à bien se tenir !",
       "Bientôt tu soulèveras la salle entière ! 🏟️"
     ],
     highWeight: [
       "Tu passes la barre des 500kg, Hulk commence à trembler ! 💚",
       "500kg ? IronBuddy va devoir appeler les Avengers !",
-      "La gravité commence à s'inquiéter..."
+      "La gravité commence à s\'inquiéter..."
     ],
     tonWeight: [
-      "1 tonne soulevée ! Appelle la NASA, t'es plus humain 🚀",
+      "1 tonne soulevée ! Appelle la NASA, t\'es plus humain 🚀",
       "IronBuddy propose de te sponsoriser pour les JO ! 🥇",
       "La salle va devoir renforcer le plancher !"
     ],
     regularity: [
-      "10 séances, la régularité c'est la clé ! IronBuddy est fier de toi 🔑",
+      "10 séances, la régularité c\'est la clé ! IronBuddy est fier de toi 🔑",
       "La persévérance paie toujours, continue comme ça !",
-      "IronBuddy commence à s'inquiéter pour les haltères..."
+      "IronBuddy commence à s\'inquiéter pour les haltères..."
     ],
     improvement: [
-      "+10% d'amélioration, tu vas devoir changer de t-shirt ! 👕",
+      "+10% d\'amélioration, tu vas devoir changer de t-shirt ! 👕",
       "Progression de mutant, IronBuddy valide !",
       "On va devoir renforcer la salle !"
     ],
@@ -650,18 +650,18 @@ export default function ProgressPage() {
     ironBuddyMsg = getRandomPunchline(punchlines.default)
   }
 
-  // Dans la logique où un objectif passe à 'Atteint', déclencher l'animation
+  // Dans la logique où un objectif passe à \'Atteint\', déclencher l\'animation
   const handleGoalAchieved = (goal: TrainingGoal) => {
     setCongratsMsg(`Bravo Thierry, badge débloqué : ${goal.exercises?.name} ${goal.target_weight ? goal.target_weight + 'kg' : goal.target_reps ? goal.target_reps + ' reps' : ''} ! 🏅`);
     setShowCongrats(true);
     setTimeout(() => setShowCongrats(false), 3500);
   };
 
-  // Pré-remplir le formulaire pour l'édition
+  // Pré-remplir le formulaire pour l\'édition
   const handleEditGoal = (goal: TrainingGoal) => {
     setEditGoalId(goal.id);
     setGoalExerciseId(goal.exercise_id.toString());
-    // Déduire le type d'objectif et la valeur
+    // Déduire le type d\'objectif et la valeur
     if ((goal as unknown as Record<string, unknown>).target_duration) {
       setGoalType('duration');
       setGoalValue((goal as unknown as Record<string, unknown>).target_duration?.toString() ?? '');
@@ -1179,7 +1179,7 @@ export default function ProgressPage() {
                 let unit = '';
                 let extraKg: number | null = null;
                 let extraDuration: number | null = null;
-                const extraSpeed: number | null = null;
+                // extraSpeed variable non utilisée supprimée
                 if (goal.target_weight) {
                   target = goal.target_weight;
                   unit = 'kg';
@@ -1218,7 +1218,7 @@ export default function ProgressPage() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-500' : 'text-gray-900'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600">{badgeDesc(goal)}</span></h3>
                       <div className="flex items-center gap-2">
-                        <span className={`text-sm ${textClass}`}>{current}/{target} {unit}{extraKg ? ` à ${extraKg} kg` : ''}{extraDuration ? ` en ${extraDuration} min` : ''}{extraSpeed ? ` à ${extraSpeed} km/h` : ''}</span>
+                        <span className={`text-sm ${textClass}`}>{current}/{target} {unit}{extraKg ? ` à ${extraKg} kg` : ''}{extraDuration ? ` en ${extraDuration} min` : ''}</span>
                         <button title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-blue-500 hover:text-blue-700"><Pencil className="h-4 w-4" /></button>
                         <button title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-red-500 hover:text-red-700"><Trash2 className="h-4 w-4" /></button>
                       </div>
