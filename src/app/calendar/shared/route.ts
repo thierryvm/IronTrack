@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
-const supabase = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhc3BkY2VibHZtcHZkaml4eWl0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc1NDc3NiwiZXhwIjoyMDY3MzMwNzc2fQ.K32qBRR6E5gmNFtSNYxaKKH9kcYbF0Wc73ewBwq3QkI'
-);
+import { createServerSupabaseClient } from '@/utils/supabase/server';
 
 export async function GET() {
+  const supabase = createServerSupabaseClient();
   // Supprimer les variables searchParams et userError non utilisées
 
   // Étape 1 : Récupérer les user_id qui partagent leur planning

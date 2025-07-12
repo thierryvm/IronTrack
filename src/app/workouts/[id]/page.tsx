@@ -3,7 +3,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Calendar, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 
 interface Workout {
   id: string;

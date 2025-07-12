@@ -186,7 +186,7 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
     lastAdvices.current = [random, ...lastAdvices.current].slice(0, 3);
   }
 
-  let contextAnim = {}
+  let contextAnim: Record<string, unknown> = {}
   if (type === 'success') {
     contextAnim = { boxShadow: [
       '0 0 0px #fff',

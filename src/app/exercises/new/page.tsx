@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Dumbbell, Save, Clock } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 
 const muscleGroups = [
   'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 'Jambes', 'Abdominaux', 'Fessiers'
@@ -521,9 +521,9 @@ export default function NewExercisePage() {
                             setEquipmentId(eq ? eq.id : null);
                           }
                           setDifficulty(ex.difficulty);
-                          setFirstReps(s.values.firstReps || '');
-                          setFirstWeight(s.values.firstWeight || '');
-                          setSets(s.values.sets || 3);
+                          setFirstReps(typeof s.values.firstReps === 'string' ? s.values.firstReps : '');
+                          setFirstWeight(typeof s.values.firstWeight === 'string' ? s.values.firstWeight : '');
+                          setSets(typeof s.values.sets === 'number' ? s.values.sets : 3);
                         }}
                       >
                         {s.label}
@@ -554,15 +554,15 @@ export default function NewExercisePage() {
                       setName(s.values && typeof s.values.name === 'string' ? s.values.name : '');
                       setMuscle(s.values && typeof s.values.muscle === 'string' ? s.values.muscle : muscleGroups[0]);
                       // Sélectionner l'équipement si possible
-                      if (typeof s.values.equipment === 'string') {
-                        const eq = equipmentList.find(e => e.name.toLowerCase() === s.values.equipment.toLowerCase());
+                      if (typeof (s.values as Record<string, unknown>).equipment === 'string') {
+                        const eq = equipmentList.find(e => e.name.toLowerCase() === ((s.values as Record<string, unknown>).equipment as string).toLowerCase());
                         setEquipmentId(eq ? eq.id : null);
                       }
                       setDifficulty(s.values && typeof s.values.difficulty === 'string' ? s.values.difficulty : difficulties[0]);
                       if (exerciseType === 'Musculation') {
-                        setFirstReps(s.values && typeof s.values.firstReps === 'string' ? s.values.firstReps : '');
-                        setFirstWeight(s.values && typeof s.values.firstWeight === 'string' ? s.values.firstWeight : '');
-                        setSets(s.values && typeof s.values.sets === 'number' ? s.values.sets : 3);
+                        setFirstReps(typeof s.values.firstReps === 'string' ? s.values.firstReps : '');
+                        setFirstWeight(typeof s.values.firstWeight === 'string' ? s.values.firstWeight : '');
+                        setSets(typeof s.values.sets === 'number' ? s.values.sets : 3);
                       } else if (exerciseType === 'Cardio') {
                         setDistance(s.values && typeof s.values.distance === 'number' ? String(s.values.distance) : '');
                         setDistanceUnit(s.values && typeof s.values.distanceUnit === 'string' ? s.values.distanceUnit : 'km');

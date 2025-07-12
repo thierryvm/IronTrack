@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { Plus } from 'lucide-react';
 
 interface UserSound {

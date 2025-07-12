@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Calendar, Save, ArrowLeft, AlertTriangle } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import Mascot from '@/components/ui/Mascot'
 
 export default function EditWorkoutPage() {

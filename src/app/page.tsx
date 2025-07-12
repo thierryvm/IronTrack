@@ -16,7 +16,7 @@ import {
 import { MascotWidget } from '@/components/ui/Mascot'
 import SessionTimer from '@/components/ui/SessionTimer'
 import SoundLibrary from '@/components/ui/SoundLibrary'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import Mascot from '@/components/ui/Mascot'
 import { useRouter } from 'next/navigation'
 import { QuickTimer } from '@/components/ui/Timer'
