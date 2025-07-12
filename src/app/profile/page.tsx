@@ -155,7 +155,7 @@ const defaultBadges = [
     validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => {
       const nom = g.exercises?.name?.toLowerCase() || '';
       // On tente d'accéder à g.exercises?.sets, sinon on considère 0 si non défini
-      const sets = (g as Record<string, unknown>).exercises?.sets ?? 0;
+      const sets = ((g.exercises as unknown) as Record<string, unknown>).sets ?? 0;
       return (
         (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
         (sets === 0)
@@ -164,7 +164,7 @@ const defaultBadges = [
     getDate: (goals: TrainingGoal[]) => {
       const g = goals.find((g: TrainingGoal) => {
         const nom = g.exercises?.name?.toLowerCase() || '';
-        const sets = (g as Record<string, unknown>).exercises?.sets ?? 0;
+        const sets = ((g.exercises as unknown) as Record<string, unknown>).sets ?? 0;
         return (
           (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
           (sets === 0)
@@ -547,7 +547,7 @@ export default function ProfilePage() {
     if (isHeic(file)) {
       try {
         // Import dynamique côté client uniquement
-        const heic2any = (await import('heic2any')).default;
+        const heic2any: (options: { blob: Blob; toType: string; quality: number }) => Promise<Blob | Blob[]> = (await import('heic2any')).default;
         const converted = await heic2any({
           blob: file,
           toType: 'image/jpeg',
