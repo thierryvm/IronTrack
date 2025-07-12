@@ -1,7 +1,8 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Dépendances et build
 /node_modules
+/.next
+/out
+/build
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,32 +11,36 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# Tests et couverture
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
+# Fichiers système et logs
 .DS_Store
 *.pem
+*.log
+*.sqlite
+*.db
 
-# debug
+# Fichiers de debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Fichiers d'environnement et secrets
 .env*
+*.local
+mcp.json
+test-supabase.ts
 
-# vercel
-.vercel
-
-# typescript
+# Next.js/TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Vercel
+.vercel
+
+# Fichiers générés par Workbox/Serwist (optionnel, si tu ne veux pas les versionner)
+public/sw.js
+public/sw.js.map
+public/workbox-*
