@@ -21,6 +21,197 @@ type PerformanceLog = {
   performed_at: string;
 };
 
+// Table d’exercices standards par groupe musculaire (enrichie avec Cardio)
+const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>> = {
+  'Pectoraux': [
+    {
+      name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '8 reps à 40kg (débutant)', values: { firstReps: '8', firstWeight: '40', sets: 3 } },
+        { label: '10 reps à 60kg (intermédiaire)', values: { firstReps: '10', firstWeight: '60', sets: 4 } },
+        { label: '12 reps à 80kg (avancé)', values: { firstReps: '12', firstWeight: '80', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Pompes', label: 'Pompes', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps (débutant)', values: { firstReps: '15', sets: 3 } },
+        { label: '30 reps (intermédiaire)', values: { firstReps: '30', sets: 4 } },
+        { label: '50 reps (IronBuddy)', values: { firstReps: '50', sets: 5 } },
+      ]
+    },
+    {
+      name: 'Développé incliné', label: 'Développé incliné', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 30kg', values: { firstReps: '10', firstWeight: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Dos': [
+    {
+      name: 'Tractions', label: 'Tractions', type: 'Musculation', equipment: 'Barre de traction', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '5 reps (débutant)', values: { firstReps: '5', sets: 3 } },
+        { label: '10 reps (intermédiaire)', values: { firstReps: '10', sets: 4 } },
+        { label: '10 reps lestées (avancé)', values: { firstReps: '10', firstWeight: '10', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Rowing barre', label: 'Rowing barre', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 40kg', values: { firstReps: '10', firstWeight: '40', sets: 3 } },
+        { label: '12 reps à 60kg', values: { firstReps: '12', firstWeight: '60', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Tirage horizontal', label: 'Tirage horizontal', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '12 reps à 30kg', values: { firstReps: '12', firstWeight: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Jambes': [
+    {
+      name: 'Squat', label: 'Squat', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 40kg (débutant)', values: { firstReps: '10', firstWeight: '40', sets: 3 } },
+        { label: '12 reps à 80kg (intermédiaire)', values: { firstReps: '12', firstWeight: '80', sets: 4 } },
+        { label: '10 reps à 120kg (avancé)', values: { firstReps: '10', firstWeight: '120', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Presse à jambes', label: 'Presse à jambes', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 60kg', values: { firstReps: '15', firstWeight: '60', sets: 3 } },
+      ]
+    },
+    {
+      name: 'Fentes', label: 'Fentes', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '10 reps/jambe', values: { firstReps: '10', sets: 3 } },
+      ]
+    },
+    {
+      name: 'Tapis de marche', label: 'Tapis de marche', type: 'Cardio', equipment: 'Tapis de marche', difficulty: 'Débutant',
+      suggestions: [
+        { label: '3 km en 30 min', values: { distance: '3', distanceUnit: 'km', minutes: '30', speed: '6', speedUnit: 'km/h', calories: '150' } },
+        { label: '5 km en 45 min', values: { distance: '5', distanceUnit: 'km', minutes: '45', speed: '6.5', speedUnit: 'km/h', calories: '250' } },
+      ]
+    },
+    {
+      name: 'Course', label: 'Course', type: 'Cardio', equipment: 'Tapis de course', difficulty: 'Débutant',
+      suggestions: [
+        { label: '5 km en 30 min', values: { distance: '5', distanceUnit: 'km', minutes: '30', speed: '10', speedUnit: 'km/h', calories: '350' } },
+        { label: '10 km en 1h', values: { distance: '10', distanceUnit: 'km', minutes: '60', speed: '10', speedUnit: 'km/h', calories: '700' } },
+      ]
+    },
+    {
+      name: 'Vélo', label: 'Vélo', type: 'Cardio', equipment: 'Vélo', difficulty: 'Débutant',
+      suggestions: [
+        { label: '10 km en 30 min', values: { distance: '10', distanceUnit: 'km', minutes: '30', speed: '20', speedUnit: 'km/h', calories: '250' } },
+        { label: '20 km en 1h', values: { distance: '20', distanceUnit: 'km', minutes: '60', speed: '20', speedUnit: 'km/h', calories: '500' } },
+      ]
+    },
+    {
+      name: 'Rameur', label: 'Rameur', type: 'Cardio', equipment: 'Rameur', difficulty: 'Débutant',
+      suggestions: [
+        { label: '2000 m en 8 min', values: { distance: '2', distanceUnit: 'km', minutes: '8', speed: '15', speedUnit: 'km/h', calories: '150' } },
+      ]
+    },
+  ],
+  'Épaules': [
+    {
+      name: 'Développé militaire', label: 'Développé militaire', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '10 reps à 20kg', values: { firstReps: '10', firstWeight: '20', sets: 3 } },
+        { label: '12 reps à 40kg', values: { firstReps: '12', firstWeight: '40', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Élévations latérales', label: 'Élévations latérales', type: 'Musculation', equipment: 'Haltères', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 6kg', values: { firstReps: '15', firstWeight: '6', sets: 3 } },
+      ]
+    },
+  ],
+  'Biceps': [
+    {
+      name: 'Curl haltère', label: 'Curl haltère', type: 'Musculation', equipment: 'Haltères', difficulty: 'Débutant',
+      suggestions: [
+        { label: '12 reps à 8kg', values: { firstReps: '12', firstWeight: '8', sets: 3 } },
+        { label: '10 reps à 12kg', values: { firstReps: '10', firstWeight: '12', sets: 4 } },
+      ]
+    },
+  ],
+  'Triceps': [
+    {
+      name: 'Dips', label: 'Dips', type: 'Musculation', equipment: 'Barre de traction', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '8 reps (débutant)', values: { firstReps: '8', sets: 3 } },
+        { label: '12 reps lestées', values: { firstReps: '12', firstWeight: '10', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Extensions poulie', label: 'Extensions poulie', type: 'Musculation', equipment: 'Machine', difficulty: 'Débutant',
+      suggestions: [
+        { label: '15 reps à 20kg', values: { firstReps: '15', firstWeight: '20', sets: 3 } },
+      ]
+    },
+  ],
+  'Abdominaux': [
+    {
+      name: 'Crunchs', label: 'Crunchs', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '20 reps', values: { firstReps: '20', sets: 3 } },
+      ]
+    },
+    {
+      name: 'Gainage', label: 'Gainage', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '3x30s', values: { firstReps: '30', sets: 3 } },
+      ]
+    },
+  ],
+  'Fessiers': [
+    {
+      name: 'Hip Thrust', label: 'Hip Thrust', type: 'Musculation', equipment: 'Barre libre', difficulty: 'Intermédiaire',
+      suggestions: [
+        { label: '12 reps à 40kg', values: { firstReps: '12', firstWeight: '40', sets: 3 } },
+        { label: '15 reps à 70kg', values: { firstReps: '15', firstWeight: '70', sets: 4 } },
+      ]
+    },
+    {
+      name: 'Glute kickback', label: 'Glute kickback', type: 'Musculation', equipment: 'Poids du corps', difficulty: 'Débutant',
+      suggestions: [
+        { label: '20 reps/jambe', values: { firstReps: '20', sets: 3 } },
+      ]
+    },
+  ],
+};
+
+// Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
+function getPerfLabel(perf: any, type: string, sets?: number): string {
+  if (type === 'Cardio') {
+    let phrase = '';
+    if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
+    if (perf.duration_minutes || perf.duration_seconds) {
+      let d = '';
+      if (perf.duration_minutes) d += perf.duration_minutes + ' min';
+      if (perf.duration_seconds) d += (d ? ' ' : '') + perf.duration_seconds + ' sec';
+      phrase += (phrase ? ' en ' : '') + d;
+    }
+    if (perf.speed) phrase += (phrase ? ' à ' : '') + perf.speed + (perf.speed_unit || ' km/h');
+    if (perf.calories) phrase += (phrase ? ', ' : '') + perf.calories + ' kcal';
+    return phrase || 'Performance cardio';
+  }
+  // Muscu
+  let phrase = '';
+  if (perf.weight) phrase += perf.weight + ' kg';
+  if (perf.reps) phrase += (phrase ? ' x ' : '') + perf.reps + ' reps';
+  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + sets + ' séries';
+  return phrase || 'Performance muscu';
+}
+
 export default function EditExercisePage() {
   const router = useRouter()
   const params = useParams()
@@ -62,6 +253,20 @@ export default function EditExercisePage() {
   const [editReps, setEditReps] = useState('')
   const [perfError, setPerfError] = useState('')
 
+  // Ajout des états pour suggestions et valeurs dynamiques
+  const [firstWeight, setFirstWeight] = useState('');
+  const [firstReps, setFirstReps] = useState('');
+  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: any}>}>>([]);
+  const [suggestionName, setSuggestionName] = useState('');
+
+  // Helpers dynamiques pour la validation du bouton Ajouter
+  const canAddPerfCardio = () => {
+    return !!(distance || minutes || seconds || speed || calories);
+  };
+  const canAddPerfMuscu = () => {
+    return !!(perfWeight || perfReps);
+  };
+
   useEffect(() => {
     const fetchEquipment = async () => {
       const supabase = createClient()
@@ -71,6 +276,7 @@ export default function EditExercisePage() {
     fetchEquipment()
   }, [])
 
+  // 1. Sélection automatique du type d'exercice lors du chargement
   useEffect(() => {
     const fetchExercise = async () => {
       setLoading(true)
@@ -83,12 +289,12 @@ export default function EditExercisePage() {
       if (!error && data) {
         setName(data.name || '')
         setMuscle(data.muscle_group || muscleGroups[0])
-        setExerciseType(data.exercise_type || 'Musculation')
+        setExerciseType(data.exercise_type || 'Musculation') // <-- Sélectionne le bon type
         setEquipmentId(data.equipment_id || null)
         setDifficulty(data.difficulty || difficulties[0])
         setSets(data.sets || 3)
-        
-        // Charger les champs cardio si applicable
+        setFirstWeight(data.weight?.toString() || '')
+        setFirstReps(data.reps?.toString() || '')
         if (data.exercise_type === 'Cardio') {
           setDistance(data.distance?.toString() || '')
           setDistanceUnit(data.distance_unit || 'km')
@@ -96,10 +302,13 @@ export default function EditExercisePage() {
           setSpeedUnit(data.speed_unit || 'km/h')
           setCalories(data.calories?.toString() || '')
         }
-        
-        // Charger les champs de durée
         setMinutes(data.duration_minutes?.toString() || '')
         setSeconds(data.duration_seconds?.toString() || '')
+        // Suggestions contextuelles selon le type
+        if (data.muscle_group && standardExercises[data.muscle_group]) {
+          const filtered = standardExercises[data.muscle_group].filter(ex => ex.type === data.exercise_type)
+          setAutoExerciseSuggestions(filtered.length ? filtered : standardExercises[data.muscle_group].filter(ex => ex.type === data.exercise_type))
+        }
       }
       setLoading(false)
     }
@@ -121,6 +330,32 @@ export default function EditExercisePage() {
     }
     if (id) fetchPerformance()
   }, [id, perfSuccess])
+
+  // 1. Suggestions contextuelles selon type et équipement/groupe
+  useEffect(() => {
+    if (muscle && standardExercises[muscle]) {
+      // Filtrer par type et équipement si possible
+      const filtered = standardExercises[muscle].filter(ex =>
+        ex.type === exerciseType &&
+        (name.toLowerCase().includes(ex.name.toLowerCase()) || ex.equipment === equipmentList.find(eq => eq.id === equipmentId)?.name)
+      );
+      setAutoExerciseSuggestions(filtered.length ? filtered : standardExercises[muscle].filter(ex => ex.type === exerciseType));
+    } else {
+      setAutoExerciseSuggestions([]);
+    }
+  }, [muscle, exerciseType, name, equipmentId, equipmentList.length]);
+
+  // 2. Suggestions dynamiques pour le cardio aussi
+  // (déjà géré par le filtre ex.type === exerciseType dans le useEffect suggestions)
+
+  // 3. Saisie de performance dynamique pour le cardio
+  useEffect(() => {
+    if (exerciseType === 'Cardio') {
+      setPerfWeight('');
+      setPerfReps('');
+      setSets(1); // Cardio is typically 1 set
+    }
+  }, [exerciseType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -178,33 +413,74 @@ export default function EditExercisePage() {
   }
 
   const handleAddPerf = async () => {
-    if (!perfReps) return
-    setPerfLoading(true)
-    setPerfSuccess('')
-    const supabase = createClient()
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (exerciseType === 'Musculation' && !canAddPerfMuscu()) return;
+    if (exerciseType === 'Cardio' && !canAddPerfCardio()) return;
+    setPerfLoading(true);
+    setPerfSuccess('');
+    const supabase = createClient();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      alert("Utilisateur non connecté !")
-      setPerfLoading(false)
-      return
+      alert("Utilisateur non connecté !");
+      setPerfLoading(false);
+      return;
     }
-    const { error } = await supabase.from('performance_logs').insert({
+    let perfData: any = {
       user_id: user.id,
       exercise_id: id,
-      reps: Number(perfReps),
-      weight: perfWeight ? Number(perfWeight) : 0,
-      performed_at: new Date().toISOString()
-    })
-    setPerfLoading(false)
-    if (!error) {
-      setPerfSuccess('Performance ajoutée !')
-      setPerfWeight('')
-      setPerfReps('')
-      setTimeout(() => setPerfSuccess(''), 2000)
-    } else {
-      alert("Erreur lors de l'ajout de la performance : " + error.message)
+      performed_at: new Date().toISOString(),
+    };
+    if (exerciseType === 'Musculation') {
+      perfData.weight = perfWeight ? Number(perfWeight) : 0;
+      perfData.reps = perfReps ? Number(perfReps) : 0;
+      perfData.sets = sets;
+      perfData.duration_minutes = minutes ? Number(minutes) : null;
+      perfData.duration_seconds = seconds ? Number(seconds) : null;
+      // Cardio à null
+      perfData.distance = null;
+      perfData.distance_unit = null;
+      perfData.speed = null;
+      perfData.speed_unit = null;
+      perfData.calories = null;
+    } else if (exerciseType === 'Cardio') {
+      perfData.distance = distance ? Number(distance) : null;
+      perfData.distance_unit = distanceUnit;
+      perfData.duration_minutes = minutes ? Number(minutes) : null;
+      perfData.duration_seconds = seconds ? Number(seconds) : null;
+      perfData.speed = speed ? Number(speed) : null;
+      perfData.speed_unit = speedUnit;
+      perfData.calories = calories ? Number(calories) : null;
+      // Muscu à null/0
+      perfData.weight = 0;
+      perfData.reps = 0;
+      perfData.sets = null;
     }
-  }
+    // DEBUG
+    console.log('perfData sent to Supabase:', perfData);
+    const { error } = await supabase.from('performance_logs').insert(perfData);
+    setPerfLoading(false);
+    if (!error) {
+      setPerfSuccess('Performance ajoutée !');
+      setPerfWeight('');
+      setPerfReps('');
+      setDistance('');
+      setSpeed('');
+      setCalories('');
+      setMinutes('');
+      setSeconds('');
+      // Rafraîchir l'historique
+      const { data: updatedHistory, error: histError } = await supabase
+        .from('performance_logs')
+        .select('id, weight, reps, distance, distance_unit, duration_minutes, duration_seconds, speed, speed_unit, calories, performed_at')
+        .eq('exercise_id', id)
+        .order('performed_at', { ascending: false });
+      if (!histError && updatedHistory) {
+        setPerfHistory(updatedHistory);
+        setLastPerf(updatedHistory[0] || null);
+      }
+    } else {
+      alert("Erreur lors de l'ajout de la performance : " + error.message);
+    }
+  };
 
   const handleEditPerf = (perf: PerformanceLog) => {
     setEditPerfId(perf.id)
@@ -265,110 +541,120 @@ export default function EditExercisePage() {
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="flex items-center space-x-2 text-orange-600 hover:text-orange-800 font-semibold mb-4"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          <span>Retour</span>
-        </button>
-        <div className="flex items-center space-x-3 mb-6">
-          <Dumbbell className="h-8 w-8 text-orange-500" />
-          <h1 className="text-2xl font-bold text-gray-900">Modifier l&apos;exercice</h1>
-        </div>
-        
+        {/* Dans le formulaire, afficher le champ nom de l'exercice et le pré-remplir */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Nom de l&apos;exercice</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <label className="block text-gray-700 font-medium mb-2">Nom de l'exercice</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+          />
         </div>
         
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Type d&apos;exercice</label>
-          <div className="grid grid-cols-2 gap-3">
-            {exerciseTypes.map(type => {
-              const Icon = type.icon
-              return (
-                <button
-                  key={type.value}
-                  type="button"
-                  onClick={() => setExerciseType(type.value)}
-                  className={`flex items-center justify-center space-x-2 p-4 rounded-lg border-2 transition-all ${
-                    exerciseType === type.value
-                      ? 'border-orange-500 bg-orange-50 text-orange-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                  }`}
-                >
-                  <Icon className={`h-5 w-5 ${type.color}`} />
-                  <span className="font-medium">{type.label}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Groupe musculaire</label>
-          <select value={muscle} onChange={e => setMuscle(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
-            {muscleGroups.map(g => <option key={g} value={g}>{g}</option>)}
-          </select>
-        </div>
-        
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Équipement</label>
-          <select value={equipmentId ?? ''} onChange={e => setEquipmentId(Number(e.target.value))} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
-            <option value="">Sélectionne un équipement</option>
-            {equipmentList.map(eq => <option key={eq.id} value={eq.id}>{eq.name}</option>)}
-          </select>
-          <div className="flex mt-2 gap-2 w-full">
-            <input
-              type="text"
-              value={newEquipment}
-              onChange={e => setNewEquipment(e.target.value)}
-              placeholder="Nouvel équipement"
-              className="min-w-0 w-1/3 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
-            />
-            <input
-              type="text"
-              value={newEquipmentDescription}
-              onChange={e => setNewEquipmentDescription(e.target.value)}
-              placeholder="Description (optionnelle)"
-              className="min-w-0 w-1/2 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
-            />
-            <button
-              type="button"
-              onClick={handleAddEquipment}
-              disabled={addingEquipment || !newEquipment.trim()}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50 w-[100px] whitespace-nowrap"
-            >
-              {addingEquipment ? 'Ajout…' : 'Ajouter'}
-            </button>
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Difficulté</label>
-          <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500">
-            {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
-        </div>
-        
-        {/* Champs spécifiques à la Musculation */}
-        {exerciseType === 'Musculation' && (
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Nombre de séries</label>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              value={sets}
-              onChange={e => setSets(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-            />
+        {/* Suggestions rapides */}
+        {autoExerciseSuggestions.length > 0 && (
+          <div className="mb-4">
+            <div className="font-medium text-gray-700 mb-2">Suggestions rapides</div>
+            <div className="flex flex-wrap gap-2">
+              {autoExerciseSuggestions.map((ex, idx) => (
+                ex.suggestions.map((s, i) => {
+                  // Construire un label explicite
+                  let label = s.label;
+                  if (!label.toLowerCase().includes(ex.name.toLowerCase())) {
+                    label = `${s.label} de ${ex.name}`;
+                    if (s.values.firstWeight) label += ` à ${s.values.firstWeight}kg`;
+                  }
+                  return (
+                    <button
+                      key={ex.name + '-' + i}
+                      type="button"
+                      className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1 rounded text-xs font-semibold border border-orange-200"
+                      onClick={() => {
+                        setName(ex.name);
+                        setMuscle(muscle);
+                        setExerciseType(ex.type);
+                        setDifficulty(ex.difficulty);
+                        setFirstReps(s.values.firstReps || '');
+                        setFirstWeight(s.values.firstWeight || '');
+                        setSets(s.values.sets || 3);
+                        setEquipmentId(equipmentList.find(eq => eq.name === ex.equipment)?.id || null);
+                        setDistance(s.values.distance || '');
+                        setDistanceUnit(s.values.distanceUnit || 'km');
+                        setMinutes(s.values.minutes || '');
+                        setSpeed(s.values.speed || '');
+                        setSpeedUnit(s.values.speedUnit || 'km/h');
+                        setCalories(s.values.calories || '');
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })
+              ))}
+            </div>
           </div>
         )}
-        
-        {/* Champs spécifiques au Cardio */}
+        {/* Champs dynamiques selon le type d'exercice */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Type d'exercice</label>
+          <div className="flex gap-4 mb-2">
+            {exerciseTypes.map((type) => (
+              <button
+                key={type.value}
+                type="button"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold ${exerciseType === type.value ? type.color + ' bg-orange-50 border-orange-500' : 'bg-white border-gray-300 text-gray-700'}`}
+                onClick={() => setExerciseType(type.value)}
+              >
+                <type.icon className="h-5 w-5" />
+                {type.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Champs spécifiques Musculation */}
+        {exerciseType === 'Musculation' && (
+          <>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Poids (optionnel)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={firstWeight}
+                onChange={e => setFirstWeight(e.target.value)}
+                placeholder="Poids (kg)"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Répétitions (optionnel)</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={firstReps}
+                onChange={e => setFirstReps(e.target.value)}
+                placeholder="Répétitions"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Nombre de séries</label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={sets}
+                onChange={e => setSets(Number(e.target.value))}
+                placeholder="Séries"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+          </>
+        )}
+        {/* Champs spécifiques Cardio */}
         {exerciseType === 'Cardio' && (
           <>
             <div>
@@ -431,14 +717,14 @@ export default function EditExercisePage() {
             </div>
           </>
         )}
-        
         {/* Champs communs */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Temps d&apos;exécution (optionnel)</label>
+          <label className="block text-gray-700 font-medium mb-2">Durée (optionnel)</label>
           <div className="flex gap-2">
             <input
               type="number"
               min="0"
+              step="1"
               value={minutes}
               onChange={e => setMinutes(e.target.value)}
               placeholder="Minutes"
@@ -448,6 +734,7 @@ export default function EditExercisePage() {
               type="number"
               min="0"
               max="59"
+              step="1"
               value={seconds}
               onChange={e => setSeconds(e.target.value)}
               placeholder="Secondes"
@@ -458,10 +745,10 @@ export default function EditExercisePage() {
         
         {/* SECTION PERFORMANCES - Uniquement pour Musculation */}
         {exerciseType === 'Musculation' && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              <span className="font-semibold text-gray-800">Performances</span>
+          <div className="mt-8 bg-gray-50 rounded-lg p-4">
+            <div className="font-semibold text-orange-700 mb-2 flex items-center gap-2">
+              <Trophy className="h-5 w-5" />
+              Performances
             </div>
             {lastPerf ? (
               <div className="mb-2 text-sm text-gray-700">
@@ -489,7 +776,7 @@ export default function EditExercisePage() {
                 placeholder="Répétitions"
                 className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
               />
-              <button type="button" onClick={handleAddPerf} disabled={perfLoading} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+              <button type="button" onClick={handleAddPerf} disabled={!canAddPerfMuscu() || perfLoading} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
                 <Save className="h-4 w-4" />
                 {perfLoading ? 'Ajout...' : 'Ajouter'}
               </button>
@@ -527,7 +814,7 @@ export default function EditExercisePage() {
                       </>
                     ) : (
                       <>
-                        <span className="font-semibold">{perf.weight === 0 ? 'Poids du corps' : perf.weight + ' kg'} x {perf.reps} reps x {sets} séries</span>
+                        <span className="font-semibold">{getPerfLabel(perf, exerciseType, sets)}</span>
                         <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
                         <button onClick={() => handleEditPerf(perf)} className="text-yellow-500 ml-2" title="Modifier"><Pencil className="h-4 w-4" /></button>
                         <button onClick={() => handleDeletePerf(perf.id)} className="text-red-500 ml-1" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
@@ -541,10 +828,170 @@ export default function EditExercisePage() {
           </div>
         )}
         
-        <button type="submit" disabled={saving} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
-          <Save className="h-5 w-5 mr-2" />
-          <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
-        </button>
+        {/* SECTION PERFORMANCES - Pour Cardio */}
+        {exerciseType === 'Cardio' && (
+          <div className="mt-8 bg-gray-50 rounded-lg p-4">
+            <div className="font-semibold text-orange-700 mb-2 flex items-center gap-2">
+              <Trophy className="h-5 w-5" />
+              Performances
+            </div>
+            <div className="flex flex-wrap gap-2 mb-2">
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={distance}
+                onChange={e => setDistance(e.target.value)}
+                placeholder="Distance"
+                className="w-1/4 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <select
+                value={distanceUnit}
+                onChange={e => setDistanceUnit(e.target.value)}
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              >
+                <option value="km">km</option>
+                <option value="m">m</option>
+                <option value="miles">miles</option>
+              </select>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={minutes}
+                onChange={e => setMinutes(e.target.value)}
+                placeholder="Min"
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="number"
+                min="0"
+                max="59"
+                step="1"
+                value={seconds}
+                onChange={e => setSeconds(e.target.value)}
+                placeholder="Sec"
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={speed}
+                onChange={e => setSpeed(e.target.value)}
+                placeholder="Vitesse"
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <select
+                value={speedUnit}
+                onChange={e => setSpeedUnit(e.target.value)}
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              >
+                <option value="km/h">km/h</option>
+                <option value="m/s">m/s</option>
+                <option value="mph">mph</option>
+              </select>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={calories}
+                onChange={e => setCalories(e.target.value)}
+                placeholder="Calories"
+                className="w-1/6 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            {lastPerf ? (
+              <div className="mb-2 text-sm text-gray-700">
+                Dernière performance : <span className="font-bold">{lastPerf.weight === 0 ? 'Poids du corps' : lastPerf.weight + ' kg'} x {lastPerf.reps} reps x {sets} séries</span> <span className="text-gray-400">({new Date(lastPerf.performed_at).toLocaleDateString()})</span>
+              </div>
+            ) : (
+              <div className="mb-2 text-sm text-gray-500">Aucune performance enregistrée.</div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-2 items-center mb-2">
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                value={perfWeight}
+                onChange={e => setPerfWeight(e.target.value)}
+                placeholder="Poids (kg)"
+                className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={perfReps}
+                onChange={e => setPerfReps(e.target.value)}
+                placeholder="Répétitions"
+                className="w-full sm:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500"
+              />
+              <button type="button" onClick={handleAddPerf} disabled={!canAddPerfCardio() || perfLoading} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                <Save className="h-4 w-4" />
+                {perfLoading ? 'Ajout...' : 'Ajouter'}
+              </button>
+            </div>
+            {perfSuccess && <div className="text-green-600 text-sm mb-2">{perfSuccess}</div>}
+            <div className="mt-2">
+              <div className="text-xs text-gray-500 mb-1">Historique :</div>
+              <ul className="max-h-32 overflow-y-auto text-sm divide-y divide-gray-200">
+                {perfHistory.length === 0 && <li className="text-gray-400">Aucune performance enregistrée.</li>}
+                {perfHistory.map((perf) => (
+                  <li key={perf.id} className="mb-1 flex items-center gap-2">
+                    {editPerfId === perf.id ? (
+                      <>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.5"
+                          value={editWeight}
+                          onChange={e => setEditWeight(e.target.value)}
+                          className="w-20 border rounded px-2 py-1"
+                        />
+                        <span>kg x</span>
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={editReps}
+                          onChange={e => setEditReps(e.target.value)}
+                          className="w-14 border rounded px-2 py-1"
+                        />
+                        <span>reps x {sets} séries</span>
+                        <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
+                        <button onClick={handleSaveEditPerf} className="text-green-600 ml-2" title="Valider"><Check className="h-4 w-4" /></button>
+                        <button onClick={handleCancelEdit} className="text-gray-400 ml-1" title="Annuler"><X className="h-4 w-4" /></button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold">{getPerfLabel(perf, exerciseType, sets)}</span>
+                        <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
+                        <button onClick={() => handleEditPerf(perf)} className="text-yellow-500 ml-2" title="Modifier"><Pencil className="h-4 w-4" /></button>
+                        <button onClick={() => handleDeletePerf(perf.id)} className="text-red-500 ml-1" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {perfError && <div className="text-red-500 text-xs mt-1">{perfError}</div>}
+            </div>
+          </div>
+        )}
+        
+        <div className="max-sm:sticky max-sm:bottom-0 max-sm:left-0 max-sm:w-full max-sm:bg-white max-sm:pt-2 max-sm:z-20 max-sm:shadow-[0_-2px_12px_0_rgba(0,0,0,0.07)] space-y-2">
+          <button type="submit" disabled={saving} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+            <Save className="h-5 w-5 mr-2" />
+            <span>{saving ? 'Sauvegarde...' : 'Enregistrer'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/exercises')}
+            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+          >
+            <span>Annuler</span>
+          </button>
+        </div>
       </motion.form>
     </div>
   )

@@ -28,6 +28,29 @@ type PerformanceLog = {
   performed_at: string;
 };
 
+// Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
+function getPerfLabel(perf: any, type: string, sets?: number): string {
+  if (type === 'Cardio') {
+    let phrase = '';
+    if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
+    if (perf.duration_minutes || perf.duration_seconds) {
+      let d = '';
+      if (perf.duration_minutes) d += perf.duration_minutes + ' min';
+      if (perf.duration_seconds) d += (d ? ' ' : '') + perf.duration_seconds + ' sec';
+      phrase += (phrase ? ' en ' : '') + d;
+    }
+    if (perf.speed) phrase += (phrase ? ' à ' : '') + perf.speed + (perf.speed_unit || ' km/h');
+    if (perf.calories) phrase += (phrase ? ', ' : '') + perf.calories + ' kcal';
+    return phrase || 'Performance cardio';
+  }
+  // Muscu
+  let phrase = '';
+  if (perf.weight) phrase += perf.weight + ' kg';
+  if (perf.reps) phrase += (phrase ? ' x ' : '') + perf.reps + ' reps';
+  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + sets + ' séries';
+  return phrase || 'Performance muscu';
+}
+
 export default function ExerciseDetailPage() {
   const router = useRouter()
   const params = useParams()
@@ -66,7 +89,7 @@ export default function ExerciseDetailPage() {
       const supabase = (await import('@/lib/supabase')).createClient()
       const { data, error } = await supabase
         .from('performance_logs')
-        .select('weight, reps, performed_at')
+        .select('weight, reps, distance, distance_unit, duration_minutes, duration_seconds, speed, speed_unit, calories, performed_at')
         .eq('exercise_id', id)
         .order('performed_at', { ascending: false })
       if (!error && data) {
@@ -194,7 +217,7 @@ export default function ExerciseDetailPage() {
         <div className="mt-6 bg-gray-50 rounded-lg p-4 flex items-center gap-3">
           <Trophy className="h-6 w-6 text-yellow-500" />
           {lastPerf ? (
-            <span className="text-gray-800 text-base">Dernière performance : <span className="font-bold">{lastPerf.weight} kg x {lastPerf.reps} reps</span> <span className="text-gray-400">({new Date(lastPerf.performed_at).toLocaleDateString()})</span></span>
+            <span className="text-gray-800 text-base">Dernière performance : <span className="font-bold">{getPerfLabel(lastPerf, exercise?.exercise_type || 'Musculation', exercise?.sets ?? 1)}</span> <span className="text-gray-400">({new Date(lastPerf.performed_at).toLocaleDateString()})</span></span>
           ) : (
             <span className="text-gray-500 text-base">Aucune performance enregistrée.</span>
           )}
@@ -211,7 +234,7 @@ export default function ExerciseDetailPage() {
             <ul className="max-h-48 overflow-y-auto text-sm divide-y divide-gray-200">
               {perfHistory.map((perf, idx) => (
                 <li key={idx} className="py-1 flex items-center justify-between">
-                  <span className="font-semibold">{perf.weight} kg x {perf.reps} reps</span>
+                  <span className="font-semibold">{getPerfLabel(perf, exercise?.exercise_type || 'Musculation', exercise?.sets ?? 1)}</span>
                   <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
                 </li>
               ))}
