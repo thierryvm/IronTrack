@@ -69,7 +69,7 @@ export default function NutritionPage() {
       }
     };
     checkAuth();
-  }, []);
+  }, [router]);
 
   const [meals, setMeals] = useState<Meal[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date())

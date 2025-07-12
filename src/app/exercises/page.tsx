@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
@@ -43,7 +43,7 @@ export default function ExercisesPage() {
       }
     };
     checkAuth();
-  }, []);
+  }, [router]);
 
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -53,18 +53,7 @@ export default function ExercisesPage() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    loadExercises()
-    // Charger la liste des équipements
-    const fetchEquipment = async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase.from('equipment').select('id, name')
-      if (!error && data) setEquipmentList(data)
-    }
-    fetchEquipment()
-  }, [page])
-
-  const loadExercises = async () => {
+  const loadExercises = useCallback(async () => {
     setLoading(true)
     const supabase = createClient()
     // Récupérer le nombre total d'exercices pour la pagination
@@ -84,7 +73,18 @@ export default function ExercisesPage() {
       setExercises(data);
     }
     setLoading(false);
-  }
+  }, [page]);
+
+  useEffect(() => {
+    loadExercises()
+    // Charger la liste des équipements
+    const fetchEquipment = async () => {
+      const supabase = createClient()
+      const { data, error } = await supabase.from('equipment').select('id, name')
+      if (!error && data) setEquipmentList(data)
+    }
+    fetchEquipment()
+  }, [loadExercises]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

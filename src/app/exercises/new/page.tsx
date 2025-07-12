@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Dumbbell, Save, Clock, Target } from 'lucide-react'
+import { Dumbbell, Save, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 const muscleGroups = [
@@ -15,7 +15,7 @@ const exerciseTypes = [
 ]
 
 // Table d’exercices standards par groupe musculaire
-const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, any>}>}>> = {
+const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, unknown>}>}>> = {
   'Pectoraux': [
     {
       name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
@@ -156,7 +156,7 @@ const standardExercises: Record<string, Array<{name: string, label: string, type
 };
 
 // Ajout de la fonction de suggestions dynamiques
-function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: Record<string, any>}> {
+function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: Record<string, unknown>}> {
   // Table de correspondance nom -> groupe musculaire
   const muscleMap: Record<string, string> = {
     'pompe': 'Pectoraux',
@@ -213,25 +213,6 @@ function getExerciseSuggestions(type: string, muscle: string, name: string): Arr
     'presse': 'Débutant',
     'hip thrust': 'Intermédiaire',
     'gainage': 'Débutant',
-  };
-  // Table de correspondance nom -> suggestion label
-  const labelMap: Record<string, string> = {
-    'pompe': 'Pompes',
-    'traction': 'Tractions',
-    'squat': 'Squat',
-    'course': 'Course',
-    'vélo': 'Vélo',
-    'rameur': 'Rameur',
-    'abdo': 'Abdos',
-    'fente': 'Fentes',
-    'dips': 'Dips',
-    'développé': 'Développé couché',
-    'rowing': 'Rowing',
-    'soulevé': 'Soulevé de terre',
-    'curl': 'Curl',
-    'presse': 'Presse',
-    'hip thrust': 'Hip Thrust',
-    'gainage': 'Gainage',
   };
   // Utilitaire pour trouver la clé correspondante
   function findKey(n: string) {
@@ -328,11 +309,8 @@ export default function NewExercisePage() {
   const [minutes, setMinutes] = useState('')
   const [seconds, setSeconds] = useState('')
   
-  // Ajout d’un état pour le nom de l’exercice (pour suggestions dynamiques)
-  const [suggestionName, setSuggestionName] = useState('');
-  
   // Ajout d’un état pour l’exercice suggéré
-  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, any>}>}>>([]);
+  const [autoExerciseSuggestions, setAutoExerciseSuggestions] = useState<Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, unknown>}>}>>([]);
   
   const router = useRouter()
 
@@ -366,7 +344,7 @@ export default function NewExercisePage() {
     }
     
     // Préparer les données selon le type d'exercice
-    const exerciseData: Record<string, any> = {
+    const exerciseData: Record<string, unknown> = {
       user_id: user.id,
       name,
       muscle_group: muscle,
@@ -447,7 +425,7 @@ export default function NewExercisePage() {
         
         <div>
           <label className="block text-gray-700 font-medium mb-2">Nom de l&apos;exercice</label>
-          <input type="text" value={name} onChange={e => { setName(e.target.value); setSuggestionName(e.target.value); }} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <input type="text" value={name} onChange={e => { setName(e.target.value); }} required className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
         
         <div>
@@ -536,7 +514,6 @@ export default function NewExercisePage() {
                         className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
                         onClick={() => {
                           setName(ex.name);
-                          setSuggestionName(ex.name);
                           setMuscle(muscle);
                           // Sélectionner l'équipement si possible
                           if (ex.equipment) {
@@ -561,7 +538,7 @@ export default function NewExercisePage() {
 
         {/* Suggestions dynamiques */}
         {(() => {
-          const suggestions = getExerciseSuggestions(exerciseType, muscle, suggestionName || name);
+          const suggestions = getExerciseSuggestions(exerciseType, muscle, name);
           if (!suggestions.length) return null;
           return (
             <div className="mb-4">
@@ -574,26 +551,25 @@ export default function NewExercisePage() {
                     className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
                     onClick={() => {
                       // Pré-remplir tous les champs nécessaires selon la suggestion
-                      setName(s.values.name || '');
-                      setSuggestionName(s.values.name || '');
-                      setMuscle(s.values.muscle || muscleGroups[0]);
+                      setName(s.values && typeof s.values.name === 'string' ? s.values.name : '');
+                      setMuscle(s.values && typeof s.values.muscle === 'string' ? s.values.muscle : muscleGroups[0]);
                       // Sélectionner l'équipement si possible
-                      if (s.values.equipment) {
+                      if (typeof s.values.equipment === 'string') {
                         const eq = equipmentList.find(e => e.name.toLowerCase() === s.values.equipment.toLowerCase());
                         setEquipmentId(eq ? eq.id : null);
                       }
-                      setDifficulty(s.values.difficulty || difficulties[0]);
+                      setDifficulty(s.values && typeof s.values.difficulty === 'string' ? s.values.difficulty : difficulties[0]);
                       if (exerciseType === 'Musculation') {
-                        setFirstReps(s.values.firstReps || '');
-                        setFirstWeight(s.values.firstWeight || '');
-                        setSets(s.values.sets || 3);
+                        setFirstReps(s.values && typeof s.values.firstReps === 'string' ? s.values.firstReps : '');
+                        setFirstWeight(s.values && typeof s.values.firstWeight === 'string' ? s.values.firstWeight : '');
+                        setSets(s.values && typeof s.values.sets === 'number' ? s.values.sets : 3);
                       } else if (exerciseType === 'Cardio') {
-                        setDistance(s.values.distance || '');
-                        setDistanceUnit(s.values.distanceUnit || 'km');
-                        setMinutes(s.values.minutes || '');
-                        setSpeed(s.values.speed || '');
-                        setSpeedUnit(s.values.speedUnit || 'km/h');
-                        setCalories(s.values.calories || '');
+                        setDistance(s.values && typeof s.values.distance === 'number' ? String(s.values.distance) : '');
+                        setDistanceUnit(s.values && typeof s.values.distanceUnit === 'string' ? s.values.distanceUnit : 'km');
+                        setMinutes(s.values && typeof s.values.minutes === 'string' ? s.values.minutes : '');
+                        setSpeed(s.values && typeof s.values.speed === 'number' ? String(s.values.speed) : '');
+                        setSpeedUnit(s.values && typeof s.values.speedUnit === 'string' ? s.values.speedUnit : 'km/h');
+                        setCalories(s.values && typeof s.values.calories === 'number' ? String(s.values.calories) : '');
                       }
                     }}
                   >

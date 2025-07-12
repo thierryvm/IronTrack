@@ -155,7 +155,7 @@ const defaultBadges = [
     validate: (goals: TrainingGoal[]) => goals.some((g: TrainingGoal) => {
       const nom = g.exercises?.name?.toLowerCase() || '';
       // On tente d'accéder à g.exercises?.sets, sinon on considère 0 si non défini
-      const sets = (g as Record<string, any>).exercises?.sets ?? 0;
+      const sets = (g as Record<string, unknown>).exercises?.sets ?? 0;
       return (
         (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
         (sets === 0)
@@ -164,7 +164,7 @@ const defaultBadges = [
     getDate: (goals: TrainingGoal[]) => {
       const g = goals.find((g: TrainingGoal) => {
         const nom = g.exercises?.name?.toLowerCase() || '';
-        const sets = (g as Record<string, any>).exercises?.sets ?? 0;
+        const sets = (g as Record<string, unknown>).exercises?.sets ?? 0;
         return (
           (nom.includes('vélo') || nom.includes('tapis') || nom.includes('rameur') || nom.includes('course')) &&
           (sets === 0)

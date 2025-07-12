@@ -249,7 +249,7 @@ function AuthContent() {
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-base"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : 'S\'inscrire'}
+              {loading ? 'Inscription...' : 'S\'inscrire'.replace("'", "&apos;")}
             </button>
             <div className="text-center mt-2">
               <button
@@ -336,7 +336,7 @@ function AuthContent() {
                 className="text-orange-600 hover:underline text-sm"
                 onClick={() => setShowSignUp(true)}
               >
-                Pas de compte ? S'inscrire
+                Pas de compte ? S&apos;inscrire
               </button>
             </div>
           </>

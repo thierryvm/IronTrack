@@ -109,17 +109,14 @@ export default function CalendarPage() {
       }
     };
     checkAuth();
-  }, []);
+  }, [router]);
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
-  const [userProfile, setUserProfile] = useState<{ avatar_url?: string; full_name?: string; pseudo?: string }>( {} );
+  const [workouts] = useState<Workout[]>([])
+  const [sharedWorkouts] = useState<SharedWorkout[]>([])
   const [sharePlanning, setSharePlanning] = useState(false);
 
   useEffect(() => {
-    loadWorkouts()
-    loadSharedWorkouts()
     const fetchProfile = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -130,19 +127,14 @@ export default function CalendarPage() {
         .eq('id', user.id)
         .single();
       if (profile) {
-        // Si pseudo est vide, on le remplit automatiquement
         if (!profile.pseudo || profile.pseudo.trim() === '') {
           const pseudo = (profile.email && profile.email.split('@')[0]) || 'Utilisateur IronTrack';
           await supabase
             .from('profiles')
             .update({ pseudo })
             .eq('id', user.id);
-          // setUserProfile({ ...profile, pseudo }); // Variable inutilisée
-        } else {
-          // setUserProfile(profile); // Variable inutilisée
         }
       }
-      // Récupérer la préférence de partage
       const { data: settings } = await supabase
         .from('user_settings')
         .select('share_planning')
@@ -156,35 +148,7 @@ export default function CalendarPage() {
   useEffect(() => {
   }, [sharedWorkouts])
 
-  const loadWorkouts = async () => {
-    try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      const { data, error } = await supabase
-        .from('workouts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('scheduled_date', { ascending: true })
-      if (!error && data) {
-        setWorkouts(data)
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des séances:', error)
-    }
-  }
-
-  const loadSharedWorkouts = async () => {
-    try {
-      const res = await fetch('/calendar/shared')
-      const { workouts } = await res.json()
-      setSharedWorkouts(workouts || [])
-    } catch (error) {
-      console.error('Erreur lors du chargement des créneaux partagés:', error)
-    }
-  }
-
-  // Après avoir récupéré les séances (workouts et sharedWorkouts)
+  // Supprime les variables inutilisées loadWorkouts et loadSharedWorkouts
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()

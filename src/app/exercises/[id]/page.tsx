@@ -29,25 +29,25 @@ type PerformanceLog = {
 };
 
 // Ajout d'une fonction utilitaire pour générer la phrase de performance selon le type et les champs
-function getPerfLabel(perf: Record<string, any>, type: string, sets?: number): string {
+function getPerfLabel(perf: Record<string, unknown>, type: string, sets?: number): string {
   if (type === 'Cardio') {
     let phrase = '';
-    if (perf.distance) phrase += perf.distance + (perf.distance_unit || ' km');
+    if (perf.distance) phrase += String(perf.distance) + (perf.distance_unit ? String(perf.distance_unit) : ' km');
     if (perf.duration_minutes || perf.duration_seconds) {
       let d = '';
-      if (perf.duration_minutes) d += perf.duration_minutes + ' min';
-      if (perf.duration_seconds) d += (d ? ' ' : '') + perf.duration_seconds + ' sec';
+      if (perf.duration_minutes) d += String(perf.duration_minutes) + ' min';
+      if (perf.duration_seconds) d += (d ? ' ' : '') + String(perf.duration_seconds) + ' sec';
       phrase += (phrase ? ' en ' : '') + d;
     }
-    if (perf.speed) phrase += (phrase ? ' à ' : '') + perf.speed + (perf.speed_unit || ' km/h');
-    if (perf.calories) phrase += (phrase ? ', ' : '') + perf.calories + ' kcal';
+    if (perf.speed) phrase += (phrase ? ' à ' : '') + String(perf.speed) + (perf.speed_unit ? String(perf.speed_unit) : ' km/h');
+    if (perf.calories) phrase += (phrase ? ', ' : '') + String(perf.calories) + ' kcal';
     return phrase || 'Performance cardio';
   }
   // Muscu
   let phrase = '';
-  if (perf.weight) phrase += perf.weight + ' kg';
-  if (perf.reps) phrase += (phrase ? ' x ' : '') + perf.reps + ' reps';
-  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + sets + ' séries';
+  if (perf.weight) phrase += String(perf.weight) + ' kg';
+  if (perf.reps) phrase += (phrase ? ' x ' : '') + String(perf.reps) + ' reps';
+  if (sets && sets > 1) phrase += (phrase ? ' x ' : '') + String(sets) + ' séries';
   return phrase || 'Performance muscu';
 }
 

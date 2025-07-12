@@ -1,8 +1,8 @@
 // Configuration Next.js avec désactivation du linting strict pour le build Vercel
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
   typescript: {
     ignoreBuildErrors: true,
   },
