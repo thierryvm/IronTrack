@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, Filter, X as LucideX, Calendar, Trophy } from 'lucide-react'
+import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, X as LucideX, Calendar, Trophy } from 'lucide-react'
 
 interface Exercise {
   id: number
@@ -227,14 +227,6 @@ export default function ExercisesPage() {
     fetchEquipment()
   }, [loadExercises]);
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Débutant': return 'bg-green-100 text-green-800'
-      case 'Intermédiaire': return 'bg-yellow-100 text-yellow-800'
-      case 'Avancé': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   // Fonction utilitaire pour normaliser (enlever accents et mettre en minuscule)
   function normalize(str: string) {
