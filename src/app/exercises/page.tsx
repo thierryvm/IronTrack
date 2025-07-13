@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, Filter, X as LucideX, Calendar, Trophy } from 'lucide-react'
 
 interface Exercise {
   id: number
@@ -16,6 +16,144 @@ interface Exercise {
   last_weight?: number
   last_reps?: number
   last_date?: string
+  description?: string
+  created_at?: string
+}
+
+interface ExerciseModalProps {
+  exercise: Exercise | null
+  isOpen: boolean
+  onClose: () => void
+  onEdit: (id: number) => void
+  onDelete: (exercise: Exercise) => void
+  equipmentList: {id: number, name: string}[]
+}
+
+function ExerciseModal({ exercise, isOpen, onClose, onEdit, onDelete, equipmentList }: ExerciseModalProps) {
+  if (!exercise) return null
+
+  const equipment = equipmentList.find(eq => String(eq.id) === String(exercise.equipment))
+  const difficultyColors = {
+    'Débutant': { bg: 'bg-green-500', text: 'text-green-100' },
+    'Intermédiaire': { bg: 'bg-yellow-500', text: 'text-yellow-100' },
+    'Avancé': { bg: 'bg-red-500', text: 'text-red-100' }
+  }
+  const difficultyColor = difficultyColors[exercise.difficulty] || { bg: 'bg-gray-500', text: 'text-gray-100' }
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50"
+          onClick={onClose}
+        >
+          {/* Overlay avec effet de flou */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.75), rgba(20,20,30,0.6))',
+              backdropFilter: 'blur(15px) brightness(0.7)',
+              WebkitBackdropFilter: 'blur(15px) brightness(0.7)'
+            }}
+          />
+          
+          {/* Container centré pour la modal */}
+          <div className="relative flex items-center justify-center min-h-full p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className={`p-2 rounded-lg ${difficultyColor.bg}`}>
+                    <Dumbbell className={`h-5 w-5 ${difficultyColor.text}`} />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">{exercise.name}</h2>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <LucideX className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Target className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">{exercise.muscle_group}</span>
+                </div>
+
+                {equipment && (
+                  <div className="flex items-center space-x-2">
+                    <Dumbbell className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">{equipment.name}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} ${difficultyColor.text}`}>
+                    {exercise.difficulty}
+                  </span>
+                </div>
+
+                {exercise.last_date && (
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      Dernière fois : {new Date(exercise.last_date).toLocaleDateString('fr-FR')}
+                    </span>
+                  </div>
+                )}
+
+                {(exercise.last_weight || exercise.last_reps) && (
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      Dernière perf : {exercise.last_weight}kg × {exercise.last_reps} reps
+                    </span>
+                  </div>
+                )}
+
+                {exercise.description && (
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-sm text-gray-700">{exercise.description}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex space-x-2 mt-6">
+                <button
+                  onClick={() => {
+                    onEdit(exercise.id)
+                    onClose()
+                  }}
+                  className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                >
+                  ✏️ Modifier
+                </button>
+                <button
+                  onClick={() => {
+                    onDelete(exercise)
+                    onClose()
+                  }}
+                  className="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-600 transition-colors"
+                >
+                  🗑️ Supprimer
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
 }
 
 const muscleGroups = [
@@ -54,6 +192,7 @@ export default function ExercisesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const loadExercises = useCallback(async () => {
     setLoading(true)
@@ -154,6 +293,14 @@ export default function ExercisesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <ExerciseModal 
+        exercise={selectedExercise} 
+        isOpen={!!selectedExercise} 
+        onClose={() => setSelectedExercise(null)}
+        onEdit={(id) => router.push(`/exercises/${id}/edit`)}
+        onDelete={handleDeleteExercise}
+        equipmentList={equipmentList}
+      />
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -180,7 +327,7 @@ export default function ExercisesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8"
         >
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Recherche */}
             <div className="flex-1">
               <div className="relative">
@@ -206,7 +353,7 @@ export default function ExercisesPage() {
             </div>
 
             {/* Filtre par groupe musculaire */}
-            <div className="md:w-64">
+            <div className="sm:w-64">
               <select
                 value={selectedMuscleGroup}
                 onChange={(e) => setSelectedMuscleGroup(e.target.value)}
@@ -225,7 +372,7 @@ export default function ExercisesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
         >
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
@@ -266,123 +413,156 @@ export default function ExercisesPage() {
           </div>
         </motion.div>
 
-        {/* Liste des exercices */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
-        >
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
-              {filteredExercises.length} exercice{filteredExercises.length > 1 ? 's' : ''} trouvé{filteredExercises.length > 1 ? 's' : ''}
-            </h2>
-          </div>
+        {/* Grille des exercices */}
+        <div className="mb-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-900">
+            {filteredExercises.length} exercice{filteredExercises.length > 1 ? 's' : ''} trouvé{filteredExercises.length > 1 ? 's' : ''}
+          </h2>
+        </div>
 
-          <div className="divide-y divide-gray-200">
-            {filteredExercises.map((exercise, index) => (
+        <div className="grid gap-3 grid-cols-1 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredExercises.map((exercise, index) => {
+            const difficultyColors = {
+              'Débutant': { bg: 'bg-green-500', border: 'border-green-500' },
+              'Intermédiaire': { bg: 'bg-yellow-500', border: 'border-yellow-500' },
+              'Avancé': { bg: 'bg-red-500', border: 'border-red-500' }
+            }
+            const difficultyColor = difficultyColors[exercise.difficulty] || { bg: 'bg-gray-500', border: 'border-gray-500' }
+            const equipment = equipmentList.find(eq => String(eq.id) === String(exercise.equipment))
+
+            return (
               <motion.div
                 key={exercise.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${difficultyColor.border} overflow-hidden`}
+                onClick={() => setSelectedExercise(exercise)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{exercise.name}</h3>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(exercise.difficulty)}`}>
-                        {exercise.difficulty}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-6 text-sm text-gray-600">
-                      <span className="flex items-center space-x-1">
-                        <Target className="h-4 w-4" />
-                        <span>{exercise.muscle_group}</span>
-                      </span>
-                      {/* Affichage dynamique de l'équipement */}
-                      {(() => {
-                        const equipment = equipmentList.find(eq => String(eq.id) === String(exercise.equipment));
-                        if (equipment) {
-                          return (
-                            <span className="inline-flex items-center">
-                              {equipment.name}
-                            </span>
-                          );
-                        }
-                        return null;
-                      })()}
+                <div className="p-4 sm:p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1">
+                      <div className={`p-2 rounded-lg ${difficultyColor.bg} flex-shrink-0`}>
+                        <Dumbbell className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{exercise.name}</h3>
+                        <p className="text-sm text-gray-500 truncate">{exercise.muscle_group}</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Link
-                      href={`/exercises/${exercise.id}`}
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Voir détails"
-                    >
-                      <Eye className="h-5 w-5" />
-                    </Link>
-                    <Link
-                      href={`/exercises/${exercise.id}/edit`}
-                      className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                      title="Modifier"
-                    >
-                      <Edit className="h-5 w-5" />
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteExercise(exercise)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
+                  <div className="space-y-2 mb-4">
+                    {equipment && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Dumbbell className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{equipment.name}</span>
+                      </div>
+                    )}
+                    {exercise.last_date && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">Dernière: {new Date(exercise.last_date).toLocaleDateString('fr-FR')}</span>
+                      </div>
+                    )}
+                    {(exercise.last_weight || exercise.last_reps) && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Trophy className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{exercise.last_weight}kg × {exercise.last_reps} reps</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white`}>
+                      {exercise.difficulty}
+                    </span>
+
+                    <div className="flex space-x-1 flex-shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedExercise(exercise);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Voir détails"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <Link
+                        href={`/exercises/${exercise.id}/edit`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                        title="Modifier"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteExercise(exercise);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          {filteredExercises.length === 0 && (
-            <div className="p-12 text-center">
-              <Dumbbell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun exercice trouvé</h3>
-              <p className="text-gray-600 mb-6">
-                {searchTerm || selectedMuscleGroup !== 'Tous' 
-                  ? 'Essaie de modifier tes critères de recherche'
-                  : 'Commence par ajouter ton premier exercice'
-                }
-              </p>
-              {!searchTerm && selectedMuscleGroup === 'Tous' && (
-                <Link
-                  href="/exercises/new"
-                  className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors inline-flex items-center space-x-2"
-                >
-                  <Plus className="h-5 w-5" />
-                  <span>Ajouter un exercice</span>
-                </Link>
-              )}
-            </div>
-          )}
-        </motion.div>
+        {filteredExercises.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">💪</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun exercice trouvé</h3>
+            <p className="text-gray-500 mb-6">
+              {searchTerm || selectedMuscleGroup !== 'Tous' 
+                ? 'Essaie de modifier tes critères de recherche'
+                : 'Commence par ajouter ton premier exercice !'}
+            </p>
+            {!searchTerm && selectedMuscleGroup === 'Tous' && (
+              <Link
+                href="/exercises/new"
+                className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors inline-flex items-center space-x-2"
+              >
+                <Plus className="h-5 w-5" />
+                <span>Ajouter un exercice</span>
+              </Link>
+            )}
+          </div>
+        )}
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-6">
+        <div className="flex justify-center items-center gap-2 sm:gap-4 mt-6 px-4">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-lg font-semibold ${page === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
+              page === 1 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                : 'bg-orange-500 text-white hover:bg-orange-600'
+            }`}
           >
-            Précédent
+            <span className="hidden sm:inline">Précédent</span>
+            <span className="sm:hidden">←</span>
           </button>
-          <span className="font-semibold">Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}</span>
+          <span className="font-semibold text-sm sm:text-base px-2">
+            Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
+          </span>
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
-            className={`px-4 py-2 rounded-lg font-semibold ${page >= Math.ceil(totalCount / PAGE_SIZE) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
+            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
+              page >= Math.ceil(totalCount / PAGE_SIZE) 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                : 'bg-orange-500 text-white hover:bg-orange-600'
+            }`}
           >
-            Suivant
+            <span className="hidden sm:inline">Suivant</span>
+            <span className="sm:hidden">→</span>
           </button>
         </div>
 
