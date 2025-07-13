@@ -5,5 +5,8 @@ export interface Achievement {
   description: string;
   icon: string;
   category: string;
-  unlocked_at: string;
+  status?: 'En cours' | 'Validé';
+  goal_id?: number;
+  unlocked_at?: string;
+  created_at?: string;
 } 

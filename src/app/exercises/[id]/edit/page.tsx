@@ -22,7 +22,7 @@ type PerformanceLog = {
 };
 
 // Table d’exercices standards par groupe musculaire (enrichie avec Cardio)
-type ExerciseSuggestion = { label: string, values: Record<string, unknown> };
+type ExerciseSuggestion = { label: string, values: Record<string, string | number> };
 type StandardExercise = { name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: ExerciseSuggestion[] };
 const standardExercises: Record<string, StandardExercise[]> = {
   'Pectoraux': [
