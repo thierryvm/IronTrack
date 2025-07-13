@@ -135,7 +135,6 @@ async function createGoalBadge(exerciseName: string, goalType: string, goalValue
     
     if (error) {
       console.error('Erreur création badge:', error.message);
-    } else {
     }
   } catch (err) {
     console.error('Erreur création badge:', err);
@@ -1471,10 +1470,13 @@ export default function ProgressPage() {
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {/* Filtrer les badges liés aux objectifs "En cours" seulement */}
-              {achievements.filter(a => 
-                a.goal_id && 
-                trainingGoals.some(goal => goal.id === a.goal_id && goal.status !== 'Atteint')
-              ).map(achievement => (
+              {(() => {
+                const filteredAchievements = achievements.filter(a => 
+                  a.goal_id && 
+                  trainingGoals.some(goal => goal.id === a.goal_id && goal.status !== 'Atteint')
+                );
+                return filteredAchievements;
+              })().map(achievement => (
                 <div key={achievement.id} className="text-center p-4 rounded-lg bg-gray-50 opacity-50">
                   <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{achievement.icon}</span>
                   <h3 className="font-medium text-gray-500">{achievement.name}</h3>
