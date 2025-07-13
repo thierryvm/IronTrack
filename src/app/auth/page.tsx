@@ -6,7 +6,14 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClient } from '@/utils/supabase/client'
 import { motion } from 'framer-motion'
-import { Dumbbell, LogOut } from 'lucide-react'
+import { Dumbbell, LogOut, AlertTriangle, Eye, EyeOff } from 'lucide-react'
+import { 
+  validateEmail, 
+  validatePassword, 
+  sanitizeInput, 
+  detectSecurityThreats,
+  ClientRateLimiter 
+} from '@/utils/security'
 
 function AuthContent() {
   const [supabase] = useState(() => createClient())
@@ -20,6 +27,10 @@ function AuthContent() {
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   const [signupConfirm, setSignupConfirm] = useState('')
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [rateLimiter] = useState(() => new ClientRateLimiter(5, 15 * 60 * 1000)) // 5 tentatives par 15 min
   const router = useRouter()
   const searchParams = useSearchParams();
 
@@ -91,38 +102,87 @@ function AuthContent() {
     router.push('/auth') // Toujours rediriger vers la page de connexion
   }
 
-  // Gestion inscription custom
+  // Gestion inscription custom sécurisée
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg(null)
-    if (!signupEmail || !signupPassword || !signupConfirm) {
-      setErrorMsg('Tous les champs sont obligatoires.')
+    setFormErrors({})
+    
+    // Vérification du rate limiting
+    if (!rateLimiter.isAllowed(signupEmail || 'anonymous')) {
+      setErrorMsg(`Trop de tentatives. Merci d'attendre avant de réessayer. (Tentatives restantes: ${rateLimiter.getRemainingAttempts(signupEmail || 'anonymous')})`)
       return
     }
-    if (signupPassword !== signupConfirm) {
-      setErrorMsg('Les mots de passe ne correspondent pas.')
+    
+    const errors: Record<string, string> = {}
+    
+    // Validation sécurisée de l'email
+    const emailError = validateEmail(signupEmail)
+    if (emailError) {
+      errors[emailError.field] = emailError.message
+    }
+    
+    // Validation sécurisée du mot de passe
+    const passwordError = validatePassword(signupPassword)
+    if (passwordError) {
+      errors[passwordError.field] = passwordError.message
+    }
+    
+    // Vérification de la confirmation du mot de passe
+    if (!signupConfirm || signupConfirm.trim() === '') {
+      errors.confirmPassword = 'La confirmation du mot de passe est requise'
+    } else if (signupPassword !== signupConfirm) {
+      errors.confirmPassword = 'Les mots de passe ne correspondent pas'
+    }
+    
+    // Détection de menaces de sécurité
+    if (detectSecurityThreats(signupEmail)) {
+      errors.email = 'Email contient des caractères interdits'
+    }
+    
+    // Si des erreurs sont détectées
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
       return
     }
+    
     setLoading(true)
-    const { data, error } = await supabase.auth.signUp({
-      email: signupEmail,
-      password: signupPassword
-    })
-    if (error) {
-      setErrorMsg(error.message)
+    
+    try {
+      // Sanitisation de l'email (bien que validateEmail l'ait déjà vérifié)
+      const sanitizedEmail = signupEmail.toLowerCase().trim()
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: sanitizedEmail,
+        password: signupPassword
+      })
+      
+      if (error) {
+        setErrorMsg(error.message)
+        setLoading(false)
+        return
+      }
+      
+      // Ajoute un pseudo sécurisé dans la table profiles
+      if (data.user) {
+        const sanitizedPseudo = sanitizeInput(sanitizedEmail.split('@')[0])
+        await supabase.from('profiles').update({ 
+          pseudo: sanitizedPseudo,
+          email: sanitizedEmail 
+        }).eq('id', data.user.id)
+      }
+      
       setLoading(false)
-      return
+      setShowSignUp(false)
+      setSignupEmail('')
+      setSignupPassword('')
+      setSignupConfirm('')
+      setFormErrors({})
+      setErrorMsg('Inscription réussie ! Vérifie tes emails pour valider ton compte.')
+    } catch {
+      setErrorMsg('Erreur lors de l\'inscription. Merci de réessayer.')
+      setLoading(false)
     }
-    // Ajoute le pseudo dans la table profiles
-    if (data.user) {
-      await supabase.from('profiles').update({ pseudo: signupEmail }).eq('id', data.user.id)
-    }
-    setLoading(false)
-    setShowSignUp(false)
-    setSignupEmail('')
-    setSignupPassword('')
-    setSignupConfirm('')
-    setErrorMsg('Inscription réussie ! Vérifie tes emails pour valider ton compte.')
   }
 
   return (
@@ -204,40 +264,120 @@ function AuthContent() {
         ) : showSignUp ? (
           <form onSubmit={handleSignUp} className="space-y-6">
             <div>
-              <label htmlFor="signupEmail" className="block text-sm font-medium text-gray-700">Email</label>
+              <label htmlFor="signupEmail" className="block text-sm font-medium text-gray-700">Email *</label>
               <input
                 id="signupEmail"
                 type="email"
                 autoComplete="email"
-                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
+                className={`mt-1 block w-full rounded-md border shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base px-4 py-3 ${
+                  formErrors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
                 value={signupEmail}
-                onChange={e => setSignupEmail(e.target.value)}
+                onChange={e => {
+                  const value = e.target.value
+                  // Validation basique en temps réel
+                  if (detectSecurityThreats(value)) {
+                    return // Bloque les caractères dangereux
+                  }
+                  setSignupEmail(value)
+                  if (formErrors.email) {
+                    setFormErrors(prev => ({ ...prev, email: '' }))
+                  }
+                }}
                 required
+                maxLength={254}
+                placeholder="exemple@email.com"
               />
+              {formErrors.email && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="h-4 w-4 mr-1" />
+                  {formErrors.email}
+                </p>
+              )}
             </div>
             <div>
-              <label htmlFor="signupPassword" className="block text-sm font-medium text-gray-700">Mot de passe</label>
-              <input
-                id="signupPassword"
-                type="password"
-                autoComplete="new-password"
-                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
-                value={signupPassword}
-                onChange={e => setSignupPassword(e.target.value)}
-                required
-              />
+              <label htmlFor="signupPassword" className="block text-sm font-medium text-gray-700">Mot de passe *</label>
+              <div className="relative">
+                <input
+                  id="signupPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  className={`mt-1 block w-full rounded-md border shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base px-4 py-3 pr-12 ${
+                    formErrors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  value={signupPassword}
+                  onChange={e => {
+                    setSignupPassword(e.target.value)
+                    if (formErrors.password) {
+                      setFormErrors(prev => ({ ...prev, password: '' }))
+                    }
+                  }}
+                  required
+                  minLength={8}
+                  maxLength={128}
+                  placeholder="Minimum 8 caractères"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 top-1 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+              {formErrors.password && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="h-4 w-4 mr-1" />
+                  {formErrors.password}
+                </p>
+              )}
+              <div className="mt-1 text-xs text-gray-500">
+                Le mot de passe doit contenir au moins 8 caractères avec 3 des éléments suivants :
+                <br />minuscules, majuscules, chiffres, caractères spéciaux
+              </div>
             </div>
             <div>
-              <label htmlFor="signupConfirm" className="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
-              <input
-                id="signupConfirm"
-                type="password"
-                autoComplete="new-password"
-                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-base px-4 py-3"
-                value={signupConfirm}
-                onChange={e => setSignupConfirm(e.target.value)}
-                required
-              />
+              <label htmlFor="signupConfirm" className="block text-sm font-medium text-gray-700">Confirmer le mot de passe *</label>
+              <div className="relative">
+                <input
+                  id="signupConfirm"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  className={`mt-1 block w-full rounded-md border shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base px-4 py-3 pr-12 ${
+                    formErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  value={signupConfirm}
+                  onChange={e => {
+                    setSignupConfirm(e.target.value)
+                    if (formErrors.confirmPassword) {
+                      setFormErrors(prev => ({ ...prev, confirmPassword: '' }))
+                    }
+                  }}
+                  required
+                  placeholder="Confirme ton mot de passe"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 top-1 pr-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+              {formErrors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="h-4 w-4 mr-1" />
+                  {formErrors.confirmPassword}
+                </p>
+              )}
             </div>
             <button
               type="submit"

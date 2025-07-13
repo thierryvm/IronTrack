@@ -17,7 +17,24 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(npm install:*)",
-      "Bash(vercel login:*)"
+      "Bash(vercel login:*)",
+      "Bash(node:*)",
+      "Bash(npm run dev:*)",
+      "Bash(del temp-fix-progress-page.tsx)",
+      "WebFetch(domain:iron-track-dusky.vercel.app)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)",
+      "mcp__ide__executeCode",
+      "Bash(del analyze-database.mjs)",
+      "Bash(del analyze-table-structure.mjs)",
+      "Bash(move analyze-achievements-duplicates.mjs analyze-achievements-duplicates.js)",
+      "Bash(ren:*)",
+      "Bash(mv:*)",
+      "Bash(ls:*)",
+      "Bash(del cleanup-analysis-files.js)",
+      "Bash(pkill:*)",
+      "Bash(npx next lint:*)"
     ],
     "deny": []
   }
