@@ -267,14 +267,6 @@ export default function CalendarPage() {
     return sharedWorkouts.filter(sw => toDDMMYYYY(sw.scheduled_date) === selected);
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Terminé': return 'bg-green-500'
-      case 'Planifié': return 'bg-blue-500'
-      case 'Annulé': return 'bg-red-500'
-      default: return 'bg-gray-500'
-    }
-  }
 
   const getTypeColor = (type: string) => {
     const workoutType = workoutTypes.find(wt => wt.name === type)
