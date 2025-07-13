@@ -121,9 +121,18 @@ export default function NutritionPage() {
     fat: 80
   }
 
-  // Fonctions de validation et sanitisation
+  // Fonctions de validation et sanitisation renforcées
   const sanitizeInput = (input: string): string => {
-    return input.trim().replace(/[<>"'&]/g, '')
+    return input
+      .trim()
+      // Supprime les caractères dangereux pour les injections
+      .replace(/[<>"'&;\\|`${}()\[\]]/g, '')
+      // Supprime les mots-clés SQL dangereux (case insensitive)
+      .replace(/\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT|JAVASCRIPT|VBSCRIPT|ONLOAD|ONERROR|ONCLICK)\b/gi, '')
+      // Supprime les caractères de contrôle
+      .replace(/[\x00-\x1F\x7F]/g, '')
+      // Limite à des caractères alphanumériques + espaces + accents + tirets
+      .replace(/[^\w\s\u00C0-\u017F\-,.']/g, '')
   }
 
   const validateNumericInput = (value: string, fieldName: string, min = 0, max = 10000): string | null => {
@@ -146,13 +155,25 @@ export default function NutritionPage() {
   const validateForm = (form: typeof addForm): Record<string, string> => {
     const errors: Record<string, string> = {}
     
-    // Validation du nom
+    // Validation renforcée du nom
     const sanitizedName = sanitizeInput(form.name)
     if (!sanitizedName || sanitizedName.length < 2) {
-      errors.name = 'Le nom doit contenir au moins 2 caractères'
+      errors.name = 'Le nom doit contenir au moins 2 caractères valides'
     }
     if (sanitizedName.length > 100) {
       errors.name = 'Le nom ne peut pas dépasser 100 caractères'
+    }
+    // Vérification de contenu suspect après sanitisation
+    if (sanitizedName !== form.name.trim()) {
+      errors.name = 'Le nom contient des caractères non autorisés'
+    }
+    // Vérification de patterns suspects
+    if (/\b(http|https|ftp|javascript|data):/i.test(form.name)) {
+      errors.name = 'Le nom ne peut pas contenir d\'URLs ou de scripts'
+    }
+    // Vérification de chaînes SQL suspectes
+    if (/(--|#|\/\*|\*\/|;|\bOR\b|\bAND\b)\s*\w/i.test(form.name)) {
+      errors.name = 'Le nom contient des caractères interdits'
     }
     
     // Validation des valeurs numériques
@@ -183,6 +204,34 @@ export default function NutritionPage() {
     const parts = sanitized.split('.')
     const result = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : sanitized
     setter(result)
+  }
+
+  // Fonction de sécurité pour détecter les tentatives d'injection
+  const detectSecurityThreats = (input: string): boolean => {
+    const dangerousPatterns = [
+      /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT)\b/gi,
+      /(--|#|\/\*|\*\/|;|\bOR\b|\bAND\b)\s*\w/i,
+      /<script[^>]*>.*?<\/script>/gi,
+      /javascript:/gi,
+      /data:/gi,
+      /vbscript:/gi,
+      /on\w+\s*=/gi,
+      /\$\{.*?\}/g, // Template literals
+      /\{\{.*?\}\}/g, // Template expressions
+    ]
+    
+    return dangerousPatterns.some(pattern => pattern.test(input))
+  }
+
+  // Fonction de nettoyage sécurisé pour les noms de repas
+  const secureFoodNameCleanup = (name: string): string => {
+    // Première passe : détection de menaces
+    if (detectSecurityThreats(name)) {
+      throw new Error('Nom de repas invalide : contenu suspect détecté')
+    }
+    
+    // Deuxième passe : nettoyage
+    return sanitizeInput(name)
   }
 
   useEffect(() => {
@@ -358,8 +407,14 @@ export default function NutritionPage() {
         return
       }
       
-      const sanitizedName = sanitizeInput(addForm.name)
+      // Sécurisation renforcée du nom
+      const sanitizedName = secureFoodNameCleanup(addForm.name)
       const dateString = selectedDate.toISOString().split('T')[0]
+      
+      // Vérification finale avant insertion
+      if (!sanitizedName || sanitizedName.length < 2) {
+        throw new Error('Nom de repas invalide après nettoyage')
+      }
       
       const { error } = await supabase.from('nutrition_logs').insert({
         user_id: userId,
@@ -443,7 +498,14 @@ export default function NutritionPage() {
         return
       }
       
-      const sanitizedName = sanitizeInput(editForm.name)
+      // Sécurisation renforcée du nom
+      const sanitizedName = secureFoodNameCleanup(editForm.name)
+      
+      // Vérification finale avant mise à jour
+      if (!sanitizedName || sanitizedName.length < 2) {
+        throw new Error('Nom de repas invalide après nettoyage')
+      }
+      
       const updatePayload = {
         meal_type: editForm.type,
         food_name: sanitizedName,
@@ -973,11 +1035,19 @@ export default function NutritionPage() {
                       }`}
                       value={addForm.name} 
                       onChange={e => {
-                        setAddForm(f => ({ ...f, name: e.target.value }))
+                        // Validation en temps réel pour bloquer les caractères dangereux
+                        const value = e.target.value
+                        // Bloque les caractères les plus dangereux en temps réel
+                        if (!/^[\w\s\u00C0-\u017F\-,.']*$/.test(value)) {
+                          return // Ignore la saisie de caractères interdits
+                        }
+                        setAddForm(f => ({ ...f, name: value }))
                         if (formErrors.name) setFormErrors(prev => ({ ...prev, name: '' }))
                       }}
                       placeholder="Ex: Salade de poulet"
                       maxLength={100}
+                      autoComplete="off"
+                      spellCheck="false"
                     />
                     {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
                   </div>
@@ -1168,11 +1238,19 @@ export default function NutritionPage() {
                       }`}
                       value={editForm.name} 
                       onChange={e => {
-                        setEditForm(f => ({ ...f, name: e.target.value }))
+                        // Validation en temps réel pour bloquer les caractères dangereux
+                        const value = e.target.value
+                        // Bloque les caractères les plus dangereux en temps réel
+                        if (!/^[\w\s\u00C0-\u017F\-,.']*$/.test(value)) {
+                          return // Ignore la saisie de caractères interdits
+                        }
+                        setEditForm(f => ({ ...f, name: value }))
                         if (editFormErrors.name) setEditFormErrors(prev => ({ ...prev, name: '' }))
                       }}
                       placeholder="Ex: Salade de poulet"
                       maxLength={100}
+                      autoComplete="off"
+                      spellCheck="false"
                     />
                     {editFormErrors.name && <p className="text-red-500 text-xs mt-1">{editFormErrors.name}</p>}
                   </div>
