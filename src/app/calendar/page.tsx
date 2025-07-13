@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   ChevronLeft, 
@@ -10,7 +10,14 @@ import {
   Clock,
   Dumbbell,
   CheckCircle,
-  Target
+  Target,
+  Info,
+  Users,
+  Activity,
+  Waves,
+  Zap,
+  Flower,
+  Smile
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -21,8 +28,8 @@ interface Workout {
   user_id: string
   scheduled_date: string
   name: string
-  type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos'
-  status: 'Planifié' | 'Terminé' | 'Annulé'
+  type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates'
+  status: 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé'
   duration?: number
   exercises?: string[]
   notes?: string
@@ -36,6 +43,12 @@ const workoutTypes = [
   { name: 'Musculation', color: 'bg-orange-500', icon: Dumbbell },
   { name: 'Cardio', color: 'bg-blue-500', icon: Clock },
   { name: 'Étirement', color: 'bg-green-500', icon: Target },
+  { name: 'Cours collectif', color: 'bg-purple-500', icon: Users },
+  { name: 'Gainage', color: 'bg-yellow-500', icon: Activity },
+  { name: 'Natation', color: 'bg-cyan-500', icon: Waves },
+  { name: 'Crossfit', color: 'bg-red-500', icon: Zap },
+  { name: 'Yoga', color: 'bg-pink-500', icon: Flower },
+  { name: 'Pilates', color: 'bg-indigo-500', icon: Smile },
   { name: 'Repos', color: 'bg-gray-500', icon: CheckCircle }
 ]
 
@@ -54,8 +67,8 @@ interface SharedWorkout extends Workout {
 interface CalendarSession {
   id: string;
   name: string;
-  type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos';
-  status: 'Planifié' | 'Terminé' | 'Annulé';
+  type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates';
+  status: 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé';
   duration?: number;
   isShared: boolean;
   participants: { id: string; name: string; avatarUrl: string }[];
@@ -111,7 +124,7 @@ export default function CalendarPage() {
   const [sharePlanning, setSharePlanning] = useState(false);
 
   // Charger les séances personnelles
-  const loadWorkouts = async () => {
+  const loadWorkouts = useCallback(async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -125,10 +138,10 @@ export default function CalendarPage() {
     if (workoutsData) {
       setWorkouts(workoutsData);
     }
-  };
+  }, []);
 
   // Charger les séances partagées de tous les utilisateurs ayant activé le partage
-  const loadSharedWorkouts = async () => {
+  const loadSharedWorkouts = useCallback(async () => {
     const supabase = createClient();
     
     // Récupérer les utilisateurs qui ont activé le partage de planning
@@ -163,7 +176,7 @@ export default function CalendarPage() {
     if (sharedData) {
       setSharedWorkouts(sharedData);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -200,7 +213,7 @@ export default function CalendarPage() {
       }
     };
     fetchProfile();
-  }, [router])
+  }, [router, loadSharedWorkouts, loadWorkouts])
 
   // Charger les données selon le mode sélectionné
   useEffect(() => {
@@ -209,7 +222,7 @@ export default function CalendarPage() {
     } else {
       loadWorkouts();
     }
-  }, [sharePlanning])
+  }, [sharePlanning, loadSharedWorkouts, loadWorkouts])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -300,13 +313,53 @@ export default function CalendarPage() {
   const totalDurees = workoutsMonth.reduce((acc, w) => acc + (w.duration || 0), 0);
   const moyenneDuree = totalSeances > 0 ? Math.round(totalDurees / totalSeances) : 0;
   const maxDuree = Math.max(...workoutsMonth.map(w => w.duration || 0), 0);
-  const minDuree = Math.min(...workoutsMonth.map(w => w.duration || 0).filter(x => x > 0), 0);
+  const durationsWithValue = workoutsMonth.map(w => w.duration || 0).filter(x => x > 0);
+  const minDuree = durationsWithValue.length > 0 ? Math.min(...durationsWithValue) : 0;
   const seanceMax = workoutsMonth.find(w => (w.duration || 0) === maxDuree);
-  const seanceMin = workoutsMonth.find(w => (w.duration || 0) === minDuree);
+  const seanceMin = workoutsMonth.find(w => (w.duration || 0) === minDuree && (w.duration || 0) > 0);
+  // Fonction pour corriger automatiquement le type basé sur le nom
+  const getCorrectType = (workout: Workout): string => {
+    const name = workout.name.toLowerCase();
+    if (name.includes('cardio')) return 'Cardio';
+    if (name.includes('étirement') || name.includes('etirement') || name.includes('stretch')) return 'Étirement';
+    if (name.includes('cours') || name.includes('collectif') || name.includes('group')) return 'Cours collectif';
+    if (name.includes('gainage') || name.includes('core') || name.includes('abs')) return 'Gainage';
+    if (name.includes('natation') || name.includes('piscine') || name.includes('swim')) return 'Natation';
+    if (name.includes('crossfit') || name.includes('cross fit') || name.includes('wod')) return 'Crossfit';
+    if (name.includes('yoga')) return 'Yoga';
+    if (name.includes('pilates')) return 'Pilates';
+    if (name.includes('repos') || name.includes('rest')) return 'Repos';
+    return workout.type; // Garder le type original si aucune correspondance
+  };
+
   const repartitionTypes = workoutTypes.map(type => ({
     name: type.name,
-    count: workoutsMonth.filter(w => w.type === type.name).length
+    count: workoutsMonth.filter(w => getCorrectType(w) === type.name).length
   }));
+  
+  
+  // Calcul des séances terminées (incluant celles avec dates passées)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Réinitialiser à minuit pour une comparaison correcte
+  const seancesTerminees = workoutsMonth.filter(w => {
+    const workoutDate = new Date(w.scheduled_date);
+    workoutDate.setHours(0, 0, 0, 0);
+    return w.status === 'Terminé' || w.status === 'Réalisé' || (workoutDate < today && (w.status === 'Planifié' || w.status === 'Planifie'));
+  }).length;
+  
+  // Calcul des séances planifiées (futures uniquement)
+  const seancesPlanifiees = workoutsMonth.filter(w => {
+    const workoutDate = new Date(w.scheduled_date);
+    workoutDate.setHours(0, 0, 0, 0);
+    return (w.status === 'Planifié' || w.status === 'Planifie') && workoutDate >= today;
+  }).length;
+  
+  // Temps total des séances terminées ou passées
+  const tempsTotal = workoutsMonth.filter(w => {
+    const workoutDate = new Date(w.scheduled_date);
+    workoutDate.setHours(0, 0, 0, 0);
+    return w.status === 'Terminé' || w.status === 'Réalisé' || (workoutDate < today && (w.status === 'Planifié' || w.status === 'Planifie'));
+  }).reduce((total, w) => total + (w.duration || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -384,11 +437,12 @@ export default function CalendarPage() {
                         name: sw.profiles?.pseudo || sw.profiles?.full_name || (sw.profiles?.email && sw.profiles.email.split('@')[0]) || '',
                         avatarUrl: sw.profiles?.avatar_url || '/window.svg',
                       };
+                      const correctedType = getCorrectType(sw as Workout);
                       return {
                         id: `shared-${String(sw.id)}`,
                         name: sw.name,
-                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
-                        status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                        status: sw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
                         duration: undefined,
                         isShared: true,
                         participants: [participant],
@@ -399,10 +453,12 @@ export default function CalendarPage() {
                     });
                   } else {
                     const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
-                    sessions = workoutsForDate.map(w => ({
+                    sessions = workoutsForDate.map(w => {
+                      const correctedType = getCorrectType(w);
+                      return {
                       id: String(w.id),
                       name: w.name,
-                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(w.type) ? w.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
+                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
                       status: w.status as 'Planifié' | 'Terminé' | 'Annulé',
                       duration: w.duration,
                       isShared: false,
@@ -410,7 +466,8 @@ export default function CalendarPage() {
                       scheduled_date: w.scheduled_date,
                       time: (w as { time?: string }).time || '',
                       exercises: w.exercises || [],
-                    }));
+                    };
+                    });
                   }
                   const isCurrentDay = isToday(day.date);
                   const isSelectedDay = isSelected(day.date);
@@ -445,11 +502,13 @@ export default function CalendarPage() {
                   {(() => {
                     let sessions: CalendarSession[] = [];
                     if (sharePlanning) {
-                      sessions = getSharedForDate(selectedDate).map(sw => ({
+                      sessions = getSharedForDate(selectedDate).map(sw => {
+                        const correctedType = getCorrectType(sw as Workout);
+                        return {
                         id: `shared-${String(sw.id)}`,
                         name: sw.name,
-                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos'].includes(sw.type) ? sw.type : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos',
-                        status: sw.status as 'Planifié' | 'Terminé' | 'Annulé',
+                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                        status: sw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
                         duration: undefined,
                         isShared: true,
                         participants: [
@@ -462,12 +521,13 @@ export default function CalendarPage() {
                         time: sw.start_time || '',
                         exercises: [],
                         scheduled_date: sw.scheduled_date
-                      }));
+                      };
+                      });
                     } else {
                       sessions = getWorkoutsForDate(selectedDate).map(workout => ({
                         id: `perso-${String(workout.id)}`,
                         name: workout.name,
-                        type: workout.type,
+                        type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
                         status: workout.status,
                         duration: workout.duration,
                         isShared: false,
@@ -492,7 +552,7 @@ export default function CalendarPage() {
                             {item.name}
                             {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
                           </h4>
-                          <div className={`w-3 h-3 rounded-full ${getStatusColor(item.status)}`} />
+                          <div className={`w-3 h-3 rounded-full ${getTypeColor(item.type)}`} title={`Type: ${item.type}`} />
                         </div>
                         <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(item.type)}`}>{item.type}</span>
                         {item.duration && (
@@ -508,7 +568,10 @@ export default function CalendarPage() {
                           </span>
                         )}
                         {item.participants && item.participants.length > 0 && item.participants[0] && (
-                          <span className="ml-2 text-xs text-gray-500">avec {item.participants.map(p => p.name).join(', ')}</span>
+                          <span className="ml-2 text-xs text-gray-500 flex items-center gap-1">
+                            <span className="text-blue-600">👥</span>
+                            Partagée avec {item.participants.map(p => p.name || 'Utilisateur IronTrack').join(', ')}
+                          </span>
                         )}
                         {item.exercises && item.exercises.length > 0 && (
                           <div className="mt-1 text-xs text-gray-500">
@@ -534,27 +597,51 @@ export default function CalendarPage() {
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
+                <div className="group relative">
+                  <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    Statistiques basées sur vos séances du mois courant
+                  </div>
+                </div>
               </h3>
               <div className="space-y-5">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500" />
                   <span className="text-gray-700">Séances terminées</span>
+                  <div className="group relative">
+                    <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      Séances terminées + séances passées
+                    </div>
+                  </div>
                   <span className="ml-auto bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {workouts.filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).length}
+                    {seancesTerminees}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Target className="h-6 w-6 text-blue-500" />
                   <span className="text-gray-700">Séances planifiées</span>
+                  <div className="group relative">
+                    <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      Séances futures à venir
+                    </div>
+                  </div>
                   <span className="ml-auto bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {workouts.filter(w => w.status === 'Planifié' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).length}
+                    {seancesPlanifiees}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-6 w-6 text-orange-500" />
                   <span className="text-gray-700">Temps total</span>
+                  <div className="group relative">
+                    <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      Durée des séances effectuées
+                    </div>
+                  </div>
                   <span className="ml-auto bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {workouts.filter(w => w.status === 'Terminé' && new Date(w.scheduled_date).getMonth() === currentDate.getMonth()).reduce((total, w) => total + (w.duration || 0), 0)} min
+                    {tempsTotal} min
                   </span>
                 </div>
                 <hr className="my-2" />

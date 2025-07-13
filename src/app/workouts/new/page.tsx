@@ -18,6 +18,7 @@ export default function NewWorkoutPage() {
   const [mascotType, setMascotType] = useState<'motivation' | 'success' | 'warning' | 'info'>('motivation')
   const [showMascot, setShowMascot] = useState(false)
   const [startTime, setStartTime] = useState('');
+  const [type, setType] = useState<'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates'>('Musculation');
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +38,8 @@ export default function NewWorkoutPage() {
       setShowMascot(true)
       return
     }
-    if (Number(duration) <= 0) {
+    // Vérification de la durée seulement si ce n'est pas un jour de repos
+    if (type !== 'Repos' && Number(duration) <= 0) {
       setErrorMsg("La durée doit être supérieure à 0 min. Même Hulk ne fait pas des séances de 0 minute !")
       setMascotMsg("Thierry, Hulk casse tout, mais il fait au moins 1 minute !")
       setMascotType('warning')
@@ -49,15 +51,36 @@ export default function NewWorkoutPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Utilisateur non connecté')
-      const { error } = await supabase.from('workouts').insert({
+      // Données de base pour l'insertion
+      const insertData = {
         user_id: user.id,
         name,
         scheduled_date: date,
-        start_time: startTime,
-        notes,
-        duration: duration === '' ? null : Number(duration)
-      })
-      if (error) throw error
+        start_time: startTime || null,
+        notes: notes || null,
+        duration: (type === 'Repos' || duration === '') ? null : Number(duration)
+      };
+
+      const { data: newWorkout, error } = await supabase
+        .from('workouts')
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Mettre à jour le type si la colonne existe et ce n'est pas Musculation
+      if (newWorkout && type !== 'Musculation') {
+        const { error: updateError } = await supabase
+          .from('workouts')
+          .update({ type: type })
+          .eq('id', newWorkout.id);
+        
+        // Ignorer l'erreur de type si la colonne n'existe pas encore
+        if (updateError && !updateError.message.includes('column "type" does not exist')) {
+          console.warn('Erreur mise à jour type:', updateError);
+        }
+      }
       setToast('Séance créée avec succès ! Redirection vers le calendrier...')
       setMascotMsg("Bravo Thierry ! Tu viens de muscler ton futur. 🏆")
       setMascotType('success')
@@ -67,11 +90,16 @@ export default function NewWorkoutPage() {
         router.push('/calendar')
       }, 2000)
     } catch (err: unknown) {
+      console.error('Erreur détaillée:', err);
       if (err instanceof Error) {
-        alert("Erreur lors de l'enregistrement : " + (err.message || err))
+        setErrorMsg(`Erreur lors de l'enregistrement : ${err.message}`)
+        setMascotMsg(`Oups Thierry ! Problème technique : ${err.message}`)
       } else {
-        alert("Erreur lors de l'enregistrement inconnue")
+        setErrorMsg("Erreur lors de l'enregistrement inconnue")
+        setMascotMsg("Oups Thierry ! Problème technique mystérieux...")
       }
+      setMascotType('warning')
+      setShowMascot(true)
       setLoading(false)
     }
   }
@@ -114,6 +142,31 @@ export default function NewWorkoutPage() {
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
         <div>
+          <label className="block text-gray-700 font-medium mb-2">Type de séance</label>
+          <select 
+            value={type} 
+            onChange={e => {
+              const newType = e.target.value as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates';
+              setType(newType);
+              if (newType === 'Repos') {
+                setDuration('');
+              }
+            }} 
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="Musculation">💪 Musculation</option>
+            <option value="Cardio">❤️ Cardio</option>
+            <option value="Étirement">🧘 Étirement</option>
+            <option value="Cours collectif">👥 Cours collectif</option>
+            <option value="Gainage">🎯 Gainage</option>
+            <option value="Natation">🏊 Natation</option>
+            <option value="Crossfit">⚡ Crossfit</option>
+            <option value="Yoga">🕉️ Yoga</option>
+            <option value="Pilates">🤸 Pilates</option>
+            <option value="Repos">😴 Jour de repos</option>
+          </select>
+        </div>
+        <div>
           <label className="block text-gray-700 font-medium mb-2">Heure prévue</label>
           <input
             type="time"
@@ -124,14 +177,17 @@ export default function NewWorkoutPage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Durée (minutes)</label>
+          <label className="block text-gray-700 font-medium mb-2">
+            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-500">(optionnel pour les jours de repos)</span>}
+          </label>
           <input
             type="number"
             min={0}
             value={duration}
             onChange={e => setDuration(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-            placeholder="Ex: 30"
+            placeholder={type === 'Repos' ? 'Durée libre pour les jours de repos' : 'Ex: 30'}
+            disabled={type === 'Repos'}
           />
         </div>
         <div>
