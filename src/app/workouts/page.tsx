@@ -44,7 +44,6 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
   const workoutType = workoutTypes.find(t => t.name === workout.type) || workoutTypes[0]
   const Icon = workoutType.icon
   const isCompleted = workout.status === 'Réalisé' || workout.status === 'Terminé'
-  const isPast = new Date(workout.scheduled_date) < new Date()
 
   return (
     <AnimatePresence>
@@ -53,7 +52,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-md flex items-center justify-center p-4 z-50"
           onClick={onClose}
         >
           <motion.div
@@ -107,13 +106,9 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
 
               <div className="flex items-center space-x-2">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  isCompleted ? 'bg-green-100 text-green-800' :
-                  isPast ? 'bg-orange-100 text-orange-800' :
-                  'bg-blue-100 text-blue-800'
+                  isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {isCompleted ? '✅ Réalisé' :
-                   isPast ? '⏰ En retard' :
-                   '⏳ Planifié'}
+                  {isCompleted ? '✅ Réalisé' : '⏳ Planifié'}
                 </span>
               </div>
 
@@ -181,35 +176,21 @@ export default function WorkoutsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    let query = supabase
+    const query = supabase
       .from('workouts')
       .select('*', { count: 'exact' })
       .eq('user_id', user.id);
 
-    // Appliquer les filtres
-    if (filterStatus !== 'all') {
-      if (filterStatus === 'completed') {
-        query = query.or('status.eq.Réalisé,status.eq.Terminé');
-      } else if (filterStatus === 'pending') {
-        query = query.eq('status', 'Planifié');
-      } else if (filterStatus === 'overdue') {
-        query = query.eq('status', 'Planifié').lt('scheduled_date', new Date().toISOString().split('T')[0]);
-      }
-    }
+    // Ne pas appliquer de filtres ici - on filtrera côté client après auto-marquage
 
-    const { count } = await query;
-    setTotalCount(count || 0);
-
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
+    // Récupérer toutes les séances pour pouvoir filtrer côté client
     const { data, error } = await query
-      .order('scheduled_date', { ascending: false })
-      .range(from, to);
+      .order('scheduled_date', { ascending: false });
 
     if (!error && data) {
-      // Auto-marquer les séances passées comme réalisées
+      // Auto-marquer les séances passées comme réalisées si elles sont encore "Planifié"
       const today = new Date().toISOString().split('T')[0];
-      const updatedWorkouts = data.map(workout => {
+      const processedWorkouts = data.map(workout => {
         if (workout.scheduled_date < today && workout.status === 'Planifié') {
           // Marquer automatiquement comme réalisé en arrière-plan
           supabase.from('workouts').update({ status: 'Réalisé' }).eq('id', workout.id);
@@ -217,7 +198,28 @@ export default function WorkoutsPage() {
         }
         return workout;
       });
-      setWorkouts(updatedWorkouts);
+
+      // Appliquer les filtres côté client après processing
+      const filteredWorkouts = processedWorkouts.filter(workout => {
+        const isCompleted = workout.status === 'Réalisé' || workout.status === 'Terminé';
+        
+        switch (filterStatus) {
+          case 'completed':
+            return isCompleted;
+          case 'pending':
+            return !isCompleted;
+          default:
+            return true; // 'all'
+        }
+      });
+
+      // Appliquer la pagination côté client
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE;
+      const paginatedWorkouts = filteredWorkouts.slice(from, to);
+
+      setWorkouts(paginatedWorkouts);
+      setTotalCount(filteredWorkouts.length);
     }
     setLoading(false);
   }, [page, filterStatus]);
@@ -283,8 +285,7 @@ export default function WorkoutsPage() {
               {[
                 { value: 'all', label: 'Toutes', icon: '📋' },
                 { value: 'pending', label: 'À venir', icon: '⏳' },
-                { value: 'completed', label: 'Terminées', icon: '✅' },
-                { value: 'overdue', label: 'En retard', icon: '⚠️' }
+                { value: 'completed', label: 'Terminées', icon: '✅' }
               ].map(filter => (
                 <button
                   key={filter.value}
@@ -320,8 +321,7 @@ export default function WorkoutsPage() {
                 const workoutType = workoutTypes.find(t => t.name === getCorrectType(workout)) || workoutTypes[0];
                 const Icon = workoutType.icon;
                 const isCompleted = workout.status === 'Réalisé' || workout.status === 'Terminé';
-                const isPast = new Date(workout.scheduled_date) < new Date();
-                const isOverdue = isPast && !isCompleted && workout.status === 'Planifié';
+                // Simplifié - plus besoin de isPast
 
                 return (
                   <motion.div
@@ -330,9 +330,7 @@ export default function WorkoutsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${
-                      isCompleted ? 'border-green-500' : 
-                      isOverdue ? 'border-red-500' : 
-                      'border-orange-500'
+                      isCompleted ? 'border-green-500' : 'border-orange-500'
                     }`}
                     onClick={() => setSelectedWorkout(workout)}
                   >
@@ -370,13 +368,9 @@ export default function WorkoutsPage() {
 
                       <div className="flex items-center justify-between">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          isCompleted ? 'bg-green-100 text-green-800' :
-                          isOverdue ? 'bg-red-100 text-red-800' :
-                          'bg-blue-100 text-blue-800'
+                          isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {isCompleted ? '✅ Réalisé' :
-                           isOverdue ? '⚠️ En retard' :
-                           '⏳ Planifié'}
+                          {isCompleted ? '✅ Réalisé' : '⏳ Planifié'}
                         </span>
 
                         <div className="flex space-x-1">
