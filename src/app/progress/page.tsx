@@ -63,64 +63,169 @@ const muscleGroupColors = {
   'Fessiers': '#F7DC6F'
 }
 
-// Helper pour générer un nom de badge unique
-function getGoalBadgeName(goal: TrainingGoal) {
-  if (goal.target_weight && goal.exercises?.name) {
-    return `Objectif atteint: ${goal.exercises.name} ${goal.target_weight}kg`;
+// Helper pour générer les données complètes d'un badge
+function getBadgeData(exerciseName: string, goalType: string, goalValue: string, extraKg?: string, extraDuration?: string, extraSpeed?: string) {
+  const name = exerciseName.toLowerCase();
+  
+  // Génération de l'icône selon l'exercice
+  let icon = '🏅';
+  if (name.includes('vélo')) icon = '🚴‍♂️';
+  else if (name.includes('tapis') || name.includes('course')) icon = '🏃‍♂️';
+  else if (name.includes('rameur')) icon = '🚣‍♂️';
+  else if (name.includes('marche')) icon = '🚶‍♂️';
+  else if (name.includes('développé couché')) icon = '🏋️‍♂️';
+  else if (name.includes('développé incliné')) icon = '🏋️‍♂️';
+  else if (name.includes('développé militaire')) icon = '💪';
+  else if (name.includes('développé')) icon = '🏋️‍♂️'; // Pour tous les autres types de développé
+  else if (name.includes('pompes')) icon = '🤸‍♂️';
+  else if (name.includes('squat')) icon = '🏋️‍♀️';
+  else if (name.includes('tractions')) icon = '🧗‍♂️';
+  else if (name.includes('abdos') || name.includes('gainage')) icon = '💪';
+  else if (name.includes('curl') || name.includes('biceps')) icon = '💪';
+  else if (name.includes('dips') || name.includes('triceps')) icon = '🤸‍♂️';
+  else if (name.includes('soulev') || name.includes('deadlift')) icon = '🏋️';
+  else if (name.includes('rowing') || name.includes('tirage')) icon = '🔥';
+  else if (name.includes('natation') || name.includes('swim')) icon = '🏊‍♂️';
+  
+  // Génération de la description complète
+  let description = '';
+  if (goalType === 'kg') {
+    description = `${goalValue} kg`;
+  } else if (goalType === 'reps') {
+    description = `${goalValue} reps`;
+    if (extraKg) description += ` à ${extraKg} kg`;
+    if (extraDuration) description += ` en ${extraDuration} min`;
+  } else if (goalType === 'duration') {
+    description = `${goalValue} min`;
+  } else if (goalType === 'distance') {
+    description = `${goalValue} km`;
+    if (extraDuration) description += ` en ${extraDuration} min`;
+    if (extraSpeed) description += ` à ${extraSpeed} km/h`;
+  } else if (goalType === 'speed') {
+    description = `${goalValue} km/h`;
+  } else if (goalType === 'calories') {
+    description = `${goalValue} kcal`;
   }
-  if (goal.target_reps && goal.exercises?.name) {
-    return `Objectif atteint: ${goal.exercises.name} ${goal.target_reps} reps`;
-  }
-  return `Objectif atteint: ${goal.exercises?.name || 'Exercice inconnu'}`;
+  
+  return {
+    icon,
+    name: exerciseName,
+    description,
+    category: 'Objectifs'
+  };
 }
 
-// Ajout d'une fonction utilitaire pour attribuer un badge si objectif atteint
-async function awardGoalBadge(goal: TrainingGoal, userId: string) {
+// Créer automatiquement un badge "En cours" lors de l'ajout d'un objectif
+async function createGoalBadge(exerciseName: string, goalType: string, goalValue: string, userId: string, goalId: number, extraKg?: string, extraDuration?: string, extraSpeed?: string) {
   const supabase = createClient();
-  const badgeName = getGoalBadgeName(goal);
+  const badgeData = getBadgeData(exerciseName, goalType, goalValue, extraKg, extraDuration, extraSpeed);
+  
   try {
-    // Vérifie si le badge existe déjà
-    const { data: existing, error: selectError } = await supabase
-      .from('achievements')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('name', badgeName)
-      .maybeSingle();
-    if (selectError) {
-      console.error('[DEBUG] awardGoalBadge select error (peut être ignoré si no rows):', selectError.message);
-    }
-    if (!existing) {
-      // Double check anti-doublon (au cas où)
-      const { data: already, error: alreadyError } = await supabase
-        .from('achievements')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('name', badgeName);
-      if (alreadyError) {
-        console.error('[DEBUG] awardGoalBadge double-check error:', alreadyError.message);
-      }
-      if (!already || already.length === 0) {
-        const { error: insertError } = await supabase.from('achievements').insert({
-          user_id: userId,
-          name: badgeName,
-          description: `Tu as atteint ton objectif sur ${goal.exercises?.name} !`,
-          icon: '🏅',
-          category: 'Objectifs',
-          unlocked_at: new Date().toISOString(),
-        });
-        if (insertError) {
-          console.error('[DEBUG] awardGoalBadge insert error:', insertError.message);
-        }
-      } else {
-      }
+    const { error } = await supabase.from('achievements').insert({
+      user_id: userId,
+      name: badgeData.name,
+      description: badgeData.description,
+      icon: badgeData.icon,
+      category: badgeData.category,
+      status: 'En cours', // Statut initial
+      goal_id: goalId, // Lien vers l'objectif
+      created_at: new Date().toISOString(),
+      unlocked_at: null // Sera défini quand l'objectif sera atteint
+    });
+    
+    if (error) {
+      console.error('Erreur création badge:', error.message);
+    } else {
     }
   } catch (err) {
-    console.error('[DEBUG] awardGoalBadge global error:', err);
+    console.error('Erreur création badge:', err);
   }
 }
 
-// Fonction utilitaire pour icône et texte badge selon l'objectif
-function getBadgeIconAndText(goal: TrainingGoal) {
+// Valider un badge quand l'objectif est atteint
+async function validateGoalBadge(goalId: number, userId: string, badgeId?: number) {
+  const supabase = createClient();
+  
+  try {
+    // Essayer d'abord avec l'ID du badge si fourni (plus fiable)
+    if (badgeId) {
+      const { data: dataById, error: errorById } = await supabase
+        .from('achievements')
+        .update({ 
+          status: 'Validé',
+          unlocked_at: new Date().toISOString()
+        })
+        .eq('id', badgeId)
+        .eq('user_id', userId)
+        .select();
+      
+      if (!errorById && dataById?.length > 0) {
+        return; // Succès !
+      }
+    }
+    
+    // Fallback avec goal_id + user_id
+    const { data, error } = await supabase
+      .from('achievements')
+      .update({ 
+        status: 'Validé',
+        unlocked_at: new Date().toISOString()
+      })
+      .eq('goal_id', goalId)
+      .eq('user_id', userId)
+      .select();
+    
+    if (error) {
+      console.error('Erreur validation badge:', error.message);
+    }
+  } catch (err) {
+    console.error('Erreur validation badge:', err);
+  }
+}
+
+// Rétrograder un badge quand l'objectif n'est plus atteint
+async function downgradeBadge(goalId: number, userId: string, badgeId?: number) {
+  const supabase = createClient();
+  
+  try {
+    // Essayer d'abord avec l'ID du badge si fourni
+    if (badgeId) {
+      const { data: dataById, error: errorById } = await supabase
+        .from('achievements')
+        .update({ 
+          status: 'En cours',
+          unlocked_at: null
+        })
+        .eq('id', badgeId)
+        .eq('user_id', userId)
+        .select();
+      
+      if (!errorById && dataById?.length > 0) {
+        return; // Succès !
+      }
+    }
+    
+    // Fallback avec goal_id + user_id
+    const { data, error } = await supabase
+      .from('achievements')
+      .update({ 
+        status: 'En cours',
+        unlocked_at: null
+      })
+      .eq('goal_id', goalId)
+      .eq('user_id', userId)
+      .select();
+    
+    if (error) {
+      console.error('Erreur rétrogradation badge:', error.message);
+    }
+  } catch (err) {
+    console.error('Erreur rétrogradation badge:', err);
+  }
+}
+
+// Fonction utilitaire pour icône et texte badge selon l'objectif (non utilisée actuellement)
+/* function getBadgeIconAndText(goal: TrainingGoal) {
   if (!goal.exercises?.name) return { icon: '🏅', title: 'Objectif', desc: '' };
   const name = goal.exercises.name.toLowerCase();
   // Attribution d'icônes spécifiques selon l'exercice ou le type d'objectif
@@ -201,7 +306,7 @@ function getBadgeIconAndText(goal: TrainingGoal) {
     title: goal.exercises.name,
     desc: badgeDesc(goal)
   };
-}
+} */
 // Helper pour la description dynamique
 function badgeDesc(goal: TrainingGoal) {
   if (goal.target_weight) return `${goal.target_weight} kg`;
@@ -242,6 +347,7 @@ export default function ProgressPage() {
   const [userExercises, setUserExercises] = useState<UserExercise[]>([])
   const [userGender, setUserGender] = useState<string | null>(null)
   const lastPunchlineRef = useRef<string | null>(null)
+  const [achievements, setAchievements] = useState<{id: number, name: string, description: string, icon: string, status: 'En cours' | 'Validé', goal_id?: number}[]>([])
 
   // Ajout d'un état pour l'animation de félicitations
   const [showCongrats, setShowCongrats] = useState(false);
@@ -272,38 +378,140 @@ export default function ProgressPage() {
     loadTrainingGoals()
     fetchExercises()
     fetchGender()
+    loadAchievements()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod])
+  
+  // Fonction pour synchroniser les badges avec les objectifs atteints
+  const syncAchievementsWithGoals = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    // IMPORTANT: Recharger les badges AVANT la synchronisation
+    const { data: freshBadges } = await supabase
+      .from('achievements')
+      .select('id, name, description, icon, status, goal_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    
+    // Récupérer les objectifs atteints DIRECTEMENT depuis la base de données
+    const { data: freshGoals } = await supabase
+      .from('training_goals')
+      .select(`
+        id,
+        status,
+        exercises:exercise_id (name)
+      `)
+      .eq('user_id', user.id)
+      .eq('status', 'Atteint');
+    
+    
+    if (!freshGoals || !freshBadges) return;
+    
+    for (const goal of freshGoals) {
+      const exerciseName = (goal.exercises as any)?.name;
+      const correspondingBadge = freshBadges.find(badge => badge.goal_id === goal.id);
+      
+      if (correspondingBadge && correspondingBadge.status !== 'Validé') {
+        await validateGoalBadge(goal.id, user.id, correspondingBadge.id);
+      } else if (!correspondingBadge) {
+      } else if (correspondingBadge.status === 'Validé') {
+      }
+    }
+    
+    // Vérifier les badges "Validés" qui n'ont plus d'objectif "Atteint" correspondant
+    const validatedBadges = freshBadges.filter(badge => badge.status === 'Validé' && badge.goal_id);
+    for (const badge of validatedBadges) {
+      const hasCorrespondingGoal = freshGoals.find(goal => goal.id === badge.goal_id);
+      if (!hasCorrespondingGoal) {
+        // L'objectif n'est plus atteint, rétrograder le badge
+        await downgradeBadge(badge.goal_id!, user.id, badge.id);
+      }
+    }
+    
+    // Recharger les achievements après synchronisation pour mettre à jour le state React
+    setTimeout(() => loadAchievements(), 1000);
+  }
+
+  const loadAchievements = async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('achievements')
+      .select('id, name, description, icon, status, goal_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    if (data) setAchievements(data)
+  }
 
   // useEffect pour recalculer le statut des objectifs après modification ou changement de performances
   useEffect(() => {
     async function checkAndUpdateGoals() {
       const supabase = createClient();
+      
       for (const goal of trainingGoals) {
-        let bestPerf: ProgressData | null = null;
-        if (goal.target_reps && goal.target_reps > 1) {
-          const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
-          bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
-        } else {
+        
+        let currentVal = 0;
+        let targetVal = 0;
+        let isGoalMet = false;
+        
+        // Logique pour différents types d'objectifs
+        if (goal.target_weight) {
+          // Objectif de poids (développé couché, etc.)
           const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
-          bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+          const bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
+          currentVal = bestPerf ? bestPerf.weight : 0;
+          targetVal = goal.target_weight;
+        } else if (goal.target_reps) {
+          // Objectif de répétitions
+          const filtered = progressData.filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
+          const bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
+          currentVal = bestPerf ? bestPerf.reps : 0;
+          targetVal = goal.target_reps;
+        } else if ((goal as unknown as Record<string, unknown>).target_distance) {
+          // Objectif de distance (vélo, course, etc.) - Pour l'instant, on considère comme atteint si l'exercice a été fait
+          const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+          isGoalMet = filtered.length > 0; // Simplification pour les tests
+        } else if ((goal as unknown as Record<string, unknown>).target_duration) {
+          // Objectif de durée
+          const filtered = progressData.filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
+          isGoalMet = filtered.length > 0; // Simplification pour les tests
         }
-        const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
-        const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
-        if (typeof targetVal === 'number' && currentVal < targetVal && goal.status === 'Atteint') {
-          await supabase.from('training_goals').update({ status: 'En cours' }).eq('id', goal.id);
-        } else if (typeof targetVal === 'number' && currentVal >= targetVal && goal.status !== 'Atteint') {
+        
+        // Vérifier si l'objectif est atteint
+        const goalAchieved = isGoalMet || (targetVal > 0 && currentVal >= targetVal);
+        
+        if (goalAchieved && goal.status !== 'Atteint') {
           await supabase.from('training_goals').update({ status: 'Atteint', updated_at: new Date().toISOString() }).eq('id', goal.id);
-          // Attribuer le badge et animation seulement lors du passage à Atteint
+          
+          // Valider le badge correspondant et animation
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
-            await awardGoalBadge(goal, user.id);
+            await validateGoalBadge(goal.id, user.id);
             handleGoalAchieved(goal);
+            // Recharger les achievements pour mettre à jour l'affichage
+            setTimeout(() => loadAchievements(), 500);
+          }
+        } else if (!goalAchieved && goal.status === 'Atteint') {
+          await supabase.from('training_goals').update({ status: 'En cours' }).eq('id', goal.id);
+          
+          // Rétrograder le badge correspondant
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await downgradeBadge(goal.id, user.id);
+            // Recharger les achievements pour mettre à jour l'affichage
+            setTimeout(() => loadAchievements(), 500);
           }
         }
       }
     }
     if (trainingGoals.length > 0 && progressData.length > 0) {
       checkAndUpdateGoals();
+      // Synchroniser les badges après mise à jour des objectifs
+      setTimeout(() => syncAchievementsWithGoals(), 500);
     }
   }, [trainingGoals, progressData]);
 
@@ -464,16 +672,39 @@ export default function ProgressPage() {
       }
 
       let error = null;
+      let newGoalId = null;
+      
       if (editGoalId) {
         // Edition d'un objectif existant
         const { error: updateError } = await supabase.from('training_goals').update(insertData).eq('id', editGoalId)
         error = updateError
+        newGoalId = editGoalId
       } else {
         // Création d'un nouvel objectif
-        const { error: insertError } = await supabase.from('training_goals').insert(insertData)
+        const { data: goalData, error: insertError } = await supabase.from('training_goals').insert(insertData).select('id').single()
         error = insertError
+        if (goalData) newGoalId = goalData.id
       }
       if (error) throw error
+      
+      // Créer automatiquement un badge "En cours" pour les nouveaux objectifs
+      if (!editGoalId && newGoalId) {
+        const selectedExercise = userExercises.find(ex => ex.id === Number(goalExerciseId));
+        if (selectedExercise) {
+          await createGoalBadge(
+            selectedExercise.name,
+            goalType,
+            goalValue,
+            user.id,
+            newGoalId,
+            goalExtraKg,
+            goalExtraDuration,
+            goalExtraSpeed
+          );
+          // Recharger les achievements pour afficher le nouveau badge
+          setTimeout(() => loadAchievements(), 500);
+        }
+      }
       setShowGoalModal(false)
       setGoalExerciseId('')
       setGoalType('kg')
@@ -654,7 +885,17 @@ export default function ProgressPage() {
   const handleGoalAchieved = (goal: TrainingGoal) => {
     setCongratsMsg(`Bravo Thierry, badge débloqué : ${goal.exercises?.name} ${goal.target_weight ? goal.target_weight + 'kg' : goal.target_reps ? goal.target_reps + ' reps' : ''} ! 🏅`);
     setShowCongrats(true);
-    setTimeout(() => setShowCongrats(false), 3500);
+    
+    // Rafraîchir les badges après validation
+    setTimeout(async () => {
+      await loadAchievements();
+      setShowCongrats(false);
+      
+      // Redirection vers l'onglet profil/statistiques après 2 secondes pour laisser le temps à la DB de se synchroniser
+      setTimeout(() => {
+        window.location.href = '/profile?refresh=' + Date.now();
+      }, 2000);
+    }, 3500);
   };
 
   // Pré-remplir le formulaire pour l\'édition
@@ -1139,40 +1380,27 @@ export default function ProgressPage() {
               </button>
             </div>
             <div className="space-y-4">
-              {trainingGoals.length === 0 && (
-                <div className="text-gray-500 text-sm">Aucun objectif défini pour l&apos;instant. Ajoute-en un pour te challenger !</div>
+              {trainingGoals.filter(goal => goal.status !== 'Atteint').length === 0 && (
+                <div className="text-gray-500 text-sm">
+                  {trainingGoals.length === 0 
+                    ? "Aucun objectif défini pour l'instant. Ajoute-en un pour te challenger !" 
+                    : "Tous tes objectifs sont atteints ! 🎉 Félicitations, ajoute-en de nouveaux pour continuer à progresser."
+                  }
+                </div>
               )}
-              {trainingGoals.filter(goal => {
-                let bestPerf: ProgressData | null = null;
-                if (goal.target_reps && goal.target_reps > 1) {
-                  const filtered = progressData
-                    .filter((p) => p.weight === 0 && goal.exercises?.name && p.exercise === goal.exercises.name);
-                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.reps > max.reps ? p : max), filtered[0]) : null;
-                } else {
-                  const filtered = progressData
-                    .filter((p) => goal.exercises?.name && p.exercise === goal.exercises.name);
-                  bestPerf = filtered.length > 0 ? filtered.reduce((max, p) => (max && p.weight > max.weight ? p : max), filtered[0]) : null;
-                }
-                const currentVal = bestPerf ? (goal.target_reps && goal.target_reps > 1 ? bestPerf.reps : bestPerf.weight) : 0;
-                const targetVal = goal.target_reps && goal.target_reps > 1 ? goal.target_reps : goal.target_weight;
-                if (typeof targetVal === 'number' && currentVal >= targetVal && targetVal) {
-                  // Le recalcul est déjà géré par le useEffect, mais on peut le forcer ici si nécessaire
-                  // createClient().auth.getUser().then(async ({ data: { user } }) => {
-                  //   if (user) {
-                  //     // Mettre à jour le statut de l'objectif à 'Atteint' dans Supabase
-                  //     await createClient()
-                  //       .from('training_goals')
-                  //       .update({ status: 'Atteint', updated_at: new Date().toISOString() })
-                  //       .eq('id', goal.id);
-                  //     // Attribuer le badge
-                  //     awardGoalBadge(goal, user.id);
-                  //     handleGoalAchieved(goal);
-                  //   }
-                  // });
-                  return false;
-                }
-                return true;
-              }).map((goal) => {
+              {/* Afficher seulement les objectifs "En cours" sans doublons */}
+              {trainingGoals
+                .filter(goal => goal.status !== 'Atteint')
+                .reduce((unique, goal) => {
+                  // Créer une clé unique basée sur l'exercice + type + valeur
+                  const key = `${goal.exercise_id}-${goal.target_weight || 0}-${goal.target_reps || 0}-${(goal as any).target_duration || 0}-${(goal as any).target_distance || 0}`;
+                  const existing = unique.find(g => `${g.exercise_id}-${g.target_weight || 0}-${g.target_reps || 0}-${(g as any).target_duration || 0}-${(g as any).target_distance || 0}` === key);
+                  if (!existing) {
+                    unique.push(goal);
+                  }
+                  return unique;
+                }, [] as TrainingGoal[])
+                .map((goal) => {
                 // Détection dynamique du type d'objectif et des valeurs
                 let target: number | null = null;
                 let current: number | null = null;
@@ -1239,17 +1467,21 @@ export default function ProgressPage() {
               <span>Badges à valider</span>
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {trainingGoals.filter(g => g.status !== 'Atteint').map(g => {
-                const { icon, title, desc } = getBadgeIconAndText(g);
-                return (
-                  <div key={g.id} className="text-center p-4 rounded-lg bg-gray-50 opacity-50">
-                    <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{icon}</span>
-                    <h3 className="font-medium text-gray-500">{title}</h3>
-                    <p className="text-sm text-gray-400">{desc || badgeDesc(g) || 'Non atteint'}</p>
-                  </div>
-                );
-              })}
-              {trainingGoals.filter(g => g.status !== 'Atteint').length === 0 && (
+              {/* Filtrer les badges liés aux objectifs "En cours" seulement */}
+              {achievements.filter(a => 
+                a.goal_id && 
+                trainingGoals.some(goal => goal.id === a.goal_id && goal.status !== 'Atteint')
+              ).map(achievement => (
+                <div key={achievement.id} className="text-center p-4 rounded-lg bg-gray-50 opacity-50">
+                  <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{achievement.icon}</span>
+                  <h3 className="font-medium text-gray-500">{achievement.name}</h3>
+                  <p className="text-sm text-gray-400">{achievement.description}</p>
+                </div>
+              ))}
+              {achievements.filter(a => 
+                a.goal_id && 
+                trainingGoals.some(goal => goal.id === a.goal_id && goal.status !== 'Atteint')
+              ).length === 0 && (
                 <div className="col-span-2 text-center text-gray-400 italic">Aucun badge à valider, lance-toi un nouveau défi !</div>
               )}
             </div>
@@ -1320,7 +1552,7 @@ export default function ProgressPage() {
 
         {/* Animation/message de félicitations */}
         {showCongrats && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(8px)' }}>
             <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
               <span className="text-5xl mb-4">🏅</span>
               <h2 className="text-2xl font-bold text-orange-600 mb-2">Félicitations !</h2>

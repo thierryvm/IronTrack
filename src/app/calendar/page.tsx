@@ -18,6 +18,7 @@ import CalendarDayCell from '@/components/ui/CalendarDayCell';
 
 interface Workout {
   id: number
+  user_id: string
   scheduled_date: string
   name: string
   type: 'Musculation' | 'Cardio' | 'Étirement' | 'Repos'
@@ -25,6 +26,10 @@ interface Workout {
   duration?: number
   exercises?: string[]
   notes?: string
+  start_time?: string
+  end_time?: string
+  created_at?: string
+  updated_at?: string
 }
 
 const workoutTypes = [
@@ -34,25 +39,14 @@ const workoutTypes = [
   { name: 'Repos', color: 'bg-gray-500', icon: CheckCircle }
 ]
 
-// Ajouter l'interface SharedWorkout
-interface SharedWorkout {
-  id: number;
-  user_id: string;
-  name: string;
-  type: string;
-  status: string;
-  scheduled_date: string;
-  start_time?: string;
-  end_time?: string;
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
+// Interface pour les séances partagées (identique à Workout mais avec profil)
+interface SharedWorkout extends Workout {
   profiles?: {
     avatar_url?: string;
     full_name?: string;
     id?: string;
-    pseudo?: string; // Added pseudo to the interface
-    email?: string; // Added email to the interface
+    pseudo?: string;
+    email?: string;
   };
 }
 
@@ -112,9 +106,64 @@ export default function CalendarPage() {
   }, [router]);
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [workouts] = useState<Workout[]>([])
-  const [sharedWorkouts] = useState<SharedWorkout[]>([])
+  const [workouts, setWorkouts] = useState<Workout[]>([])
+  const [sharedWorkouts, setSharedWorkouts] = useState<SharedWorkout[]>([])
   const [sharePlanning, setSharePlanning] = useState(false);
+
+  // Charger les séances personnelles
+  const loadWorkouts = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: workoutsData } = await supabase
+      .from('workouts')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('scheduled_date', { ascending: true });
+    
+    if (workoutsData) {
+      setWorkouts(workoutsData);
+    }
+  };
+
+  // Charger les séances partagées de tous les utilisateurs ayant activé le partage
+  const loadSharedWorkouts = async () => {
+    const supabase = createClient();
+    
+    // Récupérer les utilisateurs qui ont activé le partage de planning
+    const { data: sharedUsers } = await supabase
+      .from('user_settings')
+      .select('user_id')
+      .eq('share_planning', true);
+    
+    if (!sharedUsers || sharedUsers.length === 0) {
+      setSharedWorkouts([]);
+      return;
+    }
+
+    const userIds = sharedUsers.map(u => u.user_id);
+    
+    // Récupérer leurs séances avec les profils
+    const { data: sharedData } = await supabase
+      .from('workouts')
+      .select(`
+        *,
+        profiles:user_id (
+          id,
+          pseudo,
+          full_name,
+          email,
+          avatar_url
+        )
+      `)
+      .in('user_id', userIds)
+      .order('scheduled_date', { ascending: true });
+    
+    if (sharedData) {
+      setSharedWorkouts(sharedData);
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -140,14 +189,27 @@ export default function CalendarPage() {
         .select('share_planning')
         .eq('user_id', user.id)
         .single();
-      setSharePlanning(!!settings?.share_planning);
+      const shareEnabled = !!settings?.share_planning;
+      setSharePlanning(shareEnabled);
+      
+      // Charger les données initiales selon le paramètre de partage
+      if (shareEnabled) {
+        loadSharedWorkouts();
+      } else {
+        loadWorkouts();
+      }
     };
     fetchProfile();
   }, [router])
 
-  // useEffect vide supprimé
-
-  // Supprime les variables inutilisées loadWorkouts et loadSharedWorkouts
+  // Charger les données selon le mode sélectionné
+  useEffect(() => {
+    if (sharePlanning) {
+      loadSharedWorkouts();
+    } else {
+      loadWorkouts();
+    }
+  }, [sharePlanning])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()

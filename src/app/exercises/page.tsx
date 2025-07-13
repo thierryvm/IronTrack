@@ -52,6 +52,8 @@ export default function ExercisesPage() {
   const [equipmentList, setEquipmentList] = useState<{id: number, name: string}[]>([])
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
 
   const loadExercises = useCallback(async () => {
     setLoading(true)
@@ -99,6 +101,35 @@ export default function ExercisesPage() {
   function normalize(str: string) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
+
+  // Fonctions de suppression
+  const handleDeleteExercise = (exercise: Exercise) => {
+    setExerciseToDelete(exercise);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteExercise = async () => {
+    if (!exerciseToDelete) return;
+    
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('exercises')
+      .delete()
+      .eq('id', exerciseToDelete.id);
+    
+    if (!error) {
+      setExercises(exercises.filter(ex => ex.id !== exerciseToDelete.id));
+      setTotalCount(totalCount - 1);
+    }
+    
+    setShowDeleteModal(false);
+    setExerciseToDelete(null);
+  };
+
+  const cancelDeleteExercise = () => {
+    setShowDeleteModal(false);
+    setExerciseToDelete(null);
+  };
 
   // Filtrage des exercices selon la recherche et le groupe musculaire
   const filteredExercises = exercises.filter(ex => {
@@ -302,6 +333,7 @@ export default function ExercisesPage() {
                       <Edit className="h-5 w-5" />
                     </Link>
                     <button
+                      onClick={() => handleDeleteExercise(exercise)}
                       className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Supprimer"
                     >
@@ -353,6 +385,36 @@ export default function ExercisesPage() {
             Suivant
           </button>
         </div>
+
+        {/* Modal de confirmation suppression */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Trash2 className="h-6 w-6 text-red-500" /> 
+                Supprimer l&apos;exercice ?
+              </h2>
+              <p className="mb-6">
+                Tu es sûr de vouloir supprimer &quot;{exerciseToDelete?.name}&quot; ? 
+                Cette action est irréversible et supprimera aussi toutes les performances associées.
+              </p>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={cancelDeleteExercise} 
+                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold"
+                >
+                  Annuler
+                </button>
+                <button 
+                  onClick={confirmDeleteExercise} 
+                  className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

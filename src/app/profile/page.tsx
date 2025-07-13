@@ -29,7 +29,7 @@ import { useRouter } from 'next/navigation'
 import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
-import type { TrainingGoal } from '@/types/training-goal.d'; // Adapter le chemin si besoin
+// import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
 import type { Achievement } from '@/types/achievement';
@@ -52,8 +52,8 @@ interface SupabaseProfile {
   pseudo?: string; // Ajout du champ pseudo
 }
 
-// Définition des badges par défaut
-const defaultBadges = [
+// Définition des badges par défaut (commenté car non utilisé actuellement)
+/* const defaultBadges = [
   {
     key: 'bench-50',
     icon: '🏋️‍♂️',
@@ -173,7 +173,7 @@ const defaultBadges = [
       return g?.updated_at || g?.created_at;
     }
   },
-];
+]; */
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -217,8 +217,6 @@ export default function ProfilePage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [sharePlanning, setSharePlanning] = useState(false);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-   
-  const [achievedGoals, setAchievedGoals] = useState<TrainingGoal[]>([]);
 
   // useEffect pour la mascotte (OK)
   useEffect(() => {
@@ -230,6 +228,31 @@ export default function ProfilePage() {
   // useEffect pour charger le profil (OK)
   useEffect(() => {
     loadProfileData();
+    
+    // Vérifier si on arrive avec un paramètre refresh pour forcer le rechargement
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('refresh')) {
+      // Attendre un peu puis forcer le rechargement des achievements
+      setTimeout(async () => {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await loadAchievements(user.id);
+        }
+      }, 500);
+    }
+    
+    // Rechargement périodique des achievements (toutes les 10 secondes)
+    const interval = setInterval(() => {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          loadAchievements(user.id);
+        }
+      });
+    }, 10000);
+    
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -287,16 +310,23 @@ export default function ProfilePage() {
   // Récupérer les badges de l'utilisateur
   const loadAchievements = async (userId: string) => {
     const supabase = createClient();
+    // Forcer le rafraîchissement en ajoutant un timestamp pour éviter le cache
     const { data, error } = await supabase
       .from('achievements')
       .select('*')
       .eq('user_id', userId)
       .order('unlocked_at', { ascending: false });
-    if (!error && data) setAchievements(data as Achievement[]);
+    
+    if (error) {
+      console.error('Erreur chargement badges:', error.message);
+    } else {
+      const distinctStatuses = [...new Set(data?.map(a => a.status))];
+      setAchievements(data as Achievement[]);
+    }
   };
 
-  // Récupérer les objectifs atteints (status = 'Atteint')
-  const loadAchievedGoals = async (userId: string) => {
+  // Fonction pour récupérer les objectifs atteints (remplacée par le système de badges)
+  /* const loadAchievedGoals = async (userId: string) => {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('training_goals')
@@ -305,7 +335,7 @@ export default function ProfilePage() {
       .eq('status', 'Atteint')
       .order('updated_at', { ascending: false });
     if (!error && data) setAchievedGoals(data);
-  };
+  }; */
 
   // Charger les badges en même temps que le profil
   const loadProfileData = async () => {
@@ -369,7 +399,7 @@ export default function ProfilePage() {
     setProfile(userProfile)
     await loadWorkoutStats(user.id)
     await loadAchievements(user.id)
-    await loadAchievedGoals(user.id)
+    // await loadAchievedGoals(user.id) // Remplacé par les badges
     setLoading(false)
   }
 
@@ -1120,43 +1150,41 @@ export default function ProfilePage() {
                 <span>Badges validés</span>
               </h2>
               <div className="space-y-6">
-                {/* Badges automatiques (de la base de données) */}
-                {achievements.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-3">Badges débloqués automatiquement</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      {achievements.map(achievement => (
-                        <div key={achievement.id} className="text-center p-4 rounded-lg bg-green-50 border border-green-200">
-                          <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl">{achievement.icon || '🏆'}</span>
-                          <h3 className="font-medium text-gray-900">{achievement.name}</h3>
-                          <p className="text-sm text-gray-600">{achievement.description}</p>
-                          {achievement.unlocked_at && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              Débloqué le {new Date(achievement.unlocked_at).toLocaleDateString('fr-FR')}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Badges par défaut (basés sur les objectifs) */}
+                {/* Badges validés uniquement */}
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-3">Badges de progression</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    {defaultBadges.map(badge => {
-                      const isValid = badge.validate(achievedGoals, stats ?? undefined);
-                      const date = badge.getDate(achievedGoals);
-                      return (
-                        <div key={badge.key} className={`text-center p-4 rounded-lg ${isValid ? 'bg-orange-50' : 'bg-gray-50 opacity-50'}`}>
-                          <span className={`h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl ${isValid ? '' : 'grayscale text-gray-400'}`}>{badge.icon}</span>
-                          <h3 className={`font-medium ${isValid ? 'text-gray-900' : 'text-gray-500'}`}>{badge.title}</h3>
-                          <p className={`text-sm ${isValid ? 'text-gray-600' : 'text-gray-400'}`}>{badge.description}</p>
-                          {isValid && date && <div className="text-xs text-gray-500 mt-1">Atteint le {new Date(date).toLocaleDateString('fr-FR')}</div>}
-                        </div>
-                      );
-                    })}
+                    {/* Badges validés de la base de données (status = 'Validé') */}
+                    {achievements
+                      .filter(achievement => achievement.status === 'Validé')
+                      .reduce((unique, achievement) => {
+                        // Créer une clé unique basée sur le nom + description pour éviter les vrais doublons
+                        const existingDuplicate = unique.find(a => a.name === achievement.name && a.description === achievement.description);
+                        if (!existingDuplicate) {
+                          unique.push(achievement);
+                        }
+                        return unique;
+                      }, [] as Achievement[])
+                      .map(achievement => (
+                      <div key={achievement.id} className="text-center p-4 rounded-lg bg-orange-50 border border-orange-200">
+                        <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl">{achievement.icon || '🏆'}</span>
+                        <h3 className="font-medium text-gray-900">{achievement.name}</h3>
+                        <p className="text-sm text-gray-600">{achievement.description}</p>
+                        {achievement.unlocked_at && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            Débloqué le {new Date(achievement.unlocked_at).toLocaleDateString('fr-FR')}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    
+                    {/* Affichage si aucun badge validé */}
+                    {achievements.filter(achievement => achievement.status === 'Validé').length === 0 && (
+                      <div className="col-span-2 text-center py-8 text-gray-500">
+                        <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <h3 className="font-medium text-gray-900 mb-2">Aucun badge validé</h3>
+                        <p className="text-sm">Crée des objectifs dans la page Progression pour débloquer tes premiers badges !</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

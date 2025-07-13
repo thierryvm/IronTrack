@@ -15,7 +15,7 @@ const exerciseTypes = [
 ]
 
 // Table d’exercices standards par groupe musculaire
-const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, unknown>}>}>> = {
+const standardExercises: Record<string, Array<{name: string, label: string, type: string, equipment: string, difficulty: string, suggestions: Array<{label: string, values: Record<string, string | number>}>}>> = {
   'Pectoraux': [
     {
       name: 'Développé couché', label: 'Développé couché', type: 'Musculation', equipment: 'Barre + banc', difficulty: 'Intermédiaire',
@@ -156,7 +156,7 @@ const standardExercises: Record<string, Array<{name: string, label: string, type
 };
 
 // Ajout de la fonction de suggestions dynamiques
-function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: Record<string, unknown>}> {
+function getExerciseSuggestions(type: string, muscle: string, name: string): Array<{label: string, values: Record<string, string | number>}> {
   // Table de correspondance nom -> groupe musculaire
   const muscleMap: Record<string, string> = {
     'pompe': 'Pectoraux',
