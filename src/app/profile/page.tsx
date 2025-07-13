@@ -320,7 +320,6 @@ export default function ProfilePage() {
     if (error) {
       console.error('Erreur chargement badges:', error.message);
     } else {
-      const distinctStatuses = [...new Set(data?.map(a => a.status))];
       setAchievements(data as Achievement[]);
     }
   };

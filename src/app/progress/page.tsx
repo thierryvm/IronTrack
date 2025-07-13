@@ -165,7 +165,7 @@ async function validateGoalBadge(goalId: number, userId: string, badgeId?: numbe
     }
     
     // Fallback avec goal_id + user_id
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('achievements')
       .update({ 
         status: 'Validé',
@@ -206,7 +206,7 @@ async function downgradeBadge(goalId: number, userId: string, badgeId?: number) 
     }
     
     // Fallback avec goal_id + user_id
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('achievements')
       .update({ 
         status: 'En cours',
@@ -379,7 +379,6 @@ export default function ProgressPage() {
     fetchExercises()
     fetchGender()
     loadAchievements()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod])
   
   // Fonction pour synchroniser les badges avec les objectifs atteints
@@ -411,7 +410,6 @@ export default function ProgressPage() {
     if (!freshGoals || !freshBadges) return;
     
     for (const goal of freshGoals) {
-      const exerciseName = (goal.exercises as any)?.name;
       const correspondingBadge = freshBadges.find(badge => badge.goal_id === goal.id);
       
       if (correspondingBadge && correspondingBadge.status !== 'Validé') {
@@ -513,6 +511,7 @@ export default function ProgressPage() {
       // Synchroniser les badges après mise à jour des objectifs
       setTimeout(() => syncAchievementsWithGoals(), 500);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trainingGoals, progressData]);
 
   const loadProgressData = async () => {
@@ -1393,8 +1392,12 @@ export default function ProgressPage() {
                 .filter(goal => goal.status !== 'Atteint')
                 .reduce((unique, goal) => {
                   // Créer une clé unique basée sur l'exercice + type + valeur
-                  const key = `${goal.exercise_id}-${goal.target_weight || 0}-${goal.target_reps || 0}-${(goal as any).target_duration || 0}-${(goal as any).target_distance || 0}`;
-                  const existing = unique.find(g => `${g.exercise_id}-${g.target_weight || 0}-${g.target_reps || 0}-${(g as any).target_duration || 0}-${(g as any).target_distance || 0}` === key);
+                  const goalExtended = goal as unknown as Record<string, unknown>;
+                  const key = `${goal.exercise_id}-${goal.target_weight || 0}-${goal.target_reps || 0}-${goalExtended.target_duration || 0}-${goalExtended.target_distance || 0}`;
+                  const existing = unique.find(g => {
+                    const gExtended = g as unknown as Record<string, unknown>;
+                    return `${g.exercise_id}-${g.target_weight || 0}-${g.target_reps || 0}-${gExtended.target_duration || 0}-${gExtended.target_distance || 0}` === key;
+                  });
                   if (!existing) {
                     unique.push(goal);
                   }
