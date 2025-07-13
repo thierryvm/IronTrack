@@ -44,3 +44,11 @@ next-env.d.ts
 public/sw.js
 public/sw.js.map
 public/workbox-*
+
+# Fichiers de debug et analyse temporaires
+RAPPORT-*.md
+PLAN-*.md
+check-*.js
+check-*.mjs
+diagnose-*.mjs
+test-*.mjs
