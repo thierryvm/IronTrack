@@ -52,9 +52,21 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-md flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 z-50"
           onClick={onClose}
         >
+          {/* Overlay avec effet de flou */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.75), rgba(20,20,30,0.6))',
+              backdropFilter: 'blur(15px) brightness(0.7)',
+              WebkitBackdropFilter: 'blur(15px) brightness(0.7)'
+            }}
+          />
+          
+          {/* Container centré pour la modal */}
+          <div className="relative flex items-center justify-center min-h-full p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -139,6 +151,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
               </Link>
             </div>
           </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
