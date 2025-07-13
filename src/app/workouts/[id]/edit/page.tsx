@@ -22,6 +22,7 @@ export default function EditWorkoutPage() {
   const [mascotType, setMascotType] = useState<'motivation' | 'success' | 'warning' | 'info'>('motivation')
   const [showMascot, setShowMascot] = useState(false)
   const [startTime, setStartTime] = useState('');
+  const [type, setType] = useState<'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates'>('Musculation');
 
   // Charger les vraies données depuis Supabase
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function EditWorkoutPage() {
         setDuration(data.duration ?? '')
         setStatus(data.status || 'Planifié')
         setStartTime(data.start_time || '')
+        setType(data.type || 'Musculation')
       }
     };
     if (id) fetchWorkout();
@@ -61,7 +63,8 @@ export default function EditWorkoutPage() {
       setShowMascot(true)
       return
     }
-    if (Number(duration) <= 0) {
+    // Vérification de la durée seulement si ce n'est pas un jour de repos
+    if (type !== 'Repos' && Number(duration) <= 0) {
       setErrorMsg("La durée doit être supérieure à 0 min. Même Hulk ne fait pas des séances de 0 minute !")
       setMascotMsg("Thierry, Hulk casse tout, mais il fait au moins 1 minute !")
       setMascotType('warning')
@@ -74,10 +77,11 @@ export default function EditWorkoutPage() {
       .from('workouts')
       .update({
         name,
+        type,
         scheduled_date: date,
         start_time: startTime,
         notes,
-        duration: duration === '' ? null : Number(duration),
+        duration: (type === 'Repos' || duration === '') ? null : Number(duration),
         status
       })
       .eq('id', id)
@@ -141,6 +145,31 @@ export default function EditWorkoutPage() {
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
         </div>
         <div>
+          <label className="block text-gray-700 font-medium mb-2">Type de séance</label>
+          <select 
+            value={type} 
+            onChange={e => {
+              const newType = e.target.value as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates';
+              setType(newType);
+              if (newType === 'Repos') {
+                setDuration('');
+              }
+            }} 
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="Musculation">💪 Musculation</option>
+            <option value="Cardio">❤️ Cardio</option>
+            <option value="Étirement">🧘 Étirement</option>
+            <option value="Cours collectif">👥 Cours collectif</option>
+            <option value="Gainage">🎯 Gainage</option>
+            <option value="Natation">🏊 Natation</option>
+            <option value="Crossfit">⚡ Crossfit</option>
+            <option value="Yoga">🕉️ Yoga</option>
+            <option value="Pilates">🤸 Pilates</option>
+            <option value="Repos">😴 Jour de repos</option>
+          </select>
+        </div>
+        <div>
           <label className="block text-gray-700 font-medium mb-2">Heure prévue</label>
           <input
             type="time"
@@ -151,14 +180,17 @@ export default function EditWorkoutPage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Durée (minutes)</label>
+          <label className="block text-gray-700 font-medium mb-2">
+            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-500">(optionnel pour les jours de repos)</span>}
+          </label>
           <input
             type="number"
             min={0}
             value={duration}
             onChange={e => setDuration(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-            placeholder="Ex: 30"
+            placeholder={type === 'Repos' ? 'Durée libre pour les jours de repos' : 'Ex: 30'}
+            disabled={type === 'Repos'}
           />
         </div>
         <div>
