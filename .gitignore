@@ -34,8 +34,13 @@ yarn-error.log*
 # Fichiers d'environnement et secrets
 .env*
 *.local
+
+# Fichiers de développement et sécurité
 mcp.json
 test-supabase.ts
+*.sql
+migration-*.sql
+migration_*.sql
 
 # Next.js/TypeScript
 *.tsbuildinfo
