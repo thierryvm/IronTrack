@@ -76,3 +76,5 @@ TESTS-VALIDATION.md
 SOLUTION-PERSONNALISATION.md
 jest.config.js
 jest.setup.js
+test-*.js
+debug-*.js
