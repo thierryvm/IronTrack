@@ -77,7 +77,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 #### Créer la base de données
-Exécute ce SQL dans l'éditeur SQL de Supabase :
+⚠️ **IMPORTANT** : Exécute le fichier `supabase_schema.sql` complet dans l'éditeur SQL de Supabase pour créer toutes les tables et politiques de sécurité.
+
+Aperçu des tables principales :
 
 ```sql
 -- Créer les tables
@@ -255,7 +257,25 @@ NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
 
 ## 🔒 Sécurité
 
-Aucune information sensible (clés, tokens, secrets) n'est stockée dans ce dépôt. Toutes les variables confidentielles doivent être placées dans le fichier `.env.local` (non versionné). **Ne partage jamais tes clés Supabase ou autres secrets publiquement !**
+### Gestion des Secrets
+- ✅ **Aucune information sensible** (clés, tokens, secrets) n'est stockée dans ce dépôt
+- ✅ **Variables d'environnement** : Utilise uniquement `.env.local` (non versionné)
+- ✅ **Dossiers sensibles** : `.claude/` et `.vscode/` exclus du versioning
+- ⚠️ **ATTENTION** : Ne partage jamais tes clés Supabase ou autres secrets publiquement !
+
+### Fonctionnalités de Sécurité
+- 🛡️ **Validation stricte** des entrées utilisateur
+- 🔒 **Row Level Security** (RLS) sur toutes les tables
+- 🚫 **Protection XSS** et injection SQL
+- ⏱️ **Rate limiting** côté client
+- 🔐 **Authentification sécurisée** avec Supabase Auth
+- 📊 **Audit automatique** des actions utilisateur
+
+### Bonnes Pratiques
+- Régénère tes clés API régulièrement
+- Utilise des mots de passe forts
+- Active l'authentification 2FA sur Supabase
+- Surveille les logs d'accès
 
 ## 🤝 Contribuer
 
