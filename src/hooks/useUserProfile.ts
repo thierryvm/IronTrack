@@ -149,9 +149,18 @@ export function useUserProfile(): UseUserProfileReturn {
     }
   }, [isAuthenticated, user])
 
+  const displayName = getDisplayName(profile)
+  
+  // Sauvegarder le displayName dans localStorage pour la page offline
+  useEffect(() => {
+    if (displayName && displayName !== 'Utilisateur') {
+      localStorage.setItem('userName', displayName)
+    }
+  }, [displayName])
+
   return {
     profile,
-    displayName: getDisplayName(profile),
+    displayName,
     isLoading,
     error,
     refreshProfile: fetchProfile
