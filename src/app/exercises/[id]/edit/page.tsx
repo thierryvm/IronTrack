@@ -435,8 +435,7 @@ export default function EditExercisePage() {
       perfData.reps = 0;
       perfData.sets = null;
     }
-    // DEBUG
-    console.log('perfData sent to Supabase:', perfData);
+    // Envoi des données de performance
     const { error } = await supabase.from('performance_logs').insert(perfData);
     setPerfLoading(false);
     if (!error) {
