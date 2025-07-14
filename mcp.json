@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": ["@supabase/cli", "mcp"],
+      "env": {
+        "SUPABASE_URL": "https://taspdceblvmpvdjixyit.supabase.co",
+        "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhc3BkY2VibHZtcHZkaml4eWl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYyNzEwMjQsImV4cCI6MjA1MTg0NzAyNH0.3LzqJzEQFmjOJyLjA0FfFXjYzgOBqNxPvw2zYpGxsWY"
+      }
+    },
+    "vercel": {
+      "command": "npx",
+      "args": ["@vercel/cli", "mcp"],
+      "env": {
+        "VERCEL_TOKEN": "your_vercel_token_here"
+      }
+    }
+  }
+}
