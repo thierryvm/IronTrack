@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { motion } from 'framer-motion'
 
@@ -9,7 +10,10 @@ interface UserGreetingProps {
 }
 
 export default function UserGreeting({ className = '', showError = false }: UserGreetingProps) {
-  const { displayName, isLoading, error } = useUserProfile()
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const { displayName, isLoading: profileLoading, error } = useUserProfile()
+  
+  const isLoading = authLoading || (isAuthenticated && profileLoading)
 
   if (isLoading) {
     return (

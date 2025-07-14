@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
@@ -14,6 +14,9 @@ import {
   detectSecurityThreats,
   ClientRateLimiter 
 } from '@/utils/security'
+import InAppBrowserWarning from '@/components/auth/InAppBrowserWarning'
+import { detectBrowserInfo } from '@/utils/browserDetection'
+
 
 function AuthContent() {
   const [supabase] = useState(() => createClient())
@@ -31,21 +34,34 @@ function AuthContent() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [rateLimiter] = useState(() => new ClientRateLimiter(5, 15 * 60 * 1000)) // 5 tentatives par 15 min
+  // États pour la gestion des navigateurs in-app
+  const [showInAppWarning, setShowInAppWarning] = useState(false)
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   
   // Déterminer l'URL de redirection basée sur l'environnement actuel
   const getRedirectUrl = () => {
-    if (typeof window === 'undefined') return process.env.NEXT_PUBLIC_SITE_URL
+    if (typeof window === 'undefined') {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+      return baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
+    }
     
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    return isLocalhost ? 'http://localhost:3000/' : process.env.NEXT_PUBLIC_SITE_URL
+    if (isLocalhost) {
+      return 'http://localhost:3000/'
+    }
+    
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+    return baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
   };
 
   useEffect(() => {
-    // Debug temporaire pour vérifier la configuration
-    console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
-    console.log('Redirect URL:', process.env.NEXT_PUBLIC_SITE_URL + '/');
+    // Détection des navigateurs in-app au montage du composant
+    const browserInfo = detectBrowserInfo();
+    setIsInAppBrowser(browserInfo.isInAppBrowser);
+    
+    
     
     // Gestion des messages d'erreur dans l'URL
     const error = searchParams.get('error');
@@ -53,6 +69,9 @@ function AuthContent() {
       setErrorMsg('Identifiants invalides. Vérifie ton email et ton mot de passe.');
     } else if (error === 'otp_expired') {
       setErrorMsg('Le lien d\'inscription a expiré ou a déjà été utilisé. Merci de recommencer.');
+    } else if (error === 'disallowed_useragent') {
+      setErrorMsg('Connexion Google non autorisée depuis cette application. Merci d\'ouvrir le lien dans votre navigateur principal.');
+      setShowInAppWarning(true);
     } else if (error) {
       setErrorMsg('Erreur d\'authentification. Merci de réessayer.');
     } else {
@@ -198,8 +217,51 @@ function AuthContent() {
     }
   }
 
+  // Gestionnaire pour intercepter les clics sur le bouton Google
+  const handleGoogleSignIn = useCallback((event: Event) => {
+    if (isInAppBrowser) {
+      event.preventDefault();
+      event.stopPropagation();
+      setShowInAppWarning(true);
+      return false;
+    }
+  }, [isInAppBrowser]);
+
+  // Effet pour intercepter les clics sur le bouton Google après le rendu
+  useEffect(() => {
+    if (isInAppBrowser) {
+      const observer = new MutationObserver(() => {
+        const googleButton = document.querySelector('button[data-provider="google"]');
+        if (googleButton && !googleButton.hasAttribute('data-intercepted')) {
+          googleButton.setAttribute('data-intercepted', 'true');
+          googleButton.addEventListener('click', handleGoogleSignIn);
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Nettoyage
+      return () => {
+        observer.disconnect();
+        const googleButton = document.querySelector('button[data-provider="google"]');
+        if (googleButton) {
+          googleButton.removeEventListener('click', handleGoogleSignIn);
+        }
+      };
+    }
+  }, [isInAppBrowser, handleGoogleSignIn]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-500 via-red-500 to-purple-600 flex items-center justify-center p-4">
+    <>
+      {/* Avertissement pour navigateurs in-app */}
+      {showInAppWarning && (
+        <InAppBrowserWarning 
+          onClose={() => setShowInAppWarning(false)}
+          showAlternativeAuth={true}
+        />
+      )}
+      
+      <div className="min-h-screen bg-gradient-to-br from-orange-500 via-red-500 to-purple-600 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -458,7 +520,7 @@ function AuthContent() {
                     button_label: 'S\'inscrire',
                     loading_button_label: 'Inscription...',
                     social_provider_text: 'S\'inscrire avec {{provider}}',
-                    link_text: 'Pas de compte ? S&apos;inscrire',
+                    link_text: 'Pas de compte ? S\'inscrire',
                   },
                   forgotten_password: {
                     email_label: 'Email',
@@ -504,7 +566,26 @@ function AuthContent() {
           </p>
         </div>
       </motion.div>
+      
+      {/* Bannière d'information discrète pour les navigateurs in-app */}
+      {isInAppBrowser && !showInAppWarning && (
+        <div className="fixed bottom-4 left-4 right-4 bg-amber-100 border border-amber-300 rounded-lg p-3 shadow-lg z-40">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2 text-amber-800">
+              <span>⚠️</span>
+              <span>Pour Google, ouvre dans ton navigateur</span>
+            </div>
+            <button
+              onClick={() => setShowInAppWarning(true)}
+              className="text-amber-700 font-medium hover:text-amber-900"
+            >
+              Comment faire ?
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+    </>
   )
 }
 
