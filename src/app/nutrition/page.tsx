@@ -320,7 +320,7 @@ export default function NutritionPage() {
   // Génère une clé unique pour forcer le re-render (hash simple)
   const todayMealsKey = todayMeals.map(m => `${m.id}-${m.calories}-${m.protein}-${m.carbs}-${m.fat}`).join('|')
 
-  // Log pour debug : vérifier les repas du jour utilisés pour l'affichage
+  // Clé unique pour forcer le re-render si nécessaire
 
   // Données hebdomadaires réelles
   const [weeklyData, setWeeklyData] = useState<Array<{day: string, calories: number, protein: number, carbs: number, fat: number}>>([])

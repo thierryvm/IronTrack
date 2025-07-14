@@ -126,7 +126,7 @@ interface SupabaseProfile {
     title: 'Force brute',
     description: '+1000kg soulevés au total',
     validate: (_goals: TrainingGoal[], stats?: UserStats) => (stats?.totalWeight ?? 0) >= 1000,
-    getDate: () => null // À améliorer si tu stockes la date
+    getDate: () => new Date().toISOString() // Date actuelle pour les badges basés sur les stats
   },
   {
     key: 'regulier',
@@ -134,7 +134,7 @@ interface SupabaseProfile {
     title: 'Régulier',
     description: '30 jours consécutifs',
     validate: (_goals: TrainingGoal[], stats?: UserStats) => (stats?.currentStreak ?? 0) >= 30,
-    getDate: () => null // À améliorer si tu stockes la date
+    getDate: () => new Date().toISOString() // Date actuelle pour les badges basés sur les stats
   },
   {
     key: 'polyvalent',
@@ -408,7 +408,7 @@ export default function ProfilePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const { error } = await supabase.from('user_settings').update({ ironbuddy_level: level }).eq('user_id', user.id)
-    if (error) console.error('[DEBUG] handleIronBuddyLevelChange error:', error)
+    if (error) throw error
   }
 
   const handleProfileChange = (field: keyof UserProfile, value: string | number | boolean) => {
@@ -500,9 +500,9 @@ export default function ProfilePage() {
       a.download = 'irontrack-donnees.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch {
       setExportError("Erreur lors de l'export. Même IronBuddy ne comprend pas !");
-      console.error('[DEBUG] handleExportData error:', err)
+      // Erreur gérée via l'interface utilisateur
     }
     setExporting(false);
   };
