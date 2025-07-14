@@ -16,10 +16,10 @@ import {
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { createClient } from '@/utils/supabase/client'
-import Mascot from '@/components/ui/Mascot'
 
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -48,12 +48,21 @@ export default function HeaderClient() {
     return () => subscription.unsubscribe()
   }, [])
 
+  const closeMenu = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      setIsMenuOpen(false)
+      setIsClosing(false)
+    }, 200)
+  }
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
     setIsLoggedIn(false)
     router.push('/auth')
   }
+  
   const handleLogin = () => {
     router.push('/auth')
   }
@@ -109,8 +118,9 @@ export default function HeaderClient() {
               </button>
             )}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => isMenuOpen ? closeMenu() : setIsMenuOpen(true)}
               className="xl:hidden p-2 rounded-md text-orange-100 hover:bg-orange-600 hover:text-white transition-colors"
+              aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -120,72 +130,106 @@ export default function HeaderClient() {
         {/* Menu mobile/hamburger */}
         {isMenuOpen && (
           <>
-            {/* Overlay sombre avec blur et fallback */}
+            {/* Overlay avec animation fade */}
             <div
-              className="fixed inset-0 z-50"
-              style={{
-                background: 'rgba(0,0,0,0.25)',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-              }}
-              onClick={() => setIsMenuOpen(false)}
-              aria-label="Fermer le menu latéral"
+              className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
+                isClosing ? 'opacity-0' : 'opacity-100'
+              }`}
+              onClick={closeMenu}
+              aria-label="Fermer le menu"
             />
-            {/* Drawer latéral */}
-            <aside
-              className="fixed top-0 left-0 h-full w-72 max-w-[90vw] bg-white z-50 shadow-2xl flex flex-col animate-slide-in"
-              style={{ animation: 'slide-in 0.3s cubic-bezier(0.4,0,0.2,1)' }}
-            >
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <div className="flex items-center space-x-2">
-                  <Dumbbell className="h-7 w-7 text-orange-500" />
-                  <Link href="/" className="font-bold text-lg text-orange-600 hover:text-orange-700 focus:outline-none font-extrabold transition-colors">IronTrack</Link>
+            
+            {/* Drawer latéral amélioré */}
+            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
+              isClosing ? '-translate-x-full' : 'translate-x-0'
+            }`}>
+              {/* Header du menu */}
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-orange-500 to-red-500">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <Dumbbell className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <Link 
+                      href="/" 
+                      className="text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md px-1"
+                      onClick={closeMenu}
+                    >
+                      IronTrack
+                    </Link>
+                    <p className="text-orange-100 text-xs">Coach muscu personnel</p>
+                  </div>
                 </div>
-                <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
-                  <X className="h-6 w-6 text-gray-500" />
+                <button 
+                  onClick={closeMenu} 
+                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                  aria-label="Fermer le menu"
+                >
+                  <X className="h-5 w-5 text-white" />
                 </button>
               </div>
-              {/* Mascotte optionnelle */}
-              <div className="flex items-center justify-center py-2">
-                <Mascot message="Prêt à t'entraîner, Thierry ?" type="motivation" show={true} />
-              </div>
-              <nav className="flex-1 overflow-y-auto py-2">
-                {navigation.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.href
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`flex items-center space-x-3 px-5 py-3 rounded-lg text-base font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] mb-1 select-none ${
-                        isActive
-                          ? 'bg-orange-100 text-orange-700 font-bold'
-                          : 'text-gray-700 hover:bg-orange-50 hover:shadow-xl hover:scale-105 hover:border hover:border-orange-300 hover:text-orange-600 active:scale-98'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                      tabIndex={0}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{item.name}</span>
-                    </Link>
-                  )
-                })}
+              
+              {/* Navigation principale */}
+              <nav className="flex-1 overflow-y-auto py-4 px-3">
+                <div className="space-y-1">
+                  {navigation.map((item, index) => {
+                    const Icon = item.icon
+                    const isActive = pathname === item.href
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 ease-out group relative animate-slide-up ${
+                          isActive
+                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-800 active:scale-[0.98]'
+                        }`}
+                        onClick={closeMenu}
+                        style={{ 
+                          animationDelay: `${index * 80}ms`,
+                          animationFillMode: 'both'
+                        }}
+                      >
+                        <div className={`p-2 rounded-lg transition-colors ${
+                          isActive 
+                            ? 'bg-white/20' 
+                            : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-orange-100 dark:group-hover:bg-gray-600'
+                        }`}>
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="flex-1">{item.name}</span>
+                        {isActive && (
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                        )}
+                      </Link>
+                    )
+                  })}
+                </div>
               </nav>
-              <div className="p-4 border-t border-gray-100">
+              
+              {/* Footer avec actions */}
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                <div className="mb-3">
+                  <ThemeToggle />
+                </div>
                 {isLoggedIn ? (
                   <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg bg-orange-600 hover:bg-red-600 text-white font-semibold transition-colors"
-                    title="Se déconnecter"
+                    onClick={() => {
+                      handleLogout()
+                      closeMenu()
+                    }}
+                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors active:scale-[0.98]"
                   >
                     <LogOut className="h-5 w-5" />
                     <span>Se déconnecter</span>
                   </button>
                 ) : (
                   <button
-                    onClick={handleLogin}
-                    className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg bg-orange-600 hover:bg-green-600 text-white font-semibold transition-colors"
-                    title="Se connecter"
+                    onClick={() => {
+                      handleLogin()
+                      closeMenu()
+                    }}
+                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium transition-colors active:scale-[0.98]"
                   >
                     <LogIn className="h-5 w-5" />
                     <span>Se connecter</span>
@@ -193,17 +237,6 @@ export default function HeaderClient() {
                 )}
               </div>
             </aside>
-            {/* Animation CSS */}
-            <style jsx global>{`
-              @keyframes slide-in {
-                from { transform: translateX(-100%); }
-                to { transform: translateX(0); }
-              }
-              @keyframes slide-out {
-                from { transform: translateX(0); }
-                to { transform: translateX(-100%); }
-              }
-            `}</style>
           </>
         )}
       </div>

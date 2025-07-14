@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "kill-dev.bat && next dev",
+    "dev": "next dev -p 3000",
     "dev:setup": "node scripts/dev-setup.js dev",
     "dev:turbo": "kill-dev.bat && next dev --turbopack",
     "build": "next build",

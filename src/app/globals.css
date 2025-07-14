@@ -48,6 +48,22 @@ body {
   0% { filter: brightness(1) saturate(1); }
   100% { filter: brightness(1.1) saturate(1.2) hue-rotate(10deg); }
 }
+
+/* Animations pour le menu mobile */
+@keyframes slide-up {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
 .animate-timer-bg {
   animation: timer-bg 8s linear infinite alternate;
 }
