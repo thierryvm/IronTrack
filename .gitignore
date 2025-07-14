@@ -13,6 +13,10 @@
 
 # Tests et couverture
 /coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
 
 # Fichiers système et logs
 .DS_Store
@@ -44,6 +48,7 @@ migration_*.sql
 kill-dev.bat
 README-DEV.md
 mcp.json
+# Note: scripts/dev-setup.js est partagé avec l'équipe (pas de données sensibles)
 
 # Next.js/TypeScript
 *.tsbuildinfo
@@ -65,3 +70,9 @@ check-*.mjs
 diagnose-*.mjs
 test-*.mjs
 nul
+
+# Fichiers de test et documentation de développement
+TESTS-VALIDATION.md
+SOLUTION-PERSONNALISATION.md
+jest.config.js
+jest.setup.js

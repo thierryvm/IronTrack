@@ -33,7 +33,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">1. Informations légales</h2>
               <div className="bg-orange-50 p-3 sm:p-4 rounded-lg">
-                <p className="font-medium">Éditeur de l'application :</p>
+                <p className="font-medium">Éditeur de l&apos;application :</p>
                 <p>IronTrack - Application de coaching sportif</p>
                 <p>Dernière mise à jour : {new Date().toLocaleDateString('fr-BE')}</p>
               </div>
@@ -43,7 +43,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">2. Responsable du traitement des données</h2>
               <p>
                 Conformément au Règlement Général sur la Protection des Données (RGPD), 
-                l'éditeur de l'application IronTrack est responsable du traitement de vos données personnelles.
+                l&apos;éditeur de l&apos;application IronTrack est responsable du traitement de vos données personnelles.
               </p>
             </section>
 
@@ -51,10 +51,10 @@ export default function PrivacyPolicy() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">3. Données collectées</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900">Données d'inscription :</h3>
+                  <h3 className="font-medium text-gray-900">Données d&apos;inscription :</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>Adresse e-mail</li>
-                    <li>Nom d'utilisateur (pseudo)</li>
+                    <li>Nom d&apos;utilisateur (pseudo)</li>
                     <li>Mot de passe (chiffré)</li>
                   </ul>
                 </div>
@@ -63,13 +63,13 @@ export default function PrivacyPolicy() {
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>Informations de profil (nom, prénom si renseignés)</li>
                     <li>Photo de profil (optionnelle)</li>
-                    <li>Préférences d'entraînement</li>
+                    <li>Préférences d&apos;entraînement</li>
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Données d'activité :</h3>
+                  <h3 className="font-medium text-gray-900">Données d&apos;activité :</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Séances d'entraînement</li>
+                    <li>Séances d&apos;entraînement</li>
                     <li>Exercices réalisés</li>
                     <li>Poids et répétitions</li>
                     <li>Progression et statistiques</li>
@@ -95,9 +95,9 @@ export default function PrivacyPolicy() {
                 Le traitement de vos données personnelles est basé sur :
               </p>
               <ul className="list-disc list-inside space-y-2 mt-2">
-                <li><strong>L'exécution d'un contrat</strong> : pour la fourniture des services</li>
+                <li><strong>L&apos;exécution d&apos;un contrat</strong> : pour la fourniture des services</li>
                 <li><strong>Votre consentement</strong> : pour les données optionnelles</li>
-                <li><strong>L'intérêt légitime</strong> : pour l'amélioration des services</li>
+                <li><strong>L&apos;intérêt légitime</strong> : pour l&apos;amélioration des services</li>
               </ul>
             </section>
 
@@ -105,7 +105,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">6. Durée de conservation</h2>
               <ul className="list-disc list-inside space-y-2">
                 <li>Données de compte : conservées tant que le compte est actif</li>
-                <li>Données d'entraînement : conservées pendant 3 ans après la dernière utilisation</li>
+                <li>Données d&apos;entraînement : conservées pendant 3 ans après la dernière utilisation</li>
                 <li>Données de connexion : conservées 1 an maximum</li>
               </ul>
             </section>
@@ -116,11 +116,11 @@ export default function PrivacyPolicy() {
                 Conformément au RGPD, vous disposez des droits suivants :
               </p>
               <ul className="list-disc list-inside space-y-2">
-                <li><strong>Droit d'accès</strong> : connaître les données traitées</li>
+                <li><strong>Droit d&apos;accès</strong> : connaître les données traitées</li>
                 <li><strong>Droit de rectification</strong> : corriger vos données</li>
-                <li><strong>Droit à l'effacement</strong> : supprimer vos données</li>
+                <li><strong>Droit à l&apos;effacement</strong> : supprimer vos données</li>
                 <li><strong>Droit à la portabilité</strong> : récupérer vos données</li>
-                <li><strong>Droit d'opposition</strong> : vous opposer au traitement</li>
+                <li><strong>Droit d&apos;opposition</strong> : vous opposer au traitement</li>
                 <li><strong>Droit à la limitation</strong> : limiter le traitement</li>
               </ul>
               <p className="mt-4 text-xs sm:text-sm bg-blue-50 p-3 rounded">
@@ -138,7 +138,7 @@ export default function PrivacyPolicy() {
                 <li>Connexions sécurisées (HTTPS)</li>
                 <li>Authentification sécurisée</li>
                 <li>Sauvegardes régulières</li>
-                <li>Contrôles d'accès stricts</li>
+                <li>Contrôles d&apos;accès stricts</li>
               </ul>
             </section>
 
@@ -146,7 +146,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">9. Cookies</h2>
               <p>
                 Notre application utilise des cookies techniques essentiels pour son fonctionnement. 
-                Aucun cookie publicitaire ou de tracking n'est utilisé.
+                Aucun cookie publicitaire ou de tracking n&apos;est utilisé.
               </p>
             </section>
 
@@ -171,7 +171,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">12. Réclamations</h2>
               <p>
-                Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l'Autorité de Protection des Données (APD) en Belgique.
+                Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l&apos;Autorité de Protection des Données (APD) en Belgique.
               </p>
               <div className="bg-blue-50 p-3 sm:p-4 rounded-lg mt-4">
                 <p className="font-medium">Autorité de Protection des Données (APD)</p>

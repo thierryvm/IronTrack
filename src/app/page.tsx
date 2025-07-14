@@ -20,6 +20,8 @@ import { createClient } from '@/utils/supabase/client'
 import Mascot from '@/components/ui/Mascot'
 import { useRouter } from 'next/navigation'
 import { QuickTimer } from '@/components/ui/Timer'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import UserGreeting from '@/components/UserGreeting'
 
 interface UserSound {
   id: string;
@@ -38,6 +40,7 @@ interface ExerciseItem {
 }
 
 export default function HomePage() {
+  const { isLoading: profileLoading } = useUserProfile()
   const [stats, setStats] = useState({
     totalWorkouts: 0,
     thisWeek: 0,
@@ -365,7 +368,7 @@ export default function HomePage() {
   }
 
   // 1. Ajout de skeletons pendant le loading
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -406,18 +409,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl font-bold mb-4">
-              Bonjour Thierry ! 💪
-            </h1>
-            <p className="text-xl text-orange-100">
-              Prêt pour une nouvelle séance de musculation ?
-            </p>
-          </motion.div>
+          <UserGreeting showError={true} />
         </div>
       </div>
 
