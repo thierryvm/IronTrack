@@ -40,6 +40,11 @@ test-supabase.ts
 migration-*.sql
 migration_*.sql
 
+# Scripts et fichiers de développement local
+kill-dev.bat
+README-DEV.md
+mcp.json
+
 # Next.js/TypeScript
 *.tsbuildinfo
 next-env.d.ts
