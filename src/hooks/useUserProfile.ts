@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { useAuth } from './useAuth'
 
 export interface UserProfile {
   id: string
@@ -18,8 +19,9 @@ export interface UseUserProfileReturn {
 }
 
 export function useUserProfile(): UseUserProfileReturn {
+  const { user, isAuthenticated } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const getDisplayName = (profile: UserProfile | null): string => {
@@ -53,11 +55,16 @@ export function useUserProfile(): UseUserProfileReturn {
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
       if (userError) {
-        throw new Error(`Erreur d'authentification: ${userError.message}`)
+        // Si erreur d'auth, pas de log d'erreur - c'est normal si pas connecté
+        console.debug('Utilisateur non connecté:', userError.message)
+        setProfile(null)
+        setError(null) // Ne pas traiter comme une erreur
+        return
       }
       
       if (!user) {
         setProfile(null)
+        setError(null)
         return
       }
 
@@ -96,21 +103,35 @@ export function useUserProfile(): UseUserProfileReturn {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
+      
+      // Si c'est une erreur d'authentification, ne pas la traiter comme erreur fatale
+      if (errorMessage.includes('Auth session missing') || errorMessage.includes('Invalid Refresh Token')) {
+        console.debug('Session expirée ou manquante:', errorMessage)
+        setProfile(null)
+        setError(null)
+        return
+      }
+      
       setError(errorMessage)
       console.error('Erreur useUserProfile:', errorMessage)
       
       // Fallback sécurisé - utiliser les données auth si disponibles
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        setProfile({
-          id: user.id,
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || null,
-          pseudo: user.user_metadata?.name || null,
-          avatar_url: user.user_metadata?.avatar_url || null
-        })
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (user) {
+          setProfile({
+            id: user.id,
+            email: user.email || '',
+            full_name: user.user_metadata?.full_name || null,
+            pseudo: user.user_metadata?.name || null,
+            avatar_url: user.user_metadata?.avatar_url || null
+          })
+        }
+      } catch (fallbackError) {
+        console.debug('Fallback auth check failed:', fallbackError)
+        setProfile(null)
       }
     } finally {
       setIsLoading(false)
@@ -118,8 +139,15 @@ export function useUserProfile(): UseUserProfileReturn {
   }
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    // Ne récupérer le profil que si l'utilisateur est authentifié
+    if (isAuthenticated && user) {
+      fetchProfile()
+    } else {
+      setProfile(null)
+      setError(null)
+      setIsLoading(false)
+    }
+  }, [isAuthenticated, user])
 
   return {
     profile,
