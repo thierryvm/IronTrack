@@ -32,9 +32,21 @@ function AuthContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [rateLimiter] = useState(() => new ClientRateLimiter(5, 15 * 60 * 1000)) // 5 tentatives par 15 min
   const router = useRouter()
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
+  
+  // Déterminer l'URL de redirection basée sur l'environnement actuel
+  const getRedirectUrl = () => {
+    if (typeof window === 'undefined') return process.env.NEXT_PUBLIC_SITE_URL
+    
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    return isLocalhost ? 'http://localhost:3000/' : process.env.NEXT_PUBLIC_SITE_URL
+  };
 
   useEffect(() => {
+    // Debug temporaire pour vérifier la configuration
+    console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
+    console.log('Redirect URL:', process.env.NEXT_PUBLIC_SITE_URL + '/');
+    
     // Gestion des messages d'erreur dans l'URL
     const error = searchParams.get('error');
     if (error === 'invalid_credentials') {
@@ -101,6 +113,7 @@ function AuthContent() {
     setUserEmail(null)
     router.push('/auth') // Toujours rediriger vers la page de connexion
   }
+
 
   // Gestion inscription custom sécurisée
   const handleSignUp = async (e: React.FormEvent) => {
@@ -426,7 +439,9 @@ function AuthContent() {
                 },
               }}
               providers={['google']}
-              redirectTo={process.env.NEXT_PUBLIC_SITE_URL + '/'}
+              redirectTo={getRedirectUrl()}
+              onlyThirdPartyProviders={false}
+              magicLink={false}
               localization={{
                 variables: {
                   sign_in: {
@@ -479,8 +494,12 @@ function AuthContent() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             En continuant, tu acceptes nos{' '}
-            <a href="#" className="text-orange-600 hover:text-orange-700 font-medium">
+            <a href="/legal/terms" className="text-orange-600 hover:text-orange-700 font-medium">
               conditions d&apos;utilisation
+            </a>
+            {' '}et notre{' '}
+            <a href="/legal/privacy" className="text-orange-600 hover:text-orange-700 font-medium">
+              politique de confidentialité
             </a>
           </p>
         </div>
