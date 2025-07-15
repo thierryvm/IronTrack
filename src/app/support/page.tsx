@@ -30,7 +30,7 @@ export default function SupportPage() {
               <h3 className="font-semibold text-gray-900 mb-4">Sections</h3>
               <nav className="space-y-2">
                 {[
-                  { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d\'entraînement' },
+                  { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d&apos;entraînement' },
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
                   { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' }
                 ].map((section) => {
@@ -72,11 +72,11 @@ export default function SupportPage() {
                   <div className="space-y-8">
                     {/* Introduction */}
                     <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Qu'est-ce que Training Partners ?</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Qu&apos;est-ce que Training Partners ?</h3>
                       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
                         <p className="text-blue-800">
-                          <strong>Training Partners</strong> vous permet de vous connecter avec d'autres utilisateurs IronTrack 
-                          pour partager vos séances d'entraînement, vous motiver mutuellement et voir les calendriers de vos partenaires.
+                          <strong>Training Partners</strong> vous permet de vous connecter avec d&apos;autres utilisateurs IronTrack 
+                          pour partager vos séances d&apos;entraînement, vous motiver mutuellement et voir les calendriers de vos partenaires.
                         </p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -88,7 +88,7 @@ export default function SupportPage() {
                         <div className="text-center p-4 bg-gray-50 rounded-lg">
                           <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900">Partager</h4>
-                          <p className="text-sm text-gray-600">Partagez vos séances d'entraînement</p>
+                          <p className="text-sm text-gray-600">Partagez vos séances d&apos;entraînement</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 rounded-lg">
                           <Settings className="h-8 w-8 text-purple-500 mx-auto mb-2" />
@@ -103,8 +103,8 @@ export default function SupportPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">📱 Étape 1 : Accéder à Training Partners</h3>
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                          <li>Dans la navigation principale, cliquez sur <strong>"Partenaires"</strong></li>
-                          <li>Ou allez dans le menu mobile (hamburger) et sélectionnez <strong>"Partenaires"</strong></li>
+                          <li>Dans la navigation principale, cliquez sur <strong>&quot;Partenaires&quot;</strong></li>
+                          <li>Ou allez dans le menu mobile (hamburger) et sélectionnez <strong>&quot;Partenaires&quot;</strong></li>
                           <li>Vous arrivez sur la page Training Partners avec 3 onglets</li>
                         </ol>
                       </div>
@@ -117,19 +117,19 @@ export default function SupportPage() {
                         <div className="border border-gray-200 rounded-lg p-4">
                           <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                             <Search className="h-4 w-4 text-blue-500 mr-2" />
-                            Onglet "Rechercher"
+                            Onglet &quot;Rechercher&quot;
                           </h4>
                           <ol className="list-decimal list-inside space-y-1 text-gray-700 text-sm">
-                            <li>Cliquez sur l'onglet <strong>"Rechercher"</strong></li>
+                            <li>Cliquez sur l&apos;onglet <strong>&quot;Rechercher&quot;</strong></li>
                             <li>Tapez le <strong>pseudo</strong>, <strong>nom</strong> ou <strong>email</strong> de la personne</li>
                             <li>Les résultats apparaissent en temps réel (minimum 2 caractères)</li>
-                            <li>Cliquez sur <strong>"Inviter"</strong> à côté du nom de la personne</li>
-                            <li>L'invitation est envoyée ! 🎉</li>
+                            <li>Cliquez sur <strong>&quot;Inviter&quot;</strong> à côté du nom de la personne</li>
+                            <li>L&apos;invitation est envoyée ! 🎉</li>
                           </ol>
                         </div>
                         <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                           <p className="text-yellow-800 text-sm">
-                            <strong>💡 Astuce :</strong> Si la personne n'apparaît pas, vérifiez qu'elle utilise bien IronTrack et demandez-lui son pseudo exact.
+                            <strong>💡 Astuce :</strong> Si la personne n&apos;apparaît pas, vérifiez qu&apos;elle utilise bien IronTrack et demandez-lui son pseudo exact.
                           </p>
                         </div>
                       </div>
@@ -143,14 +143,14 @@ export default function SupportPage() {
                           <h4 className="font-medium text-green-900 mb-2">Invitations Reçues</h4>
                           <ul className="space-y-1 text-green-800 text-sm">
                             <li>• Vous recevez une notification</li>
-                            <li>• Allez dans l'onglet <strong>"Invitations"</strong></li>
-                            <li>• Cliquez <Check className="h-3 w-3 inline text-green-600" /> <strong>"Accepter"</strong> ou <X className="h-3 w-3 inline text-red-600" /> <strong>"Refuser"</strong></li>
+                            <li>• Allez dans l&apos;onglet <strong>&quot;Invitations&quot;</strong></li>
+                            <li>• Cliquez <Check className="h-3 w-3 inline text-green-600" /> <strong>&quot;Accepter&quot;</strong> ou <X className="h-3 w-3 inline text-red-600" /> <strong>&quot;Refuser&quot;</strong></li>
                           </ul>
                         </div>
                         <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
                           <h4 className="font-medium text-blue-900 mb-2">Invitations Envoyées</h4>
                           <ul className="space-y-1 text-blue-800 text-sm">
-                            <li>• Statut <Clock className="h-3 w-3 inline text-yellow-500" /> <strong>"En attente"</strong></li>
+                            <li>• Statut <Clock className="h-3 w-3 inline text-yellow-500" /> <strong>&quot;En attente&quot;</strong></li>
                             <li>• Vous pouvez annuler avec <X className="h-3 w-3 inline text-red-600" /></li>
                             <li>• Notification quand acceptée</li>
                           </ul>
@@ -165,8 +165,8 @@ export default function SupportPage() {
                         <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
                           <h4 className="font-medium text-orange-900 mb-2">Dans le Calendrier</h4>
                           <ol className="list-decimal list-inside space-y-1 text-orange-800 text-sm">
-                            <li>Allez dans <strong>"Calendrier"</strong></li>
-                            <li>Cliquez sur le bouton <Users className="h-3 w-3 inline text-blue-500" /> <strong>"Partenaires"</strong> en haut</li>
+                            <li>Allez dans <strong>&quot;Calendrier&quot;</strong></li>
+                            <li>Cliquez sur le bouton <Users className="h-3 w-3 inline text-blue-500" /> <strong>&quot;Partenaires&quot;</strong> en haut</li>
                             <li>Les séances de vos partenaires apparaissent avec leurs avatars</li>
                             <li>Distinction visuelle : vos séances vs celles des partenaires</li>
                           </ol>
@@ -184,7 +184,7 @@ export default function SupportPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">⚙️ Étape 5 : Gérer vos Partenaires</h3>
                       <div className="space-y-4">
                         <div className="border border-gray-200 rounded-lg p-4">
-                          <h4 className="font-medium text-gray-900 mb-2">Onglet "Mes Partenaires"</h4>
+                          <h4 className="font-medium text-gray-900 mb-2">Onglet &quot;Mes Partenaires&quot;</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <p className="text-sm text-gray-700 mb-2">Actions disponibles :</p>
@@ -197,7 +197,7 @@ export default function SupportPage() {
                             <div>
                               <p className="text-sm text-gray-700 mb-2">Paramètres de partage :</p>
                               <ul className="space-y-1 text-sm text-gray-600">
-                                <li>• 🏋️ Séances d'entraînement</li>
+                                <li>• 🏋️ Séances d&apos;entraînement</li>
                                 <li>• 🥗 Nutrition (à venir)</li>
                                 <li>• 📈 Progression (à venir)</li>
                               </ul>
@@ -238,26 +238,26 @@ export default function SupportPage() {
                       <div className="space-y-3">
                         <details className="border border-gray-200 rounded-lg">
                           <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                            "Je ne trouve pas mon ami dans la recherche"
+                            &quot;Je ne trouve pas mon ami dans la recherche&quot;
                           </summary>
                           <div className="p-3 pt-0 text-sm text-gray-700">
                             <ul className="space-y-1">
                               <li>• Vérifiez que votre ami utilise bien IronTrack</li>
                               <li>• Demandez-lui son pseudo exact (sensible à la casse)</li>
                               <li>• Essayez avec son email ou nom complet</li>
-                              <li>• Attendez qu'il crée son compte s'il est nouveau</li>
+                              <li>• Attendez qu&apos;il crée son compte s&apos;il est nouveau</li>
                             </ul>
                           </div>
                         </details>
 
                         <details className="border border-gray-200 rounded-lg">
                           <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                            "Je ne vois pas les séances de mes partenaires"
+                            &quot;Je ne vois pas les séances de mes partenaires&quot;
                           </summary>
                           <div className="p-3 pt-0 text-sm text-gray-700">
                             <ul className="space-y-1">
-                              <li>• Vérifiez que le bouton "Partenaires" est activé dans le calendrier</li>
-                              <li>• Assurez-vous que le partenariat est accepté (onglet "Mes Partenaires")</li>
+                              <li>• Vérifiez que le bouton &quot;Partenaires&quot; est activé dans le calendrier</li>
+                              <li>• Assurez-vous que le partenariat est accepté (onglet &quot;Mes Partenaires&quot;)</li>
                               <li>• Votre partenaire doit avoir des séances planifiées</li>
                               <li>• Rafraîchissez la page</li>
                             </ul>
@@ -266,13 +266,13 @@ export default function SupportPage() {
 
                         <details className="border border-gray-200 rounded-lg">
                           <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                            "Mon invitation reste en attente"
+                            &quot;Mon invitation reste en attente&quot;
                           </summary>
                           <div className="p-3 pt-0 text-sm text-gray-700">
                             <ul className="space-y-1">
-                              <li>• Votre ami doit aller dans "Invitations" pour accepter</li>
-                              <li>• Rappelez-lui de vérifier l'onglet "Invitations reçues"</li>
-                              <li>• Vous pouvez annuler et renvoyer l'invitation</li>
+                              <li>• Votre ami doit aller dans &quot;Invitations&quot; pour accepter</li>
+                              <li>• Rappelez-lui de vérifier l&apos;onglet &quot;Invitations reçues&quot;</li>
+                              <li>• Vous pouvez annuler et renvoyer l&apos;invitation</li>
                               <li>• Vérifiez que vous avez le bon utilisateur</li>
                             </ul>
                           </div>
@@ -286,27 +286,27 @@ export default function SupportPage() {
               {/* General Usage */}
               {activeSection === 'general' && (
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Utilisation Générale d'IronTrack</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Utilisation Générale d&apos;IronTrack</h2>
                   <div className="space-y-6">
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">🏋️ Créer une Séance</h3>
-                      <p className="text-gray-700 mb-2">Pour créer une nouvelle séance d'entraînement :</p>
+                      <p className="text-gray-700 mb-2">Pour créer une nouvelle séance d&apos;entraînement :</p>
                       <ol className="list-decimal list-inside space-y-1 text-gray-700">
-                        <li>Allez dans "Séances" ou "Calendrier"</li>
-                        <li>Cliquez sur "Nouvelle séance"</li>
+                        <li>Allez dans &quot;Séances&quot; ou &quot;Calendrier&quot;</li>
+                        <li>Cliquez sur &quot;Nouvelle séance&quot;</li>
                         <li>Remplissez les informations (nom, type, exercices)</li>
-                        <li>Définissez la date et l'heure</li>
+                        <li>Définissez la date et l&apos;heure</li>
                         <li>Sauvegardez</li>
                       </ol>
                     </section>
 
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">📊 Suivre sa Progression</h3>
-                      <p className="text-gray-700 mb-2">Dans la section "Progression" :</p>
+                      <p className="text-gray-700 mb-2">Dans la section &quot;Progression&quot; :</p>
                       <ul className="list-disc list-inside space-y-1 text-gray-700">
-                        <li>Visualisez vos statistiques d'entraînement</li>
+                        <li>Visualisez vos statistiques d&apos;entraînement</li>
                         <li>Suivez votre évolution dans le temps</li>
-                        <li>Analysez vos performances par type d'exercice</li>
+                        <li>Analysez vos performances par type d&apos;exercice</li>
                       </ul>
                     </section>
 
@@ -327,7 +327,7 @@ export default function SupportPage() {
                   <div className="space-y-6">
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">👤 Modifier votre Profil</h3>
-                      <p className="text-gray-700 mb-2">Dans la page "Profil" :</p>
+                      <p className="text-gray-700 mb-2">Dans la page &quot;Profil&quot; :</p>
                       <ul className="list-disc list-inside space-y-1 text-gray-700">
                         <li>Changez votre photo de profil</li>
                         <li>Modifiez vos informations personnelles</li>
@@ -353,7 +353,7 @@ export default function SupportPage() {
                         <li>Thème sombre/clair</li>
                         <li>Notifications</li>
                         <li>Langue (français par défaut)</li>
-                        <li>Préférences d'entraînement</li>
+                        <li>Préférences d&apos;entraînement</li>
                       </ul>
                     </section>
                   </div>

@@ -78,3 +78,4 @@ jest.config.js
 jest.setup.js
 test-*.js
 debug-*.js
+kill-dev.bat

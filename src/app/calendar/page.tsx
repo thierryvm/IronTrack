@@ -258,7 +258,7 @@ export default function CalendarPage() {
   }
 
   // Ajout d'une fonction pour récupérer les créneaux partagés d'une date
-  const getSharedForDate = (_date: Date) => {
+  const getSharedForDate = () => {
     return [];
   }
 

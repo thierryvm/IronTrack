@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 
 export async function authenticateRequestCookies() {
