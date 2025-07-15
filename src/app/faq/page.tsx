@@ -291,7 +291,7 @@ export default function FAQPage() {
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Vous ne trouvez pas votre réponse ?</h3>
             <p className="text-purple-100 mb-4">
-              Consultez notre guide complet ou contactez-nous pour obtenir de l'aide personnalisée
+              Consultez notre guide complet ou contactez-nous pour obtenir de l&apos;aide personnalisée
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 

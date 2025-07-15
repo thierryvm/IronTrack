@@ -272,7 +272,7 @@ export default function TrainingPartnersPage() {
                 <div className="flex-1">
                   <h2 className="text-xl font-bold mb-2">🎉 Bienvenue dans Training Partners !</h2>
                   <p className="text-blue-100 mb-4">
-                    Nouveauté ! Connectez-vous avec vos amis pour partager vos séances d'entraînement 
+                    Nouveauté ! Connectez-vous avec vos amis pour partager vos séances d&apos;entraînement 
                     et vous motiver mutuellement. Plus besoin de partage public, tout est privé et sécurisé.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
