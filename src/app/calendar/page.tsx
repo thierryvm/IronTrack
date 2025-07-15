@@ -112,7 +112,7 @@ export default function CalendarPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [partnersWorkouts, setPartnersWorkouts] = useState<Workout[]>([])
   const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
-  const [sharePlanning, setSharePlanning] = useState(false)
+  const [, setSharePlanning] = useState(false)
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
