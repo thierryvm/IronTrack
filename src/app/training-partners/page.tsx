@@ -46,13 +46,6 @@ export default function TrainingPartnersPage() {
     return false
   })
 
-  useEffect(() => {
-    console.log('Training Partners - isAuthenticated:', isAuthenticated, 'user:', user)
-    if (isAuthenticated) {
-      loadPartnerships()
-    }
-  }, [isAuthenticated, user, loadPartnerships])
-
   const loadPartnerships = useCallback(async () => {
     if (!isAuthenticated || !user) return
     
@@ -86,6 +79,13 @@ export default function TrainingPartnersPage() {
       setLoading(false)
     }
   }, [isAuthenticated, user])
+
+  useEffect(() => {
+    console.log('Training Partners - isAuthenticated:', isAuthenticated, 'user:', user)
+    if (isAuthenticated) {
+      loadPartnerships()
+    }
+  }, [isAuthenticated, user, loadPartnerships])
 
   const searchUsers = async () => {
     if (searchQuery.length < 2) {
