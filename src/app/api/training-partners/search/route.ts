@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/auth-api'
 import { authenticateRequestCookies } from '@/utils/auth-api-cookies'
 
+// Type pour le rate limiter global
+declare global {
+  var searchLimiter: Map<string, number[]> | undefined
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Essayer d'abord l'auth par token Bearer
@@ -10,7 +15,7 @@ export async function GET(request: NextRequest) {
     // Si ça échoue, essayer l'auth par cookies
     if (authResult.error) {
       console.log('Bearer auth failed, trying cookies...')
-      authResult = await authenticateRequestCookies(request)
+      authResult = await authenticateRequestCookies()
     }
     
     const { user, error: authError, supabase } = authResult

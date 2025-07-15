@@ -39,6 +39,16 @@ interface Workout {
   updated_at?: string
 }
 
+interface WorkoutWithProfile extends Workout {
+  profiles?: {
+    id: string
+    pseudo: string | null
+    full_name: string | null
+    email: string
+    avatar_url: string | null
+  }
+}
+
 const workoutTypes = [
   { name: 'Musculation', color: 'bg-orange-500', icon: Dumbbell },
   { name: 'Cardio', color: 'bg-blue-500', icon: Clock },
@@ -110,7 +120,7 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [partnersWorkouts, setPartnersWorkouts] = useState<Workout[]>([])
+  const [partnersWorkouts, setPartnersWorkouts] = useState<WorkoutWithProfile[]>([])
   const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
   const [, setSharePlanning] = useState(false)
 
@@ -254,10 +264,6 @@ export default function CalendarPage() {
     return workouts.filter(workout => toDDMMYYYY(workout.scheduled_date) === selected);
   }
 
-  // Ajout d'une fonction pour récupérer les créneaux partagés d'une date
-  const getSharedForDate = () => {
-    return [];
-  }
 
 
   const getTypeColor = (type: string) => {
@@ -476,7 +482,7 @@ export default function CalendarPage() {
                         name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
                         avatarUrl: partner?.avatar_url || '/default-avatar.png',
                       };
-                      const correctedType = getCorrectType(pw as Workout);
+                      const correctedType = getCorrectType(pw);
                       return {
                         id: `partner-${pw.id}`,
                         name: pw.name,
@@ -533,30 +539,8 @@ export default function CalendarPage() {
                 <div className="space-y-3">
                   {(() => {
                     let sessions: CalendarSession[] = [];
-                    // Training Partners view will be added here
-                    if (false) {
-                      sessions = getSharedForDate(selectedDate).map(sw => {
-                        const correctedType = getCorrectType(sw as Workout);
-                        return {
-                        id: `shared-${String(sw.id)}`,
-                        name: sw.name,
-                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                        status: sw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
-                        duration: undefined,
-                        isShared: true,
-                        participants: [
-                          {
-                            id: sw.user_id || sw.profiles?.id || '',
-                            name: sw.profiles?.pseudo || sw.profiles?.full_name || (sw.profiles?.email && sw.profiles.email.split('@')[0]) || '',
-                            avatarUrl: sw.profiles?.avatar_url || '/window.svg',
-                          }
-                        ],
-                        time: sw.start_time || '',
-                        exercises: [],
-                        scheduled_date: sw.scheduled_date
-                      };
-                      });
-                    } else {
+                    // Training Partners view will be added here (removed dead code)
+                    {
                       sessions = getWorkoutsForDate(selectedDate).map(workout => ({
                         id: `perso-${String(workout.id)}`,
                         name: workout.name,
