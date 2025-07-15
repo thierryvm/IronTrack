@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 
-export async function authenticateRequestCookies(_request: NextRequest) {
+export async function authenticateRequestCookies() {
   try {
     console.log('Trying cookie-based auth...')
     
