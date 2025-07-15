@@ -112,7 +112,7 @@ export default function CalendarPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [partnersWorkouts, setPartnersWorkouts] = useState<Workout[]>([])
   const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
-  const [sharePlanning] = useState(false)
+  // const [sharePlanning] = useState(false)
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
@@ -258,8 +258,7 @@ export default function CalendarPage() {
   }
 
   // Ajout d'une fonction pour récupérer les créneaux partagés d'une date
-  const getSharedForDate = (date: Date) => {
-    const dateStr = toDDMMYYYY(date);
+  const getSharedForDate = (_date: Date) => {
     return [];
   }
 

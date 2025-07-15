@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Users, UserPlus, Search, Check, X, Clock, Trash2, Settings, MessageCircle, Info } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
@@ -53,7 +53,7 @@ export default function TrainingPartnersPage() {
     }
   }, [isAuthenticated, user, loadPartnerships])
 
-  const loadPartnerships = async () => {
+  const loadPartnerships = useCallback(async () => {
     if (!isAuthenticated || !user) return
     
     setLoading(true)
@@ -85,7 +85,7 @@ export default function TrainingPartnersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isAuthenticated, user])
 
   const searchUsers = async () => {
     if (searchQuery.length < 2) {
