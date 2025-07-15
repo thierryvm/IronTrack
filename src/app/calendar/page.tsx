@@ -112,7 +112,7 @@ export default function CalendarPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [partnersWorkouts, setPartnersWorkouts] = useState<Workout[]>([])
   const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
-  // const [sharePlanning] = useState(false)
+  const [sharePlanning, setSharePlanning] = useState(false)
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
@@ -209,12 +209,9 @@ export default function CalendarPage() {
       const shareEnabled = !!settings?.share_planning;
       setSharePlanning(shareEnabled);
       
-      // Charger les données initiales selon le paramètre de partage
-      if (shareEnabled) {
-      } else {
-        loadWorkouts();
-        loadPartnersWorkouts();
-      }
+      // Charger les données initiales
+      loadWorkouts();
+      loadPartnersWorkouts();
     };
     fetchProfile();
   }, [router, loadWorkouts, loadPartnersWorkouts])
@@ -360,15 +357,35 @@ export default function CalendarPage() {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setShowPartnersWorkouts(!showPartnersWorkouts)}
+                onClick={() => {
+                  if (partnersWorkouts.length === 0) {
+                    router.push('/training-partners');
+                  } else {
+                    setShowPartnersWorkouts(!showPartnersWorkouts);
+                  }
+                }}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
                   showPartnersWorkouts 
                     ? 'bg-white/20 text-white border border-white/30' 
                     : 'bg-white/10 text-orange-100 hover:bg-white/20'
                 }`}
+                title={
+                  partnersWorkouts.length === 0 
+                    ? 'Gérer mes partenaires d\'entraînement' 
+                    : (showPartnersWorkouts ? 'Masquer les séances des partenaires' : 'Afficher les séances des partenaires')
+                }
               >
                 <Users className="h-4 w-4" />
                 <span>Partenaires</span>
+                {partnersWorkouts.length > 0 ? (
+                  <span className="bg-white/20 text-white rounded-full px-2 py-0.5 text-xs">
+                    {partnersWorkouts.length}
+                  </span>
+                ) : (
+                  <span className="bg-white/20 text-white rounded-full px-2 py-0.5 text-xs">
+                    +
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => router.push('/workouts/new')}
