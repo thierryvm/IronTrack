@@ -56,13 +56,22 @@ export async function PATCH(
           }
         ]
         
-        const { error: settingsError } = await supabase
-          .from('partner_sharing_settings')
-          .insert(sharingSettings)
-        
-        if (settingsError) {
-          console.error('Erreur création paramètres partage:', settingsError)
-          // Ne pas faire échouer l'acceptation si la création des paramètres échoue
+        // Essayer de créer les paramètres de partage avec gestion d'erreur robuste
+        try {
+          const { error: settingsError } = await supabase
+            .from('partner_sharing_settings')
+            .upsert(sharingSettings, {
+              onConflict: 'user_id,partner_id'
+            })
+          
+          if (settingsError) {
+            console.error('Erreur création paramètres partage:', settingsError)
+            console.error('Détails erreur:', JSON.stringify(settingsError, null, 2))
+            // Ne pas faire échouer l'acceptation si la création des paramètres échoue
+          }
+        } catch (tableError) {
+          console.error('Table partner_sharing_settings inaccessible:', tableError)
+          // Continuer sans les paramètres de partage si la table n'existe pas
         }
         break
 
