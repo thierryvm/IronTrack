@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Users, UserPlus, Search, Check, X, Clock, Trash2, Settings, MessageCircle, Info } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
@@ -44,6 +44,11 @@ export default function TrainingPartnersPage() {
     type: 'success' | 'error' | 'warning' | 'info'
     suggestion?: string
   } | null>(null)
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastAuthStateRef = useRef<{ isAuthenticated: boolean; userId: string | null }>({
+    isAuthenticated: false,
+    userId: null
+  })
   const [showWelcome, setShowWelcome] = useState(() => {
     if (typeof window !== 'undefined') {
       return !localStorage.getItem('training-partners-welcome-seen')
@@ -86,9 +91,39 @@ export default function TrainingPartnersPage() {
   }, [isAuthenticated, user])
 
   useEffect(() => {
-    console.log('Training Partners - isAuthenticated:', isAuthenticated, 'user:', user)
-    if (isAuthenticated && user) {
-      loadPartnerships()
+    const currentUserId = user?.id || null
+    const authStateChanged = 
+      lastAuthStateRef.current.isAuthenticated !== isAuthenticated ||
+      lastAuthStateRef.current.userId !== currentUserId
+
+    if (authStateChanged) {
+      console.log('Training Partners - Auth state changed:', {
+        isAuthenticated,
+        userId: currentUserId,
+        previous: lastAuthStateRef.current
+      })
+      
+      lastAuthStateRef.current = {
+        isAuthenticated,
+        userId: currentUserId
+      }
+
+      // Débouncer le chargement pour éviter les appels multiples
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+
+      if (isAuthenticated && user) {
+        loadingTimeoutRef.current = setTimeout(() => {
+          loadPartnerships()
+        }, 100)
+      }
+    }
+
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
     }
   }, [isAuthenticated, user, loadPartnerships])
 
