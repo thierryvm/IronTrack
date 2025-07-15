@@ -39,6 +39,11 @@ export default function TrainingPartnersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
+  const [notification, setNotification] = useState<{
+    message: string
+    type: 'success' | 'error' | 'warning' | 'info'
+    suggestion?: string
+  } | null>(null)
   const [showWelcome, setShowWelcome] = useState(() => {
     if (typeof window !== 'undefined') {
       return !localStorage.getItem('training-partners-welcome-seen')
@@ -82,7 +87,7 @@ export default function TrainingPartnersPage() {
 
   useEffect(() => {
     console.log('Training Partners - isAuthenticated:', isAuthenticated, 'user:', user)
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       loadPartnerships()
     }
   }, [isAuthenticated, user, loadPartnerships])
@@ -116,14 +121,14 @@ export default function TrainingPartnersPage() {
       } else if (response.status === 409) {
         // Gérer les doublons de pseudo
         const error = await response.json()
-        alert(`⚠️ ${error.error}\n\n💡 ${error.suggestion}`)
+        showNotification(error.error, 'warning', error.suggestion)
         setSearchResults([])
       } else if (response.status === 429) {
-        alert('🚫 Trop de recherches. Attendez 1 minute.')
+        showNotification('Trop de recherches. Attendez 1 minute.', 'warning')
         setSearchResults([])
       } else {
         const error = await response.json()
-        alert(`❌ ${error.error}`)
+        showNotification(error.error, 'error')
         setSearchResults([])
       }
     } catch (error) {
@@ -139,7 +144,7 @@ export default function TrainingPartnersPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        alert('Session expirée, veuillez vous reconnecter')
+        showNotification('Session expirée, veuillez vous reconnecter', 'error')
         return
       }
 
@@ -159,14 +164,14 @@ export default function TrainingPartnersPage() {
       if (response.ok) {
         await loadPartnerships()
         await searchUsers() // Refresh search results
-        alert('Invitation envoyée !')
+        showNotification('Invitation envoyée !', 'success')
       } else {
         const error = await response.json()
-        alert(error.error || 'Erreur lors de l\'envoi de l\'invitation')
+        showNotification(error.error || 'Erreur lors de l\'envoi de l\'invitation', 'error')
       }
     } catch (error) {
       console.error('Erreur envoi invitation:', error)
-      alert('Erreur lors de l\'envoi de l\'invitation')
+      showNotification('Erreur lors de l\'envoi de l\'invitation', 'error')
     }
   }
 
@@ -176,7 +181,7 @@ export default function TrainingPartnersPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        alert('Session expirée, veuillez vous reconnecter')
+        showNotification('Session expirée, veuillez vous reconnecter', 'error')
         return
       }
 
@@ -198,14 +203,14 @@ export default function TrainingPartnersPage() {
           remove: 'Partenariat supprimé',
           block: 'Utilisateur bloqué'
         }
-        alert(actionMessages[action] || 'Action effectuée')
+        showNotification(actionMessages[action] || 'Action effectuée', 'success')
       } else {
         const error = await response.json()
-        alert(error.error || 'Erreur lors de l\'action')
+        showNotification(error.error || 'Erreur lors de l\'action', 'error')
       }
     } catch (error) {
       console.error('Erreur action partenariat:', error)
-      alert('Erreur lors de l\'action')
+      showNotification('Erreur lors de l\'action', 'error')
     }
   }
 
@@ -216,6 +221,11 @@ export default function TrainingPartnersPage() {
   const closeWelcome = () => {
     setShowWelcome(false)
     localStorage.setItem('training-partners-welcome-seen', 'true')
+  }
+
+  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info', suggestion?: string) => {
+    setNotification({ message, type, suggestion })
+    setTimeout(() => setNotification(null), 5000)
   }
 
   const acceptedPartnerships = partnerships.filter(p => p.status === 'accepted')
@@ -260,6 +270,33 @@ export default function TrainingPartnersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2">
+          <div className={`rounded-lg p-4 shadow-lg max-w-md ${
+            notification.type === 'success' ? 'bg-green-500 text-white' :
+            notification.type === 'error' ? 'bg-red-500 text-white' :
+            notification.type === 'warning' ? 'bg-yellow-500 text-white' :
+            'bg-blue-500 text-white'
+          }`}>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="font-medium">{notification.message}</p>
+                {notification.suggestion && (
+                  <p className="text-sm mt-1 opacity-90">{notification.suggestion}</p>
+                )}
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="ml-4 text-white hover:text-gray-200 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto px-4">
         {/* Welcome Message */}
         {showWelcome && (
