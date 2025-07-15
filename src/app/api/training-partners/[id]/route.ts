@@ -3,7 +3,7 @@ import { authenticateRequest } from '@/utils/auth-api'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, error: authError, supabase } = await authenticateRequest(request)
@@ -14,7 +14,8 @@ export async function PATCH(
 
     const body = await request.json()
     const { action } = body
-    const partnershipId = params.id
+    const resolvedParams = await params
+    const partnershipId = resolvedParams.id
 
     // Vérifier que l'utilisateur fait partie de ce partenariat
     const { data: partnership, error: fetchError } = await supabase
