@@ -215,7 +215,6 @@ export default function ProfilePage() {
   // Ajout d'une ref pour la section mascotte
   const mascotSectionRef = useRef<HTMLDivElement>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [sharePlanning, setSharePlanning] = useState(false);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   // useEffect pour la mascotte (OK)
@@ -275,24 +274,6 @@ export default function ProfilePage() {
     fetchNotifPref();
   }, []);
 
-  // useEffect pour charger la préférence de partage de planning (OK)
-  useEffect(() => {
-    const fetchSharePlanning = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      try {
-        const res = await supabase.from('user_settings').select('share_planning').eq('user_id', user.id).single();
-        if (!res.data) {
-          await supabase.from('user_settings').upsert([{ user_id: user.id }], { onConflict: 'user_id' });
-        }
-        if (res.data && res.data.share_planning) setSharePlanning(true);
-      } catch (err) {
-        console.error('[user_settings] fetchSharePlanning error:', err);
-      }
-    };
-    fetchSharePlanning();
-  }, []);
 
   // useEffect pour la redirection si non connecté (OK)
   useEffect(() => {
@@ -509,9 +490,9 @@ export default function ProfilePage() {
   // Handler : Changer avatar
   const handleChangeAvatar = () => setShowAvatarModal(true);
   // Handler : Support
-  const handleSupport = () => window.open('https://irontrack-support.example.com', '_blank');
+  const handleSupport = () => router.push('/support');
   // Handler : FAQ
-  const handleFAQ = () => window.open('https://irontrack-faq.example.com', '_blank');
+  const handleFAQ = () => router.push('/faq');
 
   // Ajoute une fonction utilitaire pour détecter HEIC/HEIF
   function isHeic(file: File) {
@@ -766,22 +747,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleToggleSharePlanning = async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    try {
-      const newValue = !sharePlanning;
-      setSharePlanning(newValue);
-      await supabase.from('user_settings').upsert(
-        [{ user_id: user.id, share_planning: newValue }],
-        { onConflict: 'user_id' }
-      );
-      alert('Préférence de partage sauvegardée !');
-    } catch (err) {
-      console.error('[user_settings] handleToggleSharePlanning error:', err);
-    }
-  };
 
 
   if (loading) {
@@ -1217,20 +1182,6 @@ export default function ProfilePage() {
                     type="button"
                   >
                     <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
-                  </button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">Partager mon planning d&apos;entraînement</p>
-                    <p className="text-sm text-gray-600">Permet à d&apos;autres membres de voir tes créneaux pour s&apos;entraîner ensemble (option désactivable à tout moment).</p>
-                  </div>
-                  <button
-                    className={`w-12 h-6 rounded-full relative transition-colors ${sharePlanning ? 'bg-orange-500' : 'bg-gray-300'}`}
-                    onClick={handleToggleSharePlanning}
-                    aria-pressed={sharePlanning}
-                    type="button"
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${sharePlanning ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
               </div>
