@@ -37,32 +37,6 @@ export async function PATCH(
           return NextResponse.json({ error: 'Seul le partenaire peut accepter' }, { status: 403 })
         }
         updateData.status = 'accepted'
-        
-        // Créer les paramètres de partage par défaut pour les deux utilisateurs
-        const sharingSettings = [
-          {
-            user_id: partnership.requester_id,
-            partner_id: partnership.partner_id,
-            share_workouts: false,
-            share_nutrition: false,
-            share_progress: false
-          },
-          {
-            user_id: partnership.partner_id,
-            partner_id: partnership.requester_id,
-            share_workouts: false,
-            share_nutrition: false,
-            share_progress: false
-          }
-        ]
-        
-        const { error: settingsError } = await supabase
-          .from('partner_sharing_settings')
-          .insert(sharingSettings)
-        
-        if (settingsError) {
-          console.error('Erreur création paramètres partage:', settingsError)
-        }
         break
 
       case 'decline':
@@ -104,11 +78,7 @@ export async function PATCH(
             return NextResponse.json({ error: deleteError.message }, { status: 500 })
           }
 
-          // Supprimer aussi les paramètres de partage
-          await supabase
-            .from('partner_sharing_settings')
-            .delete()
-            .or(`and(user_id.eq.${partnership.requester_id},partner_id.eq.${partnership.partner_id}),and(user_id.eq.${partnership.partner_id},partner_id.eq.${partnership.requester_id})`)
+          // Note: Suppression des paramètres de partage désactivée car table non créée
 
           return NextResponse.json({ message: 'Partenariat supprimé' })
         }
