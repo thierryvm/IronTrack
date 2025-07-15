@@ -18,7 +18,7 @@ interface Partnership {
   id: string
   requester_id: string
   partner_id: string
-  status: &apos;pending&apos; | &apos;accepted&apos; | &apos;declined&apos; | &apos;blocked&apos;
+  status: 'pending' | 'accepted' | 'declined' | 'blocked'
   message: string | null
   created_at: string
   requester: Profile
@@ -33,21 +33,21 @@ interface SearchUser extends Profile {
 export default function TrainingPartnersPage() {
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<&apos;partners&apos; | &apos;invitations&apos; | &apos;search&apos;>(&apos;partners&apos;)
+  const [activeTab, setActiveTab] = useState<'partners' | 'invitations' | 'search'>('partners')
   const [partnerships, setPartnerships] = useState<Partnership[]>([])
   const [searchResults, setSearchResults] = useState<SearchUser[]>([])
-  const [searchQuery, setSearchQuery] = useState(&apos;&apos;)
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
   const [showWelcome, setShowWelcome] = useState(() => {
-    if (typeof window !== &apos;undefined&apos;) {
-      return !localStorage.getItem(&apos;training-partners-welcome-seen&apos;)
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('training-partners-welcome-seen')
     }
     return false
   })
 
   useEffect(() => {
-    console.log(&apos;Training Partners - isAuthenticated:&apos;, isAuthenticated, &apos;user:&apos;, user)
+    console.log('Training Partners - isAuthenticated:', isAuthenticated, 'user:', user)
     if (isAuthenticated) {
       loadPartnerships()
     }
@@ -58,19 +58,19 @@ export default function TrainingPartnersPage() {
     
     setLoading(true)
     try {
-      // Récupérer le token d&apos;authentification pour l&apos;API
+      // Récupérer le token d'authentification pour l'API
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        console.error(&apos;Pas de session active&apos;)
+        console.error('Pas de session active')
         return
       }
 
-      const response = await fetch(&apos;/api/training-partners&apos;, {
+      const response = await fetch('/api/training-partners', {
         headers: {
-          &apos;Authorization&apos;: `Bearer ${session.access_token}`,
-          &apos;Content-Type&apos;: &apos;application/json&apos;
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
         }
       })
       
@@ -78,10 +78,10 @@ export default function TrainingPartnersPage() {
         const data = await response.json()
         setPartnerships(data.partnerships || [])
       } else {
-        console.error(&apos;Erreur API:&apos;, response.status, response.statusText)
+        console.error('Erreur API:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error(&apos;Erreur chargement partenaires:&apos;, error)
+      console.error('Erreur chargement partenaires:', error)
     } finally {
       setLoading(false)
     }
@@ -99,14 +99,14 @@ export default function TrainingPartnersPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        console.error(&apos;Pas de session active pour la recherche&apos;)
+        console.error('Pas de session active pour la recherche')
         return
       }
 
       const response = await fetch(`/api/training-partners/search?q=${encodeURIComponent(searchQuery)}`, {
         headers: {
-          &apos;Authorization&apos;: `Bearer ${session.access_token}`,
-          &apos;Content-Type&apos;: &apos;application/json&apos;
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
         }
       })
       
@@ -119,7 +119,7 @@ export default function TrainingPartnersPage() {
         alert(`⚠️ ${error.error}\n\n💡 ${error.suggestion}`)
         setSearchResults([])
       } else if (response.status === 429) {
-        alert(&apos;🚫 Trop de recherches. Attendez 1 minute.&apos;)
+        alert('🚫 Trop de recherches. Attendez 1 minute.')
         setSearchResults([])
       } else {
         const error = await response.json()
@@ -127,7 +127,7 @@ export default function TrainingPartnersPage() {
         setSearchResults([])
       }
     } catch (error) {
-      console.error(&apos;Erreur recherche utilisateurs:&apos;, error)
+      console.error('Erreur recherche utilisateurs:', error)
     } finally {
       setSearchLoading(false)
     }
@@ -139,18 +139,18 @@ export default function TrainingPartnersPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        alert(&apos;Session expirée, veuillez vous reconnecter&apos;)
+        alert('Session expirée, veuillez vous reconnecter')
         return
       }
 
-      const response = await fetch(&apos;/api/training-partners&apos;, {
-        method: &apos;POST&apos;,
+      const response = await fetch('/api/training-partners', {
+        method: 'POST',
         headers: { 
-          &apos;Content-Type&apos;: &apos;application/json&apos;,
-          &apos;Authorization&apos;: `Bearer ${session.access_token}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          action: &apos;invite&apos;,
+          action: 'invite',
           partnerId,
           message
         })
@@ -159,14 +159,14 @@ export default function TrainingPartnersPage() {
       if (response.ok) {
         await loadPartnerships()
         await searchUsers() // Refresh search results
-        alert(&apos;Invitation envoyée !&apos;)
+        alert('Invitation envoyée !')
       } else {
         const error = await response.json()
-        alert(error.error || &apos;Erreur lors de l\&apos;envoi de l\&apos;invitation&apos;)
+        alert(error.error || 'Erreur lors de l\'envoi de l\'invitation')
       }
     } catch (error) {
-      console.error(&apos;Erreur envoi invitation:&apos;, error)
-      alert(&apos;Erreur lors de l\&apos;envoi de l\&apos;invitation&apos;)
+      console.error('Erreur envoi invitation:', error)
+      alert('Erreur lors de l\'envoi de l\'invitation')
     }
   }
 
@@ -176,15 +176,15 @@ export default function TrainingPartnersPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        alert(&apos;Session expirée, veuillez vous reconnecter&apos;)
+        alert('Session expirée, veuillez vous reconnecter')
         return
       }
 
       const response = await fetch(`/api/training-partners/${partnershipId}`, {
-        method: &apos;PATCH&apos;,
+        method: 'PATCH',
         headers: { 
-          &apos;Content-Type&apos;: &apos;application/json&apos;,
-          &apos;Authorization&apos;: `Bearer ${session.access_token}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ action })
       })
@@ -192,38 +192,38 @@ export default function TrainingPartnersPage() {
       if (response.ok) {
         await loadPartnerships()
         const actionMessages: Record<string, string> = {
-          accept: &apos;Invitation acceptée !&apos;,
-          decline: &apos;Invitation refusée&apos;,
-          cancel: &apos;Invitation annulée&apos;,
-          remove: &apos;Partenariat supprimé&apos;,
-          block: &apos;Utilisateur bloqué&apos;
+          accept: 'Invitation acceptée !',
+          decline: 'Invitation refusée',
+          cancel: 'Invitation annulée',
+          remove: 'Partenariat supprimé',
+          block: 'Utilisateur bloqué'
         }
-        alert(actionMessages[action] || &apos;Action effectuée&apos;)
+        alert(actionMessages[action] || 'Action effectuée')
       } else {
         const error = await response.json()
-        alert(error.error || &apos;Erreur lors de l\&apos;action&apos;)
+        alert(error.error || 'Erreur lors de l\'action')
       }
     } catch (error) {
-      console.error(&apos;Erreur action partenariat:&apos;, error)
-      alert(&apos;Erreur lors de l\&apos;action&apos;)
+      console.error('Erreur action partenariat:', error)
+      alert('Erreur lors de l\'action')
     }
   }
 
   const getDisplayName = (profile: Profile) => {
-    return profile.pseudo || profile.full_name || profile.email?.split(&apos;@&apos;)[0] || &apos;Utilisateur&apos;
+    return profile.pseudo || profile.full_name || profile.email?.split('@')[0] || 'Utilisateur'
   }
 
   const closeWelcome = () => {
     setShowWelcome(false)
-    localStorage.setItem(&apos;training-partners-welcome-seen&apos;, &apos;true&apos;)
+    localStorage.setItem('training-partners-welcome-seen', 'true')
   }
 
-  const acceptedPartnerships = partnerships.filter(p => p.status === &apos;accepted&apos;)
+  const acceptedPartnerships = partnerships.filter(p => p.status === 'accepted')
   const pendingInvitations = partnerships.filter(p => 
-    p.status === &apos;pending&apos; && p.partner_id === user?.id
+    p.status === 'pending' && p.partner_id === user?.id
   )
   const sentInvitations = partnerships.filter(p => 
-    p.status === &apos;pending&apos; && p.requester_id === user?.id
+    p.status === 'pending' && p.requester_id === user?.id
   )
 
   // Affichage du loading
@@ -247,7 +247,7 @@ export default function TrainingPartnersPage() {
               Connectez-vous pour partager vos entraînements avec vos partenaires !
             </p>
             <button
-              onClick={() => router.push(&apos;/auth&apos;)}
+              onClick={() => router.push('/auth')}
               className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
             >
               Se connecter
@@ -272,7 +272,7 @@ export default function TrainingPartnersPage() {
                 <div className="flex-1">
                   <h2 className="text-xl font-bold mb-2">🎉 Bienvenue dans Training Partners !</h2>
                   <p className="text-blue-100 mb-4">
-                    Nouveauté ! Connectez-vous avec vos amis pour partager vos séances d&apos;entraînement 
+                    Nouveauté ! Connectez-vous avec vos amis pour partager vos séances d'entraînement 
                     et vous motiver mutuellement. Plus besoin de partage public, tout est privé et sécurisé.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -297,7 +297,7 @@ export default function TrainingPartnersPage() {
                       Guide complet
                     </a>
                     <button
-                      onClick={() => setActiveTab(&apos;search&apos;)}
+                      onClick={() => setActiveTab('search')}
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                     >
                       Commencer
@@ -333,17 +333,17 @@ export default function TrainingPartnersPage() {
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6">
               {[
-                { id: &apos;partners&apos;, label: &apos;Mes Partenaires&apos;, count: acceptedPartnerships.length },
-                { id: &apos;invitations&apos;, label: &apos;Invitations&apos;, count: pendingInvitations.length },
-                { id: &apos;search&apos;, label: &apos;Rechercher&apos; }
+                { id: 'partners', label: 'Mes Partenaires', count: acceptedPartnerships.length },
+                { id: 'invitations', label: 'Invitations', count: pendingInvitations.length },
+                { id: 'search', label: 'Rechercher' }
               ].map((tab: { id: string; label: string; count?: number }) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as &apos;partners&apos; | &apos;invitations&apos; | &apos;search&apos;)}
+                  onClick={() => setActiveTab(tab.id as 'partners' | 'invitations' | 'search')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? &apos;border-orange-500 text-orange-600&apos;
-                      : &apos;border-transparent text-gray-500 hover:text-gray-700&apos;
+                      ? 'border-orange-500 text-orange-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   {tab.label}
@@ -359,7 +359,7 @@ export default function TrainingPartnersPage() {
 
           <div className="p-6">
             {/* Onglet Partenaires */}
-            {activeTab === &apos;partners&apos; && (
+            {activeTab === 'partners' && (
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Partenaires Actifs ({acceptedPartnerships.length})
@@ -369,7 +369,7 @@ export default function TrainingPartnersPage() {
                     <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-500 mb-4">Aucun partenaire pour le moment</p>
                     <button
-                      onClick={() => setActiveTab(&apos;search&apos;)}
+                      onClick={() => setActiveTab('search')}
                       className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
                     >
                       Rechercher des partenaires
@@ -405,7 +405,7 @@ export default function TrainingPartnersPage() {
                               <Settings className="h-5 w-5" />
                             </button>
                             <button
-                              onClick={() => handlePartnership(partnership.id, &apos;remove&apos;)}
+                              onClick={() => handlePartnership(partnership.id, 'remove')}
                               className="p-2 text-red-400 hover:text-red-600 transition-colors"
                               title="Supprimer le partenariat"
                             >
@@ -421,7 +421,7 @@ export default function TrainingPartnersPage() {
             )}
 
             {/* Onglet Invitations */}
-            {activeTab === &apos;invitations&apos; && (
+            {activeTab === 'invitations' && (
               <div>
                 {/* Invitations reçues */}
                 <div className="mb-8">
@@ -457,14 +457,14 @@ export default function TrainingPartnersPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <button
-                                onClick={() => handlePartnership(invitation.id, &apos;accept&apos;)}
+                                onClick={() => handlePartnership(invitation.id, 'accept')}
                                 className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors flex items-center space-x-1"
                               >
                                 <Check className="h-4 w-4" />
                                 <span>Accepter</span>
                               </button>
                               <button
-                                onClick={() => handlePartnership(invitation.id, &apos;decline&apos;)}
+                                onClick={() => handlePartnership(invitation.id, 'decline')}
                                 className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors flex items-center space-x-1"
                               >
                                 <X className="h-4 w-4" />
@@ -507,9 +507,9 @@ export default function TrainingPartnersPage() {
                               </div>
                             </div>
                             <button
-                              onClick={() => handlePartnership(invitation.id, &apos;cancel&apos;)}
+                              onClick={() => handlePartnership(invitation.id, 'cancel')}
                               className="text-red-500 hover:text-red-700 transition-colors"
-                              title="Annuler l&apos;invitation"
+                              title="Annuler l'invitation"
                             >
                               <X className="h-5 w-5" />
                             </button>
@@ -523,7 +523,7 @@ export default function TrainingPartnersPage() {
             )}
 
             {/* Onglet Recherche */}
-            {activeTab === &apos;search&apos; && (
+            {activeTab === 'search' && (
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Rechercher des Partenaires
@@ -544,7 +544,7 @@ export default function TrainingPartnersPage() {
                       }}
                       onKeyDown={(e) => {
                         // Chercher seulement quand on appuie sur Entrée
-                        if (e.key === &apos;Enter&apos; && searchQuery.length >= 2) {
+                        if (e.key === 'Enter' && searchQuery.length >= 2) {
                           searchUsers()
                         }
                       }}
@@ -595,17 +595,17 @@ export default function TrainingPartnersPage() {
                           </div>
                         </div>
                         <div>
-                          {user.partnershipStatus === &apos;accepted&apos; && (
+                          {user.partnershipStatus === 'accepted' && (
                             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                               Partenaire
                             </span>
                           )}
-                          {user.partnershipStatus === &apos;pending&apos; && (
+                          {user.partnershipStatus === 'pending' && (
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
                               Invitation envoyée
                             </span>
                           )}
-                          {user.partnershipStatus === &apos;blocked&apos; && (
+                          {user.partnershipStatus === 'blocked' && (
                             <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
                               Bloqué
                             </span>

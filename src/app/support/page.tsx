@@ -5,7 +5,7 @@ import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpe
 import Link from 'next/link'
 
 export default function SupportPage() {
-  const [activeSection, setActiveSection] = useState<&apos;partners&apos; | &apos;general&apos; | &apos;account&apos;>(&apos;partners&apos;)
+  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account'>('partners')
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -30,9 +30,9 @@ export default function SupportPage() {
               <h3 className="font-semibold text-gray-900 mb-4">Sections</h3>
               <nav className="space-y-2">
                 {[
-                  { id: &apos;partners&apos;, label: &apos;Training Partners&apos;, icon: Users, desc: &apos;Partenaires d\&apos;entraînement&apos; },
-                  { id: &apos;general&apos;, label: &apos;Utilisation générale&apos;, icon: BookOpen, desc: &apos;Fonctionnalités de base&apos; },
-                  { id: &apos;account&apos;, label: &apos;Compte & Profil&apos;, icon: Settings, desc: &apos;Gestion du compte&apos; }
+                  { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d\'entraînement' },
+                  { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
+                  { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' }
                 ].map((section) => {
                   const Icon = section.icon
                   return (
@@ -41,8 +41,8 @@ export default function SupportPage() {
                       onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account')}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
                         activeSection === section.id
-                          ? &apos;bg-orange-50 text-orange-700 border border-orange-200&apos;
-                          : &apos;hover:bg-gray-50 text-gray-700&apos;
+                          ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                          : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
                       <Icon className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -62,7 +62,7 @@ export default function SupportPage() {
             <div className="bg-white rounded-xl shadow-md p-6">
               
               {/* Training Partners Guide */}
-              {activeSection === &apos;partners&apos; && (
+              {activeSection === 'partners' && (
                 <div>
                   <div className="flex items-center space-x-3 mb-6">
                     <Users className="h-6 w-6 text-orange-500" />
@@ -72,11 +72,11 @@ export default function SupportPage() {
                   <div className="space-y-8">
                     {/* Introduction */}
                     <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Qu&apos;est-ce que Training Partners ?</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Qu'est-ce que Training Partners ?</h3>
                       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
                         <p className="text-blue-800">
-                          <strong>Training Partners</strong> vous permet de vous connecter avec d&apos;autres utilisateurs IronTrack 
-                          pour partager vos séances d&apos;entraînement, vous motiver mutuellement et voir les calendriers de vos partenaires.
+                          <strong>Training Partners</strong> vous permet de vous connecter avec d'autres utilisateurs IronTrack 
+                          pour partager vos séances d'entraînement, vous motiver mutuellement et voir les calendriers de vos partenaires.
                         </p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -88,7 +88,7 @@ export default function SupportPage() {
                         <div className="text-center p-4 bg-gray-50 rounded-lg">
                           <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900">Partager</h4>
-                          <p className="text-sm text-gray-600">Partagez vos séances d&apos;entraînement</p>
+                          <p className="text-sm text-gray-600">Partagez vos séances d'entraînement</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 rounded-lg">
                           <Settings className="h-8 w-8 text-purple-500 mx-auto mb-2" />
@@ -120,16 +120,16 @@ export default function SupportPage() {
                             Onglet "Rechercher"
                           </h4>
                           <ol className="list-decimal list-inside space-y-1 text-gray-700 text-sm">
-                            <li>Cliquez sur l&apos;onglet <strong>"Rechercher"</strong></li>
+                            <li>Cliquez sur l'onglet <strong>"Rechercher"</strong></li>
                             <li>Tapez le <strong>pseudo</strong>, <strong>nom</strong> ou <strong>email</strong> de la personne</li>
                             <li>Les résultats apparaissent en temps réel (minimum 2 caractères)</li>
                             <li>Cliquez sur <strong>"Inviter"</strong> à côté du nom de la personne</li>
-                            <li>L&apos;invitation est envoyée ! 🎉</li>
+                            <li>L'invitation est envoyée ! 🎉</li>
                           </ol>
                         </div>
                         <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                           <p className="text-yellow-800 text-sm">
-                            <strong>💡 Astuce :</strong> Si la personne n&apos;apparaît pas, vérifiez qu&apos;elle utilise bien IronTrack et demandez-lui son pseudo exact.
+                            <strong>💡 Astuce :</strong> Si la personne n'apparaît pas, vérifiez qu'elle utilise bien IronTrack et demandez-lui son pseudo exact.
                           </p>
                         </div>
                       </div>
@@ -143,7 +143,7 @@ export default function SupportPage() {
                           <h4 className="font-medium text-green-900 mb-2">Invitations Reçues</h4>
                           <ul className="space-y-1 text-green-800 text-sm">
                             <li>• Vous recevez une notification</li>
-                            <li>• Allez dans l&apos;onglet <strong>"Invitations"</strong></li>
+                            <li>• Allez dans l'onglet <strong>"Invitations"</strong></li>
                             <li>• Cliquez <Check className="h-3 w-3 inline text-green-600" /> <strong>"Accepter"</strong> ou <X className="h-3 w-3 inline text-red-600" /> <strong>"Refuser"</strong></li>
                           </ul>
                         </div>
@@ -197,7 +197,7 @@ export default function SupportPage() {
                             <div>
                               <p className="text-sm text-gray-700 mb-2">Paramètres de partage :</p>
                               <ul className="space-y-1 text-sm text-gray-600">
-                                <li>• 🏋️ Séances d&apos;entraînement</li>
+                                <li>• 🏋️ Séances d'entraînement</li>
                                 <li>• 🥗 Nutrition (à venir)</li>
                                 <li>• 📈 Progression (à venir)</li>
                               </ul>
@@ -245,7 +245,7 @@ export default function SupportPage() {
                               <li>• Vérifiez que votre ami utilise bien IronTrack</li>
                               <li>• Demandez-lui son pseudo exact (sensible à la casse)</li>
                               <li>• Essayez avec son email ou nom complet</li>
-                              <li>• Attendez qu&apos;il crée son compte s&apos;il est nouveau</li>
+                              <li>• Attendez qu'il crée son compte s'il est nouveau</li>
                             </ul>
                           </div>
                         </details>
@@ -271,8 +271,8 @@ export default function SupportPage() {
                           <div className="p-3 pt-0 text-sm text-gray-700">
                             <ul className="space-y-1">
                               <li>• Votre ami doit aller dans "Invitations" pour accepter</li>
-                              <li>• Rappelez-lui de vérifier l&apos;onglet "Invitations reçues"</li>
-                              <li>• Vous pouvez annuler et renvoyer l&apos;invitation</li>
+                              <li>• Rappelez-lui de vérifier l'onglet "Invitations reçues"</li>
+                              <li>• Vous pouvez annuler et renvoyer l'invitation</li>
                               <li>• Vérifiez que vous avez le bon utilisateur</li>
                             </ul>
                           </div>
@@ -284,18 +284,18 @@ export default function SupportPage() {
               )}
 
               {/* General Usage */}
-              {activeSection === &apos;general&apos; && (
+              {activeSection === 'general' && (
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Utilisation Générale d&apos;IronTrack</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Utilisation Générale d'IronTrack</h2>
                   <div className="space-y-6">
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">🏋️ Créer une Séance</h3>
-                      <p className="text-gray-700 mb-2">Pour créer une nouvelle séance d&apos;entraînement :</p>
+                      <p className="text-gray-700 mb-2">Pour créer une nouvelle séance d'entraînement :</p>
                       <ol className="list-decimal list-inside space-y-1 text-gray-700">
                         <li>Allez dans "Séances" ou "Calendrier"</li>
                         <li>Cliquez sur "Nouvelle séance"</li>
                         <li>Remplissez les informations (nom, type, exercices)</li>
-                        <li>Définissez la date et l&apos;heure</li>
+                        <li>Définissez la date et l'heure</li>
                         <li>Sauvegardez</li>
                       </ol>
                     </section>
@@ -304,9 +304,9 @@ export default function SupportPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">📊 Suivre sa Progression</h3>
                       <p className="text-gray-700 mb-2">Dans la section "Progression" :</p>
                       <ul className="list-disc list-inside space-y-1 text-gray-700">
-                        <li>Visualisez vos statistiques d&apos;entraînement</li>
+                        <li>Visualisez vos statistiques d'entraînement</li>
                         <li>Suivez votre évolution dans le temps</li>
-                        <li>Analysez vos performances par type d&apos;exercice</li>
+                        <li>Analysez vos performances par type d'exercice</li>
                       </ul>
                     </section>
 
@@ -321,7 +321,7 @@ export default function SupportPage() {
               )}
 
               {/* Account Management */}
-              {activeSection === &apos;account&apos; && (
+              {activeSection === 'account' && (
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 mb-6">Gestion du Compte & Profil</h2>
                   <div className="space-y-6">
@@ -353,7 +353,7 @@ export default function SupportPage() {
                         <li>Thème sombre/clair</li>
                         <li>Notifications</li>
                         <li>Langue (français par défaut)</li>
-                        <li>Préférences d&apos;entraînement</li>
+                        <li>Préférences d'entraînement</li>
                       </ul>
                     </section>
                   </div>
