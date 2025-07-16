@@ -759,12 +759,20 @@ export default function CalendarPage() {
                       <li>• Demande-leur de configurer leurs paramètres de partage</li>
                     </ul>
                   </div>
-                  <button
-                    onClick={() => router.push('/training-partners')}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Gérer mes partenaires
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={() => router.push('/training-partners')}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Gérer mes partenaires
+                    </button>
+                    <button
+                      onClick={() => router.push('/shared/dashboard')}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Dashboard partage
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
