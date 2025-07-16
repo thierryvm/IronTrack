@@ -96,13 +96,7 @@ export default function TrainingPartnersPage() {
       lastAuthStateRef.current.isAuthenticated !== isAuthenticated ||
       lastAuthStateRef.current.userId !== currentUserId
 
-    if (authStateChanged) {
-      console.log('Training Partners - Auth state changed:', {
-        isAuthenticated,
-        userId: currentUserId,
-        previous: lastAuthStateRef.current
-      })
-      
+    if (authStateChanged && isAuthenticated && user) {
       lastAuthStateRef.current = {
         isAuthenticated,
         userId: currentUserId
@@ -113,11 +107,9 @@ export default function TrainingPartnersPage() {
         clearTimeout(loadingTimeoutRef.current)
       }
 
-      if (isAuthenticated && user) {
-        loadingTimeoutRef.current = setTimeout(() => {
-          loadPartnerships()
-        }, 100)
-      }
+      loadingTimeoutRef.current = setTimeout(() => {
+        loadPartnerships()
+      }, 200)
     }
 
     return () => {
@@ -126,6 +118,13 @@ export default function TrainingPartnersPage() {
       }
     }
   }, [isAuthenticated, user, loadPartnerships])
+
+  // Chargement initial unique
+  useEffect(() => {
+    if (isAuthenticated && user && partnerships.length === 0) {
+      loadPartnerships()
+    }
+  }, [isAuthenticated, user, partnerships.length, loadPartnerships])
 
   const searchUsers = async () => {
     if (searchQuery.length < 2) {
@@ -230,7 +229,6 @@ export default function TrainingPartnersPage() {
       })
 
       if (response.ok) {
-        await loadPartnerships()
         const actionMessages: Record<string, string> = {
           accept: 'Invitation acceptée !',
           decline: 'Invitation refusée',
@@ -238,7 +236,45 @@ export default function TrainingPartnersPage() {
           remove: 'Partenariat supprimé',
           block: 'Utilisateur bloqué'
         }
-        showNotification(actionMessages[action] || 'Action effectuée', 'success')
+        
+        // Rafraîchissement amélioré pour l'acceptation
+        if (action === 'accept') {
+          showNotification(actionMessages[action] || 'Action effectuée', 'success', 'Mise à jour des données...')
+          
+          // Attendre un peu pour permettre la création des partner_sharing_settings
+          await new Promise(resolve => setTimeout(resolve, 800))
+          
+          // Rafraîchissement avec tentatives multiples
+          let attempts = 0
+          const maxAttempts = 3
+          
+          const refreshWithRetry = async () => {
+            attempts++
+            await loadPartnerships()
+            
+            // Vérifier si le partenariat apparaît bien comme accepté
+            const updatedPartnerships = await new Promise<any[]>(resolve => {
+              // Simuler un délai pour permettre au state de se mettre à jour
+              setTimeout(() => {
+                resolve(partnerships)
+              }, 200)
+            })
+            
+            const isAccepted = updatedPartnerships.some(p => p.id === partnershipId && p.status === 'accepted')
+            
+            if (!isAccepted && attempts < maxAttempts) {
+              console.log(`Tentative ${attempts}/${maxAttempts} - Nouveau rafraîchissement...`)
+              setTimeout(refreshWithRetry, 800)
+            } else if (isAccepted) {
+              showNotification('Partenariat activé avec succès !', 'success', 'Vous pouvez maintenant configurer vos paramètres de partage.')
+            }
+          }
+          
+          await refreshWithRetry()
+        } else {
+          await loadPartnerships()
+          showNotification(actionMessages[action] || 'Action effectuée', 'success')
+        }
       } else {
         const error = await response.json()
         showNotification(error.error || 'Erreur lors de l\'action', 'error')

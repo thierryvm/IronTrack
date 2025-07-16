@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Partenariat non trouvé ou non accepté' }, { status: 404 })
     }
 
-    // Mettre à jour les paramètres de partage
+    // Mettre à jour ou créer les paramètres de partage
     const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     }
@@ -66,6 +66,7 @@ export async function PATCH(request: NextRequest) {
     if (typeof shareNutrition === 'boolean') updateData.share_nutrition = shareNutrition
     if (typeof shareProgress === 'boolean') updateData.share_progress = shareProgress
 
+    // Essayer d'abord de mettre à jour
     const { data, error } = await supabase
       .from('partner_sharing_settings')
       .update(updateData)
@@ -75,8 +76,32 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Erreur mise à jour paramètres partage:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      // Si l'enregistrement n'existe pas, le créer
+      if (error.code === 'PGRST116') {
+        const newSettings = {
+          user_id: user.id,
+          partner_id: partnerId,
+          share_workouts: shareWorkouts ?? false,
+          share_nutrition: shareNutrition ?? false,
+          share_progress: shareProgress ?? false
+        }
+
+        const { data: newData, error: createError } = await supabase
+          .from('partner_sharing_settings')
+          .insert(newSettings)
+          .select()
+          .single()
+
+        if (createError) {
+          console.error('Erreur création paramètres partage:', createError)
+          return NextResponse.json({ error: createError.message }, { status: 500 })
+        }
+
+        return NextResponse.json({ settings: newData })
+      } else {
+        console.error('Erreur mise à jour paramètres partage:', error)
+        return NextResponse.json({ error: error.message }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ settings: data })
