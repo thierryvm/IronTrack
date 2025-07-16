@@ -68,13 +68,13 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className="relative h-24 p-1 pb-14 border border-gray-200 rounded-md bg-white flex flex-col overflow-hidden">
+    <div className="relative min-h-20 sm:h-24 p-1 sm:pb-14 pb-8 border border-gray-200 rounded-md bg-white flex flex-col overflow-hidden">
       <div className="text-xs font-semibold mb-1 text-gray-700">{date}</div>
       <div className="flex-1 flex flex-col gap-1">
         {displayedSessions.map((session) => (
           <div key={session.id} className="flex items-center gap-1 group">
             <div
-              className="flex-1 h-6 flex items-center px-2 text-xs text-white font-medium rounded-full shadow-md cursor-pointer transition-transform duration-150"
+              className="flex-1 h-5 sm:h-6 flex items-center px-1 sm:px-2 text-xs text-white font-medium rounded-full shadow-md cursor-pointer transition-transform duration-150"
               style={{
                 background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                 borderRadius: '12px',
@@ -105,7 +105,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                   />
                 </Tooltip>
               )}
-              <span className="truncate">{session.name}{session.time && <span className="opacity-80"> à {session.time.slice(0,5)}</span>}</span>
+              <span className="truncate text-xs sm:text-xs">{session.name}{session.time && <span className="opacity-80 hidden sm:inline"> à {session.time.slice(0,5)}</span>}</span>
             </div>
           </div>
         ))}
@@ -119,7 +119,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
         )}
       </div>
       {/* Espace réservé pour l'avatar en bas */}
-      <div className="h-8 w-full" />
+      <div className="h-6 sm:h-8 w-full" />
       {/* Popover pour afficher toutes les séances du jour */}
       {showPopover && (
         <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">

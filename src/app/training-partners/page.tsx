@@ -425,14 +425,26 @@ export default function TrainingPartnersPage() {
 
         {/* Header */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-orange-100 rounded-xl">
-              <Users className="h-8 w-8 text-orange-500" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-orange-100 rounded-xl">
+                <Users className="h-8 w-8 text-orange-500" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Training Partners</h1>
+                <p className="text-gray-600">Partagez vos entraînements avec vos partenaires</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Training Partners</h1>
-              <p className="text-gray-600">Partagez vos entraînements avec vos partenaires</p>
-            </div>
+            
+            {acceptedPartnerships.length > 0 && (
+              <button
+                onClick={() => router.push('/shared/dashboard')}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md flex items-center space-x-2"
+              >
+                <span>🍎</span>
+                <span>Voir données partagées</span>
+              </button>
+            )}
           </div>
         </div>
 
