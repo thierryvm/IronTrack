@@ -1333,7 +1333,7 @@ export default function ProgressPage() {
               <tbody>
                 {exerciseProgress.map((exercise, index) => (
                   <motion.tr
-                    key={exercise.exercise}
+                    key={`${exercise.exercise}-${index}-${exercise.muscle_group}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
