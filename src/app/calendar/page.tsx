@@ -754,7 +754,7 @@ export default function CalendarPage() {
                   <div className="space-y-2">
                     <p>Pour voir les séances de tes partenaires :</p>
                     <ul className="ml-4 space-y-1">
-                      <li>• Assure-toi d'avoir des partenaires acceptés</li>
+                      <li>• Assure-toi d&apos;avoir des partenaires acceptés</li>
                       <li>• Vérifie que tes partenaires ont activé le partage des entraînements</li>
                       <li>• Demande-leur de configurer leurs paramètres de partage</li>
                     </ul>

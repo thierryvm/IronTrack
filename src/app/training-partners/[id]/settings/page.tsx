@@ -113,7 +113,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
           
           // Trouver les paramètres pour ce partenaire
           const partnerSettings = settingsData.settings.find(
-            (s: any) => s.partner_id === (
+            (s: SharingSettings & { partner_id: string }) => s.partner_id === (
               specificPartnership.requester_id === user.id 
                 ? specificPartnership.partner_id 
                 : specificPartnership.requester_id
@@ -232,7 +232,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
     )
   }
 
-  const partner = partnership.requester_id === user.id 
+  const partner = partnership.requester_id === user?.id 
     ? partnership.partner 
     : partnership.requester
 
@@ -286,7 +286,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                   Entraînements
                 </h3>
                 <p className="text-sm text-gray-500">
-                  Partager vos séances d'entraînement et exercices
+                  Partager vos séances d&apos;entraînement et exercices
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
