@@ -253,7 +253,7 @@ export default function TrainingPartnersPage() {
             await loadPartnerships()
             
             // Vérifier si le partenariat apparaît bien comme accepté
-            const updatedPartnerships = await new Promise<any[]>(resolve => {
+            const updatedPartnerships = await new Promise<Partnership[]>(resolve => {
               // Simuler un délai pour permettre au state de se mettre à jour
               setTimeout(() => {
                 resolve(partnerships)
