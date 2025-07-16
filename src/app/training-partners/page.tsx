@@ -397,16 +397,16 @@ export default function TrainingPartnersPage() {
                       <span>Contrôlez vos données</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <a 
                       href="/support" 
-                      className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm"
+                      className="flex-1 sm:flex-none bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm text-center min-w-[120px]"
                     >
                       Guide complet
                     </a>
                     <button
                       onClick={() => setActiveTab('search')}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+                      className="flex-1 sm:flex-none bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm min-w-[120px]"
                     >
                       Commencer
                     </button>
@@ -424,25 +424,26 @@ export default function TrainingPartnersPage() {
         )}
 
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-orange-100 rounded-xl">
-                <Users className="h-8 w-8 text-orange-500" />
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="p-2 sm:p-3 bg-orange-100 rounded-xl flex-shrink-0">
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Training Partners</h1>
-                <p className="text-gray-600">Partagez vos entraînements avec vos partenaires</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Training Partners</h1>
+                <p className="text-sm sm:text-base text-gray-600 truncate">Partagez vos entraînements avec vos partenaires</p>
               </div>
             </div>
             
             {acceptedPartnerships.length > 0 && (
               <button
                 onClick={() => router.push('/shared/dashboard')}
-                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md flex items-center space-x-2"
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md flex items-center justify-center space-x-2 text-sm sm:text-base flex-shrink-0"
               >
                 <span>🍎</span>
-                <span>Voir données partagées</span>
+                <span className="hidden sm:inline">Voir données partagées</span>
+                <span className="sm:hidden">Données partagées</span>
               </button>
             )}
           </div>

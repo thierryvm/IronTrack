@@ -85,7 +85,7 @@ export default function HeaderClient() {
           </Link>
 
           {/* Navigation desktop */}
-          <nav className="hidden xl:flex space-x-6">
+          <nav className="hidden xl:flex space-x-4">
             {navigation.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -93,9 +93,9 @@ export default function HeaderClient() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-orange-600 text-white'
+                      ? 'bg-orange-600 text-white shadow-sm'
                       : 'text-orange-100 hover:bg-orange-600 hover:text-white'
                   }`}
                 >
@@ -112,11 +112,10 @@ export default function HeaderClient() {
             {isLoggedIn && (
               <button
                 onClick={handleLogout}
-                className="hidden xl:flex items-center space-x-2 px-3 py-2 rounded-md bg-orange-700 hover:bg-red-600 text-white font-medium transition-colors"
+                className="hidden xl:flex items-center justify-center p-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white transition-colors shadow-sm"
                 title="Se déconnecter"
               >
                 <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Se déconnecter</span>
               </button>
             )}
             <button
