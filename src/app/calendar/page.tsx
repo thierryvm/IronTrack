@@ -167,14 +167,30 @@ export default function CalendarPage() {
       p.requester_id === user.id ? p.partner_id : p.requester_id
     );
 
-    // Récupérer les séances des partenaires avec vérification des paramètres de partage
+    // Récupérer les paramètres de partage pour chaque partenaire
+    const { data: sharingSettings } = await supabase
+      .from('partner_sharing_settings')
+      .select('*')
+      .in('user_id', partnerIds)
+      .eq('partner_id', user.id)
+      .eq('share_workouts', true);
+
+    if (!sharingSettings || sharingSettings.length === 0) {
+      setPartnersWorkouts([]);
+      return;
+    }
+
+    // Filtrer les partenaires qui partagent leurs workouts
+    const sharingPartnerIds = sharingSettings.map(s => s.user_id);
+
+    // Récupérer les séances des partenaires qui partagent leurs workouts
     const { data: workoutsData } = await supabase
       .from('workouts')
       .select(`
         *,
         profiles:user_id(id, pseudo, full_name, email, avatar_url)
       `)
-      .in('user_id', partnerIds)
+      .in('user_id', sharingPartnerIds)
       .order('scheduled_date', { ascending: true });
 
     if (workoutsData) {
@@ -271,6 +287,24 @@ export default function CalendarPage() {
     return workoutType?.color || 'bg-gray-500'
   }
 
+  const getPartnerTypeColor = (type: string) => {
+    const colorMap: Record<string, string> = {
+      'bg-orange-500': 'linear-gradient(135deg, #e65100, #ff6f00)', // Musculation - orange foncé
+      'bg-blue-500': 'linear-gradient(135deg, #0d47a1, #1976d2)',   // Cardio - bleu foncé
+      'bg-green-500': 'linear-gradient(135deg, #1b5e20, #388e3c)',  // Étirement - vert foncé
+      'bg-purple-500': 'linear-gradient(135deg, #4a148c, #7b1fa2)', // Cours collectif - violet foncé
+      'bg-yellow-500': 'linear-gradient(135deg, #f57f17, #fbc02d)', // Gainage - jaune foncé
+      'bg-cyan-500': 'linear-gradient(135deg, #006064, #00acc1)',   // Natation - cyan foncé
+      'bg-red-500': 'linear-gradient(135deg, #b71c1c, #d32f2f)',    // Crossfit - rouge foncé
+      'bg-pink-500': 'linear-gradient(135deg, #880e4f, #c2185b)',   // Yoga - rose foncé
+      'bg-indigo-500': 'linear-gradient(135deg, #1a237e, #3f51b5)', // Pilates - indigo foncé
+      'bg-gray-500': 'linear-gradient(135deg, #424242, #616161)'    // Repos - gris foncé
+    }
+    
+    const baseColor = getTypeColor(type)
+    return colorMap[baseColor] || 'linear-gradient(135deg, #424242, #616161)'
+  }
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('fr-FR', { 
       weekday: 'long', 
@@ -356,12 +390,12 @@ export default function CalendarPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
             <div>
-              <h1 className="text-3xl font-bold">Calendrier</h1>
-              <p className="text-orange-100">Planifie et organise tes séances</p>
+              <h1 className="text-2xl sm:text-3xl font-bold">Calendrier</h1>
+              <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => {
                   if (partnersWorkouts.length === 0) {
@@ -370,80 +404,83 @@ export default function CalendarPage() {
                     setShowPartnersWorkouts(!showPartnersWorkouts);
                   }
                 }}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base ${
                   showPartnersWorkouts 
                     ? 'bg-white/20 text-white border border-white/30' 
                     : 'bg-white/10 text-orange-100 hover:bg-white/20'
                 }`}
                 title={
                   partnersWorkouts.length === 0 
-                    ? 'Gérer mes partenaires d\'entraînement' 
+                    ? 'Aucune séance partagée disponible - Gérer mes partenaires' 
                     : (showPartnersWorkouts ? 'Masquer les séances des partenaires' : 'Afficher les séances des partenaires')
                 }
               >
                 <Users className="h-4 w-4" />
-                <span>Partenaires</span>
+                <span className="hidden sm:inline">Partenaires</span>
+                <span className="sm:hidden">Part.</span>
                 {partnersWorkouts.length > 0 ? (
                   <span className="bg-white/20 text-white rounded-full px-2 py-0.5 text-xs">
                     {partnersWorkouts.length}
                   </span>
                 ) : (
-                  <span className="bg-white/20 text-white rounded-full px-2 py-0.5 text-xs">
-                    +
+                  <span className="bg-white/20 text-white rounded-full px-2 py-0.5 text-xs font-bold">
+                    0
                   </span>
                 )}
               </button>
               <button
                 onClick={() => router.push('/workouts/new')}
-                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
+                className="bg-white text-orange-600 px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
               >
-                <Plus className="h-5 w-5" />
-                <span>Nouvelle séance</span>
+                <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
+                <span className="hidden sm:inline">Nouvelle séance</span>
+                <span className="sm:hidden">Nouveau</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-8">
           {/* Calendrier */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-2"
+            className="xl:col-span-2"
           >
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
               {/* Navigation du calendrier */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <button
                   onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-4 sm:h-5 w-4 sm:w-5" />
                 </button>
-                <h2 className="text-xl font-bold text-gray-900 capitalize">{monthName}</h2>
-                <div className="flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 capitalize">{monthName}</h2>
+                <div className="flex items-center gap-1 sm:gap-2">
                   <button
                     onClick={() => setCurrentDate(new Date())}
-                    className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
+                    className="px-2 sm:px-3 py-1 bg-orange-500 text-white rounded-lg text-xs sm:text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
                   >
-                    Aujourd&apos;hui
+                    <span className="hidden sm:inline">Aujourd&apos;hui</span>
+                    <span className="sm:hidden">Auj.</span>
                   </button>
                   <button
                     onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5" />
                   </button>
                 </div>
               </div>
 
               {/* Grille du calendrier */}
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
                 {/* En-têtes des jours */}
                 {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
-                  <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                  <div key={day} className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-gray-500">
                     {day}
                   </div>
                 ))}
@@ -483,9 +520,13 @@ export default function CalendarPage() {
                         avatarUrl: partner?.avatar_url || '/default-avatar.png',
                       };
                       const correctedType = getCorrectType(pw);
+                      
+                      // Couleur différente pour les séances partagées (dégradé plus sombre)
+                      const partnerColor = getPartnerTypeColor(correctedType);
+                      
                       return {
                         id: `partner-${pw.id}`,
-                        name: pw.name,
+                        name: `👥 ${pw.name}`, // Préfixe pour identifier visuellement
                         type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
                         status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
                         duration: pw.duration,
@@ -494,6 +535,7 @@ export default function CalendarPage() {
                         scheduled_date: pw.scheduled_date,
                         time: pw.start_time || '',
                         exercises: [],
+                        color: partnerColor, // Couleur personnalisée pour les séances partagées
                       };
                     });
                   }
@@ -528,12 +570,12 @@ export default function CalendarPage() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
+            className="space-y-4 lg:space-y-6"
           >
             {/* Date sélectionnée */}
             {selectedDate && (
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
+              <div className="bg-white rounded-xl shadow-md p-4 lg:p-6">
+                <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-4">
                   {formatDate(selectedDate)}
                 </h3>
                 <div className="space-y-3">
@@ -611,8 +653,8 @@ export default function CalendarPage() {
             )}
 
             {/* Statistiques du mois */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-white rounded-xl shadow-md p-4 lg:p-6">
+              <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
                 <div className="group relative">
                   <Info className="h-4 w-4 text-gray-400 cursor-help" />
@@ -698,9 +740,38 @@ export default function CalendarPage() {
               </div>
             </div>
 
+            {/* Aide partage */}
+            {partnersWorkouts.length === 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 lg:p-6">
+                <h3 className="text-base lg:text-lg font-bold text-blue-900 mb-4 flex items-center gap-2">
+                  <Info className="h-4 lg:h-5 w-4 lg:w-5" />
+                  Séances partagées
+                </h3>
+                <div className="space-y-3 text-sm text-blue-800">
+                  <p>
+                    <strong>Aucune séance partagée disponible.</strong>
+                  </p>
+                  <div className="space-y-2">
+                    <p>Pour voir les séances de tes partenaires :</p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• Assure-toi d'avoir des partenaires acceptés</li>
+                      <li>• Vérifie que tes partenaires ont activé le partage des entraînements</li>
+                      <li>• Demande-leur de configurer leurs paramètres de partage</li>
+                    </ul>
+                  </div>
+                  <button
+                    onClick={() => router.push('/training-partners')}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Gérer mes partenaires
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Légende */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Légende</h3>
+            <div className="bg-white rounded-xl shadow-md p-4 lg:p-6">
+              <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-4">Légende</h3>
               
               <div className="space-y-2">
                 {workoutTypes.map(type => {
@@ -709,7 +780,7 @@ export default function CalendarPage() {
                     <div key={type.name} className="flex items-center space-x-2">
                       <div className={`w-3 h-3 rounded-full ${type.color}`} />
                       <Icon className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm text-gray-600">{type.name}</span>
+                      <span className="text-xs sm:text-sm text-gray-600">{type.name}</span>
                     </div>
                   )
                 })}
