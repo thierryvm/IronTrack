@@ -13,4 +13,5 @@ export interface UserProfile {
   experience: 'Débutant' | 'Intermédiaire' | 'Avancé';
   joinDate: string;
   pseudo?: string;
+  initial_weight?: number;
 } 

@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpen, HelpCircle } from 'lucide-react'
+import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpen, HelpCircle, TrendingUp, Target, Award } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SupportPage() {
-  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account'>('partners')
+  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression'>('partners')
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -32,13 +32,14 @@ export default function SupportPage() {
                 {[
                   { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d&apos;entraînement' },
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
+                  { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, desc: 'Suivi des performances' },
                   { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' }
                 ].map((section) => {
                   const Icon = section.icon
                   return (
                     <button
                       key={section.id}
-                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account')}
+                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression')}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
                         activeSection === section.id
                           ? 'bg-orange-50 text-orange-700 border border-orange-200'
@@ -326,6 +327,242 @@ export default function SupportPage() {
                 </div>
               )}
 
+              {/* Progression & Badges Guide */}
+              {activeSection === 'progression' && (
+                <div>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <TrendingUp className="h-6 w-6 text-orange-500" />
+                    <h2 className="text-xl font-bold text-gray-900">Progression & Badges - Guide Complet</h2>
+                  </div>
+
+                  <div className="space-y-8">
+                    {/* Introduction */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Comprendre le système de progression</h3>
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+                        <p className="text-blue-800">
+                          IronTrack suit automatiquement votre progression en analysant vos performances d&apos;entraînement.
+                          Le système calcule vos statistiques, records personnels et débloques des badges selon vos objectifs.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-gray-50 rounded-lg">
+                          <Target className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                          <h4 className="font-medium text-gray-900">Objectifs</h4>
+                          <p className="text-sm text-gray-600">Définissez vos challenges</p>
+                        </div>
+                        <div className="text-center p-4 bg-gray-50 rounded-lg">
+                          <TrendingUp className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                          <h4 className="font-medium text-gray-900">Performances</h4>
+                          <p className="text-sm text-gray-600">Suivez vos résultats</p>
+                        </div>
+                        <div className="text-center p-4 bg-gray-50 rounded-lg">
+                          <Award className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                          <h4 className="font-medium text-gray-900">Badges</h4>
+                          <p className="text-sm text-gray-600">Débloquez des récompenses</p>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Poids Initial vs Actuel */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">⚖️ Poids Initial vs Poids Actuel</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                            <h4 className="font-medium text-green-900 mb-2">Poids Initial</h4>
+                            <ul className="space-y-1 text-green-800 text-sm">
+                              <li>• <strong>Référence fixe</strong> pour calculer votre progression</li>
+                              <li>• Poids au début de votre programme</li>
+                              <li>• Sert à calculer gain/perte de poids</li>
+                              <li>• Se définit une seule fois dans le profil</li>
+                            </ul>
+                          </div>
+                          <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                            <h4 className="font-medium text-blue-900 mb-2">Poids Actuel</h4>
+                            <ul className="space-y-1 text-blue-800 text-sm">
+                              <li>• <strong>Poids corporel</strong> du moment</li>
+                              <li>• Utilisé pour calculer l&apos;IMC</li>
+                              <li>• Peut être mis à jour régulièrement</li>
+                              <li>• Visible dans la section IMC du profil</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                          <p className="text-yellow-800 text-sm">
+                            <strong>💡 Exemple :</strong> Poids initial = 70kg, Poids actuel = 73kg → Progression = +3kg
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Ajouter des performances */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📊 Ajouter des performances</h3>
+                      <div className="space-y-4">
+                        <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                          <h4 className="font-medium text-orange-900 mb-2">Comment ça marche</h4>
+                          <ol className="list-decimal list-inside space-y-1 text-orange-800 text-sm">
+                            <li>Créez une séance d&apos;entraînement dans &quot;Séances&quot;</li>
+                            <li>Ajoutez vos exercices avec poids/répétitions prévus</li>
+                            <li>Réalisez votre entraînement</li>
+                            <li>Marquez la séance comme &quot;Terminée&quot;</li>
+                            <li>Ajustez les résultats réels (poids, reps, durée)</li>
+                            <li>Les performances sont automatiquement enregistrées</li>
+                          </ol>
+                        </div>
+                        <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                          <p className="text-purple-800 text-sm">
+                            <strong>🔄 Automatique :</strong> Pas besoin de bouton &quot;Ajouter performance&quot;. 
+                            Tout se fait via vos séances d&apos;entraînement terminées.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Objectifs personnalisés */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Créer des objectifs</h3>
+                      <div className="space-y-4">
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Étapes</h4>
+                          <ol className="list-decimal list-inside space-y-1 text-gray-700 text-sm">
+                            <li>Allez dans <strong>&quot;Progression&quot;</strong></li>
+                            <li>Section <strong>&quot;Objectifs&quot;</strong> → cliquez <strong>&quot;Ajouter&quot;</strong></li>
+                            <li>Sélectionnez un <strong>exercice</strong> existant</li>
+                            <li>Choisissez le <strong>type d&apos;objectif</strong> (kg, reps, durée, distance)</li>
+                            <li>Définissez votre <strong>valeur cible</strong></li>
+                            <li>Utilisez les <strong>suggestions</strong> pour gagner du temps</li>
+                            <li>Sauvegardez → Un badge &quot;En cours&quot; est créé automatiquement</li>
+                          </ol>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                            <h4 className="font-medium text-green-900 mb-2">Types d&apos;objectifs Musculation</h4>
+                            <ul className="space-y-1 text-green-800 text-sm">
+                              <li>• <strong>Poids (kg) :</strong> 100kg développé couché</li>
+                              <li>• <strong>Répétitions :</strong> 20 pompes d&apos;affilée</li>
+                              <li>• <strong>Durée :</strong> 2 min de gainage</li>
+                            </ul>
+                          </div>
+                          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <h4 className="font-medium text-blue-900 mb-2">Types d&apos;objectifs Cardio</h4>
+                            <ul className="space-y-1 text-blue-800 text-sm">
+                              <li>• <strong>Distance :</strong> 5km de course</li>
+                              <li>• <strong>Vitesse :</strong> 12 km/h sur tapis</li>
+                              <li>• <strong>Calories :</strong> 300 kcal brûlées</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Système de badges */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🏅 Système de badges</h3>
+                      <div className="space-y-4">
+                        <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                          <h4 className="font-medium text-yellow-900 mb-2">Fonctionnement automatique</h4>
+                          <div className="space-y-2 text-yellow-800 text-sm">
+                            <p><strong>1. Création :</strong> Créez un objectif → Badge &quot;En cours&quot; généré</p>
+                            <p><strong>2. Validation :</strong> Atteignez l&apos;objectif → Badge passe à &quot;Validé&quot;</p>
+                            <p><strong>3. Affichage :</strong> Badge validé apparaît dans votre profil</p>
+                            <p><strong>4. Rétrogradation :</strong> Si vous ne maintenez plus le niveau → Badge redevient &quot;En cours&quot;</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <h4 className="font-medium text-gray-900 mb-2">Où voir mes badges</h4>
+                            <ul className="space-y-1 text-gray-700 text-sm">
+                              <li>• <strong>Profil :</strong> Badges validés dans &quot;Badges & Récompenses&quot;</li>
+                              <li>• <strong>Progression :</strong> Badges en cours dans &quot;Badges à valider&quot;</li>
+                            </ul>
+                          </div>
+                          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <h4 className="font-medium text-gray-900 mb-2">Icônes par exercice</h4>
+                            <ul className="space-y-1 text-gray-700 text-sm">
+                              <li>• 🏋️‍♂️ Développé couché, squat</li>
+                              <li>• 🚴‍♂️ Vélo, 🏃‍♂️ Course</li>
+                              <li>• 🤸‍♂️ Pompes, dips</li>
+                              <li>• 🧗‍♂️ Tractions</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Statistiques et records */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📈 Statistiques et records</h3>
+                      <div className="space-y-4">
+                        <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                          <h4 className="font-medium text-blue-900 mb-2">Calculs automatiques</h4>
+                          <ul className="space-y-1 text-blue-800 text-sm">
+                            <li>• <strong>Records personnels :</strong> Poids max et reps max par exercice</li>
+                            <li>• <strong>Progression :</strong> Évolution du poids corporel</li>
+                            <li>• <strong>Statistiques :</strong> Séances totales, poids total soulevé</li>
+                            <li>• <strong>Tendances :</strong> Amélioration par exercice</li>
+                          </ul>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                          <p className="text-green-800 text-sm">
+                            <strong>💪 Astuce :</strong> Plus vous complétez de séances, plus vos statistiques sont précises et détaillées !
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Problèmes courants */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🔧 Problèmes fréquents</h3>
+                      <div className="space-y-3">
+                        <details className="border border-gray-200 rounded-lg">
+                          <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
+                            &quot;Mes statistiques de progression sont vides&quot;
+                          </summary>
+                          <div className="p-3 pt-0 text-sm text-gray-700">
+                            <ul className="space-y-1">
+                              <li>• Complétez quelques séances d&apos;entraînement d&apos;abord</li>
+                              <li>• Marquez-les comme &quot;Terminées&quot; avec vos résultats</li>
+                              <li>• Définissez votre poids initial dans votre profil</li>
+                              <li>• Attendez que les données se synchronisent</li>
+                            </ul>
+                          </div>
+                        </details>
+
+                        <details className="border border-gray-200 rounded-lg">
+                          <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
+                            &quot;Mon badge ne se débloque pas&quot;
+                          </summary>
+                          <div className="p-3 pt-0 text-sm text-gray-700">
+                            <ul className="space-y-1">
+                              <li>• Vérifiez que vous avez vraiment atteint l&apos;objectif</li>
+                              <li>• Attendez quelques secondes, le système vérifie automatiquement</li>
+                              <li>• Rafraîchissez la page Progression</li>
+                              <li>• Vérifiez que la séance est marquée &quot;Terminée&quot;</li>
+                            </ul>
+                          </div>
+                        </details>
+
+                        <details className="border border-gray-200 rounded-lg">
+                          <summary className="p-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
+                            &quot;Je ne trouve pas le bouton Ajouter performance&quot;
+                          </summary>
+                          <div className="p-3 pt-0 text-sm text-gray-700">
+                            <ul className="space-y-1">
+                              <li>• Il n&apos;y a pas de bouton séparé pour ajouter des performances</li>
+                              <li>• Les performances s&apos;ajoutent via vos séances terminées</li>
+                              <li>• Créez une séance → Complétez-la → Marquez comme terminée</li>
+                              <li>• Le bouton &quot;Ajouter&quot; sert uniquement pour les objectifs</li>
+                            </ul>
+                          </div>
+                        </details>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              )}
+
               {/* Account Management */}
               {activeSection === 'account' && (
                 <div>
@@ -372,7 +609,7 @@ export default function SupportPage() {
         {/* Quick Actions */}
         <div className="mt-8 bg-white rounded-xl shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Link 
               href="/training-partners" 
               className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-colors group"
@@ -395,6 +632,18 @@ export default function SupportPage() {
                 <p className="text-sm text-gray-600">Questions fréquentes</p>
               </div>
               <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
+            </Link>
+
+            <Link 
+              href="/progress" 
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors group"
+            >
+              <TrendingUp className="h-6 w-6 text-purple-500" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Progression</p>
+                <p className="text-sm text-gray-600">Objectifs & badges</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-purple-500" />
             </Link>
 
             <Link 

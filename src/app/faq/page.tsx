@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search } from 'lucide-react'
+import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 interface FAQItem {
   id: string
   question: string
   answer: string
-  category: 'partners' | 'workouts' | 'general' | 'technical'
+  category: 'partners' | 'workouts' | 'general' | 'technical' | 'progression'
 }
 
 const faqData: FAQItem[] = [
@@ -132,6 +132,56 @@ const faqData: FAQItem[] = [
     question: 'Comment signaler un bug ?',
     answer: 'Vous pouvez signaler les bugs dans la section Support ou en contactant l\'équipe de développement avec une description détaillée du problème.',
     category: 'technical'
+  },
+
+  // Progression & Badges
+  {
+    id: 'progression-1',
+    question: 'Quelle est la différence entre "poids initial" et "poids actuel" ?',
+    answer: 'Le poids initial est votre poids de référence pour calculer votre progression (gain/perte de poids depuis le début). Le poids actuel est votre poids corporel utilisé pour calculer l\'IMC. Définissez votre poids initial dans votre profil pour suivre votre évolution.',
+    category: 'progression'
+  },
+  {
+    id: 'progression-2',
+    question: 'Comment ajouter des performances d\'entraînement ?',
+    answer: 'Les performances s\'ajoutent automatiquement quand vous complétez vos séances d\'entraînement. Allez dans "Séances" → créez ou modifiez une séance → marquez-la comme "Terminée" en ajoutant vos résultats (poids, répétitions, etc.).',
+    category: 'progression'
+  },
+  {
+    id: 'progression-3',
+    question: 'Pourquoi mes statistiques de progression sont vides ?',
+    answer: 'Vos statistiques se basent sur vos performances d\'entraînement. Si elles sont vides, c\'est que vous n\'avez pas encore terminé de séances ou ajouté de performances. Complétez quelques séances d\'entraînement pour voir vos statistiques.',
+    category: 'progression'
+  },
+  {
+    id: 'progression-4',
+    question: 'Comment créer un objectif personnalisé ?',
+    answer: 'Dans "Progression" → cliquez "Ajouter" dans la section Objectifs → choisissez un exercice → sélectionnez le type d\'objectif (kg, reps, durée, distance) → définissez votre cible. L\'app vous proposera des suggestions selon l\'exercice.',
+    category: 'progression'
+  },
+  {
+    id: 'badges-1',
+    question: 'Comment fonctionnent les badges ?',
+    answer: 'Les badges se débloquent automatiquement quand vous atteignez vos objectifs. Créez un objectif → un badge "En cours" est généré → complétez l\'objectif → le badge passe à "Validé" et apparaît dans votre profil.',
+    category: 'progression'
+  },
+  {
+    id: 'badges-2',
+    question: 'Où voir mes badges débloqués ?',
+    answer: 'Vos badges validés apparaissent dans votre profil dans la section "Badges & Récompenses". Les badges en cours de validation sont visibles dans "Progression" → section "Badges à valider".',
+    category: 'progression'
+  },
+  {
+    id: 'badges-3',
+    question: 'Un badge peut-il être retiré ?',
+    answer: 'Oui, si vous ne maintenez plus le niveau requis pour un objectif, le badge repasse automatiquement en "En cours". Le système vérifie constamment vos performances pour maintenir la cohérence.',
+    category: 'progression'
+  },
+  {
+    id: 'progression-5',
+    question: 'Comment sont calculés mes records personnels ?',
+    answer: 'Vos records personnels sont calculés automatiquement à partir de toutes vos performances d\'entraînement. Le système trouve le poids maximal et le nombre de répétitions maximal pour chaque exercice.',
+    category: 'progression'
   }
 ]
 
@@ -139,6 +189,7 @@ const categories = [
   { id: 'all', label: 'Toutes les questions', icon: HelpCircle, count: faqData.length },
   { id: 'partners', label: 'Training Partners', icon: Users, count: faqData.filter(f => f.category === 'partners').length },
   { id: 'workouts', label: 'Séances & Exercices', icon: Dumbbell, count: faqData.filter(f => f.category === 'workouts').length },
+  { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, count: faqData.filter(f => f.category === 'progression').length },
   { id: 'general', label: 'Général', icon: Calendar, count: faqData.filter(f => f.category === 'general').length },
   { id: 'technical', label: 'Technique', icon: HelpCircle, count: faqData.filter(f => f.category === 'technical').length }
 ]

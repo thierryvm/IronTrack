@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
@@ -42,7 +42,7 @@ interface ExerciseItem {
 
 export default function HomePage() {
   const { isLoading: profileLoading } = useUserProfile()
-  const { userBadges, newBadgeEarned, checkAndAwardBadges } = useBadges()
+  const { userBadges, newBadgeEarned } = useBadges()
   
   const [stats, setStats] = useState({
     totalWorkouts: 0,
@@ -104,9 +104,120 @@ export default function HomePage() {
   const router = useRouter();
   const [allExercises, setAllExercises] = useState<ExerciseItem[]>([])
 
+  const loadDashboardData = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setRecentExercises([])
+        setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
+        setLoading(false)
+        return
+      }
+      // Récupérer toutes les séances réalisées (plusieurs statuts possibles)
+      const { data: workouts, error: workoutsError } = await supabase
+        .from('workouts')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('status', ['Réalisé', 'Terminé', 'Completed'])
+        .order('created_at', { ascending: false })
+        .limit(10)
+      
+      if (workoutsError) {
+        console.error('Erreur récupération workouts:', workoutsError)
+        setRecentExercises([])
+        setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
+        setLoading(false)
+        return
+      }
+      
+      const workoutsList = workouts || []
+      
+      // Calculer les stats
+      const totalWorkouts = workoutsList.length
+      const now = new Date()
+      const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+      const thisWeek = workoutsList.filter(w => new Date(w.created_at) >= weekStart).length
+      
+      // Calculer la série actuelle
+      let currentStreak = 0
+      const sortedWorkouts = workoutsList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      
+      for (let i = 0; i < sortedWorkouts.length; i++) {
+        const workoutDate = new Date(sortedWorkouts[i].created_at)
+        const expectedDate = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000))
+        
+        if (workoutDate.toDateString() === expectedDate.toDateString()) {
+          currentStreak++
+        } else {
+          break
+        }
+      }
+      
+      // Calculer le poids total soulevé
+      const { data: perfLogs } = await supabase
+        .from('performance_logs')
+        .select('weight, reps, sets')
+        .eq('user_id', user.id)
+      
+      const totalWeight = perfLogs?.reduce((sum, log) => {
+        return sum + (log.weight || 0) * (log.reps || 0) * (log.sets || 1)
+      }, 0) || 0
+      
+      setStats({ totalWorkouts, thisWeek, currentStreak, totalWeight })
+      
+      // Récupérer les exercices récents
+      const { data: exercises, error: exercisesError } = await supabase
+        .from('exercises')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+      
+      if (!exercisesError && exercises) {
+        const recent = exercises.map(ex => ({
+          id: ex.id,
+          name: ex.name,
+          type: ex.exercise_type || 'Musculation',
+          lastPerformed: ex.created_at,
+          sets: ex.sets || 0,
+          reps: ex.reps || 0,
+          weight: ex.weight || 0
+        }))
+        setRecentExercises(recent)
+      }
+      
+      // Récupérer TOUS les exercices pour le dropdown
+      const { data: allExercisesData, error: allExercisesError } = await supabase
+        .from('exercises')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('name', { ascending: true })
+      
+      if (!allExercisesError && allExercisesData) {
+        const allEx = allExercisesData.map(ex => ({
+          id: ex.id,
+          name: ex.name,
+          type: ex.exercise_type || 'Musculation',
+          lastPerformed: ex.created_at,
+          sets: ex.sets || 0,
+          reps: ex.reps || 0,
+          weight: ex.weight || 0
+        }))
+        setAllExercises(allEx)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error)
+      setRecentExercises([])
+      setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadDashboardData()
-  }, [])
+  }, [loadDashboardData])
 
   useEffect(() => {
     const getUser = async () => {
@@ -183,126 +294,6 @@ export default function HomePage() {
       localStorage.setItem('irontrack-session-steps', JSON.stringify(sessionSteps));
     }
   }, [sessionSteps]);
-
-  const loadDashboardData = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setRecentExercises([])
-        setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
-        setLoading(false)
-        return
-      }
-      // Récupérer toutes les séances réalisées (plusieurs statuts possibles)
-      const { data: workouts, error: workoutsError } = await supabase
-        .from('workouts')
-        .select('*')
-        .eq('user_id', user.id)
-        .in('status', ['Réalisé', 'Terminé']);
-      
-      // Debug temporaire pour vérifier les données
-      console.log('🔍 Debug workouts:', workouts?.length || 0, 'séances trouvées')
-      if (workouts && workouts.length > 0) {
-        console.log('📋 Première séance:', workouts[0])
-      }
-      // Récupérer toutes les performances
-      const { data: perfLogs } = await supabase
-        .from('performance_logs')
-        .select('weight, reps, set_number, performed_at')
-        .eq('user_id', user.id);
-      // Récupérer les 3 derniers exercices avec leur dernière perf (conserve l'ancien code)
-      const { data: perfLogsRecent } = await supabase
-        .from('performance_logs')
-        .select('exercise_id, weight, performed_at, exercises(name, muscle_group)')
-        .eq('user_id', user.id)
-        .order('performed_at', { ascending: false });
-      if (workoutsError || !workouts) {
-        setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 });
-      } else {
-        // 1. Total séances réalisées
-        const totalWorkouts = workouts.length;
-        // 2. Série en cours (current streak)
-        const dates = workouts
-          .map(w => w.scheduled_date)
-          .filter(Boolean)
-          .map(d => new Date(d).toISOString().slice(0, 10))
-          .sort((a, b) => b.localeCompare(a));
-        let streak = 0;
-        const day = new Date();
-        for (;;) {
-          const dayStr = day.toISOString().slice(0, 10);
-          if (dates.includes(dayStr)) {
-            streak++;
-            day.setDate(day.getDate() - 1);
-          } else {
-            break;
-          }
-        }
-        // 3. Séances/semaine (7 derniers jours)
-        const now = new Date();
-        const weekAgo = new Date();
-        weekAgo.setDate(now.getDate() - 6);
-        const workoutsThisWeek = dates.filter(d => d >= weekAgo.toISOString().slice(0, 10) && d <= now.toISOString().slice(0, 10)).length;
-        // 4. Poids total soulevé (toutes perfs)
-        let totalWeight = 0;
-        if (perfLogs && Array.isArray(perfLogs)) {
-          totalWeight = perfLogs
-            .filter((p) => p.weight > 0 && p.reps > 0 && p.set_number > 0)
-            .reduce((acc, p) => acc + (p.weight * p.reps * p.set_number), 0);
-        }
-        setStats({
-          totalWorkouts,
-          thisWeek: workoutsThisWeek,
-          currentStreak: streak,
-          totalWeight: Math.round(totalWeight)
-        });
-        
-        // Vérifier et attribuer les badges après le calcul des stats
-        if (typeof checkAndAwardBadges === 'function') {
-          checkAndAwardBadges()
-        }
-      }
-      // Exercices récents (conserve l'ancien code)
-      if (!perfLogsRecent) {
-        setRecentExercises([])
-      } else {
-        type PerfLog = {
-          exercise_id: number;
-          weight: number;
-          performed_at: string;
-          exercises: { name: string; muscle_group?: string } | { name: string; muscle_group?: string }[];
-        };
-        const seen = new Set()
-        const recent: ExerciseItem[] = []
-        for (const log of perfLogsRecent as PerfLog[]) {
-          let exerciseObj: { name: string; muscle_group?: string } | undefined;
-          if (Array.isArray(log.exercises)) {
-            exerciseObj = log.exercises[0];
-          } else {
-            exerciseObj = log.exercises;
-          }
-          if (!seen.has(log.exercise_id) && exerciseObj) {
-            recent.push({
-              id: log.exercise_id,
-              name: exerciseObj.name,
-              muscle_group: exerciseObj.muscle_group,
-              last_weight: Number(log.weight) || 0
-            })
-            seen.add(log.exercise_id)
-          }
-          if (recent.length >= 3) break
-        }
-        setRecentExercises(recent)
-      }
-      setLoading(false)
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error)
-      setRecentExercises([])
-      setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
-      setLoading(false)
-    }
-  }
 
   const quickActions = [
     {
