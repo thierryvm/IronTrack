@@ -564,50 +564,89 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[140px]"
+          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[140px] relative"
         >
+          {/* Info bulle explicative */}
+          <div className="absolute top-4 right-4 group">
+            <button className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div className="absolute right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              <p className="font-semibold mb-1">Comment ça marche ?</p>
+              <p>Les objectifs se basent sur tes séances marquées comme &quot;Réalisé&quot; ou &quot;Terminé&quot;. Va dans &quot;Séances&quot; pour marquer tes entraînements comme terminés !</p>
+            </div>
+          </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Trophy className="h-6 w-6 text-yellow-300" />
               <h2 className="text-2xl font-bold">Objectif de la semaine</h2>
             </div>
-            <p className="text-purple-100 mb-6">
-              {stats.thisWeek >= 4 
-                ? "🎉 Félicitations ! Tu as atteint ton objectif de la semaine !" 
-                : `Complète 4 séances cette semaine pour débloquer le badge "Déterminé" 🏅`
-              }
-            </p>
-            <div className="flex items-center justify-center space-x-8">
+            
+            {/* Messages contextuels personnalisés */}
+            <div className="mb-6">
+              {stats.thisWeek >= 4 ? (
+                <p className="text-purple-100 text-lg animate-pulse">
+                  🎉 Félicitations ! Tu as atteint ton objectif de la semaine !
+                </p>
+              ) : stats.thisWeek === 0 ? (
+                <p className="text-purple-100 text-lg">
+                  💪 Prêt à démarrer ? Commence ta première séance de la semaine !
+                </p>
+              ) : (
+                <p className="text-purple-100 text-lg">
+                  🔥 Tu es sur la bonne voie ! Complète 4 séances pour débloquer le badge &quot;Déterminé&quot; 🏅
+                </p>
+              )}
+              
+              {/* Debug temporaire pour vérifier les stats */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-2 text-xs text-purple-200 bg-purple-700 rounded p-2">
+                  Debug: thisWeek={stats.thisWeek}, currentStreak={stats.currentStreak}, totalWorkouts={stats.totalWorkouts}
+                </div>
+              )}
+            </div>
+            
+            {/* Progression visuelle */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
               <div className="text-center">
                 <p className="text-4xl font-bold">{stats.thisWeek}/4</p>
-                <p className="text-sm text-purple-100">Séances</p>
+                <p className="text-sm text-purple-100">Séances réalisées</p>
               </div>
-              <div className="flex-1 max-w-md">
-                <div className="w-full bg-purple-600 rounded-full h-3 mb-2">
+              
+              {/* Barre de progression animée */}
+              <div className="flex-1 max-w-md w-full">
+                <div className="w-full bg-purple-600 rounded-full h-4 mb-2 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-3 rounded-full transition-all duration-500 shadow-sm"
+                    className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-4 rounded-full transition-all duration-1000 shadow-sm"
                     style={{ width: `${Math.min((stats.thisWeek / 4) * 100, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-xs text-purple-100">
+                <p className="text-xs text-purple-100 font-semibold">
                   {stats.thisWeek >= 4 
-                    ? "Objectif atteint ! 🎯" 
-                    : `Plus que ${4 - stats.thisWeek} séance${4 - stats.thisWeek > 1 ? 's' : ''} !`
+                    ? "🎯 Objectif atteint ! Bravo !" 
+                    : `Plus que ${4 - stats.thisWeek} séance${4 - stats.thisWeek > 1 ? 's' : ''} à faire !`
                   }
                 </p>
               </div>
-              <div className="text-center">
-                <div className="text-2xl mb-1">
+              
+              {/* Streak counter amélioré */}
+              <div className="text-center bg-purple-600 rounded-lg p-3 min-w-[80px]">
+                <div className="text-3xl mb-1">
                   {stats.currentStreak > 0 ? '🔥' : '💪'}
                 </div>
-                <p className="text-sm text-purple-100">
+                <p className="text-lg font-bold text-yellow-300">
                   {stats.currentStreak > 0 
-                    ? `${stats.currentStreak} jour${stats.currentStreak > 1 ? 's' : ''}`
-                    : "Commence"
+                    ? `${stats.currentStreak}`
+                    : "0"
                   }
                 </p>
                 <p className="text-xs text-purple-100">
-                  {stats.currentStreak > 0 ? 'de série' : 'ta série'}
+                  {stats.currentStreak > 0 
+                    ? `jour${stats.currentStreak > 1 ? 's' : ''} de série`
+                    : 'Commence ta série'
+                  }
                 </p>
               </div>
             </div>
