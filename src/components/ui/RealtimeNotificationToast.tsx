@@ -43,11 +43,9 @@ export function RealtimeNotificationToast({
     }
   }
 
-  if (notifications.length === 0) return null
-
   return (
     <>
-      {/* Contrôle du son */}
+      {/* Contrôle du son - Toujours visible */}
       <div className="fixed top-4 left-4 z-50">
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
@@ -65,9 +63,10 @@ export function RealtimeNotificationToast({
       </div>
 
       {/* Notifications */}
-      <div className="fixed top-4 right-4 z-50 space-y-3 max-w-md w-full">
-        <AnimatePresence mode="popLayout">
-          {notifications.map((notification) => (
+      {notifications.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 space-y-3 max-w-md w-full">
+          <AnimatePresence mode="popLayout">
+            {notifications.map((notification) => (
             <motion.div
               key={notification.id}
               initial={{ opacity: 0, x: 400, scale: 0.8 }}
@@ -139,6 +138,7 @@ export function RealtimeNotificationToast({
           ))}
         </AnimatePresence>
       </div>
+      )}
     </>
   )
 }
