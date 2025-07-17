@@ -24,26 +24,47 @@ export function useRealtimeNotifications() {
   // Initialiser l'audio
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      let audioContext: AudioContext | null = null
+      
       // Créer un son de notification simple avec Web Audio API
       const createNotificationSound = () => {
-        const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
-        const oscillator = audioContext.createOscillator()
-        const gainNode = audioContext.createGain()
-        
-        oscillator.connect(gainNode)
-        gainNode.connect(audioContext.destination)
-        
-        oscillator.frequency.value = 800
-        oscillator.type = 'sine'
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
-        
-        oscillator.start(audioContext.currentTime)
-        oscillator.stop(audioContext.currentTime + 0.3)
+        try {
+          if (!audioContext) {
+            audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+          }
+          
+          // Reprendre le contexte si suspendu
+          if (audioContext.state === 'suspended') {
+            audioContext.resume()
+          }
+          
+          const oscillator = audioContext.createOscillator()
+          const gainNode = audioContext.createGain()
+          
+          oscillator.connect(gainNode)
+          gainNode.connect(audioContext.destination)
+          
+          oscillator.frequency.value = 800
+          oscillator.type = 'sine'
+          
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+          
+          oscillator.start(audioContext.currentTime)
+          oscillator.stop(audioContext.currentTime + 0.3)
+        } catch (error) {
+          console.error('Erreur création audio:', error)
+        }
       }
       
       audioRef.current = { play: createNotificationSound }
+      
+      // Cleanup
+      return () => {
+        if (audioContext) {
+          audioContext.close()
+        }
+      }
     }
   }, [])
 

@@ -581,21 +581,60 @@ export default function CalendarPage() {
                 <div className="space-y-3">
                   {(() => {
                     let sessions: CalendarSession[] = [];
-                    // Training Partners view will be added here (removed dead code)
-                    {
-                      sessions = getWorkoutsForDate(selectedDate).map(workout => ({
-                        id: `perso-${String(workout.id)}`,
-                        name: workout.name,
-                        type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                        status: workout.status,
-                        duration: workout.duration,
-                        isShared: false,
-                        participants: [],
-                        scheduled_date: workout.scheduled_date,
-                        time: (workout as { time?: string }).time || '',
-                        exercises: workout.exercises || [],
-                      }));
+                    const dayYMD = formatDateToYMD(selectedDate);
+                    
+                    // Séances personnelles
+                    const personalSessions = getWorkoutsForDate(selectedDate).map(workout => ({
+                      id: `perso-${String(workout.id)}`,
+                      name: workout.name,
+                      type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                      status: workout.status,
+                      duration: workout.duration,
+                      isShared: false,
+                      participants: [],
+                      scheduled_date: workout.scheduled_date,
+                      time: (workout as { time?: string }).time || '',
+                      exercises: workout.exercises || [],
+                    }));
+
+                    // Séances des partenaires (si activées)
+                    let partnerSessions: CalendarSession[] = [];
+                    if (showPartnersWorkouts) {
+                      const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
+                      partnerSessions = partnersForDate.map(pw => {
+                        const partner = pw.profiles;
+                        const participant = {
+                          id: partner?.id || '',
+                          name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
+                          avatarUrl: partner?.avatar_url || '/default-avatar.png',
+                        };
+                        const correctedType = getCorrectType(pw);
+                        
+                        return {
+                          id: `partner-${pw.id}`,
+                          name: `👥 ${pw.name}`,
+                          type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                          status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
+                          duration: pw.duration,
+                          isShared: true,
+                          participants: [participant],
+                          scheduled_date: pw.scheduled_date,
+                          time: pw.start_time || '',
+                          exercises: [],
+                        };
+                      });
                     }
+
+                    sessions = [...personalSessions, ...partnerSessions];
+                    
+                    // Trier par heure si disponible
+                    sessions.sort((a, b) => {
+                      if (a.time && b.time) {
+                        return a.time.localeCompare(b.time);
+                      }
+                      return 0;
+                    });
+                    
                     if (sessions.length === 0) {
                       return (
                         <div className="text-center py-6 text-gray-500">
