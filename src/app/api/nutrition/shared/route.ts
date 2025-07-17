@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Vérifier que c'est un partenaire accepté avec permission de partage nutrition
+    console.log('🔍 Vérification partenariat pour:', { userId: user.id, partnerId })
     const { data: partnershipData, error: partnershipError } = await supabase
       .from('training_partners')
       .select('*')
@@ -39,11 +40,15 @@ export async function GET(request: NextRequest) {
       .or(`and(requester_id.eq.${user.id},partner_id.eq.${partnerId}),and(requester_id.eq.${partnerId},partner_id.eq.${user.id})`)
       .single()
 
+    console.log('🤝 Résultat partenariat:', { partnershipData, partnershipError })
+
     if (partnershipError || !partnershipData) {
+      console.log('❌ Partenariat non trouvé:', partnershipError)
       return NextResponse.json({ error: 'Partenariat non trouvé ou non accepté' }, { status: 404 })
     }
 
     // Vérifier les permissions de partage nutrition
+    console.log('🔒 Vérification permissions partage pour:', { partnerId, userId: user.id })
     const { data: sharingSettings, error: sharingError } = await supabase
       .from('partner_sharing_settings')
       .select('share_nutrition')
@@ -51,7 +56,10 @@ export async function GET(request: NextRequest) {
       .eq('partner_id', user.id)
       .single()
 
+    console.log('🔐 Résultat permissions:', { sharingSettings, sharingError })
+
     if (sharingError || !sharingSettings?.share_nutrition) {
+      console.log('❌ Partage nutrition non autorisé:', { sharingError, shareNutrition: sharingSettings?.share_nutrition })
       return NextResponse.json({ error: 'Le partenaire n\'a pas activé le partage de nutrition' }, { status: 403 })
     }
 
@@ -84,10 +92,13 @@ export async function GET(request: NextRequest) {
       query = query.gte('date', sevenDaysAgo.toISOString().split('T')[0])
     }
 
+    console.log('📊 Requête nutrition:', { partnerId, date })
     const { data: nutritionData, error: nutritionError } = await query
 
+    console.log('🍽️ Résultat nutrition:', { count: nutritionData?.length || 0, nutritionError })
+
     if (nutritionError) {
-      console.error('Erreur récupération nutrition partagée:', nutritionError)
+      console.error('❌ Erreur récupération nutrition partagée:', nutritionError)
       return NextResponse.json({ error: 'Erreur lors de la récupération des données' }, { status: 500 })
     }
 

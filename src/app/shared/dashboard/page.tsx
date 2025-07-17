@@ -11,7 +11,14 @@ interface Partnership {
   requester_id: string
   partner_id: string
   status: string
+  created_at?: string
   partner: {
+    id: string
+    pseudo: string | null
+    full_name: string | null
+    avatar_url: string | null
+  }
+  requester: {
     id: string
     pseudo: string | null
     full_name: string | null
@@ -25,6 +32,7 @@ export default function SharedDashboardPage() {
   const router = useRouter()
   
   const [partnerships, setPartnerships] = useState<Partnership[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const loadPartnerships = useCallback(async () => {
@@ -32,6 +40,7 @@ export default function SharedDashboardPage() {
 
     try {
       setError(null)
+      setLoading(true)
 
       const response = await fetch('/api/training-partners')
       const result = await response.json()
@@ -50,6 +59,7 @@ export default function SharedDashboardPage() {
       console.error('Erreur chargement partenaires:', err)
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
     } finally {
+      setLoading(false)
     }
   }, [isAuthenticated, user])
 
@@ -59,14 +69,23 @@ export default function SharedDashboardPage() {
     }
   }, [isAuthenticated, user, loadPartnerships])
 
-  const getPartnerDisplayName = (partner: Partnership['partner']) => {
-    return partner.pseudo || partner.full_name || 'Partenaire'
-  }
-
-  const getPartnerId = (partnership: Partnership) => {
-    return partnership.requester_id === user?.id 
-      ? partnership.partner_id 
-      : partnership.requester_id
+  const getPartnerInfo = (partnership: Partnership) => {
+    // Si je suis le requester, mon partenaire est dans partner_id
+    if (partnership.requester_id === user?.id) {
+      return {
+        id: partnership.partner_id,
+        profile: partnership.partner,
+        displayName: partnership.partner.pseudo || partnership.partner.full_name || 'Partenaire'
+      }
+    }
+    // Si je suis le partner, mon partenaire est dans requester_id
+    else {
+      return {
+        id: partnership.requester_id,
+        profile: partnership.requester,
+        displayName: partnership.requester.pseudo || partnership.requester.full_name || 'Partenaire'
+      }
+    }
   }
 
   if (isLoading) {
@@ -101,7 +120,7 @@ export default function SharedDashboardPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold">Dashboard Partage</h1>
-                  <p className="text-purple-100">Accédez aux données partagées de vos partenaires</p>
+                  <p className="text-purple-100">Connecté en tant que <span className="font-semibold">{user?.email}</span></p>
                 </div>
               </div>
             </div>
@@ -114,7 +133,26 @@ export default function SharedDashboardPage() {
           </div>
         )}
 
-        {partnerships.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : partnerships.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-8 text-center">
             <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Users className="h-8 w-8 text-gray-400" />
@@ -135,8 +173,9 @@ export default function SharedDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {partnerships.map((partnership) => {
-              const partnerId = getPartnerId(partnership)
-              const partnerName = getPartnerDisplayName(partnership.partner)
+              const partnerInfo = getPartnerInfo(partnership)
+              const partnerId = partnerInfo.id
+              const partnerName = partnerInfo.displayName
 
               return (
                 <motion.div
@@ -149,10 +188,19 @@ export default function SharedDashboardPage() {
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
                       {partnerName.charAt(0).toUpperCase()}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{partnerName}</h3>
-                      <p className="text-sm text-gray-500">Partenaire d&apos;entraînement</p>
+                      <p className="text-sm text-gray-500">Partenaire depuis {new Date(partnership.created_at || Date.now()).toLocaleDateString('fr-FR')}</p>
                     </div>
+                  </div>
+                  
+                  {/* Indicateur de partage */}
+                  <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-blue-800">Consulter les données de {partnerName}</span>
+                    </div>
+                    <p className="text-xs text-blue-700">Cliquez sur les sections ci-dessous pour accéder aux données partagées</p>
                   </div>
 
                   <div className="space-y-3">
@@ -165,7 +213,7 @@ export default function SharedDashboardPage() {
                         <div className="bg-orange-500 rounded-lg p-2">
                           <Calendar className="h-4 w-4 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Entraînements</span>
+                        <span className="font-medium text-gray-900">Entraînements de {partnerName}</span>
                       </div>
                       <span className="text-orange-600 text-sm">Voir dans calendrier</span>
                     </button>
@@ -179,9 +227,9 @@ export default function SharedDashboardPage() {
                         <div className="bg-green-500 rounded-lg p-2">
                           <Apple className="h-4 w-4 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Nutrition</span>
+                        <span className="font-medium text-gray-900">Nutrition de {partnerName}</span>
                       </div>
-                      <span className="text-green-600 text-sm">Nouveau !</span>
+                      <span className="text-green-600 text-sm">Disponible</span>
                     </button>
 
                     {/* Progress */}
@@ -194,18 +242,43 @@ export default function SharedDashboardPage() {
                         <div className="bg-blue-500 rounded-lg p-2">
                           <TrendingUp className="h-4 w-4 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Progrès</span>
+                        <span className="font-medium text-gray-900">Progrès de {partnerName}</span>
                       </div>
                       <span className="text-blue-600 text-sm">Bientôt</span>
                     </button>
                   </div>
 
+                  {/* Section de partage mutuel */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-amber-800">Vos données partagées avec {partnerName}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-2 text-xs mb-3">
+                      <div className="bg-orange-50 p-2 rounded text-center">
+                        <div className="text-orange-600 font-medium">Entraînements</div>
+                        <div className="text-orange-500">Activé</div>
+                      </div>
+                      <div className="bg-green-50 p-2 rounded text-center">
+                        <div className="text-green-600 font-medium">Nutrition</div>
+                        <div className="text-green-500">Activé</div>
+                      </div>
+                      <div className="bg-gray-50 p-2 rounded text-center">
+                        <div className="text-gray-600 font-medium">Progrès</div>
+                        <div className="text-gray-500">Désactivé</div>
+                      </div>
+                    </div>
+                    
                     <button
                       onClick={() => router.push(`/training-partners/${partnership.id}/settings`)}
-                      className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                     >
-                      Gérer les paramètres de partage
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>Modifier les paramètres</span>
                     </button>
                   </div>
                 </motion.div>

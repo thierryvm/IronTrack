@@ -5,6 +5,9 @@ import { Users, UserPlus, Search, Check, X, Clock, Trash2, Settings, MessageCirc
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
+import { useRealtimePartnerships } from '@/hooks/useRealtimePartnerships'
+import { RealtimeNotificationToast } from '@/components/ui/RealtimeNotificationToast'
 
 interface Profile {
   id: string
@@ -45,6 +48,18 @@ export default function TrainingPartnersPage() {
     suggestion?: string
   } | null>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // Hooks pour les notifications temps réel
+  const {
+    notifications,
+    removeNotification,
+    markAsRead,
+    soundEnabled,
+    setSoundEnabled
+  } = useRealtimeNotifications()
+
+  // Hook pour la mise à jour automatique
+  const { refreshTrigger } = useRealtimePartnerships()
   const lastAuthStateRef = useRef<{ isAuthenticated: boolean; userId: string | null }>({
     isAuthenticated: false,
     userId: null
@@ -89,6 +104,14 @@ export default function TrainingPartnersPage() {
       setLoading(false)
     }
   }, [isAuthenticated, user])
+
+  // Rafraîchir les données quand refreshTrigger change
+  useEffect(() => {
+    if (refreshTrigger > 0 && isAuthenticated && user) {
+      console.log('🔄 Rafraîchissement automatique des partenaires')
+      loadPartnerships()
+    }
+  }, [refreshTrigger, isAuthenticated, user, loadPartnerships])
 
   useEffect(() => {
     const currentUserId = user?.id || null
@@ -341,6 +364,15 @@ export default function TrainingPartnersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Notifications en temps réel */}
+      <RealtimeNotificationToast
+        notifications={notifications}
+        onRemove={removeNotification}
+        onMarkAsRead={markAsRead}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => setSoundEnabled(!soundEnabled)}
+      />
+
       {/* Notification Toast */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2">
