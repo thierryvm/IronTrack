@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation'
 import { QuickTimer } from '@/components/ui/Timer'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
+import { useBadges } from '@/hooks/useBadges'
 
 interface UserSound {
   id: string;
@@ -41,6 +42,7 @@ interface ExerciseItem {
 
 export default function HomePage() {
   const { isLoading: profileLoading } = useUserProfile()
+  const { userBadges, newBadgeEarned, checkAndAwardBadges } = useBadges()
   const [stats, setStats] = useState({
     totalWorkouts: 0,
     thisWeek: 0,
@@ -178,12 +180,18 @@ export default function HomePage() {
         setLoading(false)
         return
       }
-      // Récupérer toutes les séances réalisées
+      // Récupérer toutes les séances réalisées (plusieurs statuts possibles)
       const { data: workouts, error: workoutsError } = await supabase
         .from('workouts')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'Réalisé');
+        .in('status', ['Réalisé', 'Terminé']);
+      
+      // Debug temporaire pour vérifier les données
+      console.log('🔍 Debug workouts:', workouts?.length || 0, 'séances trouvées')
+      if (workouts && workouts.length > 0) {
+        console.log('📋 Première séance:', workouts[0])
+      }
       // Récupérer toutes les performances
       const { data: perfLogs } = await supabase
         .from('performance_logs')
@@ -235,6 +243,11 @@ export default function HomePage() {
           currentStreak: streak,
           totalWeight: Math.round(totalWeight)
         });
+        
+        // Vérifier et attribuer les badges après le calcul des stats
+        if (typeof checkAndAwardBadges === 'function') {
+          checkAndAwardBadges()
+        }
       }
       // Exercices récents (conserve l'ancien code)
       if (!perfLogsRecent) {
@@ -600,12 +613,23 @@ export default function HomePage() {
                 </p>
               )}
               
-              {/* Debug temporaire pour vérifier les stats */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 text-xs text-purple-200 bg-purple-700 rounded p-2">
-                  Debug: thisWeek={stats.thisWeek}, currentStreak={stats.currentStreak}, totalWorkouts={stats.totalWorkouts}
+              {/* Affichage des badges obtenus */}
+              {userBadges.length > 0 && (
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {userBadges.slice(0, 3).map((badge, index) => (
+                    <div key={index} className="bg-purple-600 rounded-lg px-3 py-1 text-sm flex items-center gap-1">
+                      <span className="text-lg">{badge.icon}</span>
+                      <span className="font-semibold">{badge.name}</span>
+                    </div>
+                  ))}
+                  {userBadges.length > 3 && (
+                    <div className="bg-purple-600 rounded-lg px-3 py-1 text-sm">
+                      +{userBadges.length - 3} autres
+                    </div>
+                  )}
                 </div>
               )}
+              
             </div>
             
             {/* Progression visuelle */}
@@ -617,18 +641,25 @@ export default function HomePage() {
               
               {/* Barre de progression animée */}
               <div className="flex-1 max-w-md w-full">
-                <div className="w-full bg-purple-600 rounded-full h-4 mb-2 overflow-hidden">
+                <div className="w-full bg-purple-600 rounded-full h-4 mb-2 overflow-hidden border-2 border-purple-400">
                   <div 
-                    className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-4 rounded-full transition-all duration-1000 shadow-sm"
-                    style={{ width: `${Math.min((stats.thisWeek / 4) * 100, 100)}%` }}
+                    className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-full rounded-full transition-all duration-1000 shadow-sm"
+                    style={{ 
+                      width: `${Math.max(Math.min((stats.thisWeek / 4) * 100, 100), 2)}%`,
+                      minWidth: stats.thisWeek === 0 ? '0%' : '8px'
+                    }}
                   ></div>
                 </div>
-                <p className="text-xs text-purple-100 font-semibold">
-                  {stats.thisWeek >= 4 
-                    ? "🎯 Objectif atteint ! Bravo !" 
-                    : `Plus que ${4 - stats.thisWeek} séance${4 - stats.thisWeek > 1 ? 's' : ''} à faire !`
-                  }
-                </p>
+                <div className="flex justify-between items-center text-xs text-purple-100 font-semibold">
+                  <span>0</span>
+                  <span className="text-center">
+                    {stats.thisWeek >= 4 
+                      ? "🎯 Objectif atteint ! Bravo !" 
+                      : `${4 - stats.thisWeek} séance${4 - stats.thisWeek > 1 ? 's' : ''} restante${4 - stats.thisWeek > 1 ? 's' : ''}`
+                    }
+                  </span>
+                  <span>4</span>
+                </div>
               </div>
               
               {/* Streak counter amélioré */}
@@ -656,6 +687,18 @@ export default function HomePage() {
 
       {/* Mascotte */}
       <MascotWidget />
+
+      {/* Notification nouveau badge */}
+      {newBadgeEarned && (
+        <div className="fixed top-4 right-4 z-50 bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-xl shadow-2xl animate-bounce">
+          <div className="text-center">
+            <div className="text-4xl mb-2">{newBadgeEarned.icon}</div>
+            <h3 className="font-bold text-lg mb-1">Nouveau Badge !</h3>
+            <p className="text-sm opacity-90">{newBadgeEarned.name}</p>
+            <p className="text-xs opacity-75 mt-1">{newBadgeEarned.description}</p>
+          </div>
+        </div>
+      )}
 
       {/* Modal SessionTimer */}
       {showSessionTimer && (
