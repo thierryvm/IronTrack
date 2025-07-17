@@ -414,10 +414,48 @@ export default function HomePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Séance du jour - Section prioritaire */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-8 text-white shadow-lg">
+            <div className="flex flex-col lg:flex-row items-center justify-between">
+              <div className="text-center lg:text-left mb-6 lg:mb-0">
+                <h2 className="text-3xl font-bold mb-2">Prêt pour ta séance ?</h2>
+                <p className="text-orange-100 text-lg">
+                  {stats.thisWeek === 0 
+                    ? "Commence ta première séance de la semaine !" 
+                    : `Tu as déjà fait ${stats.thisWeek} séance${stats.thisWeek > 1 ? 's' : ''} cette semaine 💪`
+                  }
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/workouts/new"
+                  className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                >
+                  <Dumbbell className="h-6 w-6" />
+                  Commencer ma séance
+                </Link>
+                <Link
+                  href="/calendar"
+                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-500"
+                >
+                  <Calendar className="h-5 w-5" />
+                  Voir le planning
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Statistiques */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
           {statCards.map((stat, index) => {
@@ -452,7 +490,10 @@ export default function HomePage() {
             className="lg:col-span-2"
           >
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Actions rapides</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Actions rapides</h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd&apos;hui ?</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon
@@ -518,28 +559,56 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Section motivation */}
+        {/* Section motivation améliorée */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[120px]"
+          className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[140px]"
         >
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Objectif de la semaine</h2>
-            <p className="text-purple-100 mb-4">
-              Complète 4 séances cette semaine pour débloquer le badge &quot;Déterminé&quot; 🏅
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Trophy className="h-6 w-6 text-yellow-300" />
+              <h2 className="text-2xl font-bold">Objectif de la semaine</h2>
+            </div>
+            <p className="text-purple-100 mb-6">
+              {stats.thisWeek >= 4 
+                ? "🎉 Félicitations ! Tu as atteint ton objectif de la semaine !" 
+                : `Complète 4 séances cette semaine pour débloquer le badge "Déterminé" 🏅`
+              }
             </p>
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex items-center justify-center space-x-8">
               <div className="text-center">
-                <p className="text-3xl font-bold">{stats.thisWeek}/4</p>
+                <p className="text-4xl font-bold">{stats.thisWeek}/4</p>
                 <p className="text-sm text-purple-100">Séances</p>
               </div>
-              <div className="w-32 bg-purple-600 rounded-full h-2">
-                <div 
-                  className="bg-yellow-300 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${(stats.thisWeek / 4) * 100}%` }}
-                ></div>
+              <div className="flex-1 max-w-md">
+                <div className="w-full bg-purple-600 rounded-full h-3 mb-2">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-300 to-yellow-400 h-3 rounded-full transition-all duration-500 shadow-sm"
+                    style={{ width: `${Math.min((stats.thisWeek / 4) * 100, 100)}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-purple-100">
+                  {stats.thisWeek >= 4 
+                    ? "Objectif atteint ! 🎯" 
+                    : `Plus que ${4 - stats.thisWeek} séance${4 - stats.thisWeek > 1 ? 's' : ''} !`
+                  }
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-1">
+                  {stats.currentStreak > 0 ? '🔥' : '💪'}
+                </div>
+                <p className="text-sm text-purple-100">
+                  {stats.currentStreak > 0 
+                    ? `${stats.currentStreak} jour${stats.currentStreak > 1 ? 's' : ''}`
+                    : "Commence"
+                  }
+                </p>
+                <p className="text-xs text-purple-100">
+                  {stats.currentStreak > 0 ? 'de série' : 'ta série'}
+                </p>
               </div>
             </div>
           </div>
