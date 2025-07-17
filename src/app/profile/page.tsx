@@ -30,6 +30,7 @@ import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
 import { useBadges } from '@/hooks/useBadges'
+import { useProgressionStats } from '@/hooks/useProgressionStats'
 // import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
@@ -185,6 +186,7 @@ export default function ProfilePage() {
   const [ironBuddyLevel, setIronBuddyLevel] = useState<'discret' | 'normal' | 'ambianceur'>('normal')
   const router = useRouter();
   const { userBadges } = useBadges();
+  const { progressionStats, personalRecords, loading: progressionLoading } = useProgressionStats();
   // États pour les modales
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -988,6 +990,23 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div>
+                    <span className="text-gray-500">Poids initial</span>
+                    <div className="font-medium text-gray-900">
+                      {isEditing && profile ? (
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="30"
+                          max="200"
+                          placeholder="Ex: 70.0"
+                          className="w-full px-2 py-1 rounded border border-gray-200"
+                          value={profile.initial_weight || ''}
+                          onChange={e => handleProfileChange('initial_weight', parseFloat(e.target.value) || 0)}
+                        />
+                      ) : profile?.initial_weight ? `${profile.initial_weight} kg` : <span className="italic text-gray-400">Non renseigné</span>}
+                    </div>
+                  </div>
+                  <div>
                     <span className="text-gray-500">Membre depuis</span>
                     <div className="font-medium text-gray-900">{profile && profile.joinDate ? new Date(profile.joinDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }) : <span className="italic text-gray-400">Non renseigné</span>}</div>
                   </div>
@@ -1032,28 +1051,40 @@ export default function ProfilePage() {
               
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-center p-4 bg-orange-50 rounded-lg group relative">
                     <Trophy className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.totalWorkouts || 0}</p>
                     <p className="text-sm text-gray-600">Séances totales</p>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      Toutes les séances marquées comme &quot;Réalisé&quot; ou &quot;Terminé&quot;
+                    </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
                     <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.currentStreak || 0}</p>
                     <p className="text-sm text-gray-600">Jours consécutifs</p>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      Série actuelle de jours avec au moins une séance terminée
+                    </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-center p-4 bg-green-50 rounded-lg group relative">
                     <Activity className="h-8 w-8 text-green-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.averageWorkoutsPerWeek || 0}</p>
                     <p className="text-sm text-gray-600">Séances/semaine</p>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      Moyenne des séances terminées par semaine
+                    </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-center p-4 bg-purple-50 rounded-lg group relative">
                     <Target className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats?.achievements || 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">{userBadges?.length || 0}</p>
                     <p className="text-sm text-gray-600">Badges gagnés</p>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      Badges de réalisation obtenus automatiquement
+                    </div>
                   </div>
                 </div>
                 
@@ -1075,36 +1106,67 @@ export default function ProfilePage() {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3">Évolution du poids</h4>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Début</span>
-                      <span className="font-medium text-gray-900">70 kg</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Actuel</span>
-                      <span className="font-medium text-orange-600">{profile.weight} kg</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Gain</span>
-                      <span className="font-medium text-green-600">+{profile.weight - 70} kg</span>
-                    </div>
+                    {progressionStats ? (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Début</span>
+                          <span className="font-medium text-gray-900">
+                            {progressionStats.initial_weight ? `${progressionStats.initial_weight} kg` : 'Non renseigné'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Actuel</span>
+                          <span className="font-medium text-orange-600">
+                            {progressionStats.current_weight ? `${progressionStats.current_weight} kg` : 'Non renseigné'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Évolution</span>
+                          <span className={`font-medium ${progressionStats.weight_gain && progressionStats.weight_gain > 0 ? 'text-green-600' : progressionStats.weight_gain && progressionStats.weight_gain < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                            {progressionStats.weight_gain ? `${progressionStats.weight_gain > 0 ? '+' : ''}${progressionStats.weight_gain} kg` : 'Aucune donnée'}
+                          </span>
+                        </div>
+                        {!progressionStats.initial_weight && progressionStats.current_weight && (
+                          <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                            💡 Définissez votre poids initial pour suivre votre progression
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-sm text-gray-500">Chargement des données...</div>
+                    )}
                   </div>
                 </div>
                 
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3">Records personnels</h4>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Développé couché</span>
-                      <span className="font-medium text-gray-900">92.5 kg</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Squat</span>
-                      <span className="font-medium text-gray-900">120 kg</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Tractions</span>
-                      <span className="font-medium text-gray-900">8 reps</span>
-                    </div>
+                    {progressionLoading ? (
+                      <div className="text-sm text-gray-500">Chargement des records...</div>
+                    ) : personalRecords && personalRecords.length > 0 ? (
+                      <>
+                        {personalRecords.slice(0, 5).map((record, index) => (
+                          <div key={index} className="flex justify-between text-sm">
+                            <span className="text-gray-600">{record.exercise_name}</span>
+                            <span className="font-medium text-gray-900">
+                              {record.max_weight ? `${record.max_weight} kg` : ''}
+                              {record.max_weight && record.max_reps ? ' × ' : ''}
+                              {record.max_reps ? `${record.max_reps} reps` : ''}
+                            </span>
+                          </div>
+                        ))}
+                        {personalRecords.length > 5 && (
+                          <div className="text-xs text-gray-500 mt-2">
+                            Et {personalRecords.length - 5} autres records...
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-sm text-gray-500 text-center py-4">
+                        <p>Aucun record personnel enregistré</p>
+                        <p className="text-xs mt-1">Commencez à enregistrer vos performances dans la section &quot;Progression&quot; !</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
