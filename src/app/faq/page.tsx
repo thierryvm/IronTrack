@@ -43,6 +43,12 @@ const faqData: FAQItem[] = [
     answer: 'Oui, dans l\'onglet "Invitations" → section "Invitations Envoyées" → cliquez sur le X à côté de l\'invitation. Elle sera annulée immédiatement.',
     category: 'partners'
   },
+  {
+    id: 'partners-6',
+    question: 'Puis-je partager mes données nutritionnelles avec mes partenaires ?',
+    answer: 'Oui, vous pouvez partager vos données nutritionnelles (recettes, objectifs, progression) avec vos partenaires acceptés. Allez dans "Partenaires" → "Mes Partenaires" → paramètres de partage pour activer le partage de nutrition.',
+    category: 'partners'
+  },
 
   // Workouts
   {

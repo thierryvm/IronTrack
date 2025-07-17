@@ -198,7 +198,7 @@ export default function SupportPage() {
                               <p className="text-sm text-gray-700 mb-2">Paramètres de partage :</p>
                               <ul className="space-y-1 text-sm text-gray-600">
                                 <li>• 🏋️ Séances d&apos;entraînement</li>
-                                <li>• 🥗 Nutrition (à venir)</li>
+                                <li>• 🥗 Nutrition (recettes, objectifs)</li>
                                 <li>• 📈 Progression (à venir)</li>
                               </ul>
                             </div>
@@ -312,9 +312,15 @@ export default function SupportPage() {
 
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">🍎 Nutrition</h3>
-                      <p className="text-gray-700">
-                        Gérez votre alimentation et suivez vos objectifs nutritionnels dans la section dédiée.
+                      <p className="text-gray-700 mb-2">
+                        Gérez votre alimentation et suivez vos objectifs nutritionnels dans la section dédiée :
                       </p>
+                      <ul className="list-disc list-inside space-y-1 text-gray-700">
+                        <li>Créez et sauvegardez vos recettes personnalisées</li>
+                        <li>Suivez vos objectifs caloriques et nutritionnels</li>
+                        <li>Partagez vos données nutritionnelles avec vos partenaires</li>
+                        <li>Consultez les recettes partagées par vos partenaires</li>
+                      </ul>
                     </section>
                   </div>
                 </div>
