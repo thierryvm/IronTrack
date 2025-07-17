@@ -33,6 +33,7 @@ export function useBadges() {
       
       if (error) {
         console.error('Erreur chargement badges:', error)
+        console.error('Détails erreur:', JSON.stringify(error, null, 2))
       } else {
         setBadges(data || [])
       }
@@ -48,15 +49,31 @@ export function useBadges() {
       if (!user) return
 
       const { data, error } = await supabase
-        .from('user_badges_view')
-        .select('*')
+        .from('user_badges')
+        .select(`
+          *,
+          badges (
+            id,
+            name,
+            description,
+            icon,
+            color,
+            condition_type,
+            condition_value
+          )
+        `)
         .eq('user_id', user.id)
         .order('earned_at', { ascending: false })
       
       if (error) {
         console.error('Erreur chargement badges utilisateur:', error)
       } else {
-        setUserBadges(data || [])
+        // Transformer les données pour correspondre à l'interface UserBadge
+        const transformedBadges = data?.map(item => ({
+          ...item.badges,
+          earned_at: item.earned_at
+        })) || []
+        setUserBadges(transformedBadges)
       }
     } catch (error) {
       console.error('Erreur badges utilisateur:', error)
@@ -161,6 +178,13 @@ export function useBadges() {
 
     initializeBadges()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Vérifier les badges quand les badges sont chargés
+  useEffect(() => {
+    if (badges.length > 0 && !loading) {
+      checkAndAwardBadges()
+    }
+  }, [badges, loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     badges,

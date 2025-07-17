@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation'
 import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
+import { useBadges } from '@/hooks/useBadges'
 // import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
@@ -183,6 +184,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [ironBuddyLevel, setIronBuddyLevel] = useState<'discret' | 'normal' | 'ambianceur'>('normal')
   const router = useRouter();
+  const { userBadges } = useBadges();
   // États pour les modales
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -1151,6 +1153,40 @@ export default function ProfilePage() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Section Badges de réalisation */}
+            <div className="bg-white rounded-xl shadow-md p-6 mt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                <Star className="h-6 w-6 text-purple-500" />
+                <span>Badges de réalisation</span>
+              </h2>
+              <div className="space-y-6">
+                {userBadges.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {userBadges.map((badge) => (
+                      <div key={badge.name} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+                        <div className="flex items-center space-x-3">
+                          <div className="text-2xl">{badge.icon}</div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{badge.name}</h3>
+                            <p className="text-sm text-gray-600">{badge.description}</p>
+                            <p className="text-xs text-purple-600 mt-1">
+                              Obtenu le {new Date(badge.earned_at).toLocaleDateString('fr-FR')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">Aucun badge de réalisation pour le moment</p>
+                    <p className="text-sm text-gray-400 mt-2">Continue tes entraînements pour débloquer des badges !</p>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

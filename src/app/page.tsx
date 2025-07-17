@@ -43,6 +43,7 @@ interface ExerciseItem {
 export default function HomePage() {
   const { isLoading: profileLoading } = useUserProfile()
   const { userBadges, newBadgeEarned, checkAndAwardBadges } = useBadges()
+  
   const [stats, setStats] = useState({
     totalWorkouts: 0,
     thisWeek: 0,
@@ -52,6 +53,19 @@ export default function HomePage() {
   const [recentExercises, setRecentExercises] = useState<ExerciseItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showSessionTimer, setShowSessionTimer] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
+
+  // Fermer l'info-bulle quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowTooltip(false)
+    }
+
+    if (showTooltip) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [showTooltip])
   const [sessionSteps, setSessionSteps] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('irontrack-session-steps');
@@ -581,12 +595,20 @@ export default function HomePage() {
         >
           {/* Info bulle explicative */}
           <div className="absolute top-4 right-4 group">
-            <button className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors">
+            <button 
+              className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowTooltip(!showTooltip)
+              }}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
             </button>
-            <div className="absolute right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+            <div className={`absolute right-0 md:right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 md:w-64 max-w-[calc(100vw-2rem)] transition-opacity pointer-events-none z-10 transform -translate-x-1/2 md:translate-x-0 left-1/2 md:left-auto ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
               <p className="font-semibold mb-1">Comment ça marche ?</p>
               <p>Les objectifs se basent sur tes séances marquées comme &quot;Réalisé&quot; ou &quot;Terminé&quot;. Va dans &quot;Séances&quot; pour marquer tes entraînements comme terminés !</p>
             </div>

@@ -71,6 +71,21 @@ diagnose-*.mjs
 test-*.mjs
 nul
 
+# Fichiers temporaires SQL et de debug
+*_system.sql
+*_fix.sql
+*_security*.sql
+debug_*.sql
+force_cache_refresh.sql
+simple_*.sql
+badges_system*.sql
+
+# Fichiers de cahier des charges et audit (ne pas commiter)
+CAHIER_DES_CHARGES_UX.md
+irontrack_ux_audit.md
+*_audit.md
+*_charges.md
+
 # Fichiers de test et documentation de développement
 TESTS-VALIDATION.md
 SOLUTION-PERSONNALISATION.md
