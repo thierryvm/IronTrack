@@ -68,6 +68,7 @@ export default function SharedNutritionPage() {
 
     try {
       setError(null)
+      console.log('🔍 Chargement nutrition partagée pour:', { partnerId, date, user: user.id })
 
       const url = new URL('/api/nutrition/shared', window.location.origin)
       url.searchParams.set('partnerId', partnerId)
@@ -75,16 +76,20 @@ export default function SharedNutritionPage() {
         url.searchParams.set('date', date)
       }
 
+      console.log('📡 URL API:', url.toString())
       const response = await fetch(url.toString())
       const result = await response.json()
+
+      console.log('📊 Réponse API:', { status: response.status, result })
 
       if (!response.ok) {
         throw new Error(result.error || 'Erreur lors du chargement')
       }
 
       setNutritionData(result.data)
+      console.log('✅ Données nutrition chargées:', result.data)
     } catch (err) {
-      console.error('Erreur chargement nutrition partagée:', err)
+      console.error('❌ Erreur chargement nutrition partagée:', err)
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
     } finally {
     }
