@@ -1317,34 +1317,34 @@ export default function ProfilePage() {
                 {/* Sélection de mascotte */}
                 <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
                   <span className="font-bold text-orange-600">Choisir ma mascotte</span>
-                  <div className="flex gap-4 mt-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
                     <button
-                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('ironbuddy')}
                     >
-                      <Dumbbell className="h-8 w-8 text-orange-600 animate-bounce" />
-                      <span className="mt-1 text-xs font-bold">IronBuddy</span>
+                      <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 animate-bounce" />
+                      <span className="mt-1 text-xs font-bold text-center">IronBuddy</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('cat')}
                     >
-                      <Cat className="h-8 w-8 text-yellow-600 animate-pulse" />
-                      <span className="mt-1 text-xs font-bold">Félix</span>
+                      <Cat className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 animate-pulse" />
+                      <span className="mt-1 text-xs font-bold text-center">Félix</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('bot')}
                     >
-                      <Bot className="h-8 w-8 text-blue-600 animate-spin-slow" />
-                      <span className="mt-1 text-xs font-bold">RoboCoach</span>
+                      <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin-slow" />
+                      <span className="mt-1 text-xs font-bold text-center">RoboCoach</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('star')}
                     >
-                      <Star className="h-8 w-8 text-purple-600 animate-ping" />
-                      <span className="mt-1 text-xs font-bold">SuperStar</span>
+                      <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 animate-ping" />
+                      <span className="mt-1 text-xs font-bold text-center">SuperStar</span>
                     </button>
                   </div>
                   <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l&apos;app et t&apos;encouragera à chaque étape !</p>
