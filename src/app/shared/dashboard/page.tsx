@@ -42,12 +42,22 @@ export default function SharedDashboardPage() {
       setError(null)
       setLoading(true)
 
+      console.log('🔍 Chargement des partenariats...')
       const response = await fetch('/api/training-partners')
-      const result = await response.json()
+      
+      console.log('📡 Réponse API training-partners:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers.get('content-type')
+      })
 
       if (!response.ok) {
-        throw new Error(result.error || 'Erreur lors du chargement')
+        const errorText = await response.text()
+        console.error('❌ Erreur API:', errorText)
+        throw new Error(`Erreur ${response.status}: ${errorText}`)
       }
+
+      const result = await response.json()
 
       // Filtrer seulement les partenaires acceptés
       const acceptedPartnerships = result.partnerships?.filter(
