@@ -186,7 +186,7 @@ export default function ProfilePage() {
   const [ironBuddyLevel, setIronBuddyLevel] = useState<'discret' | 'normal' | 'ambianceur'>('normal')
   const router = useRouter();
   const { userBadges } = useBadges();
-  const { progressionStats, personalRecords, loading: progressionLoading } = useProgressionStats();
+  const { progressionStats, personalRecords, loading: progressionLoading, reload: reloadProgressionStats } = useProgressionStats();
   // États pour les modales
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -418,9 +418,14 @@ export default function ProfilePage() {
         gender: profile.gender,
         goal: profile.goal,
         experience: profile.experience,
-        pseudo: profile.pseudo // Ajout de la sauvegarde du pseudo
+        pseudo: profile.pseudo, // Ajout de la sauvegarde du pseudo
+        initial_weight: profile.initial_weight
       })
       .eq('id', profile.id)
+    
+    // Recharger les stats de progression après la mise à jour
+    reloadProgressionStats()
+    
     setIsEditing(false)
     setLoading(false)
     if (error) {
@@ -900,24 +905,24 @@ export default function ProfilePage() {
                         <span className="text-xs text-gray-500">Taille</span>
                         {isEditing ? (
                           <div className="flex items-center gap-2">
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.max(0, (profile.height || 0) - 1))}>-</button>
-                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.height} maxLength={3} onChange={e => handleProfileChange('height', Number(e.target.value.replace(/\D/g, '')))} aria-label="Taille" />
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.min(250, (profile.height || 0) + 1))}>+</button>
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.max(0, Math.round(((profile.height || 0) - 0.1) * 10) / 10))}>-</button>
+                            <input type="number" step="0.1" min="0" max="250" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.height || ''} onChange={e => handleProfileChange('height', parseFloat(e.target.value) || 0)} aria-label="Taille" />
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.min(250, Math.round(((profile.height || 0) + 0.1) * 10) / 10))}>+</button>
                           </div>
                         ) : (
-                          <div>{profile.height}</div>
+                          <div>{profile.height ? `${profile.height} cm` : 'Non renseigné'}</div>
                         )}
                       </div>
                       <div className="flex flex-col items-center md:items-start w-full">
                         <span className="text-xs text-gray-500">Poids</span>
                         {isEditing ? (
                           <div className="flex items-center gap-2">
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.max(0, (profile.weight || 0) - 1))}>-</button>
-                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.weight} maxLength={3} onChange={e => handleProfileChange('weight', Number(e.target.value.replace(/\D/g, '')))} aria-label="Poids" />
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.min(300, (profile.weight || 0) + 1))}>+</button>
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.max(0, Math.round(((profile.weight || 0) - 0.1) * 10) / 10))}>-</button>
+                            <input type="number" step="0.1" min="0" max="300" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.weight || ''} onChange={e => handleProfileChange('weight', parseFloat(e.target.value) || 0)} aria-label="Poids" />
+                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.min(300, Math.round(((profile.weight || 0) + 0.1) * 10) / 10))}>+</button>
                           </div>
                         ) : (
-                          <div>{profile.weight}</div>
+                          <div>{profile.weight ? `${profile.weight} kg` : 'Non renseigné'}</div>
                         )}
                       </div>
                     </div>
