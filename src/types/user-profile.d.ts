@@ -14,4 +14,6 @@ export interface UserProfile {
   joinDate: string;
   pseudo?: string;
   initial_weight?: number;
+  frequency?: 'Faible' | 'Modérée' | 'Élevée';
+  availability?: number;
 } 

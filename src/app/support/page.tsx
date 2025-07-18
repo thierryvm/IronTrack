@@ -5,7 +5,7 @@ import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpe
 import Link from 'next/link'
 
 export default function SupportPage() {
-  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression'>('partners')
+  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding'>('partners')
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -33,13 +33,14 @@ export default function SupportPage() {
                   { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d&apos;entraînement' },
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
                   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, desc: 'Suivi des performances' },
-                  { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' }
+                  { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' },
+                  { id: 'onboarding', label: 'Onboarding & Configuration', icon: Target, desc: 'Première configuration' }
                 ].map((section) => {
                   const Icon = section.icon
                   return (
                     <button
                       key={section.id}
-                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression')}
+                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression' | 'onboarding')}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
                         activeSection === section.id
                           ? 'bg-orange-50 text-orange-700 border border-orange-200'
@@ -602,6 +603,110 @@ export default function SupportPage() {
                   </div>
                 </div>
               )}
+
+              {/* Onboarding & Configuration */}
+              {activeSection === 'onboarding' && (
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Onboarding & Configuration Initiale</h2>
+                  <div className="space-y-6">
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🎯 Première Configuration</h3>
+                      <p className="text-gray-700 mb-4">
+                        L&apos;onboarding vous guide lors de votre première connexion pour configurer votre profil et vos préférences d&apos;entraînement.
+                      </p>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 className="font-medium text-green-800 mb-2">Comment refaire l&apos;onboarding ?</h4>
+                        <p className="text-sm text-green-700">
+                          Accédez à <strong>/onboarding</strong> ou cliquez sur le bouton &quot;Refaire l&apos;onboarding&quot; dans les actions rapides.
+                        </p>
+                      </div>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📝 Étapes de Configuration</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-orange-600">1</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Objectif d&apos;entraînement</h4>
+                            <p className="text-sm text-gray-600">Prise de masse, Perte de poids, Maintien, ou Performance</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-orange-600">2</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Niveau d&apos;expérience</h4>
+                            <p className="text-sm text-gray-600">Débutant, Intermédiaire, ou Avancé</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-orange-600">3</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Fréquence d&apos;entraînement</h4>
+                            <p className="text-sm text-gray-600">Faible, Modérée, ou Élevée + disponibilité par séance</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-orange-600">4</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Informations physiques</h4>
+                            <p className="text-sm text-gray-600">Taille, poids actuel, âge, et poids initial</p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🔄 Mise à jour des Données</h3>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-800 mb-2">Synchronisation automatique</h4>
+                        <p className="text-sm text-blue-700 mb-3">
+                          Après l&apos;onboarding, vos données sont automatiquement synchronisées avec votre profil.
+                        </p>
+                        <ul className="text-sm text-blue-700 space-y-1">
+                          <li>• <strong>Préférences d&apos;entraînement</strong> : Mises à jour systématiquement</li>
+                          <li>• <strong>Données physiques</strong> : Taille, poids, âge mis à jour</li>
+                          <li>• <strong>Poids initial</strong> : Préservé pour maintenir l&apos;historique de progression</li>
+                        </ul>
+                      </div>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">❓ FAQ Onboarding</h3>
+                      <div className="space-y-3">
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Puis-je modifier mes données après l&apos;onboarding ?</h4>
+                          <p className="text-sm text-gray-600">
+                            Oui ! Vous pouvez modifier toutes vos données via la page Profil ou refaire l&apos;onboarding complet.
+                          </p>
+                        </div>
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Pourquoi le poids initial n&apos;est-il pas modifié ?</h4>
+                          <p className="text-sm text-gray-600">
+                            Le poids initial est préservé pour maintenir l&apos;historique de votre progression. 
+                            Vous pouvez le modifier manuellement via l&apos;édition du profil.
+                          </p>
+                        </div>
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Mes données ne s&apos;affichent pas dans le profil ?</h4>
+                          <p className="text-sm text-gray-600">
+                            Après l&apos;onboarding, vous êtes automatiquement redirigé vers votre profil avec un rechargement.
+                            Si le problème persiste, actualisez la page.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -656,6 +761,18 @@ export default function SupportPage() {
                 <p className="text-sm text-gray-600">Gérer votre profil</p>
               </div>
               <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-green-500" />
+            </Link>
+
+            <Link 
+              href="/onboarding" 
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-colors group"
+            >
+              <Target className="h-6 w-6 text-orange-500" />
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Onboarding</p>
+                <p className="text-sm text-gray-600">Refaire la configuration</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500" />
             </Link>
           </div>
         </div>

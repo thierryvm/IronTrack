@@ -23,6 +23,7 @@ import { QuickTimer } from '@/components/ui/Timer'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
 import { useBadges } from '@/hooks/useBadges'
+import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 
 interface UserSound {
   id: string;
@@ -43,6 +44,9 @@ interface ExerciseItem {
 export default function HomePage() {
   const { isLoading: profileLoading } = useUserProfile()
   const { userBadges, newBadgeEarned } = useBadges()
+  
+  // Vérifier l'onboarding
+  useOnboardingCheck()
   
   const [stats, setStats] = useState({
     totalWorkouts: 0,
@@ -217,6 +221,16 @@ export default function HomePage() {
 
   useEffect(() => {
     loadDashboardData()
+    
+    // Vérifier si l'utilisateur vient de terminer l'onboarding
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('onboarding') === 'success') {
+      // Afficher un message de bienvenue ou notification
+      setTimeout(() => {
+        // Nettoyer l'URL
+        window.history.replaceState({}, '', '/')
+      }, 3000)
+    }
   }, [loadDashboardData])
 
   useEffect(() => {
