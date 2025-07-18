@@ -9,8 +9,6 @@ import {
   Trophy, 
   Calendar,
   TrendingUp,
-  Edit,
-  Save,
   X,
   Bell,
   Shield,
@@ -31,6 +29,7 @@ import Avatar from '@/components/ui/Avatar'
 import Cropper from 'react-easy-crop'
 import { useBadges } from '@/hooks/useBadges'
 import { useProgressionStats } from '@/hooks/useProgressionStats'
+import { ProfileInfoSection } from '@/components/profile/ProfileInfoSection'
 // import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
@@ -51,7 +50,10 @@ interface SupabaseProfile {
   goal?: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance';
   experience?: 'Débutant' | 'Intermédiaire' | 'Avancé';
   created_at: string;
-  pseudo?: string; // Ajout du champ pseudo
+  pseudo?: string;
+  frequency?: 'Faible' | 'Modérée' | 'Élevée';
+  availability?: number;
+  initial_weight?: number;
 }
 
 // Définition des badges par défaut (commenté car non utilisé actuellement)
@@ -180,7 +182,6 @@ interface SupabaseProfile {
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState<UserStats | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('profile')
   const [ironBuddyLevel, setIronBuddyLevel] = useState<'discret' | 'normal' | 'ambianceur'>('normal')
@@ -197,7 +198,7 @@ export default function ProfilePage() {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarError, setAvatarError] = useState<string|null>(null);
   // Ajoute un état pour stocker le profil original
-  const [originalProfile, setOriginalProfile] = useState<UserProfile | null>(null);
+;
   // Ajoute les états pour le crop
   const [selectedFile, setSelectedFile] = useState<File|null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -232,17 +233,14 @@ export default function ProfilePage() {
   useEffect(() => {
     loadProfileData();
     
-    // Vérifier si on arrive avec un paramètre refresh pour forcer le rechargement
+    // Vérifier si on arrive avec un paramètre refresh ou onboarding pour forcer le rechargement
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('refresh')) {
-      // Attendre un peu puis forcer le rechargement des achievements
+    if (urlParams.get('refresh') || urlParams.get('onboarding')) {
+      // Attendre un peu puis forcer le rechargement complet
       setTimeout(async () => {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await loadAchievements(user.id);
-        }
-      }, 500);
+        console.log('🔄 Rechargement forcé du profil après onboarding/refresh');
+        await loadProfileData();
+      }, 300);
     }
     
     // Rechargement périodique des achievements (toutes les 10 secondes)
@@ -378,7 +376,10 @@ export default function ProfilePage() {
       goal: profileData.goal || 'Prise de masse',
       experience: profileData.experience || 'Débutant',
       joinDate: profileData.created_at,
-      pseudo: profileData.pseudo || ''
+      pseudo: profileData.pseudo || '',
+      frequency: profileData.frequency,
+      availability: profileData.availability,
+      initial_weight: profileData.initial_weight
     }
     setProfile(userProfile)
     await loadWorkoutStats(user.id)
@@ -396,42 +397,7 @@ export default function ProfilePage() {
     if (error) throw error
   }
 
-  const handleProfileChange = (field: keyof UserProfile, value: string | number | boolean) => {
-    if (!profile) return
-    setProfile({ ...profile, [field]: value })
-  }
 
-  const handleSaveProfile = async () => {
-    if (!profile) return
-    setLoading(true)
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        full_name: profile.name,
-        avatar_url: profile.avatar,
-        phone: profile.phone,
-        location: profile.location,
-        height: profile.height,
-        weight: profile.weight,
-        age: profile.age,
-        gender: profile.gender,
-        goal: profile.goal,
-        experience: profile.experience,
-        pseudo: profile.pseudo, // Ajout de la sauvegarde du pseudo
-        initial_weight: profile.initial_weight
-      })
-      .eq('id', profile.id)
-    
-    // Recharger les stats de progression après la mise à jour
-    reloadProgressionStats()
-    
-    setIsEditing(false)
-    setLoading(false)
-    if (error) {
-      alert("Erreur lors de la sauvegarde du profil : " + error.message)
-    }
-  }
 
   const calculateBMI = () => {
     if (!profile || !profile.height || !profile.weight) return "0"
@@ -623,38 +589,7 @@ export default function ProfilePage() {
     setAvatarUploading(false);
   };
 
-  // Quand on passe en mode édition, on sauvegarde le profil courant
-  const startEdit = () => {
-    setOriginalProfile(profile ? { ...profile } : null);
-    setIsEditing(true);
-  };
-  // Quand on annule, on restaure le profil original
-  const cancelEdit = () => {
-    if (originalProfile) setProfile({ ...originalProfile });
-    setIsEditing(false);
-  };
 
-  // Helpers pour affichage profil
-  function displayOrDefault(val: string | number | undefined | null) {
-    if (val === undefined || val === null || val === "" || val === 0) {
-      return <span className="italic text-gray-400">Non renseigné</span>;
-    }
-    return val;
-  }
-  function displayOrBuddy(val: string | number | undefined | null, label: string) {
-    if (val === undefined || val === null || val === "" || val === 0) {
-      return <span className="italic text-purple-500">{label} : IronBuddy attend ta réponse !</span>;
-    }
-    return val;
-  }
-  // Détection profil incomplet
-  const isProfileIncomplete = profile && (
-    !profile.goal ||
-    !profile.experience ||
-    !profile.height ||
-    !profile.weight ||
-    !profile.age
-  );
 
   // Nouvelle fonction pour charger toutes les séances et compter par statut
   const loadWorkoutStats = async (userId: string) => {
@@ -790,32 +725,6 @@ export default function ProfilePage() {
               <h1 className="text-3xl font-bold">Profil</h1>
               <p className="text-orange-100">Gère tes informations et paramètres</p>
             </div>
-            {isEditing ? (
-              <div className="flex flex-row md:space-x-2 space-x-1 items-center justify-end md:mt-0 mt-2">
-                <button
-                  onClick={handleSaveProfile}
-                  className="bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-1 text-sm md:text-base"
-                >
-                  <Save className="h-4 w-4" />
-                  <span>Sauvegarder</span>
-                </button>
-                <button
-                  onClick={cancelEdit}
-                  className="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-1 text-sm md:text-base"
-                >
-                  <X className="h-4 w-4" />
-                  <span>Annuler</span>
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={startEdit}
-                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
-              >
-                <Edit className="h-5 w-5" />
-                <span>Modifier</span>
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -859,170 +768,103 @@ export default function ProfilePage() {
             {/* Informations principales */}
             <div className="lg:col-span-2 space-y-4 md:space-y-6">
               {/* Photo de profil et infos de base */}
-              <div className="bg-white rounded-xl shadow-md p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
-                <div className="relative flex-shrink-0">
-                  <div key={avatarAnimationKey} className={showAvatarCongrats ? "animate-avatar-pop" : ""}>
-                    <Avatar
-                      src={profile.avatar}
-                      name={profile.name}
-                      size={88}
-                      className="shadow-lg"
-                      onClick={isEditing ? handleChangeAvatar : undefined}
-                    />
+              <div className="bg-white rounded-xl shadow-md p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                  {/* Avatar Section */}
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="relative">
+                      <div key={avatarAnimationKey} className={showAvatarCongrats ? "animate-avatar-pop" : ""}>
+                        <Avatar
+                          src={profile.avatar}
+                          name={profile.name}
+                          size={100}
+                          className="shadow-lg cursor-pointer"
+                          onClick={handleChangeAvatar}
+                        />
+                      </div>
+                      {showAvatarCongrats && (
+                        <div className="absolute left-1/2 -bottom-10 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold animate-fade-in-out z-20 border-2 border-white">
+                          {avatarCongratsMsg}
+                        </div>
+                      )}
+                      <button
+                        className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                        onClick={handleChangeAvatar}
+                        title="Changer l'avatar"
+                      >
+                        <Camera className="h-4 w-4 text-gray-600" />
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <h2 className="text-xl font-bold text-gray-900">{profile.pseudo || profile.name || 'Utilisateur'}</h2>
+                      <p className="text-gray-600 text-sm break-all">{profile.email}</p>
+                    </div>
                   </div>
-                  {showAvatarCongrats && (
-                    <div className="absolute left-1/2 -bottom-10 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold animate-fade-in-out z-20 border-2 border-white">
-                      {avatarCongratsMsg}
-                    </div>
-                  )}
-                  {isEditing && (
-                    <button
-                      className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors"
-                      onClick={handleChangeAvatar}
-                      title="Changer l'avatar"
-                    >
-                      <Camera className="h-4 w-4 text-gray-600" />
-                    </button>
-                  )}
-                </div>
-                <div className="flex-1 w-full flex flex-col gap-2">
-                  <div className="text-center md:text-left break-all font-medium text-gray-800 text-sm md:text-base">{profile.email}</div>
-                  <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full items-center md:items-end justify-between">
-                    <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
-                      <div className="flex flex-col items-center md:items-start w-full">
-                        <span className="text-xs text-gray-500">Âge</span>
-                        {isEditing ? (
-                          <div className="flex items-center gap-2">
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('age', Math.max(0, (profile.age || 0) - 1))}>-</button>
-                            <input type="text" inputMode="numeric" pattern="[0-9]*" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.age} maxLength={3} onChange={e => handleProfileChange('age', Number(e.target.value.replace(/\D/g, '')))} aria-label="Âge" />
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('age', Math.min(120, (profile.age || 0) + 1))}>+</button>
-                          </div>
-                        ) : (
-                          <div>{profile.age}</div>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-center md:items-start w-full">
-                        <span className="text-xs text-gray-500">Taille</span>
-                        {isEditing ? (
-                          <div className="flex items-center gap-2">
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.max(0, Math.round(((profile.height || 0) - 0.1) * 10) / 10))}>-</button>
-                            <input type="number" step="0.1" min="0" max="250" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.height || ''} onChange={e => handleProfileChange('height', parseFloat(e.target.value) || 0)} aria-label="Taille" />
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('height', Math.min(250, Math.round(((profile.height || 0) + 0.1) * 10) / 10))}>+</button>
-                          </div>
-                        ) : (
-                          <div>{profile.height ? `${profile.height} cm` : 'Non renseigné'}</div>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-center md:items-start w-full">
-                        <span className="text-xs text-gray-500">Poids</span>
-                        {isEditing ? (
-                          <div className="flex items-center gap-2">
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.max(0, Math.round(((profile.weight || 0) - 0.1) * 10) / 10))}>-</button>
-                            <input type="number" step="0.1" min="0" max="300" className="w-16 px-2 py-1 rounded border border-gray-200 text-center no-spinner" value={profile.weight || ''} onChange={e => handleProfileChange('weight', parseFloat(e.target.value) || 0)} aria-label="Poids" />
-                            <button type="button" className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleProfileChange('weight', Math.min(300, Math.round(((profile.weight || 0) + 0.1) * 10) / 10))}>+</button>
-                          </div>
-                        ) : (
-                          <div>{profile.weight ? `${profile.weight} kg` : 'Non renseigné'}</div>
-                        )}
+
+                  {/* Stats Section */}
+                  <div className="grid grid-cols-2 gap-4 md:col-span-2">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200">
+                      <div className="text-sm text-blue-600 font-medium mb-1">IMC</div>
+                      <div className="text-3xl font-bold text-blue-700">{calculateBMI()}</div>
+                      <div className="text-xs text-blue-600 mt-1">
+                        {profile.height && profile.weight ? 
+                          `${profile.height}cm • ${profile.weight}kg` : 
+                          'Données manquantes'
+                        }
                       </div>
                     </div>
-                    <div className="flex flex-col items-center md:items-end w-full md:w-auto mt-2 md:mt-0">
-                      <span className="text-xs text-gray-500">IMC</span>
-                      <div className="bg-gray-100 rounded px-4 py-2 font-bold text-green-600 text-lg md:text-xl w-full md:w-auto text-center">{calculateBMI()}</div>
+
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+                      <div className="text-sm text-orange-600 font-medium mb-1">Objectif</div>
+                      <div className="text-lg font-bold text-orange-700">
+                        {profile.goal || 'Non défini'}
+                      </div>
+                      <div className="text-xs text-orange-600 mt-1">
+                        {profile.experience || 'Niveau inconnu'}
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center border border-green-200">
+                      <div className="text-sm text-green-600 font-medium mb-1">Fréquence</div>
+                      <div className="text-lg font-bold text-green-700">
+                        {profile.frequency || 'Non définie'}
+                      </div>
+                      <div className="text-xs text-green-600 mt-1">
+                        {profile.availability ? `${profile.availability} min/séance` : 'Durée non définie'}
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center border border-purple-200">
+                      <div className="text-sm text-purple-600 font-medium mb-1">Membre depuis</div>
+                      <div className="text-lg font-bold text-purple-700">
+                        {profile.joinDate 
+                          ? new Date(profile.joinDate).toLocaleDateString('fr-FR', { 
+                              year: 'numeric', 
+                              month: 'short' 
+                            })
+                          : 'Récemment'
+                        }
+                      </div>
+                      <div className="text-xs text-purple-600 mt-1">
+                        {profile.joinDate ? 
+                          `${Math.floor((Date.now() - new Date(profile.joinDate).getTime()) / (1000 * 60 * 60 * 24))} jours` : 
+                          'Nouveau membre'
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               {/* Informations personnelles */}
-              <div className="bg-white rounded-xl shadow-md p-4 md:p-6">
-                <h3 className="font-bold text-gray-900 mb-2 md:mb-4 text-base md:text-lg">Informations personnelles</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base">
-                  <div>
-                    <span className="text-gray-500">Email</span>
-                    <div className="font-medium text-gray-900 break-all">{profile ? displayOrDefault(profile.email) : null}</div>
-                  </div>
-                  {isEditing ? (
-                    <div className="mb-4">
-                      <label htmlFor="pseudo" className="block text-sm font-medium text-gray-700">Pseudo</label>
-                      <input
-                        id="pseudo"
-                        type="text"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
-                        value={profile?.pseudo || ''}
-                        onChange={e => handleProfileChange('pseudo', e.target.value)}
-                        placeholder="Ton pseudo (affiché publiquement)"
-                      />
-                    </div>
-                  ) : (
-                    <div className="mb-4">
-                      <span className="block text-sm font-medium text-gray-700">Pseudo</span>
-                      <span className="mt-1 block text-gray-900">{profile?.pseudo || profile?.name || profile?.email}</span>
-                    </div>
-                  )}
-                  <div>
-                    <span className="text-gray-500">Objectif</span>
-                    <div className="font-medium text-gray-900">
-                      {isEditing && profile ? (
-                        <select
-                          className="w-full px-2 py-1 rounded border border-gray-200"
-                          value={profile.goal || ''}
-                          onChange={e => handleProfileChange('goal', e.target.value)}
-                        >
-                          <option value="">Non renseigné</option>
-                          <option value="Prise de masse">Prise de masse</option>
-                          <option value="Perte de poids">Perte de poids</option>
-                          <option value="Maintien">Maintien</option>
-                          <option value="Performance">Performance</option>
-                        </select>
-                      ) : profile ? displayOrBuddy(profile.goal, "Objectif") : null}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Niveau d&apos;expérience</span>
-                    <div className="font-medium text-gray-900">
-                      {isEditing && profile ? (
-                        <select
-                          className="w-full px-2 py-1 rounded border border-gray-200"
-                          value={profile.experience || ''}
-                          onChange={e => handleProfileChange('experience', e.target.value)}
-                        >
-                          <option value="">Non renseigné</option>
-                          <option value="Débutant">Débutant</option>
-                          <option value="Intermédiaire">Intermédiaire</option>
-                          <option value="Avancé">Avancé</option>
-                        </select>
-                      ) : profile ? displayOrBuddy(profile.experience, "Niveau d'expérience") : null}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Poids initial</span>
-                    <div className="font-medium text-gray-900">
-                      {isEditing && profile ? (
-                        <input
-                          type="number"
-                          step="0.1"
-                          min="30"
-                          max="200"
-                          placeholder="Ex: 70.0"
-                          className="w-full px-2 py-1 rounded border border-gray-200"
-                          value={profile.initial_weight || ''}
-                          onChange={e => handleProfileChange('initial_weight', parseFloat(e.target.value) || 0)}
-                        />
-                      ) : profile?.initial_weight ? `${profile.initial_weight} kg` : <span className="italic text-gray-400">Non renseigné</span>}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Membre depuis</span>
-                    <div className="font-medium text-gray-900">{profile && profile.joinDate ? new Date(profile.joinDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }) : <span className="italic text-gray-400">Non renseigné</span>}</div>
-                  </div>
-                </div>
-                {isProfileIncomplete && profile && (
-                  <div className="my-4 p-4 bg-purple-50 border-l-4 border-purple-400 text-purple-800 rounded-lg flex items-center gap-2 animate-fade-in-out">
-                    <span role="img" aria-label="IronBuddy">💪</span>
-                    <span>IronBuddy : Complète ton profil pour une expérience sur-mesure et des conseils encore plus musclés !</span>
-                  </div>
-                )}
-              </div>
+              {profile && (
+                <ProfileInfoSection 
+                  profile={profile}
+                  onProfileUpdate={(updates) => {
+                    setProfile(prev => prev ? { ...prev, ...updates } : null)
+                  }}
+                  onProgressionReload={reloadProgressionStats}
+                />
+              )}
             </div>
             {/* Statistiques rapides */}
             <div className="w-full lg:w-auto">

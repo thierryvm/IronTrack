@@ -18,6 +18,15 @@
 *.spec.ts
 *.spec.tsx
 
+# Guides et documentation temporaires
+*_TEST_GUIDE.md
+*_MIGRATION_GUIDE.md
+TESTING_GUIDE.md
+README-DEV.md
+README_MIGRATION.md
+SUPABASE_MIGRATION_GUIDE.md
+irontrack_ux_audit.md
+
 # Fichiers système et logs
 .DS_Store
 *.pem
