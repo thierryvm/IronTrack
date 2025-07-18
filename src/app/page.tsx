@@ -38,7 +38,10 @@ interface ExerciseItem {
   id: number;
   name: string;
   muscle_group?: string;
-  last_weight?: number;
+  exercise_type?: string;
+  weight?: number;
+  displayValue?: string;
+  displayLabel?: string;
 }
 
 export default function HomePage() {
@@ -170,25 +173,74 @@ export default function HomePage() {
       
       setStats({ totalWorkouts, thisWeek, currentStreak, totalWeight })
       
-      // Récupérer les exercices récents
+      // Récupérer les exercices récents avec leur type
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
-        .select('*')
+        .select('id, name, muscle_group, exercise_type')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5)
       
       if (!exercisesError && exercises) {
-        const recent = exercises.map(ex => ({
-          id: ex.id,
-          name: ex.name,
-          type: ex.exercise_type || 'Musculation',
-          lastPerformed: ex.created_at,
-          sets: ex.sets || 0,
-          reps: ex.reps || 0,
-          weight: ex.weight || 0
-        }))
-        setRecentExercises(recent)
+        // Pour chaque exercice, récupérer les dernières données selon le type
+        const recentWithData = await Promise.all(
+          exercises.map(async (ex) => {
+            if (ex.exercise_type === 'Musculation') {
+              // Pour la musculation, récupérer le dernier poids
+              const { data: lastWorkout } = await supabase
+                .from('workout_exercises')
+                .select('weight')
+                .eq('exercise_id', ex.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single()
+              
+              return {
+                id: ex.id,
+                name: ex.name,
+                muscle_group: ex.muscle_group || 'Général',
+                exercise_type: ex.exercise_type,
+                weight: lastWorkout?.weight || 0,
+                displayValue: lastWorkout?.weight === 0 ? 'Poids du corps' : `${lastWorkout?.weight || 0} kg`,
+                displayLabel: 'Dernier poids'
+              }
+            } else {
+              // Pour le cardio, récupérer les dernières données de performance
+              const { data: lastPerformance } = await supabase
+                .from('performance_logs')
+                .select('duration, reps')
+                .eq('exercise_id', ex.id)
+                .order('performed_at', { ascending: false })
+                .limit(1)
+                .single()
+              
+              // Afficher la durée si disponible, sinon les reps
+              let displayValue = 'Aucune donnée'
+              let displayLabel = 'Dernière performance'
+              
+              if (lastPerformance?.duration) {
+                const minutes = Math.floor(lastPerformance.duration / 60)
+                const seconds = lastPerformance.duration % 60
+                displayValue = `${minutes}:${seconds.toString().padStart(2, '0')}`
+                displayLabel = 'Dernière durée'
+              } else if (lastPerformance?.reps) {
+                displayValue = `${lastPerformance.reps} reps`
+                displayLabel = 'Dernières reps'
+              }
+              
+              return {
+                id: ex.id,
+                name: ex.name,
+                muscle_group: ex.muscle_group || 'Général',
+                exercise_type: ex.exercise_type,
+                weight: 0,
+                displayValue,
+                displayLabel
+              }
+            }
+          })
+        )
+        setRecentExercises(recentWithData)
       }
       
       // Récupérer TOUS les exercices pour le dropdown
@@ -579,9 +631,11 @@ export default function HomePage() {
                     </div>
                     <div className="text-right">
                       <span className="text-orange-500 dark:text-orange-300 font-bold">
-                        {exercise.last_weight === 0 ? 'Poids du corps' : `${exercise.last_weight} kg`}
+                        {exercise.displayValue || 'Aucune donnée'}
                       </span>
-                      <p className="text-xs text-gray-500 dark:text-gray-300">Dernier poids</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
+                        {exercise.displayLabel || 'Dernière performance'}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
