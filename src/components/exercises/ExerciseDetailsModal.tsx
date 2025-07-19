@@ -52,12 +52,6 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
   const [perfToDelete, setPerfToDelete] = useState<Performance | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    if (isOpen && exerciseId) {
-      loadExerciseData()
-    }
-  }, [isOpen, exerciseId, loadExerciseData])
-
   const loadExerciseData = useCallback(async () => {
     try {
       setLoading(true)
@@ -89,6 +83,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       setLoading(false)
     }
   }, [exerciseId])
+
+  useEffect(() => {
+    if (isOpen && exerciseId) {
+      loadExerciseData()
+    }
+  }, [isOpen, exerciseId, loadExerciseData])
 
   const handleDeletePerformance = async (performance: Performance) => {
     try {
