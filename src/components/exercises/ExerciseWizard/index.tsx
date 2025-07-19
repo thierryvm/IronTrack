@@ -16,8 +16,8 @@ interface ExerciseWizardProps {
   initialData?: CustomExercise
   isEditMode?: boolean
   exerciseId?: string
-  onComplete?: (finalData: any) => Promise<void>
-  onCompleteWithoutPerformance?: (exerciseData: any) => Promise<void>
+  onComplete?: (finalData: unknown) => Promise<void>
+  onCompleteWithoutPerformance?: (exerciseData: unknown) => Promise<void>
 }
 
 export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({ 

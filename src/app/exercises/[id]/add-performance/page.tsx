@@ -60,7 +60,7 @@ export default function AddPerformancePage() {
     fetchExercise()
   }, [id])
 
-  const handleComplete = async (finalData: { exercise: any; performance?: any }) => {
+  const handleComplete = async (finalData: { exercise: unknown; performance?: unknown }) => {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()

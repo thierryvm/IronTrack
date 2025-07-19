@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, X } from 'lucide-react'
 import { CustomExercise } from '@/types/exercise-wizard'
@@ -8,32 +8,14 @@ import { CustomExercise } from '@/types/exercise-wizard'
 interface FinalSummaryModalProps {
   isOpen: boolean
   exercise: CustomExercise
-  onAddPerformance: () => void
-  onSaveWithoutPerformance: () => Promise<void>
   onClose: () => void
-  isEditMode?: boolean
 }
 
 export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
   isOpen,
   exercise,
-  onAddPerformance,
-  onSaveWithoutPerformance,
-  onClose,
-  isEditMode = false
+  onClose
 }) => {
-  const [saving, setSaving] = useState(false)
-
-  const handleSaveWithoutPerformance = async () => {
-    setSaving(true)
-    try {
-      await onSaveWithoutPerformance()
-    } catch (error) {
-      console.error('Erreur:', error)
-    } finally {
-      setSaving(false)
-    }
-  }
 
   return (
     <AnimatePresence>
