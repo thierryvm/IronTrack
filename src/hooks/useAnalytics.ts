@@ -86,13 +86,13 @@ class Analytics {
 
   private async sendToExternal(data: AnalyticsData) {
     // Exemple d'envoi vers Vercel Analytics (si configuré)
-    if (typeof window !== 'undefined' && (window as unknown as { va?: Function }).va) {
-      (window as unknown as { va: Function }).va('track', data.event, data.properties)
+    if (typeof window !== 'undefined' && (window as { va?: (action: string, event: string, props: Record<string, unknown>) => void }).va) {
+      (window as { va: (action: string, event: string, props: Record<string, unknown>) => void }).va('track', data.event, data.properties)
     }
 
     // Ou vers PostHog (si configuré)
-    if (typeof window !== 'undefined' && (window as unknown as { posthog?: { capture: Function } }).posthog) {
-      (window as unknown as { posthog: { capture: Function } }).posthog.capture(data.event, data.properties)
+    if (typeof window !== 'undefined' && (window as { posthog?: { capture: (event: string, props: Record<string, unknown>) => void } }).posthog) {
+      (window as { posthog: { capture: (event: string, props: Record<string, unknown>) => void } }).posthog.capture(data.event, data.properties)
     }
   }
 

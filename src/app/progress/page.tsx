@@ -595,7 +595,7 @@ export default function ProgressPage() {
       const exerciseProgress: ExerciseProgress[] = Object.entries(exerciseMap).map(([, ex]) => {
         let improvement = 0
         let trend: 'up' | 'down' | 'stable' = 'stable'
-        const metric_type: 'weight' | 'distance' | 'duration' = 'weight'
+        // const metric_type: 'weight' | 'distance' | 'duration' = 'weight'
         
         const result: ExerciseProgress = {
           exercise: ex.name,
