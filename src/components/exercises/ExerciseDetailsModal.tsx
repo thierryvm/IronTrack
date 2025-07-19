@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft, Trophy, Trash2, Edit3, Plus } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
@@ -56,9 +56,9 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
     if (isOpen && exerciseId) {
       loadExerciseData()
     }
-  }, [isOpen, exerciseId])
+  }, [isOpen, exerciseId, loadExerciseData])
 
-  const loadExerciseData = async () => {
+  const loadExerciseData = useCallback(async () => {
     try {
       setLoading(true)
       const supabase = createClient()
@@ -88,7 +88,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
     } finally {
       setLoading(false)
     }
-  }
+  }, [exerciseId])
 
   const handleDeletePerformance = async (performance: Performance) => {
     try {
