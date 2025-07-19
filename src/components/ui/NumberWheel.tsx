@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
 interface NumberWheelProps {
@@ -26,10 +26,13 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Générer la liste des valeurs possibles
-  const values = []
-  for (let i = min; i <= max; i += step) {
-    values.push(i)
-  }
+  const values = useMemo(() => {
+    const result = []
+    for (let i = min; i <= max; i += step) {
+      result.push(i)
+    }
+    return result
+  }, [min, max, step])
 
   const currentIndex = values.findIndex(v => v === value)
 
@@ -40,7 +43,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
     e.preventDefault()
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return
 
     const deltaY = startY - e.clientY
@@ -51,7 +54,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
     if (values[newIndex] !== value) {
       onChange(values[newIndex])
     }
-  }
+  }, [isDragging, startY, startValue, values, value, onChange])
 
   const handleMouseUp = () => {
     setIsDragging(false)
@@ -63,7 +66,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
     setStartValue(value)
   }
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging) return
     e.preventDefault()
 
@@ -75,7 +78,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
     if (values[newIndex] !== value) {
       onChange(values[newIndex])
     }
-  }
+  }, [isDragging, startY, startValue, values, value, onChange])
 
   const handleTouchEnd = () => {
     setIsDragging(false)
@@ -95,7 +98,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isDragging, startY, startValue])
+  }, [isDragging, startY, startValue, handleMouseMove, handleTouchMove])
 
   const getItemOpacity = (index: number) => {
     const distance = Math.abs(index - currentIndex)

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft } from 'lucide-react'
 import { useWizardState } from './hooks/useWizardState'
@@ -43,7 +43,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
   const previousStepRef = useRef<number>(state.currentStep)
 
   // Noms des étapes pour le tracking
-  const getStepName = (step: number) => {
+  const getStepName = useCallback((step: number) => {
     switch (step) {
       case 0: return 'Type Selection'
       case 1: return 'Suggestions List'
@@ -51,7 +51,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
       case 3: return 'Performance Input'
       default: return 'Unknown'
     }
-  }
+  }, [state.selectedSuggestion])
 
   // Tracker les changements d'étapes
   useEffect(() => {
@@ -66,7 +66,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
       
       previousStepRef.current = state.currentStep
     }
-  }, [state.currentStep, trackWizardStep])
+  }, [state.currentStep, trackWizardStep, getStepName])
 
   // Tracker l'abandon si fermeture
   useEffect(() => {
@@ -78,7 +78,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [state.currentStep, state.isComplete, trackWizardAbandon])
+  }, [state.currentStep, state.isComplete, trackWizardAbandon, getStepName])
 
   const handleTypeSelection = (type: 'Musculation' | 'Cardio') => {
     nextStep({ exerciseType: type })

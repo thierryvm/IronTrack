@@ -71,7 +71,7 @@ export default function AddPerformancePage() {
 
       // Ajouter la performance
       if (finalData.performance) {
-        const performance = finalData.performance
+        const performance = finalData.performance as Record<string, unknown>
         
         // Préparer les données de performance
         const performanceData: Record<string, unknown> = {
