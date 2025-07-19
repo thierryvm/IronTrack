@@ -193,7 +193,6 @@ export default function AddPerformancePage() {
             exercise={exercise}
             onComplete={handleComplete}
             onBack={handleBack}
-            onCancel={handleBack}
           />
         </div>
       </div>
