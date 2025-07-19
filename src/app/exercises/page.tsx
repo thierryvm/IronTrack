@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, X as LucideX, Calendar, Trophy } from 'lucide-react'
+import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, Calendar, Trophy } from 'lucide-react'
+import { ExerciseDetailsModal } from '@/components/exercises/ExerciseDetailsModal'
 
 interface Exercise {
   id: number
@@ -13,147 +14,37 @@ interface Exercise {
   muscle_group: string
   equipment: string
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
+  exercise_type: 'Musculation' | 'Cardio'
   last_weight?: number
   last_reps?: number
+  last_distance?: number
+  last_duration?: number
   last_date?: string
   description?: string
   created_at?: string
 }
 
-interface ExerciseModalProps {
-  exercise: Exercise | null
-  isOpen: boolean
-  onClose: () => void
-  onEdit: (id: number) => void
-  onDelete: (exercise: Exercise) => void
-  equipmentList: {id: number, name: string}[]
-}
-
-function ExerciseModal({ exercise, isOpen, onClose, onEdit, onDelete, equipmentList }: ExerciseModalProps) {
-  if (!exercise) return null
-
-  const equipment = equipmentList.find(eq => String(eq.id) === String(exercise.equipment))
-  const difficultyColors = {
-    'Débutant': { bg: 'bg-green-500', text: 'text-green-100' },
-    'Intermédiaire': { bg: 'bg-yellow-500', text: 'text-yellow-100' },
-    'Avancé': { bg: 'bg-red-500', text: 'text-red-100' }
+// Fonction pour formater les performances selon le type d'exercice
+function formatLastPerformance(exercise: Exercise): string {
+  if (exercise.exercise_type === 'Musculation') {
+    if (exercise.last_weight && exercise.last_reps) {
+      return `${exercise.last_weight}kg × ${exercise.last_reps} reps`;
+    }
+  } else if (exercise.exercise_type === 'Cardio') {
+    const parts = [];
+    if (exercise.last_distance) {
+      parts.push(`${exercise.last_distance}km`);
+    }
+    if (exercise.last_duration) {
+      const minutes = Math.floor(exercise.last_duration / 60);
+      const seconds = exercise.last_duration % 60;
+      parts.push(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+    }
+    if (parts.length > 0) {
+      return parts.join(' - ');
+    }
   }
-  const difficultyColor = difficultyColors[exercise.difficulty] || { bg: 'bg-gray-500', text: 'text-gray-100' }
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50"
-          onClick={onClose}
-        >
-          {/* Overlay avec effet de flou */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.75), rgba(20,20,30,0.6))',
-              backdropFilter: 'blur(15px) brightness(0.7)',
-              WebkitBackdropFilter: 'blur(15px) brightness(0.7)'
-            }}
-          />
-          
-          {/* Container centré pour la modal */}
-          <div className="relative flex items-center justify-center min-h-full p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${difficultyColor.bg}`}>
-                    <Dumbbell className={`h-5 w-5 ${difficultyColor.text}`} />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-900">{exercise.name}</h2>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <LucideX className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Target className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">{exercise.muscle_group}</span>
-                </div>
-
-                {equipment && (
-                  <div className="flex items-center space-x-2">
-                    <Dumbbell className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">{equipment.name}</span>
-                  </div>
-                )}
-
-                <div className="flex items-center space-x-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} ${difficultyColor.text}`}>
-                    {exercise.difficulty}
-                  </span>
-                </div>
-
-                {exercise.last_date && (
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
-                      Dernière fois : {new Date(exercise.last_date).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                )}
-
-                {(exercise.last_weight || exercise.last_reps) && (
-                  <div className="flex items-center space-x-2">
-                    <Trophy className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
-                      Dernière perf : {exercise.last_weight}kg × {exercise.last_reps} reps
-                    </span>
-                  </div>
-                )}
-
-                {exercise.description && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-700">{exercise.description}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex space-x-2 mt-6">
-                <button
-                  onClick={() => {
-                    onEdit(exercise.id)
-                    onClose()
-                  }}
-                  className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
-                >
-                  ✏️ Modifier
-                </button>
-                <button
-                  onClick={() => {
-                    onDelete(exercise)
-                    onClose()
-                  }}
-                  className="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-600 transition-colors"
-                >
-                  🗑️ Supprimer
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+  return '';
 }
 
 const muscleGroups = [
@@ -192,26 +83,52 @@ export default function ExercisesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
   const loadExercises = useCallback(async () => {
     setLoading(true)
     const supabase = createClient()
+    
     // Récupérer le nombre total d'exercices pour la pagination
     const { count } = await supabase
       .from('exercises')
       .select('*', { count: 'exact', head: true });
     setTotalCount(count || 0);
+    
     // Charger uniquement les exercices de la page courante
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    const { data, error } = await supabase
+    const { data: exercisesData, error } = await supabase
       .from('exercises')
       .select('*')
       .order('created_at', { ascending: false })
       .range(from, to);
-    if (!error && data) {
-      setExercises(data);
+
+    if (!error && exercisesData) {
+      // Pour chaque exercice, récupérer la dernière performance
+      const enrichedExercises = await Promise.all(
+        exercisesData.map(async (exercise) => {
+          const { data: lastPerf } = await supabase
+            .from('performance_logs')
+            .select('weight, reps, distance, duration, performed_at')
+            .eq('exercise_id', exercise.id)
+            .order('performed_at', { ascending: false })
+            .limit(1);
+
+          const lastPerfData = lastPerf?.[0];
+          
+          return {
+            ...exercise,
+            last_weight: lastPerfData?.weight,
+            last_reps: lastPerfData?.reps,
+            last_distance: lastPerfData?.distance,
+            last_duration: lastPerfData?.duration,
+            last_date: lastPerfData?.performed_at
+          };
+        })
+      );
+      
+      setExercises(enrichedExercises);
     }
     setLoading(false);
   }, [page]);
@@ -232,6 +149,7 @@ export default function ExercisesPage() {
   function normalize(str: string) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
+
 
   // Fonctions de suppression
   const handleDeleteExercise = (exercise: Exercise) => {
@@ -285,13 +203,10 @@ export default function ExercisesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ExerciseModal 
-        exercise={selectedExercise} 
-        isOpen={!!selectedExercise} 
-        onClose={() => setSelectedExercise(null)}
-        onEdit={(id) => router.push(`/exercises/${id}/edit`)}
-        onDelete={handleDeleteExercise}
-        equipmentList={equipmentList}
+      <ExerciseDetailsModal 
+        exerciseId={selectedExerciseId || ''}
+        isOpen={!!selectedExerciseId} 
+        onClose={() => setSelectedExerciseId(null)}
       />
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-8">
@@ -429,7 +344,7 @@ export default function ExercisesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${difficultyColor.border} overflow-hidden`}
-                onClick={() => setSelectedExercise(exercise)}
+                onClick={() => setSelectedExerciseId(exercise.id.toString())}
               >
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -457,10 +372,10 @@ export default function ExercisesPage() {
                         <span className="truncate">Dernière: {new Date(exercise.last_date).toLocaleDateString('fr-FR')}</span>
                       </div>
                     )}
-                    {(exercise.last_weight || exercise.last_reps) && (
+                    {formatLastPerformance(exercise) && (
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <Trophy className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">{exercise.last_weight}kg × {exercise.last_reps} reps</span>
+                        <span className="truncate">{formatLastPerformance(exercise)}</span>
                       </div>
                     )}
                   </div>
@@ -474,7 +389,7 @@ export default function ExercisesPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedExercise(exercise);
+                          setSelectedExerciseId(exercise.id.toString());
                         }}
                         className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Voir détails"
@@ -482,7 +397,15 @@ export default function ExercisesPage() {
                         <Eye className="h-4 w-4" />
                       </button>
                       <Link
-                        href={`/exercises/${exercise.id}/edit`}
+                        href={`/exercises/${exercise.id}/add-performance`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Ajouter une performance"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Link>
+                      <Link
+                        href={`/exercises/${exercise.id}/edit-exercise`}
                         onClick={(e) => e.stopPropagation()}
                         className="p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                         title="Modifier"
@@ -560,8 +483,8 @@ export default function ExercisesPage() {
 
         {/* Modal de confirmation suppression */}
         {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-            <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <Trash2 className="h-6 w-6 text-red-500" /> 
                 Supprimer l&apos;exercice ?

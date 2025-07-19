@@ -31,10 +31,16 @@ interface ProgressData {
 interface ExerciseProgress {
   exercise: string
   muscle_group: string
-  current_weight: number
-  previous_weight: number
+  exercise_type: 'Musculation' | 'Cardio'
+  current_weight?: number
+  previous_weight?: number
+  current_distance?: number
+  previous_distance?: number
+  current_duration?: number
+  previous_duration?: number
   improvement: number
   trend: 'up' | 'down' | 'stable'
+  metric_type: 'weight' | 'distance' | 'duration'
 }
 
 interface UserExercise {
@@ -48,8 +54,16 @@ interface PerfLog {
   weight?: number;
   reps?: number;
   set_number?: number;
+  distance?: number;
+  duration?: number;
+  speed?: number;
+  calories?: number;
   exercise_id: string;
-  exercises?: { name?: string; muscle_groups?: { name?: string } };
+  exercises?: { 
+    name?: string; 
+    exercise_type?: 'Musculation' | 'Cardio';
+    muscle_groups?: { name?: string } 
+  };
 }
 
 const muscleGroupColors = {
@@ -528,7 +542,7 @@ export default function ProgressPage() {
       // Récupérer toutes les performances de l'utilisateur
       const { data: perfLogsRaw } = await supabase
         .from('performance_logs')
-        .select('*, exercise_id, exercises(name, muscle_group_id, muscle_groups(name))')
+        .select('*, exercise_id, exercises(name, exercise_type, muscle_group_id, muscle_groups(name))')
         .eq('user_id', user.id)
         .order('performed_at', { ascending: true })
       const perfLogs: PerfLog[] = perfLogsRaw as PerfLog[];
@@ -548,30 +562,91 @@ export default function ProgressPage() {
         exercise: log.exercises?.name || `Exercice #${log.exercise_id}`
       }))
       // 2. Calcul de la progression par exercice
-      const exerciseMap: Record<string, { name: string, muscle_group: string, weights: number[] }> = {}
+      const exerciseMap: Record<string, { 
+        name: string, 
+        muscle_group: string, 
+        exercise_type: 'Musculation' | 'Cardio',
+        weights: number[], 
+        distances: number[], 
+        durations: number[] 
+      }> = {}
+      
       perfLogs.forEach((log) => {
         const exName = log.exercises?.name || `Exercice #${log.exercise_id}`
         const mgName = log.exercises?.muscle_groups?.name || 'Autre'
+        const exType = log.exercises?.exercise_type || 'Musculation'
+        
         if (!exerciseMap[log.exercise_id]) {
-          exerciseMap[log.exercise_id] = { name: exName, muscle_group: mgName, weights: [] }
+          exerciseMap[log.exercise_id] = { 
+            name: exName, 
+            muscle_group: mgName, 
+            exercise_type: exType,
+            weights: [], 
+            distances: [], 
+            durations: [] 
+          }
         }
-        exerciseMap[log.exercise_id].weights.push(Number(log.weight) || 0)
+        
+        if (log.weight) exerciseMap[log.exercise_id].weights.push(Number(log.weight))
+        if (log.distance) exerciseMap[log.exercise_id].distances.push(Number(log.distance))
+        if (log.duration) exerciseMap[log.exercise_id].durations.push(Number(log.duration))
       })
+      
       const exerciseProgress: ExerciseProgress[] = Object.entries(exerciseMap).map(([, ex]) => {
-        const current_weight = ex.weights[ex.weights.length - 1] || 0
-        const previous_weight = ex.weights[0] || 0
-        const improvement = previous_weight > 0 ? ((current_weight - previous_weight) / previous_weight) * 100 : 0
+        let improvement = 0
         let trend: 'up' | 'down' | 'stable' = 'stable'
-        if (current_weight > previous_weight) trend = 'up'
-        else if (current_weight < previous_weight) trend = 'down'
-        return {
+        const metric_type: 'weight' | 'distance' | 'duration' = 'weight'
+        
+        const result: ExerciseProgress = {
           exercise: ex.name,
           muscle_group: ex.muscle_group,
-          current_weight,
-          previous_weight,
-          improvement: Math.round(improvement * 10) / 10,
-          trend
+          exercise_type: ex.exercise_type,
+          improvement: 0,
+          trend: 'stable',
+          metric_type: 'weight'
         }
+        
+        if (ex.exercise_type === 'Musculation' && ex.weights.length > 0) {
+          const current_weight = ex.weights[ex.weights.length - 1] || 0
+          const previous_weight = ex.weights[0] || 0
+          improvement = previous_weight > 0 ? ((current_weight - previous_weight) / previous_weight) * 100 : 0
+          if (current_weight > previous_weight) trend = 'up'
+          else if (current_weight < previous_weight) trend = 'down'
+          
+          result.current_weight = current_weight
+          result.previous_weight = previous_weight
+          result.metric_type = 'weight'
+          
+        } else if (ex.exercise_type === 'Cardio') {
+          // Priorité: distance > durée
+          if (ex.distances.length > 0) {
+            const current_distance = ex.distances[ex.distances.length - 1] || 0
+            const previous_distance = ex.distances[0] || 0
+            improvement = previous_distance > 0 ? ((current_distance - previous_distance) / previous_distance) * 100 : 0
+            if (current_distance > previous_distance) trend = 'up'
+            else if (current_distance < previous_distance) trend = 'down'
+            
+            result.current_distance = current_distance
+            result.previous_distance = previous_distance
+            result.metric_type = 'distance'
+            
+          } else if (ex.durations.length > 0) {
+            const current_duration = ex.durations[ex.durations.length - 1] || 0
+            const previous_duration = ex.durations[0] || 0
+            improvement = previous_duration > 0 ? ((current_duration - previous_duration) / previous_duration) * 100 : 0
+            if (current_duration > previous_duration) trend = 'up'
+            else if (current_duration < previous_duration) trend = 'down'
+            
+            result.current_duration = current_duration
+            result.previous_duration = previous_duration
+            result.metric_type = 'duration'
+          }
+        }
+        
+        result.improvement = Math.round(improvement * 10) / 10
+        result.trend = trend
+        
+        return result
       })
       setProgressData(progressData)
       setExerciseProgress(exerciseProgress)
@@ -1324,8 +1399,8 @@ export default function ProgressPage() {
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-3 px-4 font-medium text-gray-900">Exercice</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900">Groupe musculaire</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Poids actuel</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Poids précédent</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Valeur actuelle</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Valeur précédente</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900">Amélioration</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900">Tendance</th>
                 </tr>
@@ -1341,8 +1416,16 @@ export default function ProgressPage() {
                   >
                     <td className="py-3 px-4 font-medium text-gray-900">{exercise.exercise}</td>
                     <td className="py-3 px-4 text-gray-600">{exercise.muscle_group}</td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">{exercise.current_weight} kg</td>
-                    <td className="py-3 px-4 text-gray-600">{exercise.previous_weight} kg</td>
+                    <td className="py-3 px-4 font-semibold text-gray-900">
+                      {exercise.metric_type === 'weight' && `${exercise.current_weight || 0} kg`}
+                      {exercise.metric_type === 'distance' && `${exercise.current_distance || 0} km`}
+                      {exercise.metric_type === 'duration' && `${Math.floor((exercise.current_duration || 0) / 60)}:${String((exercise.current_duration || 0) % 60).padStart(2, '0')}`}
+                    </td>
+                    <td className="py-3 px-4 text-gray-600">
+                      {exercise.metric_type === 'weight' && `${exercise.previous_weight || 0} kg`}
+                      {exercise.metric_type === 'distance' && `${exercise.previous_distance || 0} km`}
+                      {exercise.metric_type === 'duration' && `${Math.floor((exercise.previous_duration || 0) / 60)}:${String((exercise.previous_duration || 0) % 60).padStart(2, '0')}`}
+                    </td>
                     <td className={`py-3 px-4 font-medium ${getTrendColor(exercise.trend)}`}>
                       {exercise.improvement > 0 ? '+' : ''}{exercise.improvement.toFixed(1)}%
                     </td>
