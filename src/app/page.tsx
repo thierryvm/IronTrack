@@ -193,15 +193,14 @@ export default function HomePage() {
                 .eq('exercise_id', ex.id)
                 .order('created_at', { ascending: false })
                 .limit(1)
-                .single()
               
               return {
                 id: ex.id,
                 name: ex.name,
                 muscle_group: ex.muscle_group || 'Général',
                 exercise_type: ex.exercise_type,
-                weight: lastWorkout?.weight || 0,
-                displayValue: lastWorkout?.weight === 0 ? 'Poids du corps' : `${lastWorkout?.weight || 0} kg`,
+                weight: lastWorkout?.[0]?.weight || 0,
+                displayValue: lastWorkout?.[0]?.weight === 0 ? 'Poids du corps' : `${lastWorkout?.[0]?.weight || 0} kg`,
                 displayLabel: 'Dernier poids'
               }
             } else {
@@ -212,19 +211,18 @@ export default function HomePage() {
                 .eq('exercise_id', ex.id)
                 .order('performed_at', { ascending: false })
                 .limit(1)
-                .single()
               
               // Afficher la durée si disponible, sinon les reps
               let displayValue = 'Aucune donnée'
               let displayLabel = 'Dernière performance'
               
-              if (lastPerformance?.duration) {
-                const minutes = Math.floor(lastPerformance.duration / 60)
-                const seconds = lastPerformance.duration % 60
+              if (lastPerformance?.[0]?.duration) {
+                const minutes = Math.floor(lastPerformance[0].duration / 60)
+                const seconds = lastPerformance[0].duration % 60
                 displayValue = `${minutes}:${seconds.toString().padStart(2, '0')}`
                 displayLabel = 'Dernière durée'
-              } else if (lastPerformance?.reps) {
-                displayValue = `${lastPerformance.reps} reps`
+              } else if (lastPerformance?.[0]?.reps) {
+                displayValue = `${lastPerformance[0].reps} reps`
                 displayLabel = 'Dernières reps'
               }
               

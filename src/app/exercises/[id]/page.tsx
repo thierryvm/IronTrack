@@ -1,8 +1,9 @@
 "use client"
 import { useRouter, useParams } from 'next/navigation'
-import { Dumbbell, ArrowLeft, Trophy } from 'lucide-react'
+import { Dumbbell, ArrowLeft, Trophy, Edit3, Plus, Trash2, Edit } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal'
 
 type Exercise = {
   id: number;
@@ -23,8 +24,14 @@ type Exercise = {
   weight?: number | null; // Pour compatibilité éventuelle
 };
 type PerformanceLog = {
-  weight: number;
-  reps: number;
+  id: number;
+  weight?: number;
+  reps?: number;
+  distance?: number;
+  duration?: number;
+  speed?: number;
+  calories?: number;
+  notes?: string;
   performed_at: string;
 };
 
@@ -33,12 +40,21 @@ function getPerfLabel(perf: Record<string, unknown>, type: string, sets?: number
   if (type === 'Cardio') {
     let phrase = '';
     if (perf.distance) phrase += String(perf.distance) + (perf.distance_unit ? String(perf.distance_unit) : ' km');
-    if (perf.duration_minutes || perf.duration_seconds) {
-      let d = '';
-      if (perf.duration_minutes) d += String(perf.duration_minutes) + ' min';
-      if (perf.duration_seconds) d += (d ? ' ' : '') + String(perf.duration_seconds) + ' sec';
-      phrase += (phrase ? ' en ' : '') + d;
+    
+    // Gérer la durée (soit duration en secondes, soit duration_minutes/duration_seconds)
+    let durationText = '';
+    if (perf.duration) {
+      const totalSeconds = Number(perf.duration);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      if (minutes > 0) durationText += minutes + ' min';
+      if (seconds > 0) durationText += (durationText ? ' ' : '') + seconds + ' sec';
+    } else if (perf.duration_minutes || perf.duration_seconds) {
+      if (perf.duration_minutes) durationText += String(perf.duration_minutes) + ' min';
+      if (perf.duration_seconds) durationText += (durationText ? ' ' : '') + String(perf.duration_seconds) + ' sec';
     }
+    if (durationText) phrase += (phrase ? ' en ' : '') + durationText;
+    
     if (perf.speed) phrase += (phrase ? ' à ' : '') + String(perf.speed) + (perf.speed_unit ? String(perf.speed_unit) : ' km/h');
     if (perf.calories) phrase += (phrase ? ', ' : '') + String(perf.calories) + ' kcal';
     return phrase || 'Performance cardio';
@@ -59,6 +75,43 @@ export default function ExerciseDetailPage() {
   const [exercise, setExercise] = useState<Exercise | null>(null)
   const [lastPerf, setLastPerf] = useState<PerformanceLog | null>(null)
   const [perfHistory, setPerfHistory] = useState<PerformanceLog[]>([])
+  const [deletingPerf, setDeletingPerf] = useState<number | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [perfToDelete, setPerfToDelete] = useState<PerformanceLog | null>(null)
+
+  const handleDeleteClick = (perf: PerformanceLog) => {
+    setPerfToDelete(perf)
+    setShowDeleteModal(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!perfToDelete) return
+    
+    try {
+      setDeletingPerf(perfToDelete.id)
+      const supabase = (await import('@/utils/supabase/client')).createClient()
+      
+      const { error } = await supabase
+        .from('performance_logs')
+        .delete()
+        .eq('id', perfToDelete.id)
+      
+      if (error) throw error
+      
+      // Mettre à jour la liste des performances
+      const updatedHistory = perfHistory.filter(p => p.id !== perfToDelete.id)
+      setPerfHistory(updatedHistory)
+      setLastPerf(updatedHistory[0] || null)
+      
+      setShowDeleteModal(false)
+      setPerfToDelete(null)
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
+    } finally {
+      setDeletingPerf(null)
+    }
+  }
   useEffect(() => {
     const fetchExercise = async () => {
       const supabase = (await import('@/utils/supabase/client')).createClient()
@@ -89,7 +142,7 @@ export default function ExerciseDetailPage() {
       const supabase = (await import('@/utils/supabase/client')).createClient()
       const { data, error } = await supabase
         .from('performance_logs')
-        .select('weight, reps, distance, distance_unit, duration_minutes, duration_seconds, speed, speed_unit, calories, performed_at')
+        .select('id, weight, reps, distance, distance_unit, duration, duration_minutes, duration_seconds, speed, speed_unit, calories, notes, performed_at')
         .eq('exercise_id', id)
         .order('performed_at', { ascending: false })
       if (!error && data) {
@@ -108,10 +161,13 @@ export default function ExerciseDetailPage() {
         className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
         <button
-          onClick={() => router.back()}
+          onClick={() => {
+            console.log('🔙 Bouton Retour cliqué')
+            router.push('/exercises')
+          }}
           className="flex items-center space-x-2 text-orange-600 hover:text-orange-800 font-semibold mb-4"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-5 h-5" />
           <span>Retour</span>
         </button>
         <div className="flex items-center space-x-3 mb-6">
@@ -208,10 +264,29 @@ export default function ExerciseDetailPage() {
           </div>
         )}
         <div className="space-y-2">
+          <div><span className="font-medium">Type :</span> {exercise ? exercise.exercise_type : ''}</div>
           <div><span className="font-medium">Groupe musculaire :</span> {exercise ? exercise.muscle_group : ''}</div>
           <div><span className="font-medium">Équipement :</span> {exercise ? exercise.equipment : ''}</div>
           <div><span className="font-medium">Difficulté :</span> {exercise ? exercise.difficulty : ''}</div>
-          <div><span className="font-medium">Nombre de séries :</span> {exercise && typeof exercise.sets !== 'undefined' ? exercise.sets : ''}</div>
+          {exercise?.exercise_type === 'Musculation' && exercise.sets && (
+            <div><span className="font-medium">Nombre de séries :</span> {exercise.sets}</div>
+          )}
+          {exercise?.exercise_type === 'Cardio' && (
+            <>
+              {exercise.distance && (
+                <div><span className="font-medium">Distance :</span> {exercise.distance} {exercise.distance_unit || 'km'}</div>
+              )}
+              {exercise.speed && (
+                <div><span className="font-medium">Vitesse :</span> {exercise.speed} {exercise.speed_unit || 'km/h'}</div>
+              )}
+              {exercise.calories && (
+                <div><span className="font-medium">Calories cibles :</span> {exercise.calories}</div>
+              )}
+              {(exercise.duration_minutes || exercise.duration_seconds) && (
+                <div><span className="font-medium">Durée :</span> {exercise.duration_minutes || 0}:{(exercise.duration_seconds || 0).toString().padStart(2, '0')}</div>
+              )}
+            </>
+          )}
         </div>
         {/* Dernière performance */}
         <div className="mt-6 bg-gray-50 rounded-lg p-4 flex items-center gap-3">
@@ -222,6 +297,24 @@ export default function ExerciseDetailPage() {
             <span className="text-gray-500 text-base">Aucune performance enregistrée.</span>
           )}
         </div>
+        {/* Actions principales */}
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={() => router.push(`/exercises/${id}/edit-exercise`)}
+            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+          >
+            <Edit3 className="h-4 w-4" />
+            Modifier l&apos;exercice
+          </button>
+          <button
+            onClick={() => router.push(`/exercises/${id}/add-performance`)}
+            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Nouvelle performance
+          </button>
+        </div>
+
         {/* Historique des performances */}
         <div className="mt-4 bg-gray-50 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -232,16 +325,58 @@ export default function ExerciseDetailPage() {
             <div className="text-gray-500 text-sm">Aucune performance enregistrée.</div>
           ) : (
             <ul className="max-h-48 overflow-y-auto text-sm divide-y divide-gray-200">
-              {perfHistory.map((perf, idx) => (
-                <li key={idx} className="py-1 flex items-center justify-between">
-                  <span className="font-semibold">{getPerfLabel(perf, exercise?.exercise_type || 'Musculation', exercise?.sets ?? 1)}</span>
-                  <span className="text-gray-400 ml-2">{new Date(perf.performed_at).toLocaleDateString()}</span>
+              {perfHistory.map((perf) => (
+                <li key={perf.id} className="py-2 flex items-center justify-between group">
+                  <div className="flex-1">
+                    <div className="font-semibold">{getPerfLabel(perf, exercise?.exercise_type || 'Musculation', exercise?.sets ?? 1)}</div>
+                    <div className="text-gray-400 text-xs">{new Date(perf.performed_at).toLocaleDateString()}</div>
+                    {perf.notes && (
+                      <div className="text-gray-600 text-xs italic mt-1">{perf.notes}</div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 opacity-100 transition-opacity">
+                    <button
+                      onClick={() => router.push(`/exercises/${id}/edit-performance/${perf.id}`)}
+                      className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                      title="Modifier cette performance"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(perf)}
+                      disabled={deletingPerf === perf.id}
+                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                      title="Supprimer cette performance"
+                    >
+                      {deletingPerf === perf.id ? (
+                        <div className="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin"></div>
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </motion.div>
+
+      {/* Modal de confirmation de suppression */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setPerfToDelete(null)
+        }}
+        onConfirm={confirmDelete}
+        title="Supprimer cette performance ?"
+        message={`Cette action supprimera définitivement la performance "${perfToDelete ? getPerfLabel(perfToDelete, exercise?.exercise_type || 'Musculation', exercise?.sets ?? 1) : ''}" du ${perfToDelete ? new Date(perfToDelete.performed_at).toLocaleDateString() : ''}.`}
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        type="danger"
+        loading={!!deletingPerf}
+      />
     </div>
   )
 } 
