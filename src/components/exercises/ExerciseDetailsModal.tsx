@@ -30,6 +30,8 @@ interface Performance {
   reps?: number
   duration?: number
   distance?: number
+  calories?: number
+  speed?: number
   notes?: string
   set_number?: number
 }
@@ -110,11 +112,22 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
     }
   }
 
-  const getPerfLabel = (perf: Performance, exerciseType: string) => {
+  const getPerfLabel = (perf: Performance, exerciseType: string, exerciseName?: string) => {
     if (exerciseType === 'Cardio') {
       const parts = []
-      if (perf.distance) parts.push(`${perf.distance}km`)
+      const isRowing = exerciseName?.toLowerCase().includes('rameur')
+      
+      if (perf.distance) {
+        // Adapter l'unité selon le type d'exercice
+        if (isRowing && perf.distance >= 100) {
+          parts.push(`${perf.distance}m`)
+        } else {
+          parts.push(`${perf.distance}km`)
+        }
+      }
       if (perf.duration) parts.push(`${Math.round(perf.duration / 60)}min`)
+      if (perf.calories) parts.push(`${perf.calories} kcal`)
+      
       return parts.join(' • ') || 'Performance cardio'
     } else {
       const parts = []
@@ -189,7 +202,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   <Trophy className="h-6 w-6 text-yellow-500" />
                   {lastPerf ? (
                     <span className="text-gray-800">
-                      Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type)}</span>
+                      Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
                       <span className="text-gray-400 ml-2">
                         ({new Date(lastPerf.performed_at).toLocaleDateString()})
                       </span>
@@ -204,9 +217,19 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   <button
                     onClick={() => {
                       onClose()
+                      router.push(`/exercises/${exerciseId}/edit-exercise`)
+                    }}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                    Modifier l&apos;exercice
+                  </button>
+                  <button
+                    onClick={() => {
+                      onClose()
                       router.push(`/exercises/${exerciseId}/add-performance`)
                     }}
-                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Nouvelle performance
@@ -236,7 +259,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                             <div className="flex-1">
                               <div className="flex items-center gap-4">
                                 <span className="font-medium text-gray-900">
-                                  {getPerfLabel(perf, exercise.exercise_type)}
+                                  {getPerfLabel(perf, exercise.exercise_type, exercise.name)}
                                 </span>
                                 <span className="text-sm text-gray-500">
                                   {new Date(perf.performed_at).toLocaleDateString()}
@@ -253,7 +276,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                   router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
                                 }}
                                 className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                title="Modifier"
+                                title="Modifier cette performance"
                               >
                                 <Edit3 className="h-4 w-4" />
                               </button>
@@ -291,7 +314,6 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
           title="Supprimer la performance"
           message={`Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.`}
           confirmText="Supprimer"
-          confirmButtonClass="bg-red-500 hover:bg-red-600"
         />
       </div>
     </AnimatePresence>

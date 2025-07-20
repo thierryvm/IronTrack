@@ -9,6 +9,10 @@ interface PerformanceInputProps {
   exercise: ExerciseSuggestion | CustomExercise
   onComplete: (data: { exercise: ExerciseSuggestion | CustomExercise, performance?: ExercisePerformance }) => Promise<void>
   onBack: () => void
+  onCancel?: () => void
+  onCompleteWithoutPerformance?: (exerciseData: unknown) => Promise<void>
+  isEditMode?: boolean
+  exerciseId?: string
 }
 
 const StrengthPerformanceForm: React.FC<{
@@ -16,10 +20,11 @@ const StrengthPerformanceForm: React.FC<{
   onChange: (performance: ExercisePerformance) => void
 }> = ({ performance, onChange }) => (
   <div className="space-y-4">
-    <div className="grid grid-cols-2 gap-4">
+    {/* Métriques principales */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Poids (kg)
+          Poids utilisé (kg)
         </label>
         <input
           type="number"
@@ -30,32 +35,110 @@ const StrengthPerformanceForm: React.FC<{
           placeholder="60"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
+        <p className="text-xs text-gray-500 mt-1">Poids total utilisé pour l&apos;exercice</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Répétitions
+          Répétitions par série
         </label>
         <input
           type="number"
           min="1"
+          max="50"
           value={performance.reps || ''}
           onChange={(e) => onChange({...performance, reps: Number(e.target.value)})}
           placeholder="10"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
+        <p className="text-xs text-gray-500 mt-1">Nombre de répétitions réalisées</p>
       </div>
     </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Nombre de séries
+        </label>
+        <NumberInput
+          value={performance.sets || 3}
+          onChange={(value) => onChange({...performance, sets: value})}
+          min={1}
+          max={10}
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500 mt-1">Séries complètes réalisées</p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Temps de repos (min)
+        </label>
+        <input
+          type="number"
+          min="0.5"
+          max="10"
+          step="0.5"
+          value={performance.rest_time || ''}
+          onChange={(e) => onChange({...performance, rest_time: Number(e.target.value)})}
+          placeholder="2"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+        />
+        <p className="text-xs text-gray-500 mt-1">Repos entre les séries</p>
+      </div>
+    </div>
+
+    {/* Métriques avancées optionnelles */}
+    <div className="border-t pt-4">
+      <h4 className="text-sm font-medium text-gray-700 mb-3">Métriques avancées (optionnel)</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Temps sous tension (s)
+          </label>
+          <input
+            type="number"
+            min="5"
+            max="120"
+            value={performance.time_under_tension || ''}
+            onChange={(e) => onChange({...performance, time_under_tension: Number(e.target.value)})}
+            placeholder="30"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">Durée totale de la série</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            RPE (1-10)
+          </label>
+          <select
+            value={performance.rpe || ''}
+            onChange={(e) => onChange({...performance, rpe: Number(e.target.value)})}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="">Sélectionner...</option>
+            <option value="6">6 - Très facile</option>
+            <option value="7">7 - Facile</option>
+            <option value="8">8 - Modéré</option>
+            <option value="9">9 - Difficile</option>
+            <option value="10">10 - Très difficile</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Effort perçu (Rate of Perceived Exertion)</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Zone commentaire */}
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Nombre de séries
+        Notes de séance (optionnel)
       </label>
-      <NumberInput
-        value={performance.sets || 3}
-        onChange={(value) => onChange({...performance, sets: value})}
-        min={1}
-        max={10}
-        className="w-full"
+      <textarea
+        value={performance.notes || ''}
+        onChange={(e) => onChange({...performance, notes: e.target.value})}
+        rows={3}
+        placeholder="Sensation, technique, points à améliorer..."
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
       />
+      <p className="text-xs text-gray-500 mt-1">Remarques sur votre ressenti et technique</p>
     </div>
   </div>
 )
@@ -63,68 +146,200 @@ const StrengthPerformanceForm: React.FC<{
 const CardioPerformanceForm: React.FC<{
   performance: ExercisePerformance
   onChange: (performance: ExercisePerformance) => void
-}> = ({ performance, onChange }) => (
-  <div className="space-y-4">
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Distance (km)
-        </label>
-        <input
-          type="number"
-          min="0"
-          step="0.1"
-          value={performance.distance || ''}
-          onChange={(e) => onChange({...performance, distance: Number(e.target.value)})}
-          placeholder="5.0"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-        />
+  exerciseName?: string
+}> = ({ performance, onChange, exerciseName = '' }) => {
+  const isRowing = exerciseName.toLowerCase().includes('rameur')
+  const isRunning = exerciseName.toLowerCase().includes('course') || exerciseName.toLowerCase().includes('tapis')
+  const isCycling = exerciseName.toLowerCase().includes('vélo') || exerciseName.toLowerCase().includes('cyclisme')
+
+  return (
+    <div className="space-y-4">
+      {/* Métriques principales: Distance et Durée */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Distance {isRowing ? '(optionnel)' : '(km)'}
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              min="0"
+              step={isRowing ? "50" : "0.1"}
+              value={performance.distance || ''}
+              onChange={(e) => onChange({...performance, distance: Number(e.target.value)})}
+              placeholder={isRowing ? "2000" : "5.0"}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+            {isRowing && (
+              <select
+                value={performance.distance_unit || 'meters'}
+                onChange={(e) => onChange({...performance, distance_unit: e.target.value})}
+                className="w-20 sm:w-24 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+              >
+                <option value="meters">mètres</option>
+                <option value="km">km</option>
+              </select>
+            )}
+          </div>
+          {isRowing && (
+            <p className="text-xs text-gray-500 mt-1">Laissez vide si vous ne connaissez pas la distance</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Durée (minutes)
+          </label>
+          <input
+            type="number"
+            min="1"
+            value={performance.duration || ''}
+            onChange={(e) => onChange({...performance, duration: Number(e.target.value)})}
+            placeholder="30"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Durée (minutes)
-        </label>
-        <input
-          type="number"
-          min="1"
-          value={performance.duration || ''}
-          onChange={(e) => onChange({...performance, duration: Number(e.target.value)})}
-          placeholder="30"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-        />
+
+      {/* Métriques d'intensité */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRowing ? 'Vitesse (optionnel)' : 'Vitesse (km/h)'}
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="0.1"
+            value={performance.speed || ''}
+            onChange={(e) => onChange({...performance, speed: Number(e.target.value)})}
+            placeholder={isRowing ? "12.0" : "12.0"}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+          />
+          {isRowing && (
+            <p className="text-xs text-gray-500 mt-1">Vitesse en km/h si affichée sur l&apos;écran du rameur</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Calories brûlées
+          </label>
+          <input
+            type="number"
+            min="0"
+            value={performance.calories || ''}
+            onChange={(e) => onChange({...performance, calories: Number(e.target.value)})}
+            placeholder={isRowing ? "120" : "250"}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
       </div>
+
+      {/* Métriques spécifiques selon l'exercice */}
+      {isRowing && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Coups/minute (SPM)
+            </label>
+            <input
+              type="number"
+              min="16"
+              max="36"
+              value={performance.stroke_rate || ''}
+              onChange={(e) => onChange({...performance, stroke_rate: Number(e.target.value)})}
+              placeholder="24"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">Affiché sur l&apos;écran du rameur - Laissez vide si introuvable</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Puissance (Watts)
+            </label>
+            <input
+              type="number"
+              min="50"
+              value={performance.watts || ''}
+              onChange={(e) => onChange({...performance, watts: Number(e.target.value)})}
+              placeholder="120"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">Affiché sur l&apos;écran du rameur - Laissez vide si introuvable</p>
+          </div>
+        </div>
+      )}
+
+      {isRunning && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Rythme cardiaque moyen
+            </label>
+            <input
+              type="number"
+              min="60"
+              max="200"
+              value={performance.heart_rate || ''}
+              onChange={(e) => onChange({...performance, heart_rate: Number(e.target.value)})}
+              placeholder="140"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">BPM - Zone cardio: 120-160</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Inclinaison (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="25"
+              step="0.5"
+              value={performance.incline || ''}
+              onChange={(e) => onChange({...performance, incline: Number(e.target.value)})}
+              placeholder="0"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+      )}
+
+      {isCycling && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Cadence (RPM)
+            </label>
+            <input
+              type="number"
+              min="50"
+              max="130"
+              value={performance.cadence || ''}
+              onChange={(e) => onChange({...performance, cadence: Number(e.target.value)})}
+              placeholder="80"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">Optimal: 70-90 RPM</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Résistance
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="25"
+              value={performance.resistance || ''}
+              onChange={(e) => onChange({...performance, resistance: Number(e.target.value)})}
+              placeholder="5"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+      )}
     </div>
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Vitesse (km/h)
-        </label>
-        <input
-          type="number"
-          min="0"
-          step="0.1"
-          value={performance.speed || ''}
-          onChange={(e) => onChange({...performance, speed: Number(e.target.value)})}
-          placeholder="10.0"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Calories brûlées
-        </label>
-        <input
-          type="number"
-          min="0"
-          value={performance.calories || ''}
-          onChange={(e) => onChange({...performance, calories: Number(e.target.value)})}
-          placeholder="300"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-    </div>
-  </div>
-)
+  )
+}
 
 export const PerformanceInput: React.FC<PerformanceInputProps> = ({ 
   exercise, 
@@ -139,30 +354,21 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         weight: suggestion.values.firstWeight ? Number(suggestion.values.firstWeight) : undefined,
         reps: suggestion.values.firstReps ? Number(suggestion.values.firstReps) : undefined,
         sets: suggestion.values.sets || 3,
-        duration: suggestion.values.duration_minutes || undefined,
-        distance: suggestion.values.distance || undefined,
-        speed: suggestion.values.speed || undefined,
-        calories: suggestion.values.calories || undefined
+        duration: suggestion.values.duration ? Number(suggestion.values.duration) : undefined,
+        distance: suggestion.values.distance ? Number(suggestion.values.distance) : undefined,
+        speed: suggestion.values.speed ? Number(suggestion.values.speed) : undefined,
+        calories: suggestion.values.calories ? Number(suggestion.values.calories) : undefined
       }
     }
     
-    // Pré-remplir avec les valeurs custom si disponibles
-    const customEx = exercise as CustomExercise
-    const initialPerf: ExercisePerformance = {
-      sets: customEx.sets || 3
+    // Valeurs par défaut pour un exercice custom
+    return {
+      sets: 3
     }
-    if (customEx.weight) initialPerf.weight = customEx.weight
-    if (customEx.reps) initialPerf.reps = customEx.reps
-    if (customEx.distance) initialPerf.distance = customEx.distance
-    if (customEx.duration_minutes) initialPerf.duration = customEx.duration_minutes
-    if (customEx.speed) initialPerf.speed = customEx.speed
-    if (customEx.calories) initialPerf.calories = customEx.calories
-    
-    return initialPerf
   })
 
   const [showModal, setShowModal] = useState(false)
-  const [notes, setNotes] = useState('')
+  const [notes] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleComplete = async () => {
@@ -192,8 +398,17 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
     }
   }
 
+  const getExerciseType = () => {
+    // Gérer la différence entre ExerciseSuggestion (type) et CustomExercise (exercise_type)
+    if ('type' in exercise) {
+      return exercise.type
+    }
+    return exercise.exercise_type
+  }
+
   const isFormValid = () => {
-    if (exercise.exercise_type === 'Cardio') {
+    const exerciseType = getExerciseType()
+    if (exerciseType === 'Cardio') {
       return performance.duration || performance.distance
     } else {
       return performance.weight && performance.reps
@@ -224,40 +439,28 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         {/* Form */}
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
-            {exercise.exercise_type === 'Cardio' ? (
+            {getExerciseType() === 'Cardio' ? (
               <Target className="h-5 w-5 text-orange-500" />
             ) : (
               <Dumbbell className="h-5 w-5 text-orange-500" />
             )}
             <h3 className="font-semibold text-gray-900">
-              Performance {exercise.exercise_type === 'Cardio' ? 'Cardio' : 'Musculation'}
+              Performance {getExerciseType() === 'Cardio' ? 'Cardio' : 'Musculation'}
             </h3>
           </div>
 
-          {exercise.exercise_type === 'Cardio' ? (
+          {getExerciseType() === 'Cardio' ? (
             <CardioPerformanceForm 
               performance={performance} 
-              onChange={setPerformance} 
+              onChange={setPerformance}
+              exerciseName={exercise.name}
             />
           ) : (
             <StrengthPerformanceForm 
               performance={performance} 
-              onChange={setPerformance} 
+              onChange={setPerformance}
             />
           )}
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notes (optionnel)
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Ajoute des notes sur ta séance..."
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-            />
-          </div>
         </div>
 
         {/* Actions */}

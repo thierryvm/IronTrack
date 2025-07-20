@@ -3,20 +3,25 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, X } from 'lucide-react'
-import { CustomExercise } from '@/types/exercise-wizard'
+import { CustomExercise, ExerciseSuggestion, ExercisePerformance } from '@/types/exercise-wizard'
 
 interface FinalSummaryModalProps {
   isOpen: boolean
-  exercise: CustomExercise
+  exercise: CustomExercise | ExerciseSuggestion
+  performance?: ExercisePerformance
+  onConfirm: () => Promise<void>
+  loading: boolean
   onClose: () => void
 }
 
 export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
   isOpen,
   exercise,
+  performance,
+  onConfirm,
+  loading,
   onClose
 }) => {
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -42,10 +47,10 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">
-                    {isEditMode ? 'Modifications sauvegardées !' : 'Exercice créé !'}
+                    Exercice sauvegardé !
                   </h2>
                   <p className="text-gray-600 text-sm">
-                    {isEditMode ? 'Vos modifications ont été sauvegardées avec succès' : 'Votre exercice est prêt'}
+                    Votre exercice a été sauvegardé avec succès
                   </p>
                 </div>
               </div>
@@ -64,7 +69,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2 text-orange-700">
                   <span className="font-medium">🏋️</span>
-                  <span>{exercise.exercise_type}</span>
+                  <span>{'type' in exercise ? exercise.type : exercise.exercise_type}</span>
                 </div>
                 <div className="flex items-center gap-2 text-orange-700">
                   <span className="font-medium">📍</span>
@@ -74,46 +79,34 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                   <span className="font-medium">⭐</span>
                   <span>{exercise.difficulty}</span>
                 </div>
-                {exercise.equipment_id && (
+                {'equipment_id' in exercise && exercise.equipment_id && (
                   <div className="flex items-center gap-2 text-orange-700">
                     <span className="font-medium">🛠️</span>
                     <span>{exercise.equipment_name || `Équipement #${exercise.equipment_id}`}</span>
                   </div>
                 )}
+                {'equipment' in exercise && (
+                  <div className="flex items-center gap-2 text-orange-700">
+                    <span className="font-medium">🛠️</span>
+                    <span>{exercise.equipment}</span>
+                  </div>
+                )}
                 
                 {/* Données spécifiques selon le type */}
-                {exercise.exercise_type === 'Musculation' && exercise.sets && (
+                {(('type' in exercise ? exercise.type : exercise.exercise_type) === 'Musculation') && 'sets' in exercise && exercise.sets && (
                   <div className="flex items-center gap-2 text-orange-700">
                     <span className="font-medium">🔢</span>
                     <span>{exercise.sets} séries</span>
                   </div>
                 )}
                 
-                {exercise.exercise_type === 'Cardio' && (
-                  <>
-                    {exercise.distance && (
-                      <div className="flex items-center gap-2 text-orange-700">
-                        <span className="font-medium">📏</span>
-                        <span>{exercise.distance} {exercise.distance_unit || 'km'}</span>
-                      </div>
-                    )}
-                    {exercise.speed && (
-                      <div className="flex items-center gap-2 text-orange-700">
-                        <span className="font-medium">⚡</span>
-                        <span>{exercise.speed} {exercise.speed_unit || 'km/h'}</span>
-                      </div>
-                    )}
-                    {exercise.calories && (
-                      <div className="flex items-center gap-2 text-orange-700">
-                        <span className="font-medium">🔥</span>
-                        <span>{exercise.calories} kcal</span>
-                      </div>
-                    )}
-                  </>
-                )}
+                <div className="flex items-center gap-2 text-orange-700">
+                  <span className="font-medium">✅</span>
+                  <span>Exercice {('type' in exercise ? exercise.type : exercise.exercise_type).toLowerCase()} créé avec succès</span>
+                </div>
               </div>
               
-              {exercise.description && (
+              {'description' in exercise && exercise.description && (
                 <div className="mt-4 p-3 bg-white rounded-lg border border-orange-200">
                   <div className="flex items-start gap-2 text-orange-700">
                     <span className="font-medium">📝</span>
@@ -121,7 +114,133 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                   </div>
                 </div>
               )}
+              
             </div>
+
+            {/* Performance Summary */}
+            {performance && (
+              <div className="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-200">
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">Performance ajoutée</h3>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  {(('type' in exercise ? exercise.type : exercise.exercise_type) === 'Cardio') ? (
+                    <>
+                      {performance.distance && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">📏</span>
+                          <span>
+                            {performance.distance}
+                            {performance.distance_unit === 'meters' ? 'm' : 'km'}
+                          </span>
+                        </div>
+                      )}
+                      {performance.duration && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">⏱️</span>
+                          <span>{performance.duration} min</span>
+                        </div>
+                      )}
+                      {performance.speed && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🏃</span>
+                          <span>{performance.speed} km/h</span>
+                        </div>
+                      )}
+                      {performance.calories && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🔥</span>
+                          <span>{performance.calories} kcal</span>
+                        </div>
+                      )}
+                      {performance.stroke_rate && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🚣</span>
+                          <span>{performance.stroke_rate} SPM</span>
+                        </div>
+                      )}
+                      {performance.watts && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">⚡</span>
+                          <span>{performance.watts} watts</span>
+                        </div>
+                      )}
+                      {performance.heart_rate && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">❤️</span>
+                          <span>{performance.heart_rate} BPM</span>
+                        </div>
+                      )}
+                      {performance.incline && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">📈</span>
+                          <span>{performance.incline}% inclinaison</span>
+                        </div>
+                      )}
+                      {performance.cadence && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🚴</span>
+                          <span>{performance.cadence} RPM</span>
+                        </div>
+                      )}
+                      {performance.resistance && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">💪</span>
+                          <span>Résistance {performance.resistance}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {performance.weight && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🏋️</span>
+                          <span>{performance.weight} kg</span>
+                        </div>
+                      )}
+                      {performance.reps && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">🔢</span>
+                          <span>{performance.reps} répétitions</span>
+                        </div>
+                      )}
+                      {performance.sets && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">📊</span>
+                          <span>{performance.sets} séries</span>
+                        </div>
+                      )}
+                      {performance.rest_time && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">⏸️</span>
+                          <span>{performance.rest_time} min repos</span>
+                        </div>
+                      )}
+                      {performance.time_under_tension && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">⏱️</span>
+                          <span>{performance.time_under_tension}s TUT</span>
+                        </div>
+                      )}
+                      {performance.rpe && (
+                        <div className="flex items-center gap-2 text-blue-700">
+                          <span className="font-medium">📈</span>
+                          <span>RPE {performance.rpe}/10</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                
+                {performance.notes && (
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                    <div className="flex items-start gap-2 text-blue-700">
+                      <span className="font-medium">💭</span>
+                      <span className="italic">{performance.notes}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Actions */}
             <div className="space-y-4">
@@ -134,11 +253,16 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
               <div className="flex flex-col gap-3">
                 {/* Mode création uniquement - bouton simple pour terminer */}
                 <button
-                  onClick={onClose}
-                  className="w-full bg-green-500 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                  onClick={onConfirm}
+                  disabled={loading}
+                  className="w-full bg-green-500 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <CheckCircle className="w-5 h-5" />
-                  Terminer et aller aux exercices
+                  {loading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <CheckCircle className="w-5 h-5" />
+                  )}
+                  {loading ? 'Sauvegarde...' : 'Terminer et aller aux exercices'}
                 </button>
               </div>
             </div>
@@ -146,7 +270,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
             {/* Note d'aide */}
             <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-blue-700 text-sm">
-                💡 <strong>Astuce :</strong> Vous pourrez toujours {isEditMode ? 'modifier cet exercice' : 'ajouter des performances'} plus tard depuis la page de l&apos;exercice.
+                💡 <strong>Astuce :</strong> Vous pourrez toujours ajouter des performances plus tard depuis la page de l&apos;exercice.
               </p>
             </div>
           </motion.div>

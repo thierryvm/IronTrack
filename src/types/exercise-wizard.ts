@@ -51,11 +51,16 @@ export interface CustomExercise {
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
   instructions?: string
+  
+  // Musculation specific
+  weight?: number
+  reps?: number
   sets?: number
-  duration_minutes?: number
-  duration_seconds?: number
+  rest_time?: number
   
   // Cardio specific
+  duration_minutes?: number
+  duration_seconds?: number
   distance?: number
   distance_unit?: string
   speed?: number
@@ -68,12 +73,28 @@ export interface ExercisePerformance {
   weight?: number
   reps?: number
   sets?: number
+  rest_time?: number // Temps de repos entre séries (minutes)
+  time_under_tension?: number // Temps sous tension (secondes)
+  rpe?: number // Rate of Perceived Exertion (1-10)
   
-  // Cardio
+  // Cardio général
   distance?: number
+  distance_unit?: string
   duration?: number
   speed?: number
   calories?: number
+  
+  // Rameur spécifique
+  stroke_rate?: number // SPM (Strokes Per Minute)
+  watts?: number // Puissance
+  
+  // Course/Tapis spécifique
+  heart_rate?: number // BPM
+  incline?: number // Inclinaison en %
+  
+  // Vélo spécifique
+  cadence?: number // RPM
+  resistance?: number // Niveau de résistance
   
   // Commun
   notes?: string

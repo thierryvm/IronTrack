@@ -59,7 +59,7 @@ interface CustomFormProps {
   onBack: () => void
   onCancel?: () => void
   onCompleteWithoutPerformance?: (exerciseData: CustomExercise) => Promise<void>
-  initialData?: CustomExercise
+  initialData?: Partial<CustomExercise>
   isEditMode?: boolean
 }
 
@@ -73,13 +73,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
   isEditMode = false
 }) => {
   const [formData, setFormData] = useState<CustomExercise>(() => {
-    if (initialData) {
-      return {
-        ...initialData,
-        exercise_type: exerciseType // S'assurer que le type correspond
-      }
-    }
-    return {
+    const defaultData: CustomExercise = {
       name: '',
       exercise_type: exerciseType,
       muscle_group: muscleGroups[0],
@@ -88,6 +82,16 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       description: '',
       sets: 3
     }
+    
+    if (initialData) {
+      return {
+        ...defaultData,
+        ...initialData,
+        exercise_type: exerciseType // S'assurer que le type correspond
+      }
+    }
+    
+    return defaultData
   })
 
   const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>([])
@@ -278,19 +282,58 @@ export const CustomForm: React.FC<CustomFormProps> = ({
         </motion.div>
 
         {exerciseType === 'Musculation' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <FormField
-              label="Nombre de séries"
-              type="number"
-              value={formData.sets || 3}
-              onChange={(value) => setFormData({...formData, sets: Number(value)})}
-              placeholder="3"
-            />
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="space-y-4"
+            >
+              <h4 className="text-lg font-medium text-gray-900 border-b pb-2">Valeurs recommandées par défaut</h4>
+              
+              {/* Première ligne: Poids et Répétitions */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  label="Poids recommandé (kg)"
+                  type="number"
+                  value={formData.weight || ''}
+                  onChange={(value) => setFormData({...formData, weight: Number(value)})}
+                  placeholder="Ex: 20"
+                />
+                <FormField
+                  label="Répétitions recommandées"
+                  type="number"
+                  value={formData.reps || ''}
+                  onChange={(value) => setFormData({...formData, reps: Number(value)})}
+                  placeholder="Ex: 10"
+                />
+              </div>
+
+              {/* Deuxième ligne: Séries et Repos */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  label="Nombre de séries"
+                  type="number"
+                  value={formData.sets || 3}
+                  onChange={(value) => setFormData({...formData, sets: Number(value)})}
+                  placeholder="3"
+                />
+                <FormField
+                  label="Temps de repos (min)"
+                  type="number"
+                  value={formData.rest_time || ''}
+                  onChange={(value) => setFormData({...formData, rest_time: Number(value)})}
+                  placeholder="Ex: 2"
+                />
+              </div>
+              
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  Ces valeurs seront suggérées par défaut aux utilisateurs lors de leurs séances.
+                </p>
+              </div>
+            </motion.div>
+          </>
         )}
 
         <motion.div

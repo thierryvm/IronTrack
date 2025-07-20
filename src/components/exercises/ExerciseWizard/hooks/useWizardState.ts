@@ -80,11 +80,38 @@ export const useWizardState = (initialData?: CustomExercise, isEditMode = false)
       if ('id' in finalData.exercise) {
         // Suggestion sélectionnée - créer l'exercice à partir de la suggestion
         const suggestion = finalData.exercise as ExerciseSuggestion
+        
+        // Récupérer l'ID de l'équipement depuis le nom avec fallback intelligent
+        let equipmentId = 1 // Fallback par défaut
+        
+        const { data: equipment } = await supabase
+          .from('equipment')
+          .select('id, name')
+          .eq('name', suggestion.equipment)
+          .single()
+        
+        if (equipment) {
+          equipmentId = equipment.id
+        } else {
+          // Si équipement exact pas trouvé, chercher des équipements similaires
+          const { data: fallbackEquipment } = await supabase
+            .from('equipment')
+            .select('id, name')
+            .ilike('name', `%${suggestion.equipment}%`)
+            .limit(1)
+            .single()
+          
+          if (fallbackEquipment) {
+            equipmentId = fallbackEquipment.id
+          }
+        }
+        
         exerciseData = {
           user_id: user.id,
           name: suggestion.name,
           exercise_type: suggestion.type,
           muscle_group: suggestion.muscle_group,
+          equipment_id: equipmentId,
           difficulty: suggestion.difficulty,
           created_at: new Date().toISOString()
         }

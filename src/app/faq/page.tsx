@@ -75,6 +75,30 @@ const faqData: FAQItem[] = [
     answer: 'IronTrack supporte tous types d\'exercices : Musculation, Cardio, Étirement, Yoga, Pilates, Natation, Crossfit, Gainage, Cours collectifs, etc.',
     category: 'workouts'
   },
+  {
+    id: 'workouts-5',
+    question: 'Comment utiliser le wizard de création d\'exercices ?',
+    answer: 'Allez dans "Exercices" → "Nouveau" → Le wizard vous guide : 1) Choisissez le type (Musculation/Cardio), 2) Sélectionnez un exercice suggéré ou créez le vôtre, 3) Ajoutez vos performances. L\'IA vous propose des exercices adaptés à votre niveau.',
+    category: 'workouts'
+  },
+  {
+    id: 'workouts-6',
+    question: 'Quelles métriques puis-je saisir pour le cardio ?',
+    answer: 'Pour le cardio, vous pouvez saisir : distance (km/m selon l&apos;exercice), durée, calories, vitesse. Métriques spécialisées - Rameur : SPM (coups/minute), watts (puissance), rythme cardiaque. Course/Tapis : rythme cardiaque, inclinaison (%). Vélo : cadence (RPM), résistance, rythme cardiaque. Toutes les métriques sont adaptées aux standards belges.',
+    category: 'workouts'
+  },
+  {
+    id: 'workouts-7',
+    question: 'Quelles métriques avancées puis-je suivre en musculation ?',
+    answer: 'En musculation, vous pouvez saisir : poids, répétitions, séries (de base) + temps de repos entre séries, temps sous tension (durée de la série), RPE (effort perçu de 6 à 10), et notes personnalisées sur votre ressenti.',
+    category: 'workouts'
+  },
+  {
+    id: 'workouts-8',
+    question: 'Comment modifier un exercice ou une performance existante ?',
+    answer: 'Depuis la page Exercices, cliquez sur l&apos;icône œil pour voir les détails → "Modifier l&apos;exercice" pour changer les infos de base, ou "Nouvelle performance" pour ajouter des résultats. Pour modifier une performance existante, utilisez l&apos;icône crayon dans l&apos;historique. Toutes vos modifications incluent les nouvelles métriques cardio avancées.',
+    category: 'workouts'
+  },
 
   // General
   {

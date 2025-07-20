@@ -14,10 +14,21 @@ interface PerformanceData {
   weight?: number
   reps?: number
   sets?: number
+  rest_time?: number
+  time_under_tension?: number
+  rpe?: number
   distance?: number
+  distance_unit?: string
   duration?: number
   speed?: number
   calories?: number
+  // Champs cardio avancés
+  stroke_rate?: number
+  watts?: number
+  heart_rate?: number
+  incline?: number
+  cadence?: number
+  resistance?: number
   notes?: string
   performed_at: string
 }
@@ -97,10 +108,23 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
         weight: performance.weight || null,
         reps: performance.reps || null,
         sets: performance.sets || null,
+        // Nouvelles métriques musculation
+        rest_time: performance.rest_time || null,
+        time_under_tension: performance.time_under_tension || null,
+        rpe: performance.rpe || null,
+        // Métriques cardio
         distance: performance.distance || null,
+        distance_unit: performance.distance_unit || null,
         duration: performance.duration ? performance.duration * 60 : null, // Convertir minutes en secondes
         speed: performance.speed || null,
         calories: performance.calories || null,
+        // Champs cardio avancés
+        stroke_rate: performance.stroke_rate || null,
+        watts: performance.watts || null,
+        heart_rate: performance.heart_rate || null,
+        incline: performance.incline || null,
+        cadence: performance.cadence || null,
+        resistance: performance.resistance || null,
         notes: performance.notes || null
       }
 
@@ -112,7 +136,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
       if (error) throw error
 
       toast.success('Performance modifiée avec succès !')
-      router.push(`/exercises/${exerciseId}`)
+      router.push('/exercises')
     } catch (error) {
       console.error('Erreur:', error)
       toast.error('Erreur lors de la sauvegarde')
@@ -122,7 +146,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
   }
 
   const handleCancel = () => {
-    router.push(`/exercises/${exerciseId}`)
+    router.push('/exercises')
   }
 
   if (loading) {
@@ -191,7 +215,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
           <div className="space-y-6">
             {exercise.exercise_type === 'Musculation' ? (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Poids (kg)
@@ -220,37 +244,103 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombre de séries
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={performance.sets || ''}
-                    onChange={(e) => setPerformance({...performance, sets: Number(e.target.value)})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    placeholder="3"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nombre de séries
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={performance.sets || ''}
+                      onChange={(e) => setPerformance({...performance, sets: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Temps de repos (min)
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      max="10"
+                      step="0.5"
+                      value={performance.rest_time || ''}
+                      onChange={(e) => setPerformance({...performance, rest_time: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="2"
+                    />
+                  </div>
+                </div>
+                
+                {/* Métriques avancées musculation */}
+                <div className="border-t pt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Métriques avancées (optionnel)</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Temps sous tension (s)
+                      </label>
+                      <input
+                        type="number"
+                        min="5"
+                        max="120"
+                        value={performance.time_under_tension || ''}
+                        onChange={(e) => setPerformance({...performance, time_under_tension: Number(e.target.value)})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        placeholder="30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        RPE (1-10)
+                      </label>
+                      <select
+                        value={performance.rpe || ''}
+                        onChange={(e) => setPerformance({...performance, rpe: Number(e.target.value)})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      >
+                        <option value="">Sélectionner...</option>
+                        <option value="6">6 - Très facile</option>
+                        <option value="7">7 - Facile</option>
+                        <option value="8">8 - Modéré</option>
+                        <option value="9">9 - Difficile</option>
+                        <option value="10">10 - Très difficile</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                {/* Métriques de base */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Distance (km)
+                      Distance
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={performance.distance || ''}
-                      onChange={(e) => setPerformance({...performance, distance: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      placeholder="5"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={performance.distance || ''}
+                        onChange={(e) => setPerformance({...performance, distance: Number(e.target.value)})}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        placeholder="5"
+                      />
+                      <select
+                        value={performance.distance_unit || 'km'}
+                        onChange={(e) => setPerformance({...performance, distance_unit: e.target.value})}
+                        className="w-20 sm:w-24 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                      >
+                        <option value="km">km</option>
+                        <option value="meters">m</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -266,7 +356,8 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Vitesse (km/h)
@@ -295,6 +386,115 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                     />
                   </div>
                 </div>
+
+                {/* Métriques spécifiques selon le type d'exercice */}
+                {exercise.name.toLowerCase().includes('rameur') && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium text-gray-800 mb-3">Métriques rameur</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Coups/minute (SPM)
+                        </label>
+                        <input
+                          type="number"
+                          min="16"
+                          max="36"
+                          value={performance.stroke_rate || ''}
+                          onChange={(e) => setPerformance({...performance, stroke_rate: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="24"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Puissance (Watts)
+                        </label>
+                        <input
+                          type="number"
+                          min="50"
+                          value={performance.watts || ''}
+                          onChange={(e) => setPerformance({...performance, watts: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="120"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(exercise.name.toLowerCase().includes('course') || exercise.name.toLowerCase().includes('tapis')) && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium text-gray-800 mb-3">Métriques course/tapis</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Fréquence cardiaque (BPM)
+                        </label>
+                        <input
+                          type="number"
+                          min="60"
+                          max="220"
+                          value={performance.heart_rate || ''}
+                          onChange={(e) => setPerformance({...performance, heart_rate: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="140"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Inclinaison (%)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="25"
+                          step="0.5"
+                          value={performance.incline || ''}
+                          onChange={(e) => setPerformance({...performance, incline: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {exercise.name.toLowerCase().includes('vélo') && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium text-gray-800 mb-3">Métriques vélo</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cadence (RPM)
+                        </label>
+                        <input
+                          type="number"
+                          min="50"
+                          max="130"
+                          value={performance.cadence || ''}
+                          onChange={(e) => setPerformance({...performance, cadence: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="80"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Résistance
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="25"
+                          value={performance.resistance || ''}
+                          onChange={(e) => setPerformance({...performance, resistance: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 

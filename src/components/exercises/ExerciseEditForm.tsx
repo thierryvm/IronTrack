@@ -16,7 +16,12 @@ interface ExerciseData {
   equipment_id: number
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
+  // Métriques musculation
+  weight?: number
+  reps?: number
   sets?: number
+  rest_time?: number
+  // Métriques cardio
   duration_minutes?: number
   duration_seconds?: number
   distance?: number
@@ -24,6 +29,7 @@ interface ExerciseData {
   speed?: number
   speed_unit?: string
   calories?: number
+  notes?: string // Notes from latest performance
 }
 
 export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }) => {
@@ -46,6 +52,15 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
           .single()
 
         if (exerciseError) throw exerciseError
+
+        // Récupérer les notes de la dernière performance
+        const { data: latestPerformance } = await supabase
+          .from('performance_logs')
+          .select('notes')
+          .eq('exercise_id', exerciseId)
+          .order('performed_at', { ascending: false })
+          .limit(1)
+          .single()
 
         // Récupérer les équipements
         const { data: equipmentData, error: equipmentError } = await supabase
@@ -70,7 +85,8 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
           distance_unit: exerciseData.distance_unit || undefined,
           speed: exerciseData.speed || undefined,
           speed_unit: exerciseData.speed_unit || undefined,
-          calories: exerciseData.calories || undefined
+          calories: exerciseData.calories || undefined,
+          notes: latestPerformance?.notes || '' // Notes from latest performance
         }
         
         setExercise(formattedExercise)
@@ -102,21 +118,26 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
           equipment_id: exercise.equipment_id,
           difficulty: exercise.difficulty,
           description: exercise.description,
-          sets: exercise.sets,
-          duration_minutes: exercise.duration_minutes,
-          duration_seconds: exercise.duration_seconds,
-          distance: exercise.distance,
-          distance_unit: exercise.distance_unit,
-          speed: exercise.speed,
-          speed_unit: exercise.speed_unit,
-          calories: exercise.calories
+          // Métriques musculation
+          weight: exercise.weight || null,
+          reps: exercise.reps || null,
+          sets: exercise.sets || null,
+          rest_time: exercise.rest_time || null,
+          // Métriques cardio
+          duration_minutes: exercise.duration_minutes || null,
+          duration_seconds: exercise.duration_seconds || null,
+          distance: exercise.distance || null,
+          distance_unit: exercise.distance_unit || null,
+          speed: exercise.speed || null,
+          speed_unit: exercise.speed_unit || null,
+          calories: exercise.calories || null
         })
         .eq('id', exerciseId)
 
       if (error) throw error
 
       toast.success('Exercice modifié avec succès !')
-      router.push(`/exercises/${exerciseId}`)
+      router.push('/exercises')
     } catch (error) {
       console.error('Erreur:', error)
       toast.error('Erreur lors de la sauvegarde')
@@ -126,7 +147,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
   }
 
   const handleCancel = () => {
-    router.push(`/exercises/${exerciseId}`)
+    router.push('/exercises')
   }
 
   if (loading) {
@@ -279,57 +300,326 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
               />
             </div>
 
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Notes (de la dernière performance)
+              </label>
+              <textarea
+                value={exercise.notes || ''}
+                onChange={(e) => setExercise({...exercise, notes: e.target.value})}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                placeholder="Notes ajoutées lors de la création..."
+                readOnly
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Ces notes proviennent de votre dernière performance. Pour les modifier, utilisez le formulaire de modification de performance.
+              </p>
+            </div>
+
             {/* Champs spécifiques selon le type */}
             {exercise.exercise_type === 'Musculation' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre de séries recommandées
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={exercise.sets || ''}
-                  onChange={(e) => setExercise({...exercise, sets: Number(e.target.value)})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  placeholder="Ex: 3"
-                />
+              <div className="space-y-4">
+                <h4 className="text-lg font-medium text-gray-900 border-b pb-2">Valeurs recommandées par défaut</h4>
+                
+                {/* Métriques de base musculation */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Poids recommandé (kg)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={exercise.weight || ''}
+                      onChange={(e) => setExercise({...exercise, weight: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ex: 20"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Poids de départ suggéré</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Répétitions recommandées
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={exercise.reps || ''}
+                      onChange={(e) => setExercise({...exercise, reps: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ex: 10"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Nombre de répétitions par série</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nombre de séries recommandées
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={exercise.sets || ''}
+                      onChange={(e) => setExercise({...exercise, sets: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ex: 3"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Nombre de séries à effectuer</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Temps de repos recommandé (min)
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      max="10"
+                      step="0.5"
+                      value={exercise.rest_time || ''}
+                      onChange={(e) => setExercise({...exercise, rest_time: Number(e.target.value)})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ex: 2"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Repos entre les séries</p>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note :</strong> Ces valeurs sont des recommandations par défaut pour cet exercice. 
+                    Les utilisateurs pourront ajuster selon leur niveau lors de chaque séance.
+                  </p>
+                </div>
               </div>
             )}
 
             {exercise.exercise_type === 'Cardio' && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                {/* Métriques de base pour tous les cardio */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Distance recommandée
+                      Distance recommandée {exercise.name.toLowerCase().includes('rameur') ? '(mètres)' : '(km)'}
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        step={exercise.name.toLowerCase().includes('rameur') ? "50" : "0.1"}
+                        value={exercise.distance || ''}
+                        onChange={(e) => setExercise({...exercise, distance: Number(e.target.value)})}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        placeholder={exercise.name.toLowerCase().includes('rameur') ? "2000" : "5.0"}
+                      />
+                      <select
+                        value={exercise.distance_unit || (exercise.name.toLowerCase().includes('rameur') ? 'meters' : 'km')}
+                        onChange={(e) => setExercise({...exercise, distance_unit: e.target.value})}
+                        className="w-20 sm:w-24 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                      >
+                        <option value="km">km</option>
+                        <option value="meters">m</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Durée recommandée (min)
                     </label>
                     <input
                       type="number"
-                      step="0.1"
-                      value={exercise.distance || ''}
-                      onChange={(e) => setExercise({...exercise, distance: Number(e.target.value)})}
+                      min="1"
+                      value={exercise.duration_minutes || ''}
+                      onChange={(e) => setExercise({...exercise, duration_minutes: Number(e.target.value)})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      placeholder="Ex: 5"
+                      placeholder="30"
                     />
                   </div>
+                </div>
+
+                {/* Métriques spécifiques selon l'équipement */}
+                {exercise.name.toLowerCase().includes('rameur') && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Métriques spécifiques rameur</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cadence recommandée (SPM)
+                        </label>
+                        <input
+                          type="number"
+                          min="16"
+                          max="36"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="24"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Valeur suggérée: 20-28 SPM</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Puissance recommandée (W)
+                        </label>
+                        <input
+                          type="number"
+                          min="50"
+                          max="500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="150"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Valeur suggérée: 100-200W</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(exercise.name.toLowerCase().includes('course') || exercise.name.toLowerCase().includes('tapis')) && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Métriques spécifiques course</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Vitesse recommandée (km/h)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={exercise.speed || ''}
+                          onChange={(e) => setExercise({...exercise, speed: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="10.0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Inclinaison recommandée (%)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="15"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="2.0"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Valeur suggérée: 1-5%</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {exercise.name.toLowerCase().includes('vélo') && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Métriques spécifiques vélo</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cadence recommandée (RPM)
+                        </label>
+                        <input
+                          type="number"
+                          min="50"
+                          max="120"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="80"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Valeur suggérée: 70-90 RPM</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Résistance recommandée
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="20"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="8"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Valeur suggérée: 5-12</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Unité
+                      Calories recommandées
                     </label>
-                    <select
-                      value={exercise.distance_unit || 'km'}
-                      onChange={(e) => setExercise({...exercise, distance_unit: e.target.value})}
+                    <input
+                      type="number"
+                      min="0"
+                      value={exercise.calories || ''}
+                      onChange={(e) => setExercise({...exercise, calories: Number(e.target.value)})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    >
-                      <option value="km">km</option>
-                      <option value="m">m</option>
-                      <option value="miles">miles</option>
-                    </select>
+                      placeholder="300"
+                    />
                   </div>
+                </div>
+
+                {/* Section répétitions/séries pour certains cardio */}
+                {(exercise.name.toLowerCase().includes('burpees') || 
+                  exercise.name.toLowerCase().includes('jumping') ||
+                  exercise.name.toLowerCase().includes('squat') ||
+                  exercise.name.toLowerCase().includes('pompe') ||
+                  exercise.name.toLowerCase().includes('hiit') ||
+                  exercise.name.toLowerCase().includes('tabata')) && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Exercice avec répétitions</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Répétitions recommandées
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={exercise.reps || ''}
+                          onChange={(e) => setExercise({...exercise, reps: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="20"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Nombre de répétitions par série</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nombre de séries recommandées
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={exercise.sets || ''}
+                          onChange={(e) => setExercise({...exercise, sets: Number(e.target.value)})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          placeholder="3"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Nombre de séries à effectuer</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note :</strong> Ces valeurs sont des recommandations par défaut. 
+                    Les utilisateurs pourront saisir leurs propres métriques lors de chaque performance.
+                  </p>
                 </div>
               </div>
             )}
+
           </div>
 
           {/* Boutons */}
