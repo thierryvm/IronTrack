@@ -182,59 +182,160 @@ export default function HomePage() {
         .limit(5)
       
       if (!exercisesError && exercises) {
-        // Pour chaque exercice, récupérer les dernières données selon le type
+        // Pour chaque exercice, récupérer les dernières données de performance_logs (source principale)
         const recentWithData = await Promise.all(
           exercises.map(async (ex) => {
-            if (ex.exercise_type === 'Musculation') {
-              // Pour la musculation, récupérer le dernier poids
+            // D'abord, essayer de récupérer depuis performance_logs (source principale)
+            const { data: lastPerformance } = await supabase
+              .from('performance_logs')
+              .select('weight, reps, sets, duration, distance, speed, calories, notes, stroke_rate, watts, heart_rate, incline, cadence, resistance, distance_unit')
+              .eq('exercise_id', ex.id)
+              .order('performed_at', { ascending: false })
+              .limit(1)
+            
+            let displayValue = 'Aucune donnée'
+            let displayLabel = 'Dernière performance'
+            const metrics: string[] = []
+            
+            if (lastPerformance?.[0]) {
+              const perf = lastPerformance[0]
+              
+              if (ex.exercise_type === 'Musculation') {
+                // Pour la musculation : afficher le poids principal + reps/sets si disponibles
+                if (perf.weight && perf.weight > 0) {
+                  metrics.push(`${perf.weight} kg`)
+                  if (perf.reps) {
+                    metrics.push(`${perf.reps} reps`)
+                  }
+                  if (perf.sets && perf.sets > 1) {
+                    metrics.push(`${perf.sets} sets`)
+                  }
+                  displayValue = metrics.join(' • ')
+                  displayLabel = 'Dernière série'
+                } else {
+                  displayValue = 'Poids du corps'
+                  if (perf.reps) {
+                    displayValue += ` • ${perf.reps} reps`
+                  }
+                  displayLabel = 'Dernière série'
+                }
+              } else {
+                // Pour le cardio : afficher plusieurs métriques selon le type d'exercice
+                const exerciseName = ex.name.toLowerCase()
+                
+                if (exerciseName.includes('rameur')) {
+                  // Rameur : distance + durée + SPM/watts si disponibles
+                  if (perf.distance) {
+                    const unit = perf.distance_unit === 'm' || perf.distance >= 100 ? 'm' : 'km'
+                    metrics.push(`${perf.distance}${unit}`)
+                  }
+                  if (perf.duration) {
+                    const minutes = Math.floor(perf.duration / 60)
+                    const seconds = perf.duration % 60
+                    metrics.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+                  }
+                  if (perf.stroke_rate) {
+                    metrics.push(`${perf.stroke_rate} SPM`)
+                  }
+                  if (perf.watts) {
+                    metrics.push(`${perf.watts}W`)
+                  }
+                  displayLabel = 'Dernière session rameur'
+                } else if (exerciseName.includes('course') || exerciseName.includes('tapis')) {
+                  // Course/Tapis : distance + durée + vitesse/inclinaison si disponibles
+                  if (perf.distance) {
+                    metrics.push(`${perf.distance} km`)
+                  }
+                  if (perf.duration) {
+                    const minutes = Math.floor(perf.duration / 60)
+                    const seconds = perf.duration % 60
+                    metrics.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+                  }
+                  if (perf.speed) {
+                    metrics.push(`${perf.speed} km/h`)
+                  }
+                  if (perf.incline) {
+                    metrics.push(`${perf.incline}%`)
+                  }
+                  displayLabel = 'Dernière course'
+                } else if (exerciseName.includes('vélo') || exerciseName.includes('cyclisme')) {
+                  // Vélo : distance + durée + cadence/résistance si disponibles
+                  if (perf.distance) {
+                    metrics.push(`${perf.distance} km`)
+                  }
+                  if (perf.duration) {
+                    const minutes = Math.floor(perf.duration / 60)
+                    const seconds = perf.duration % 60
+                    metrics.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+                  }
+                  if (perf.cadence) {
+                    metrics.push(`${perf.cadence} RPM`)
+                  }
+                  if (perf.resistance) {
+                    metrics.push(`Niv.${perf.resistance}`)
+                  }
+                  displayLabel = 'Dernière session vélo'
+                } else {
+                  // Cardio générique : durée + distance + reps si disponibles
+                  if (perf.duration) {
+                    const minutes = Math.floor(perf.duration / 60)
+                    const seconds = perf.duration % 60
+                    metrics.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+                  }
+                  if (perf.distance) {
+                    const unit = perf.distance_unit || 'km'
+                    metrics.push(`${perf.distance}${unit}`)
+                  }
+                  if (perf.reps) {
+                    metrics.push(`${perf.reps} reps`)
+                  }
+                  displayLabel = 'Dernière session'
+                }
+                
+                // Limiter à 3 métriques maximum pour éviter débordement
+                if (metrics.length > 0) {
+                  displayValue = metrics.slice(0, 3).join(' • ')
+                  if (metrics.length > 3) {
+                    displayValue += '...'
+                  }
+                } else {
+                  displayValue = 'Aucune donnée'
+                }
+              }
+            } else {
+              // Si aucune performance trouvée dans performance_logs, essayer workout_exercises (fallback)
               const { data: lastWorkout } = await supabase
                 .from('workout_exercises')
-                .select('weight')
+                .select('weight, reps, sets')
                 .eq('exercise_id', ex.id)
                 .order('created_at', { ascending: false })
                 .limit(1)
               
-              return {
-                id: ex.id,
-                name: ex.name,
-                muscle_group: ex.muscle_group || 'Général',
-                exercise_type: ex.exercise_type,
-                weight: lastWorkout?.[0]?.weight || 0,
-                displayValue: lastWorkout?.[0]?.weight === 0 ? 'Poids du corps' : `${lastWorkout?.[0]?.weight || 0} kg`,
-                displayLabel: 'Dernier poids'
+              if (lastWorkout?.[0]) {
+                const workout = lastWorkout[0]
+                if (ex.exercise_type === 'Musculation') {
+                  if (workout.weight && workout.weight > 0) {
+                    displayValue = `${workout.weight} kg`
+                    displayLabel = 'Dernier poids'
+                  } else {
+                    displayValue = 'Poids du corps'
+                    displayLabel = 'Dernier poids'
+                  }
+                } else if (workout.reps) {
+                  displayValue = `${workout.reps} reps`
+                  displayLabel = 'Dernières reps'
+                }
               }
-            } else {
-              // Pour le cardio, récupérer les dernières données de performance
-              const { data: lastPerformance } = await supabase
-                .from('performance_logs')
-                .select('duration, reps')
-                .eq('exercise_id', ex.id)
-                .order('performed_at', { ascending: false })
-                .limit(1)
-              
-              // Afficher la durée si disponible, sinon les reps
-              let displayValue = 'Aucune donnée'
-              let displayLabel = 'Dernière performance'
-              
-              if (lastPerformance?.[0]?.duration) {
-                const minutes = Math.floor(lastPerformance[0].duration / 60)
-                const seconds = lastPerformance[0].duration % 60
-                displayValue = `${minutes}:${seconds.toString().padStart(2, '0')}`
-                displayLabel = 'Dernière durée'
-              } else if (lastPerformance?.[0]?.reps) {
-                displayValue = `${lastPerformance[0].reps} reps`
-                displayLabel = 'Dernières reps'
-              }
-              
-              return {
-                id: ex.id,
-                name: ex.name,
-                muscle_group: ex.muscle_group || 'Général',
-                exercise_type: ex.exercise_type,
-                weight: 0,
-                displayValue,
-                displayLabel
-              }
+            }
+            
+            return {
+              id: ex.id,
+              name: ex.name,
+              muscle_group: ex.muscle_group || 'Général',
+              exercise_type: ex.exercise_type,
+              weight: lastPerformance?.[0]?.weight || 0,
+              displayValue,
+              displayLabel
             }
           })
         )
@@ -564,19 +665,19 @@ export default function HomePage() {
           })}
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Actions rapides */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Actions rapides</h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd&apos;hui ?</span>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-0">Actions rapides</h2>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd&apos;hui ?</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon
                   // Palette personnalisée
@@ -593,13 +694,13 @@ export default function HomePage() {
                       key={action.name}
                       href={action.href || '#'}
                       onClick={action.onClick}
-                      className={`flex flex-col justify-between rounded-xl p-6 shadow-md text-white dark:text-gray-100 font-semibold text-lg transition-all duration-200 bg-gradient-to-r ${bg} hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 min-h-[90px] min-w-[180px]`}
+                      className={`flex flex-col justify-between rounded-xl p-4 sm:p-6 shadow-md text-white dark:text-gray-100 font-semibold text-base sm:text-lg transition-all duration-200 bg-gradient-to-r ${bg} hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 min-h-[80px] sm:min-h-[90px]`}
                     >
                       <div className="flex items-center mb-2">
-                        <Icon className="h-7 w-7 mr-3" />
-                        <span>{action.name}</span>
+                        <Icon className="h-5 w-5 sm:h-7 sm:w-7 mr-2 sm:mr-3 flex-shrink-0" />
+                        <span className="text-sm sm:text-base leading-tight">{action.name}</span>
                       </div>
-                      <span className="text-sm font-normal text-white dark:text-gray-200 opacity-80">{action.description}</span>
+                      <span className="text-xs sm:text-sm font-normal text-white dark:text-gray-200 opacity-80 leading-tight">{action.description}</span>
                     </Link>
                   )
                 })}
@@ -608,37 +709,52 @@ export default function HomePage() {
           </motion.div>
 
           {/* Colonne de droite : timer + exercices récents */}
-          <div className="flex flex-col gap-6 w-full">
+          <div className="flex flex-col gap-4 lg:gap-6 w-full">
             {/* Temps de repos rapide (réduit) */}
             <QuickTimer />
             {/* Exercices récents */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 w-full min-h-[180px]">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Exercices récents</h2>
-              <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px]">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Exercices récents</h2>
+              <div className="space-y-2 sm:space-y-3">
                 {recentExercises.map((exercise: ExerciseItem, index: number) => (
                   <motion.div
                     key={exercise.id}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <div>
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{exercise.name}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">{exercise.muscle_group}</p>
+                    <div className="flex-1 min-w-0 pr-2 sm:pr-3">
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base truncate">
+                        {exercise.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 truncate">
+                        {exercise.muscle_group}
+                      </p>
                     </div>
-                    <div className="text-right">
-                      <span className="text-orange-500 dark:text-orange-300 font-bold">
+                    <div className="text-right flex-shrink-0 max-w-[40%] sm:max-w-[45%]">
+                      <span className="text-orange-500 dark:text-orange-300 font-bold text-xs sm:text-sm block leading-tight break-words">
                         {exercise.displayValue || 'Aucune donnée'}
                       </span>
-                      <p className="text-xs text-gray-500 dark:text-gray-300">
+                      <p className="text-xs text-gray-500 dark:text-gray-300 leading-tight mt-1">
                         {exercise.displayLabel || 'Dernière performance'}
                       </p>
                     </div>
                   </motion.div>
                 ))}
+                {recentExercises.length === 0 && (
+                  <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                    <p className="text-sm">Aucun exercice récent</p>
+                    <p className="text-xs mt-1">Commence ton premier exercice !</p>
+                  </div>
+                )}
               </div>
-              <Link href="/exercises" className="block mt-4 text-orange-500 dark:text-orange-300 text-sm font-semibold hover:underline">Voir tous les exercices →</Link>
+              <Link 
+                href="/exercises" 
+                className="block mt-3 sm:mt-4 text-orange-500 dark:text-orange-300 text-xs sm:text-sm font-semibold hover:underline"
+              >
+                Voir tous les exercices →
+              </Link>
             </div>
           </div>
         </div>
