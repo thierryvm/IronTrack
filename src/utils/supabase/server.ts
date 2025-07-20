@@ -15,8 +15,23 @@ const cookieMethods = {
     const allCookies = cookieStore.getAll();
     return allCookies.map((c) => ({ name: c.name, value: c.value }));
   },
-  set: () => { /* no-op */ }, // Optionnel, à implémenter si besoin
-  remove: () => { /* no-op */ }, // Optionnel, à implémenter si besoin
+  set: async (name: string, value: string, options: Record<string, unknown>) => {
+    const cookieStore = await cookies();
+    cookieStore.set(name, value, {
+      ...options,
+      httpOnly: false, // Important pour l'auth Supabase
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+  },
+  remove: async (name: string, options: Record<string, unknown>) => {
+    const cookieStore = await cookies();
+    cookieStore.set(name, '', {
+      ...options,
+      maxAge: 0,
+      expires: new Date(0),
+    });
+  },
 };
 
 export const createServerSupabaseClient = () => {
