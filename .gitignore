@@ -13,6 +13,7 @@
 
 # Tests et couverture
 /coverage
+__tests__/
 *.test.ts
 *.test.tsx
 *.spec.ts
@@ -108,8 +109,18 @@ test-*.js
 debug-*.js
 kill-dev.bat
 
+# Fichiers sensibles et configuration locale
+mcp.json
+irontrack_ux_audit.md
+*_audit.md
+README_MIGRATION.md
+
 # Guides de backup et maintenance (utiles localement, pas à versionner)
 how_to_save_backup.md
 backup_and_upgrade_guide.md
 *_backup_guide.md
 *_save_backup.md
+
+# Documentation de migration (utile localement, pas à versionner)
+SUPABASE_SSR_MIGRATION.md
+*_MIGRATION.md
