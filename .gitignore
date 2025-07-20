@@ -96,9 +96,11 @@ badges_system*.sql
 
 # Fichiers de cahier des charges et audit (ne pas commiter)
 CAHIER_DES_CHARGES_UX.md
+CAHIER_des_CHARGES_UX.md
 irontrack_ux_audit.md
 *_audit.md
 *_charges.md
+*_CHARGES_*.md
 
 # Fichiers de test et documentation de développement
 TESTS-VALIDATION.md
