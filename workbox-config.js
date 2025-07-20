@@ -8,13 +8,14 @@ module.exports = {
   skipWaiting: true,
   runtimeCaching: [
     {
-      urlPattern: /^https?.*/, // cache tout ce qui est http(s)
+      // APIs Supabase UNIQUEMENT
+      urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'http-cache',
+        cacheName: 'supabase-cache',
         expiration: {
-          maxEntries: 200,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 semaine
+          maxEntries: 50,
+          maxAgeSeconds: 5 * 60, // 5 minutes
         },
       },
     },

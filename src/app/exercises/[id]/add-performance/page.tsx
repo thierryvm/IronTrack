@@ -77,8 +77,15 @@ export default function AddPerformancePage() {
           sets?: number
           duration?: number
           distance?: number
+          distance_unit?: string
           speed?: number
           calories?: number
+          stroke_rate?: number
+          watts?: number
+          heart_rate?: number
+          incline?: number
+          cadence?: number
+          resistance?: number
           notes?: string
         }
         
@@ -97,8 +104,21 @@ export default function AddPerformancePage() {
         } else if (exercise?.exercise_type === 'Cardio') {
           if (performance.duration) performanceData.duration = performance.duration * 60 // convertir en secondes
           if (performance.distance) performanceData.distance = performance.distance
+          if (performance.distance_unit) performanceData.distance_unit = performance.distance_unit
           if (performance.speed) performanceData.speed = performance.speed
           if (performance.calories) performanceData.calories = performance.calories
+          
+          // Champs spécifiques rameur
+          if (performance.stroke_rate) performanceData.stroke_rate = performance.stroke_rate
+          if (performance.watts) performanceData.watts = performance.watts
+          
+          // Champs spécifiques course/tapis
+          if (performance.heart_rate) performanceData.heart_rate = performance.heart_rate
+          if (performance.incline) performanceData.incline = performance.incline
+          
+          // Champs spécifiques vélo
+          if (performance.cadence) performanceData.cadence = performance.cadence
+          if (performance.resistance) performanceData.resistance = performance.resistance
         }
 
         if (performance.notes) performanceData.notes = performance.notes
@@ -112,8 +132,8 @@ export default function AddPerformancePage() {
         }
       }
 
-      // Retourner directement à la page de détails sans modal
-      router.push(`/exercises/${id}`)
+      // Retourner à la liste des exercices
+      router.push('/exercises')
     } catch (err) {
       console.error('Erreur lors de l\'ajout de la performance:', err)
       throw err
@@ -121,7 +141,7 @@ export default function AddPerformancePage() {
   }
 
   const handleBack = () => {
-    router.push(`/exercises/${id}`)
+    router.push('/exercises')
   }
 
   if (loading) {

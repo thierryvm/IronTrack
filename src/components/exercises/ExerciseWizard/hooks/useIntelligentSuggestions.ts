@@ -260,7 +260,7 @@ const getBaseSuggestions = (exerciseType: 'Musculation' | 'Cardio'): ExerciseSug
       label: 'Rameur 2000m',
       type: 'Cardio',
       muscle_group: 'Dos',
-      equipment: 'Machine',
+      equipment: 'Rameur',
       difficulty: 'Intermédiaire',
       values: {
         distance: '2',
@@ -488,7 +488,7 @@ function createAdvancedVariation(exerciseName: string, exerciseType: 'Musculatio
         muscle_group: 'Dos',
         equipment: 'Machine',
         difficulty: 'Avancé',
-        values: { firstDistance: '3', firstDuration: '15' },
+        values: { distance: '3', duration: '15' },
         relevanceScore: 85
       }
     }
@@ -501,7 +501,7 @@ function createAdvancedVariation(exerciseName: string, exerciseType: 'Musculatio
         muscle_group: 'Jambes',
         equipment: 'Aucun',
         difficulty: 'Avancé',
-        values: { firstDistance: '5', firstDuration: '25' },
+        values: { distance: '5', duration: '25' },
         relevanceScore: 85
       }
     }

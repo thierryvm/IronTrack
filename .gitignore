@@ -26,6 +26,9 @@ README-DEV.md
 README_MIGRATION.md
 SUPABASE_MIGRATION_GUIDE.md
 irontrack_ux_audit.md
+claude_code_specification_optimized.md
+claude.md
+GUIDE_CLAUDE_CODE.md
 
 # Fichiers système et logs
 .DS_Store
@@ -69,6 +72,7 @@ next-env.d.ts
 # Fichiers générés par Workbox/Serwist (optionnel, si tu ne veux pas les versionner)
 public/sw.js
 public/sw.js.map
+public/sw-dev.js
 public/workbox-*
 
 # Fichiers de debug et analyse temporaires
@@ -103,3 +107,9 @@ jest.setup.js
 test-*.js
 debug-*.js
 kill-dev.bat
+
+# Guides de backup et maintenance (utiles localement, pas à versionner)
+how_to_save_backup.md
+backup_and_upgrade_guide.md
+*_backup_guide.md
+*_save_backup.md
