@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search, TrendingUp } from 'lucide-react'
+import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search, TrendingUp, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 
 interface FAQItem {
@@ -368,25 +368,37 @@ export default function FAQPage() {
         </div>
 
         {/* Help Section */}
-        <div className="mt-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl shadow-md p-6 text-white">
+        <div className="mt-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-md p-6 text-white">
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Vous ne trouvez pas votre réponse ?</h3>
-            <p className="text-purple-100 mb-4">
-              Consultez notre guide complet ou contactez-nous pour obtenir de l&apos;aide personnalisée
+            <p className="text-orange-100 mb-4">
+              Consultez notre guide complet ou contactez directement notre équipe de support
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
               >
                 Guide Complet
               </Link>
-              <button className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors border border-purple-400">
-                Contacter le Support
-              </button>
+              <Link 
+                href="/support/contact"
+                className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors border border-orange-400"
+              >
+                ✉️ Contacter le Support
+              </Link>
             </div>
           </div>
         </div>
+
+        {/* Bouton de contact rapide fixe */}
+        <Link
+          href="/support/contact"
+          className="fixed bottom-6 right-6 bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-105 z-50"
+          title="Contacter le support"
+        >
+          <MessageSquare className="h-6 w-6" />
+        </Link>
       </div>
     </div>
   )

@@ -13,10 +13,12 @@ import {
   Menu,
   X,
   LogOut,
-  LogIn
+  LogIn,
+  Shield
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { createClient } from '@/utils/supabase/client'
+import { useAdminRole } from '@/hooks/useAdminRole'
 
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -24,6 +26,7 @@ export default function HeaderClient() {
   const pathname = usePathname()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { isAdmin, isModerator } = useAdminRole()
 
   const navigation = [
     { name: 'Exercices', href: '/exercises', icon: Dumbbell },
@@ -33,6 +36,11 @@ export default function HeaderClient() {
     { name: 'Progression', href: '/progress', icon: BarChart3 },
     { name: 'Nutrition', href: '/nutrition', icon: Apple },
     { name: 'Profil', href: '/profile', icon: User },
+  ]
+
+  // Navigation admin (conditionnelle)
+  const adminNavigation = [
+    ...(isAdmin || isModerator ? [{ name: '👑 Admin', href: '/admin', icon: Shield }] : []),
   ]
 
   // Vérifier l'état de connexion
@@ -86,7 +94,7 @@ export default function HeaderClient() {
 
           {/* Navigation desktop */}
           <nav className="hidden xl:flex space-x-4">
-            {navigation.map((item) => {
+            {[...navigation, ...adminNavigation].map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
               return (
@@ -173,7 +181,7 @@ export default function HeaderClient() {
               {/* Navigation principale */}
               <nav className="flex-1 overflow-y-auto py-4 px-3">
                 <div className="space-y-1">
-                  {navigation.map((item, index) => {
+                  {[...navigation, ...adminNavigation].map((item, index) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
                     return (

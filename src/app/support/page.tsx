@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpen, HelpCircle, TrendingUp, Target, Award } from 'lucide-react'
+import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpen, HelpCircle, TrendingUp, Target, Award, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SupportPage() {
@@ -714,7 +714,20 @@ export default function SupportPage() {
         {/* Quick Actions */}
         <div className="mt-8 bg-white rounded-xl shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            
+            {/* NOUVEAU - Contact Support en premier */}
+            <Link 
+              href="/support/contact" 
+              className="flex items-center space-x-3 p-4 border-2 border-orange-200 bg-orange-50 rounded-lg hover:bg-orange-100 hover:border-orange-300 transition-colors group"
+            >
+              <MessageSquare className="h-6 w-6 text-orange-600" />
+              <div className="flex-1">
+                <p className="font-medium text-orange-900">✉️ Contacter le Support</p>
+                <p className="text-sm text-orange-700">Signaler un problème</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-orange-500 group-hover:text-orange-600" />
+            </Link>
             <Link 
               href="/training-partners" 
               className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-colors group"

@@ -61,6 +61,8 @@ migration_*.sql
 kill-dev.bat
 README-DEV.md
 mcp.json
+mcp.json.backup
+
 # Note: scripts/dev-setup.js est partagé avec l'équipe (pas de données sensibles)
 
 # Next.js/TypeScript
@@ -85,7 +87,7 @@ diagnose-*.mjs
 test-*.mjs
 nul
 
-# Fichiers temporaires SQL et de debug
+# Fichiers temporaires SQL et de debug (patterns généraux)
 *_system.sql
 *_fix.sql
 *_security*.sql
@@ -93,6 +95,17 @@ debug_*.sql
 force_cache_refresh.sql
 simple_*.sql
 badges_system*.sql
+*_admin*.sql
+*_backup*.sql
+*_migration*.sql
+create_support_system*.sql
+create_ticket_responses*.sql
+full_database_audit*.sql
+security_fixes*.sql
+verify_support_tables*.sql
+check_support_tickets*.sql
+verify_new_fields*.sql
+execute_backup*.sql
 
 # Fichiers de cahier des charges et audit (ne pas commiter)
 CAHIER_DES_CHARGES_UX.md
@@ -111,6 +124,17 @@ test-*.js
 debug-*.js
 kill-dev.bat
 
+# 🛡️ FICHIERS DE SÉCURITÉ CRITIQUE - JAMAIS À COMMITER
+SECURITY_STRATEGY.md
+GUIDE_EXECUTION_ADMIN_SQL.md
+create_first_admin.sql
+admin_architecture.sql
+fix_admin_dashboard_stats.sql
+verify_admin_setup.sql
+add_file_upload_support.sql
+supabase_schema.sql
+supabase_storage.sql
+
 # Fichiers sensibles et configuration locale
 mcp.json
 irontrack_ux_audit.md
@@ -126,3 +150,10 @@ backup_and_upgrade_guide.md
 # Documentation de migration (utile localement, pas à versionner)
 SUPABASE_SSR_MIGRATION.md
 *_MIGRATION.md
+
+# Fichiers temporaires Supabase CLI
+supabase/.temp/
+supabase/functions/.vscode/
+supabase/*.temp
+.env.local
+.env

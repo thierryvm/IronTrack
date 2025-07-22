@@ -16,6 +16,7 @@ interface NutritionLog {
 
 export async function GET(request: NextRequest) {
   try {
+    console.log(`[API LOG] /api/nutrition/shared/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
