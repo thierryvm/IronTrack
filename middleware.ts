@@ -62,16 +62,12 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/auth?error=admin_auth_required', request.url))
       }
 
-      // 2️⃣ Vérification CRITIQUE : Rôles admin avec protection RLS
-      const { data: adminRoles, error: roleError } = await supabase
-        .from('user_roles')
-        .select('role, is_active, expires_at, granted_at')
-        .eq('user_id', session.user.id)
-        .eq('is_active', true)
-        .in('role', ['moderator', 'admin', 'super_admin'])
+      // 2️⃣ Vérification CRITIQUE : Rôles admin via RPC bypass RLS
+      const { data: isAdmin, error: roleError } = await supabase
+        .rpc('is_user_admin', { user_uuid: session.user.id })
 
       if (roleError) {
-        console.error(`[SECURITY ERROR] Erreur vérification rôles admin:`, {
+        console.error(`[SECURITY ERROR] Erreur vérification rôles admin via RPC:`, {
           error: roleError,
           userId: session.user.id,
           path: request.nextUrl.pathname
@@ -80,22 +76,16 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/auth?error=role_verification_failed', request.url))
       }
 
-      // 3️⃣ Validation stricte des rôles admin
-      const validAdminRole = adminRoles?.find(role => {
-        // Vérifier que le rôle n'est pas expiré
-        const isNotExpired = !role.expires_at || new Date(role.expires_at) > new Date()
-        
-        // Vérifier que c'est un vrai rôle admin
-        const isAdminRole = ['moderator', 'admin', 'super_admin'].includes(role.role)
-        
-        return role.is_active && isNotExpired && isAdminRole
-      })
+      // 3️⃣ Validation stricte admin via RPC
+      if (!isAdmin) {
+        // Récupérer les détails pour logging
+        const { data: adminRoles } = await supabase
+          .rpc('check_user_admin_role', { user_uuid: session.user.id })
 
-      if (!validAdminRole) {
         console.log(`[SECURITY] Accès admin refusé - Permissions insuffisantes`, {
           userId: session.user.id,
           email: session.user.email,
-          roles: adminRoles?.map(r => r.role),
+          isAdminRpc: isAdmin,
           path: request.nextUrl.pathname,
           ip: request.headers.get('x-forwarded-for') || 'unknown'
         })
@@ -109,6 +99,7 @@ export async function middleware(request: NextRequest) {
             path: request.nextUrl.pathname,
             ip: request.headers.get('x-forwarded-for') || 'unknown',
             user_agent: request.headers.get('user-agent'),
+            rpc_result: isAdmin,
             roles_found: adminRoles?.map(r => r.role) || [],
             timestamp: new Date().toISOString()
           }
@@ -116,6 +107,12 @@ export async function middleware(request: NextRequest) {
 
         return NextResponse.redirect(new URL('/?error=insufficient_admin_privileges', request.url))
       }
+
+      // Récupérer le rôle pour logging
+      const { data: adminRoleDetails } = await supabase
+        .rpc('check_user_admin_role', { user_uuid: session.user.id })
+      
+      const validAdminRole = adminRoleDetails?.[0] || { role: 'admin' }
 
       // 4️⃣ Log d'accès admin valide (pour audit)
       await supabase.from('admin_logs').insert({
