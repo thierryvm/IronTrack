@@ -73,6 +73,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  console.log(`[API LOG] /api/nutrition/recipes/[id]/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
   try {
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -116,6 +117,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  console.log(`[API LOG] /api/nutrition/recipes/[id]/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
   try {
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -301,6 +303,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  console.log(`[API LOG] /api/nutrition/recipes/[id]/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
   try {
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()

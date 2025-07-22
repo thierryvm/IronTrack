@@ -5,6 +5,8 @@ import Header from "@/components/layout/Header";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import RegisterSW from '../components/register-sw';
 import { MascotGlobal } from "@/components/ui/Mascot";
+import { FloatingSupport } from "@/components/ui/FloatingSupport";
+import { ErrorHandler } from "@/components/ui/ErrorHandler";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,12 +51,14 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} antialiased h-full bg-gray-50 dark:bg-gray-900`} suppressHydrationWarning>
         <ThemeProvider>
+          <ErrorHandler />
           <div className="min-h-screen flex flex-col">
             <Header />
             <ClientMascotWrapper />
             <main className="flex-1">
               {children}
             </main>
+            <FloatingSupport />
           </div>
           <RegisterSW />
         </ThemeProvider>

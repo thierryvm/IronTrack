@@ -1,5 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Rate limiting simple en mémoire
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const MAX_REQUESTS = 30 // 30 requêtes par minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitMap.get(ip)
+
+  if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { count: 1, timestamp: now })
+    return true
+  }
+
+  if (record.count >= MAX_REQUESTS) {
+    return false // Rate limit dépassé
+  }
+
+  record.count++
+  return true
+}
+
 // Interface pour les données OpenFoodFacts (basée sur la vraie réponse API)
 interface OpenFoodFactsProduct {
   product_name?: string
@@ -309,7 +331,18 @@ function transformProduct(product: OpenFoodFactsProduct): NutritionSearchResult 
 }
 
 export async function GET(request: NextRequest) {
+  console.log(`[API LOG] /api/nutrition/search/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
   try {
+    // Récupérer l'IP du client
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    
+    // Vérifier le rate limiting
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json({ 
+        error: 'Trop de requêtes. Veuillez patienter une minute avant de refaire une recherche.' 
+      }, { status: 429 })
+    }
+
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
 

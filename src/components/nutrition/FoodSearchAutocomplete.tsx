@@ -105,7 +105,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
     timeoutRef.current = setTimeout(() => {
       searchFood(query)
-    }, 300)
+    }, 800)
 
     return () => {
       if (timeoutRef.current) {

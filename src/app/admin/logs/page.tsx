@@ -1,0 +1,418 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  Activity,
+  RefreshCw,
+  Search,
+  Filter,
+  Clock,
+  Shield,
+  Eye,
+  AlertTriangle,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Calendar
+} from 'lucide-react'
+import { useAdminAuthComplete as useAdminAuth } from '@/hooks/useAdminAuthComplete'
+import { createClient } from '@/utils/supabase/client'
+
+interface AdminLog {
+  id: string
+  admin_id: string
+  action: string
+  target_type: string
+  target_id?: string
+  created_at: string
+  details: Record<string, unknown>
+}
+
+interface Filters {
+  action: string
+  target_type: string
+  date_range: string
+  search: string
+}
+
+const LOGS_PER_PAGE = 50
+const MAX_LOGS_TOTAL = 1000 // Limite absolue pour éviter la surcharge
+
+export default function AdminLogsPage() {
+  const [logs, setLogs] = useState<AdminLog[]>([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalLogs, setTotalLogs] = useState(0)
+  const [filters, setFilters] = useState<Filters>({
+    action: '',
+    target_type: '',
+    date_range: '24h',
+    search: ''
+  })
+
+  const { hasPermission, logAdminAction } = useAdminAuth()
+  const supabase = createClient()
+
+  // Optimisation : Charger les logs avec pagination et filtres
+  const loadLogs = useCallback(async (page = 1, newFilters = filters) => {
+    if (!hasPermission('admin')) return
+
+    try {
+      setLoading(page === 1)
+      setRefreshing(page !== 1)
+
+      // Construire la requête avec filtres
+      let query = supabase
+        .from('admin_logs')
+        .select('id, admin_id, action, target_type, target_id, created_at, details', { count: 'exact' })
+
+      // Filtrage par date (optimisation performance)
+      const now = new Date()
+      let dateThreshold = new Date()
+      switch (newFilters.date_range) {
+        case '1h':
+          dateThreshold = new Date(now.getTime() - 60 * 60 * 1000)
+          break
+        case '24h':
+          dateThreshold = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+          break
+        case '7d':
+          dateThreshold = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+          break
+        case '30d':
+          dateThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+          break
+        default:
+          dateThreshold = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      }
+
+      query = query.gte('created_at', dateThreshold.toISOString())
+
+      // Filtres additionnels
+      if (newFilters.action) {
+        query = query.eq('action', newFilters.action)
+      }
+      if (newFilters.target_type) {
+        query = query.eq('target_type', newFilters.target_type)
+      }
+      if (newFilters.search) {
+        query = query.ilike('action', `%${newFilters.search}%`)
+      }
+
+      // Pagination optimisée
+      const from = (page - 1) * LOGS_PER_PAGE
+      const to = Math.min(from + LOGS_PER_PAGE - 1, MAX_LOGS_TOTAL - 1)
+
+      query = query
+        .order('created_at', { ascending: false })
+        .range(from, to)
+
+      const { data, error, count } = await query
+
+      if (error) {
+        console.error('Erreur chargement logs:', error)
+        return
+      }
+
+      setLogs(data || [])
+      setTotalLogs(Math.min(count || 0, MAX_LOGS_TOTAL))
+      setCurrentPage(page)
+
+      // Log de consultation (avec throttling pour éviter spam)
+      if (page === 1) {
+        await logAdminAction('view_admin_logs', 'admin_logs', undefined, {
+          filters: newFilters,
+          logs_count: data?.length || 0
+        })
+      }
+
+    } catch (error) {
+      console.error('Erreur chargement logs admin:', error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }, [hasPermission, logAdminAction, supabase, filters])
+
+  // Chargement initial
+  useEffect(() => {
+    loadLogs(1, filters)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasPermission]) // Volontairement retiré loadLogs et filters pour éviter boucle infinie
+
+  // Gestionnaires
+  const handleRefresh = () => loadLogs(currentPage, filters)
+  
+  const handleFilterChange = (newFilters: Partial<Filters>) => {
+    const updatedFilters = { ...filters, ...newFilters }
+    setFilters(updatedFilters)
+    loadLogs(1, updatedFilters)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    loadLogs(newPage, filters)
+  }
+
+  // Formatage des données
+  const getActionColor = (action: string) => {
+    if (action.includes('unauthorized') || action.includes('failed')) return 'text-red-600 bg-red-100'
+    if (action.includes('success') || action.includes('access')) return 'text-green-600 bg-green-100'
+    if (action.includes('warning')) return 'text-yellow-600 bg-yellow-100'
+    return 'text-blue-600 bg-blue-100'
+  }
+
+  const getActionIcon = (action: string) => {
+    if (action.includes('unauthorized') || action.includes('failed')) return <AlertTriangle className="h-4 w-4" />
+    if (action.includes('access') || action.includes('view')) return <Eye className="h-4 w-4" />
+    if (action.includes('success')) return <CheckCircle className="h-4 w-4" />
+    return <Activity className="h-4 w-4" />
+  }
+
+  const totalPages = Math.ceil(totalLogs / LOGS_PER_PAGE)
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-purple-100 rounded-xl">
+                <Activity className="h-8 w-8 text-purple-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Logs Système</h1>
+                <p className="text-gray-600">
+                  Monitoring des actions administratives
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center space-x-2 bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <span>Actualiser</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filtres optimisés */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Calendar className="h-4 w-4 inline mr-1" />
+                Période
+              </label>
+              <select
+                value={filters.date_range}
+                onChange={(e) => handleFilterChange({ date_range: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="1h">Dernière heure</option>
+                <option value="24h">24 dernières heures</option>
+                <option value="7d">7 derniers jours</option>
+                <option value="30d">30 derniers jours</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Filter className="h-4 w-4 inline mr-1" />
+                Type d&apos;action
+              </label>
+              <select
+                value={filters.action}
+                onChange={(e) => handleFilterChange({ action: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">Toutes les actions</option>
+                <option value="admin_access">Accès admin</option>
+                <option value="view_admin_logs">Consultation logs</option>
+                <option value="unauthorized_admin_access_attempt">Accès non autorisé</option>
+                <option value="user_management">Gestion utilisateurs</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Shield className="h-4 w-4 inline mr-1" />
+                Cible
+              </label>
+              <select
+                value={filters.target_type}
+                onChange={(e) => handleFilterChange({ target_type: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">Tous les types</option>
+                <option value="admin_panel">Interface admin</option>
+                <option value="user_account">Comptes utilisateurs</option>
+                <option value="admin_logs">Logs système</option>
+                <option value="admin_api">APIs admin</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Search className="h-4 w-4 inline mr-1" />
+                Recherche
+              </label>
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => handleFilterChange({ search: e.target.value })}
+                placeholder="Rechercher une action..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Statistiques rapides */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>
+                <strong>{totalLogs.toLocaleString('fr-FR')}</strong> logs trouvés
+                {totalLogs >= MAX_LOGS_TOTAL && (
+                  <span className="text-orange-600 ml-2">
+                    (limité à {MAX_LOGS_TOTAL.toLocaleString('fr-FR')} pour les performances)
+                  </span>
+                )}
+              </span>
+              <span>Page {currentPage} / {totalPages}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Liste des logs avec pagination */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center">
+              <RefreshCw className="h-8 w-8 text-purple-500 animate-spin mx-auto mb-4" />
+              <p className="text-gray-600">Chargement des logs...</p>
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="p-8 text-center">
+              <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">Aucun log trouvé pour cette période.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cible
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Admin
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Détails
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {logs.map((log) => (
+                    <motion.tr
+                      key={log.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="hover:bg-gray-50"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          <div className={`p-2 rounded-lg ${getActionColor(log.action)}`}>
+                            {getActionIcon(log.action)}
+                          </div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {log.action.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {log.target_type.replace(/_/g, ' ')}
+                        {log.target_id && (
+                          <div className="text-xs text-gray-400 mt-1">
+                            ID: {log.target_id.slice(0, 8)}...
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                          {log.admin_id.slice(0, 8)}...
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{new Date(log.created_at).toLocaleString('fr-FR')}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                        {log.details && Object.keys(log.details).length > 0 && (
+                          <details className="cursor-pointer">
+                            <summary className="text-purple-600 hover:text-purple-700">
+                              Voir détails
+                            </summary>
+                            <pre className="mt-2 text-xs bg-gray-50 p-2 rounded overflow-x-auto">
+                              {JSON.stringify(log.details, null, 2)}
+                            </pre>
+                          </details>
+                        )}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Affichage de {(currentPage - 1) * LOGS_PER_PAGE + 1} à {Math.min(currentPage * LOGS_PER_PAGE, totalLogs)} sur {totalLogs.toLocaleString('fr-FR')}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                    className="flex items-center px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Précédent
+                  </button>
+                  
+                  <span className="text-sm text-gray-600 px-3">
+                    {currentPage} / {totalPages}
+                  </span>
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                    className="flex items-center px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Suivant
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

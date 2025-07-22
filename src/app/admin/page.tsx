@@ -1,0 +1,496 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  Users, 
+  MessageSquare, 
+  TrendingUp, 
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Download,
+  RefreshCw,
+  Activity,
+  Shield,
+  BarChart3,
+  Eye
+} from 'lucide-react'
+import Link from 'next/link'
+import { useAdminAuthComplete as useAdminAuth, AdminStats } from '@/hooks/useAdminAuthComplete'
+import { createClient } from '@/utils/supabase/client'
+
+interface QuickAction {
+  title: string
+  description: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  color: string
+  permission: 'moderator' | 'admin' | 'super_admin'
+}
+
+interface RecentActivity {
+  id: string
+  action: string
+  target_type: string
+  admin_email: string
+  created_at: string
+  details: Record<string, unknown>
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<AdminStats | null>(null)
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
+  const [recentTickets, setRecentTickets] = useState<Array<Record<string, unknown>>>([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  
+  const { user, hasPermission, getAdminStats, logAdminAction } = useAdminAuth()
+  const supabase = createClient()
+
+  const quickActions: QuickAction[] = [
+    {
+      title: 'Tickets Ouverts',
+      description: 'Gérer les demandes de support',
+      href: '/admin/tickets?status=open',
+      icon: MessageSquare,
+      color: 'orange',
+      permission: 'moderator'
+    },
+    {
+      title: 'Gestion Utilisateurs',
+      description: 'Administrer les comptes',
+      href: '/admin/users',
+      icon: Users,
+      color: 'blue',
+      permission: 'admin'
+    },
+    {
+      title: 'Export Données',
+      description: 'Télécharger les données',
+      href: '/admin/exports',
+      icon: Download,
+      color: 'green',
+      permission: 'admin'
+    },
+    {
+      title: 'Logs Système',
+      description: 'Audit et monitoring',
+      href: '/admin/logs',
+      icon: Activity,
+      color: 'purple',
+      permission: 'admin'
+    }
+  ]
+
+  // Throttling pour éviter les appels trop fréquents
+  const [lastRefreshTime, setLastRefreshTime] = useState(0)
+  const REFRESH_COOLDOWN = 5000 // 5 secondes minimum entre les rafraîchissements
+
+  // Charger les données du dashboard avec throttling
+  const loadDashboardData = async () => {
+    const now = Date.now()
+    if (refreshing || (now - lastRefreshTime) < REFRESH_COOLDOWN) {
+      return // Ignore si déjà en cours ou trop récent
+    }
+    
+    setLastRefreshTime(now)
+    try {
+      setRefreshing(true)
+      
+      // Statistiques via API sécurisée (remplacement d'appels admin côté client)
+      try {
+        const response = await fetch('/api/admin/stats')
+        if (response.ok) {
+          const adminStats = await response.json()
+          setStats(adminStats)
+        } else {
+          console.error('Erreur API stats admin:', response.status)
+          // Fallback vers la méthode existante en cas d'échec API
+          const adminStats = await getAdminStats()
+          setStats(adminStats)
+        }
+      } catch (error) {
+        console.error('Erreur récupération stats admin:', error)
+        // Fallback vers la méthode existante
+        const adminStats = await getAdminStats()
+        setStats(adminStats)
+      }
+      
+      // Activité récente via API sécurisée (remplacement de getUserById)
+      if (hasPermission('moderator')) {
+        try {
+          const response = await fetch('/api/admin/activity')
+          if (response.ok) {
+            const { activity } = await response.json()
+            const formattedActivity = activity.map((log: { id: string; action: string; target_type: string; created_at: string; admin_info?: { email_masked?: string } }) => ({
+              id: log.id,
+              action: log.action,
+              target_type: log.target_type,
+              created_at: log.created_at,
+              admin_email: log.admin_info?.email_masked || 'Admin inconnu'
+            }))
+            setRecentActivity(formattedActivity)
+          } else {
+            console.error('Erreur API admin activity:', response.status)
+            setRecentActivity([])
+          }
+        } catch (error) {
+          console.error('Erreur récupération activité admin:', error)
+          setRecentActivity([])
+        }
+      }
+      
+      // Tickets récents
+      const { data: ticketsData } = await supabase
+        .from('support_tickets')
+        .select('id, title, category, status, created_at, priority')
+        .order('created_at', { ascending: false })
+        .limit(5)
+      
+      setRecentTickets(ticketsData || [])
+      
+      await logAdminAction('dashboard_view', 'admin_panel')
+      
+    } catch (error) {
+      console.error('Erreur chargement dashboard:', error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
+    loadDashboardData()
+    
+    // Actualisation automatique toutes les 10 minutes pour éviter surcharge API
+    const interval = setInterval(() => {
+      if (!loading && !refreshing) {
+        loadDashboardData()
+      }
+    }, 600000)
+    
+    return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, refreshing]) // Volontairement retiré loadDashboardData pour éviter boucle infinie
+
+  const getActionColor = (color: string) => {
+    const colors = {
+      orange: 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100',
+      blue: 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
+      green: 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100',
+      purple: 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100'
+    }
+    return colors[color as keyof typeof colors] || colors.orange
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'open':
+        return <Clock className="h-4 w-4 text-orange-500" />
+      case 'in_progress':
+        return <Activity className="h-4 w-4 text-blue-500" />
+      case 'resolved':
+      case 'closed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      default:
+        return <AlertTriangle className="h-4 w-4 text-gray-500" />
+    }
+  }
+
+  const getCategoryEmoji = (category: string) => {
+    const emojis = {
+      bug: '🐛',
+      feature: '💡',
+      help: '❓',
+      feedback: '💬',
+      account: '👤',
+      payment: '💳'
+    }
+    return emojis[category as keyof typeof emojis] || '📝'
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
+          <div className="h-4 bg-gray-200 rounded w-1/2" />
+        </div>
+        
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl shadow-sm animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+              <div className="h-8 bg-gray-200 rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header avec refresh */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            Dashboard Administrateur
+          </h1>
+          <p className="text-gray-600">
+            Bonjour {user?.email.split('@')[0]}, voici un aperçu de l&apos;activité IronTrack
+          </p>
+        </div>
+        
+        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          <div className="flex items-center text-sm text-gray-500">
+            <Shield className="h-4 w-4 mr-1" />
+            {user?.role.replace('_', ' ').toUpperCase()}
+          </div>
+          
+          <button
+            onClick={loadDashboardData}
+            disabled={refreshing}
+            className="flex items-center px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Actualiser</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Statistiques principales */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            title: 'Tickets Ouverts',
+            value: stats?.open_tickets || 0,
+            change: '+' + (stats?.tickets_24h || 0) + ' aujourd\'hui',
+            icon: MessageSquare,
+            color: 'orange',
+            href: '/admin/tickets?status=open'
+          },
+          {
+            title: 'Nouveaux Utilisateurs',
+            value: stats?.new_users_7d || 0,
+            change: '+' + (stats?.new_users_24h || 0) + ' aujourd\'hui',
+            icon: Users,
+            color: 'blue',
+            href: '/admin/users'
+          },
+          {
+            title: 'Entraînements',
+            value: stats?.workouts_7d || 0,
+            change: '+' + (stats?.workouts_24h || 0) + ' aujourd\'hui',
+            icon: TrendingUp,
+            color: 'green',
+            href: '#'
+          },
+          {
+            title: 'Admins Actifs',
+            value: stats?.admin_users || 0,
+            change: 'Équipe administrative',
+            icon: Shield,
+            color: 'purple',
+            href: '/admin/users?role=admin'
+          }
+        ].map((stat, index) => {
+          const Icon = stat.icon
+          return (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Link href={stat.href}>
+                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`p-3 rounded-lg ${
+                      stat.color === 'orange' ? 'bg-orange-100' :
+                      stat.color === 'blue' ? 'bg-blue-100' :
+                      stat.color === 'green' ? 'bg-green-100' :
+                      'bg-purple-100'
+                    }`}>
+                      <Icon className={`h-6 w-6 ${
+                        stat.color === 'orange' ? 'text-orange-600' :
+                        stat.color === 'blue' ? 'text-blue-600' :
+                        stat.color === 'green' ? 'text-green-600' :
+                        'text-purple-600'
+                      }`} />
+                    </div>
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600 mb-1">
+                      {stat.title}
+                    </h3>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      {stat.value.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {stat.change}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          )
+        })}
+      </div>
+
+      {/* Actions rapides */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <BarChart3 className="h-5 w-5 mr-2" />
+          Actions Rapides
+        </h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickActions.map((action) => {
+            if (!hasPermission(action.permission)) return null
+            
+            const Icon = action.icon
+            return (
+              <Link key={action.title} href={action.href}>
+                <div className={`p-4 border-2 rounded-xl transition-all cursor-pointer ${getActionColor(action.color)}`}>
+                  <div className="flex items-center mb-3">
+                    <Icon className="h-5 w-5 mr-2" />
+                    <h3 className="font-medium">{action.title}</h3>
+                  </div>
+                  <p className="text-sm opacity-75">
+                    {action.description}
+                  </p>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Tickets récents */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+              <MessageSquare className="h-5 w-5 mr-2" />
+              Tickets Récents
+            </h2>
+            <Link 
+              href="/admin/tickets"
+              className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+            >
+              Voir tous
+            </Link>
+          </div>
+          
+          <div className="space-y-3">
+            {recentTickets.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-4">
+                Aucun ticket récent
+              </p>
+            ) : (
+              recentTickets.map((ticket) => (
+                <Link key={String(ticket.id || '')} href={`/admin/tickets/${ticket.id}`}>
+                  <div className="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">
+                          {getCategoryEmoji(String(ticket.category || 'help'))}
+                        </span>
+                        <h4 className="font-medium text-gray-900 text-sm truncate max-w-[200px]">
+                          {String(ticket.title || 'Sans titre')}
+                        </h4>
+                      </div>
+                      {getStatusIcon(String(ticket.status || 'open'))}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span className="capitalize">{String(ticket.category || 'general')}</span>
+                      <span>{new Date(String(ticket.created_at || new Date().toISOString())).toLocaleDateString('fr-FR')}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Activité récente (optimisée) */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+              <Activity className="h-5 w-5 mr-2" />
+              Activité Récente
+              <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                Dernière heure
+              </span>
+            </h2>
+            <Link 
+              href="/admin/logs"
+              className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center space-x-1"
+            >
+              <Eye className="h-3 w-3" />
+              <span>Logs complets</span>
+            </Link>
+          </div>
+          
+          <div className="space-y-3">
+            {!hasPermission('admin') ? (
+              <div className="text-center py-6">
+                <Shield className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-500 text-sm">Permissions administrateur requises</p>
+              </div>
+            ) : recentActivity.length === 0 ? (
+              <div className="text-center py-6">
+                <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-500 text-sm">Aucune activité dans la dernière heure</p>
+                <p className="text-gray-400 text-xs mt-1">
+                  Consultez les logs complets pour plus d&apos;historique
+                </p>
+              </div>
+            ) : (
+              <>
+                {recentActivity.slice(0, 3).map((activity) => ( // LIMITÉ à 3 au lieu de tous
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-900">
+                        <span className="font-medium">{activity.admin_email}</span>
+                        {' '}
+                        <span className="text-gray-600">
+                          {activity.action.replace(/_/g, ' ')}
+                        </span>
+                        {activity.target_type && (
+                          <span className="text-gray-500"> • {activity.target_type.replace(/_/g, ' ')}</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(activity.created_at).toLocaleString('fr-FR')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Afficher le nombre d'activités cachées */}
+                {recentActivity.length > 3 && (
+                  <div className="text-center pt-2">
+                    <Link 
+                      href="/admin/logs"
+                      className="text-xs text-orange-600 hover:text-orange-700 font-medium"
+                    >
+                      +{recentActivity.length - 3} activités supplémentaires → Voir tous les logs
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
