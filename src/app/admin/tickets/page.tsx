@@ -54,7 +54,7 @@ export default function AdminTicketsPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   const { logAdminAction, hasPermission } = useAdminAuth()
-  const { getAllTickets, updateTicketStatus, updateTicketPriority } = useSupport()
+  const { getAllTickets, updateTicketStatus, updateTicketPriority, refreshSchemaCache } = useSupport()
 
   // Charger les tickets - Version finale sans dépendances problématiques  
   const loadTickets = async () => {
@@ -235,6 +235,17 @@ export default function AdminTicketsPage() {
             >
               <Filter className="h-4 w-4 mr-2" />
               Filtres
+            </button>
+            <button
+              onClick={async () => {
+                await refreshSchemaCache()
+                await loadTickets()
+              }}
+              className="flex items-center px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              title="Forcer le refresh du cache schema et recharger"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Fix Cache
             </button>
             <button
               onClick={loadTickets}
