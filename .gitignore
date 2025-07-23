@@ -31,6 +31,14 @@ claude_code_specification_optimized.md
 claude.md
 GUIDE_CLAUDE_CODE.md
 
+# 🚨 FICHIERS INTERNES CLAUDE - JAMAIS À COMMITER
+CLAUDE.md
+HTTP_PERFORMANCE_GUIDE.md
+DIAGNOSTIC_*.md
+*_DIAGNOSTIC.md
+*_FIXED.md
+REGLES_SECURITE_CLAUDE.md
+
 # Fichiers système et logs
 .DS_Store
 *.pem
@@ -87,17 +95,24 @@ diagnose-*.mjs
 test-*.mjs
 nul
 
-# Fichiers temporaires SQL et de debug (patterns généraux)
-*_system.sql
-*_fix.sql
-*_security*.sql
+# 🚨 FICHIERS SQL TEMPORAIRES - TOUS INTERDITS
+# Scripts SQL créés pendant le développement (JAMAIS À COMMITER)
+*.sql
+!src/**/*.sql
+create_*.sql
 debug_*.sql
-force_cache_refresh.sql
-simple_*.sql
-badges_system*.sql
+fix_*.sql
+test_*.sql
+verify_*.sql
 *_admin*.sql
 *_backup*.sql
 *_migration*.sql
+*_system.sql
+*_security*.sql
+*_fix.sql
+force_cache_refresh.sql
+simple_*.sql
+badges_system*.sql
 create_support_system*.sql
 create_ticket_responses*.sql
 full_database_audit*.sql
@@ -162,12 +177,17 @@ supabase/.temp/
 supabase/functions/.vscode/
 supabase/*.temp
 
-# 🚨 MIGRATIONS SUPABASE SENSIBLES (ne pas commiter nouvelles migrations)
-# Note: Les migrations déjà committées restent pour la compatibilité
-supabase/migrations/*_admin*.sql
-supabase/migrations/*_security*.sql
-supabase/migrations/*_rpc*.sql
-supabase/migrations/*_user_management*.sql
+# 🚨 DOSSIER SUPABASE COMPLET - CRITIQUE SÉCURITÉ
+# Le dossier supabase/ entier contient des migrations et config sensibles
+supabase/
+!src/utils/supabase/
+
+# Migrations et configurations Supabase (JAMAIS À COMMITER)
+supabase/migrations/
+supabase/config.toml
+supabase/.gitignore
+supabase/*.sql
+supabase/*.toml
 
 .env.local
 .env

@@ -161,18 +161,19 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
-    loadDashboardData()
-    
-    // Actualisation automatique toutes les 10 minutes pour éviter surcharge API
-    const interval = setInterval(() => {
-      if (!loading && !refreshing) {
-        loadDashboardData()
-      }
-    }, 600000)
-    
-    return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, refreshing]) // Volontairement retiré loadDashboardData pour éviter boucle infinie
+    if (hasPermission('moderator')) {
+      loadDashboardData()
+      
+      // Actualisation automatique toutes les 10 minutes pour éviter surcharge API
+      const interval = setInterval(() => {
+        if (!loading && !refreshing) {
+          loadDashboardData()
+        }
+      }, 600000)
+      
+      return () => clearInterval(interval)
+    }
+  }, [hasPermission]) // Chargement uniquement quand les permissions changent
 
   const getActionColor = (color: string) => {
     const colors = {

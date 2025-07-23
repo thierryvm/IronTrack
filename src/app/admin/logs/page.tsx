@@ -136,11 +136,12 @@ export default function AdminLogsPage() {
     }
   }, [hasPermission, logAdminAction, supabase, filters])
 
-  // Chargement initial
+  // Chargement initial avec useCallback stabilisé
   useEffect(() => {
-    loadLogs(1, filters)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasPermission]) // Volontairement retiré loadLogs et filters pour éviter boucle infinie
+    if (hasPermission('admin')) {
+      loadLogs(1, filters)
+    }
+  }, [hasPermission]) // loadLogs n'est pas inclus car il change à chaque render
 
   // Gestionnaires
   const handleRefresh = () => loadLogs(currentPage, filters)

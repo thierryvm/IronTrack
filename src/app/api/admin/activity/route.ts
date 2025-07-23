@@ -50,10 +50,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Permissions admin requises' }, { status: 403 })
     }
 
-    // 🔒 3. Récupération optimisée de l'activité (LIMITÉE pour performance)
+    // 🔒 3. Récupération optimisée de l'activité avec fallback
+    let recentActivity = null
+    let activityError = null
+    
+    // Essayer d'abord la dernière heure
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
     
-    const { data: recentActivity, error: activityError } = await supabase
+    const { data: hourActivity, error: hourError } = await supabase
       .from('admin_logs')
       .select(`
         id,
@@ -63,9 +67,35 @@ export async function GET() {
         details,
         admin_id
       `)
-      .gte('created_at', oneHourAgo) // OPTIMISATION: Seulement la dernière heure
+      .gte('created_at', oneHourAgo)
       .order('created_at', { ascending: false })
-      .limit(5) // RÉDUCTION: 10 → 5 logs max
+      .limit(5)
+
+    if (hourError) {
+      activityError = hourError
+    } else if (hourActivity && hourActivity.length > 0) {
+      recentActivity = hourActivity
+    } else {
+      // Fallback: récupérer les 24 dernières heures si aucune activité dans l'heure
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      
+      const { data: dayActivity, error: dayError } = await supabase
+        .from('admin_logs')
+        .select(`
+          id,
+          action,
+          target_type,
+          created_at,
+          details,
+          admin_id
+        `)
+        .gte('created_at', oneDayAgo)
+        .order('created_at', { ascending: false })
+        .limit(3) // Encore moins si on va chercher plus loin
+        
+      recentActivity = dayActivity || []
+      activityError = dayError
+    }
 
     if (activityError) {
       console.error('[ADMIN ACTIVITY] Erreur:', activityError)
