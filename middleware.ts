@@ -100,7 +100,7 @@ export async function middleware(request: NextRequest) {
             ip: request.headers.get('x-forwarded-for') || 'unknown',
             user_agent: request.headers.get('user-agent'),
             rpc_result: isAdmin,
-            roles_found: adminRoles?.map(r => r.role) || [],
+            roles_found: adminRoles?.map((r: any) => r.role) || [],
             timestamp: new Date().toISOString()
           }
         })
