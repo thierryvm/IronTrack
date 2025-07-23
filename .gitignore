@@ -107,13 +107,19 @@ check_support_tickets*.sql
 verify_new_fields*.sql
 execute_backup*.sql
 
-# Fichiers de cahier des charges et audit (ne pas commiter)
+# Fichiers de cahier des charges et audit (ne pas commiter - IMPORTANT pour évolution app)
+# NOTE: CAHIER_des_CHARGES_UX.md doit exister localement mais ne pas être committé
 CAHIER_DES_CHARGES_UX.md
 CAHIER_des_CHARGES_UX.md
 irontrack_ux_audit.md
 *_audit.md
 *_charges.md
 *_CHARGES_*.md
+
+# Règles de sécurité internes Claude (ne pas commiter)
+REGLES_SECURITE_CLAUDE.md
+*_REGLES_*.md
+*_SECURITY_RULES*.md
 
 # Fichiers de test et documentation de développement
 TESTS-VALIDATION.md
@@ -155,5 +161,13 @@ SUPABASE_SSR_MIGRATION.md
 supabase/.temp/
 supabase/functions/.vscode/
 supabase/*.temp
+
+# 🚨 MIGRATIONS SUPABASE SENSIBLES (ne pas commiter nouvelles migrations)
+# Note: Les migrations déjà committées restent pour la compatibilité
+supabase/migrations/*_admin*.sql
+supabase/migrations/*_security*.sql
+supabase/migrations/*_rpc*.sql
+supabase/migrations/*_user_management*.sql
+
 .env.local
 .env
