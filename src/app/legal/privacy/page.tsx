@@ -75,6 +75,18 @@ export default function PrivacyPolicy() {
                     <li>Progression et statistiques</li>
                   </ul>
                 </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">Données techniques et analytics :</h3>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>Pages visitées et temps de navigation</li>
+                    <li>Performances techniques (temps de chargement)</li>
+                    <li>Interactions avec l&apos;interface (clics, navigation)</li>
+                    <li>Données agrégées et anonymisées d&apos;utilisation</li>
+                  </ul>
+                  <p className="text-sm text-gray-600 mt-2 italic">
+                    Ces données sont collectées de manière anonyme pour améliorer l&apos;expérience utilisateur.
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -143,11 +155,39 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">9. Cookies</h2>
-              <p>
-                Notre application utilise des cookies techniques essentiels pour son fonctionnement. 
-                Aucun cookie publicitaire ou de tracking n&apos;est utilisé.
-              </p>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">9. Cookies et Analytics</h2>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">9.1 Cookies techniques essentiels</h3>
+                  <p>
+                    Notre application utilise des cookies techniques essentiels pour son fonctionnement,
+                    notamment pour l&apos;authentification et la sauvegarde de vos préférences.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">9.2 Analytics et amélioration des performances</h3>
+                  <p>
+                    Nous utilisons <strong>Vercel Analytics</strong> et <strong>Speed Insights</strong> pour :
+                  </p>
+                  <ul className="list-disc ml-6 mt-2 space-y-1">
+                    <li>Analyser l&apos;utilisation de l&apos;application de manière anonymisée</li>
+                    <li>Mesurer les performances (temps de chargement, réactivité)</li>
+                    <li>Améliorer l&apos;expérience utilisateur</li>
+                  </ul>
+                  <p className="mt-3 text-sm bg-blue-50 p-3 rounded-lg">
+                    <strong>Base légale :</strong> Intérêts légitimes (amélioration du service)<br/>
+                    <strong>Données collectées :</strong> Pages visitées, temps de navigation, performances techniques<br/>
+                    <strong>Conservation :</strong> 24 mois maximum<br/>
+                    <strong>Droit d&apos;opposition :</strong> Contactez-nous à l&apos;adresse ci-dessous
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">9.3 Aucun cookie publicitaire</h3>
+                  <p>
+                    Nous n&apos;utilisons aucun cookie publicitaire, de profilage ou de tracking à des fins commerciales.
+                  </p>
+                </div>
+              </div>
             </section>
 
             <section>
