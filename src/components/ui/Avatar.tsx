@@ -23,7 +23,7 @@ const Avatar = memo(function Avatar({ src, name = '', size = 96, className = '',
       onClick={onClick}
       title={name}
     >
-      {src ? (
+      {src && src !== '/default-avatar.png' && src !== '/default-avatar.svg' ? (
         <Image
           src={src}
           alt={name || 'Avatar'}
@@ -31,6 +31,10 @@ const Avatar = memo(function Avatar({ src, name = '', size = 96, className = '',
           width={size}
           height={size}
           priority
+          onError={(e) => {
+            // Masquer l'image si elle ne charge pas
+            e.currentTarget.style.display = 'none';
+          }}
         />
       ) : (
         <span>{initials}</span>

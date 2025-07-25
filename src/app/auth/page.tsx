@@ -90,6 +90,12 @@ function AuthContent() {
             .update({ full_name: fullName })
             .eq('id', user.id);
         }
+        
+        // Si l'utilisateur est connecté et n'a pas de paramètre spécial, rediriger
+        if (!searchParams.get('change_password') && !searchParams.get('error')) {
+          router.push('/')
+          return
+        }
       } else {
         setIsLoggedIn(false)
         setUserEmail(null)
@@ -101,6 +107,7 @@ function AuthContent() {
         setIsLoggedIn(true)
         const user = session?.user
         setUserEmail(user?.email ?? null)
+        // Redirection immédiate sans afficher la modal
         router.push('/')
       }
       if (event === 'SIGNED_OUT') {

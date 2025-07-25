@@ -4,10 +4,7 @@ import {
   SupportTicket, 
   CreateTicketRequest, 
   CreateResponseRequest,
-  TicketResponse,
-  SupportTicketCategory,
-  SupportTicketPriority,
-  SupportTicketStatus
+  TicketResponse
 } from '@/types/support'
 
 export const useSupport = () => {
@@ -214,38 +211,45 @@ export const useSupport = () => {
     }
   }
 
-  // Récupérer tous les tickets (admin seulement) - Solution RPC anti-cache
+  // Récupérer tous les tickets (admin seulement) - Utilise API route sécurisée
   const getAllTickets = useCallback(async (): Promise<SupportTicket[]> => {
     try {
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] getAllTickets - Utilisation de la fonction RPC')
+      console.log('[DEBUG] getAllTickets - Utilisation de l\'API route admin')
       
-      // SOLUTION 1: Utiliser la fonction RPC personnalisée (bypass cache PostgREST)
-      const { data: rpcData, error: rpcError } = await supabase
-        .rpc('get_admin_tickets_with_users')
+      // Utiliser la nouvelle API route sécurisée
+      const response = await fetch('/api/admin/tickets', {
+        method: 'GET',
+        credentials: 'include', // Important pour les cookies de session
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      if (!rpcError && rpcData && rpcData.length > 0) {
-        console.log('[DEBUG] RPC tickets successful:', rpcData.length, 'tickets')
+      if (response.ok) {
+        const { tickets } = await response.json()
         
-        // Transformer les données RPC au format SupportTicket
-        const transformedTickets: SupportTicket[] = rpcData.map((ticket: Record<string, unknown>) => ({
-          ...ticket,
-          // Merger les données de profil dans l'objet profiles
-          profiles: ticket.profiles_email ? {
-            email: ticket.profiles_email,
-            full_name: ticket.profiles_full_name,
-            avatar_url: ticket.profiles_avatar_url
-          } : undefined,
-          // Fallback email depuis user_email si pas de profil
-          user_email: ticket.user_email || ticket.profiles_email
-        }))
-        
-        return transformedTickets
+        if (tickets && tickets.length > 0) {
+          console.log('[DEBUG] API tickets successful:', tickets.length, 'tickets')
+          
+          // Transformer les données API au format SupportTicket  
+          const transformedTickets: SupportTicket[] = tickets.map((ticket: Record<string, unknown>) => ({
+            ...ticket,
+            // Les données de profil sont déjà intégrées par l'API
+            profiles: ticket.user_email ? {
+              email: ticket.user_email,
+              full_name: ticket.user_full_name,
+              avatar_url: ticket.user_avatar_url
+            } : undefined
+          }))
+          
+          return transformedTickets
+        }
       }
       
-      console.warn('[DEBUG] RPC failed, trying fallback:', rpcError?.message)
+      console.warn('[DEBUG] API failed, trying fallback:', response.status, response.statusText)
       
       // SOLUTION 2: Fallback - Requêtes séparées (plus robuste)
       const { data: ticketsData, error: ticketsError } = await supabase
@@ -397,7 +401,7 @@ export const useSupport = () => {
     }
   }
 
-  // Récupérer un ticket spécifique avec toutes ses données (RPC)
+  // Récupérer un ticket spécifique avec toutes ses données
   const getTicketWithResponses = useCallback(async (ticketId: string): Promise<{
     ticket: SupportTicket | null,
     responses: TicketResponse[]
@@ -406,86 +410,61 @@ export const useSupport = () => {
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] getTicketWithResponses - Utilisation RPC pour ticket:', ticketId)
+      console.log('[DEBUG] getTicketWithResponses - Récupération directe pour ticket:', ticketId)
       
-      // Utiliser la fonction RPC optimisée
-      const { data: rpcData, error: rpcError } = await supabase
-        .rpc('get_ticket_with_responses', { ticket_uuid: ticketId })
+      // Récupérer le ticket avec le profil utilisateur
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('support_tickets')
+        .select(`
+          *,
+          profiles!support_tickets_user_id_fkey (
+            full_name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('id', ticketId)
+        .single()
 
-      if (rpcError) {
-        console.error('[DEBUG] RPC getTicketWithResponses error:', rpcError)
-        
-        // Fallback : requêtes séparées
-        console.log('[DEBUG] Fallback to separate queries...')
-        
-        const { data: ticketData, error: ticketError } = await supabase
-          .from('support_tickets')
-          .select('*')
-          .eq('id', ticketId)
-          .single()
-
-        if (ticketError) {
-          throw ticketError
-        }
-
-        const { data: responsesData } = await supabase
-          .from('ticket_responses')
-          .select('*')
-          .eq('ticket_id', ticketId)
-          .order('created_at', { ascending: true })
-
-        return {
-          ticket: ticketData,
-          responses: responsesData || []
-        }
+      if (ticketError) {
+        console.error('[DEBUG] Erreur récupération ticket:', ticketError)
+        throw ticketError
       }
 
-      if (!rpcData || rpcData.length === 0) {
+      if (!ticketData) {
+        console.log('[DEBUG] Aucun ticket trouvé avec ID:', ticketId)
         return { ticket: null, responses: [] }
       }
 
-      const ticketResult = rpcData[0]
-      
-      // Transformer les données RPC au format attendu
-      const ticket: SupportTicket = {
-        id: ticketResult.ticket_id,
-        title: ticketResult.ticket_title,
-        description: ticketResult.ticket_description,
-        category: ticketResult.ticket_category as SupportTicketCategory,
-        priority: ticketResult.ticket_priority as SupportTicketPriority,
-        status: ticketResult.ticket_status as SupportTicketStatus,
-        user_id: ticketResult.ticket_user_id,
-        created_at: ticketResult.ticket_created_at,
-        updated_at: ticketResult.ticket_updated_at,
-        url: ticketResult.ticket_url,
-        user_email: ticketResult.ticket_user_email,
-        attachments: ticketResult.ticket_attachments,
-        upvotes: 0,
-        downvotes: 0,
-        profiles: ticketResult.ticket_user_full_name ? {
-          email: ticketResult.ticket_user_email || '',
-          full_name: ticketResult.ticket_user_full_name,
-          avatar_url: ticketResult.ticket_user_avatar_url
-        } : undefined
+      // Récupérer les réponses du ticket
+      const { data: responsesData, error: responsesError } = await supabase
+        .from('ticket_responses')
+        .select(`
+          *,
+          profiles!ticket_responses_user_id_fkey (
+            full_name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('ticket_id', ticketId)
+        .order('created_at', { ascending: true })
+
+      if (responsesError) {
+        console.error('[DEBUG] Erreur récupération réponses:', responsesError)
+        // Continuer même si les réponses échouent
       }
 
-      const responses: TicketResponse[] = ticketResult.responses_data 
-        ? ticketResult.responses_data.map((resp: Record<string, unknown>) => ({
-            id: resp.id,
-            ticket_id: ticketId,
-            user_id: resp.user_id,
-            message: resp.message,
-            is_internal: resp.is_internal,
-            is_solution: resp.is_solution,
-            attachments: resp.attachments || {},
-            created_at: resp.created_at,
-            updated_at: resp.updated_at,
-            user_email: resp.responder_email
-          }))
-        : []
+      console.log('[DEBUG] Ticket récupéré avec succès:', {
+        ticketId: ticketData.id,
+        title: ticketData.title,
+        responsesCount: responsesData?.length || 0
+      })
 
-      console.log('[DEBUG] RPC ticket data transformed successfully')
-      return { ticket, responses }
+      return {
+        ticket: ticketData as SupportTicket,
+        responses: (responsesData || []) as TicketResponse[]
+      }
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération du ticket'

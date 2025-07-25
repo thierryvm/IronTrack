@@ -334,12 +334,19 @@ export function MascotGlobal() {
     <ClientOnly>
       {minimized ? (
         <div className="fixed bottom-4 right-4 z-[60] cursor-pointer" onClick={handleRestore} title="Afficher la mascotte">
-          <div className="bg-white rounded-full shadow-2xl p-2 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
-            <Dumbbell className="h-8 w-8 text-orange-600" />
+          <div className="bg-white rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
+            <Dumbbell className="h-6 w-6 text-orange-600" />
           </div>
         </div>
       ) : (
-        <div className="fixed bottom-4 right-4 z-[60]">
+        <motion.div 
+          className="fixed bottom-4 right-4 z-[60]"
+          animate={{ 
+            x: 0, 
+            y: 0,
+            transition: { type: "spring", damping: 15, stiffness: 200 }
+          }}
+        >
           <div className="relative">
             <button
               onClick={handleMinimize}
@@ -351,7 +358,7 @@ export function MascotGlobal() {
             </button>
             <Mascot show={true} message={joke || undefined} type="success" onClose={handleMinimize} />
           </div>
-        </div>
+        </motion.div>
       )}
     </ClientOnly>
   );

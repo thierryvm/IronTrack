@@ -56,16 +56,16 @@ export const FloatingSupport = () => {
 
   return (
     <>
-      {/* Bouton principal flottant */}
+      {/* Bouton principal flottant - Positionné pour éviter conflit avec mascotte */}
       <motion.div
-        className="fixed bottom-6 right-6 z-40"
+        className="fixed bottom-4 right-20 z-[70]"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 2 }} // Apparaît après 2 secondes
       >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+          className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           aria-label="Support et aide"
           title="Besoin d'aide ?"
         >
@@ -104,7 +104,7 @@ export const FloatingSupport = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-20 z-30 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/10 z-[65] backdrop-blur-md"
               onClick={() => setIsOpen(false)}
             />
 
@@ -114,7 +114,7 @@ export const FloatingSupport = () => {
               animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 20, y: 20 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="fixed bottom-24 right-6 z-40 bg-white rounded-xl shadow-xl border border-gray-200 p-2 min-w-[280px]"
+              className="fixed bottom-20 right-20 z-[70] bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 p-2 min-w-[280px]"
             >
               {/* Header */}
               <div className="px-4 py-3 border-b border-gray-100">

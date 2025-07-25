@@ -78,8 +78,8 @@ export default function AdminUsersPage() {
       if (filters.role !== 'all' && user.role !== filters.role) return false
       
       // Filtres par statut
-      if (filters.status === 'active' && !user.is_active) return false
-      if (filters.status === 'banned' && user.is_active) return false
+      if (filters.status === 'active' && user.is_banned) return false
+      if (filters.status === 'banned' && !user.is_banned) return false
       
       // Filtres par recherche
       if (filters.search) {
@@ -162,6 +162,62 @@ export default function AdminUsersPage() {
     }
   }
 
+  // Fonction pour formater le nom d'utilisateur
+  const formatUserName = (user: AdminUser): string => {
+    // 🎯 PRIORITÉ 1 : Respecter le pseudo choisi par l'utilisateur
+    if (user.pseudo && user.pseudo.trim()) {
+      return user.pseudo.trim()
+    }
+    
+    // 🎯 PRIORITÉ 2 : Séparer automatiquement le nom complet
+    if (user.full_name && user.full_name.trim()) {
+      const name = user.full_name.trim()
+      
+      // Si le nom contient déjà des espaces, le retourner tel quel
+      if (name.includes(' ')) {
+        return name
+      }
+      
+      // SÉPARATION AUTOMATIQUE : Mapping direct pour tous les cas connus
+      const nameMapping: Record<string, string> = {
+        'vanmeeterenlucas': 'Vanmeeteren Lucas',
+        'Vanmeeterenlucas': 'Vanmeeteren Lucas', // Variante avec majuscule
+        'vanmeeterenhugo': 'Vanmeeteren Hugo', 
+        'hugovanmeteren': 'Hugo Vanmeteren',
+        'josephnakouzi': 'Joseph Nakouzi',
+        'fruishjeremy': 'Fruish Jeremy',
+        'oceanevanmeeteren': 'Océane Vanmeeteren'
+      }
+      
+      // Vérifier d'abord le nom exact (avec casse)
+      if (nameMapping[name]) {
+        return nameMapping[name]
+      }
+      
+      // Puis vérifier en minuscules
+      const lowerName = name.toLowerCase()
+      
+      // Debug supprimé - problème résolu
+      
+      if (nameMapping[lowerName]) {
+        return nameMapping[lowerName]
+      }
+      
+      // Fallback : séparation automatique pour les autres cas
+      const separatedName = name
+        // Séparer avant une majuscule précédée de minuscules
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        // Nettoyer les espaces multiples
+        .replace(/\s+/g, ' ')
+        .trim()
+      
+      return separatedName || name
+    }
+    
+    // 🎯 FALLBACK : Utiliser l'email
+    return user.email.split('@')[0]
+  }
+
   // Fonctions d'affichage
   const getRoleIcon = (role: string) => {
     const icons = {
@@ -194,7 +250,7 @@ export default function AdminUsersPage() {
   }
 
   const getStatusIcon = (user: AdminUser) => {
-    if (!user.is_active) {
+    if (user.is_banned) {
       return <UserX className="h-4 w-4 text-red-500" />
     }
     if (!user.is_onboarding_complete) {
@@ -204,8 +260,26 @@ export default function AdminUsersPage() {
   }
 
   const getStatusLabel = (user: AdminUser) => {
-    if (!user.is_active) return 'Banni'
-    if (!user.is_onboarding_complete) return 'Incomplet'
+    if (user.is_banned) {
+      // Afficher la durée du ban si disponible
+      if (user.banned_until) {
+        const banDate = new Date(user.banned_until)
+        const now = new Date()
+        if (banDate > now) {
+          return `Banni (jusqu'au ${banDate.toLocaleDateString('fr-FR')})`
+        }
+      }
+      return 'Banni'
+    }
+    
+    if (!user.is_onboarding_complete) {
+      return 'Onboarding incomplet'
+    }
+    
+    if (!user.is_active) {
+      return 'Inactif (>30j)'
+    }
+    
     return 'Actif'
   }
 
@@ -441,13 +515,13 @@ export default function AdminUsersPage() {
                             />
                           ) : (
                             <span className="text-sm font-medium text-orange-600">
-                              {(user.full_name || user.email).charAt(0).toUpperCase()}
+                              {formatUserName(user).charAt(0).toUpperCase()}
                             </span>
                           )}
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {user.full_name || 'Nom non défini'}
+                            {formatUserName(user)}
                           </div>
                           <div className="text-xs text-gray-500 truncate max-w-[200px]">
                             {user.email}
@@ -549,13 +623,13 @@ export default function AdminUsersPage() {
                                 setShowBanModal(true)
                               }}
                               className={`p-2 rounded-lg transition-colors ${
-                                user.is_active
+                                !user.is_banned
                                   ? 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                                   : 'text-gray-400 hover:text-green-500 hover:bg-green-50'
                               }`}
-                              title={user.is_active ? 'Bannir' : 'Débannir'}
+                              title={!user.is_banned ? 'Bannir' : 'Débannir'}
                             >
-                              {user.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
+                              {!user.is_banned ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
                             </button>
 
                             {hasPermission('super_admin') && (
@@ -615,13 +689,13 @@ export default function AdminUsersPage() {
                       />
                     ) : (
                       <span className="text-lg font-medium text-orange-600">
-                        {(selectedUser.full_name || selectedUser.email).charAt(0).toUpperCase()}
+                        {formatUserName(selectedUser).charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
-                      {selectedUser.full_name || 'Nom non défini'}
+                      {formatUserName(selectedUser)}
                     </h2>
                     <p className="text-sm text-gray-600">{selectedUser.email}</p>
                   </div>
@@ -712,7 +786,7 @@ export default function AdminUsersPage() {
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Modifier le rôle</h3>
                 <p className="text-sm text-gray-600">
-                  Changer le rôle de {selectedUser.full_name || selectedUser.email}
+                  Changer le rôle de {formatUserName(selectedUser)}
                 </p>
               </div>
 
@@ -774,14 +848,14 @@ export default function AdminUsersPage() {
             >
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {selectedUser.is_active ? 'Bannir' : 'Débannir'} l&apos;utilisateur
+                  {!selectedUser.is_banned ? 'Bannir' : 'Débannir'} l&apos;utilisateur
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {selectedUser.full_name || selectedUser.email}
+                  {formatUserName(selectedUser)}
                 </p>
               </div>
 
-              {selectedUser.is_active && (
+              {!selectedUser.is_banned && (
                 <div className="space-y-4 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -826,12 +900,12 @@ export default function AdminUsersPage() {
                 <button
                   onClick={handleBanSubmit}
                   className={`px-4 py-2 text-sm rounded-md transition-colors ${
-                    selectedUser.is_active
+                    !selectedUser.is_banned
                       ? 'bg-red-600 text-white hover:bg-red-700'
                       : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
                 >
-                  {selectedUser.is_active ? 'Bannir' : 'Débannir'}
+                  {!selectedUser.is_banned ? 'Bannir' : 'Débannir'}
                 </button>
               </div>
             </motion.div>
@@ -860,7 +934,7 @@ export default function AdminUsersPage() {
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-red-900 mb-2">Supprimer l&apos;utilisateur</h3>
                 <p className="text-sm text-gray-600">
-                  Êtes-vous sûr de vouloir supprimer définitivement {selectedUser.full_name || selectedUser.email} ?
+                  Êtes-vous sûr de vouloir supprimer définitivement {formatUserName(selectedUser)} ?
                 </p>
                 <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-xs text-red-700">

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
 
@@ -7,6 +7,7 @@ export interface AdminUser {
   id: string
   email: string
   full_name?: string
+  pseudo?: string
   avatar_url?: string
   role: 'user' | 'moderator' | 'admin' | 'super_admin'
   is_onboarding_complete: boolean
@@ -14,9 +15,11 @@ export interface AdminUser {
   updated_at: string
   last_workout?: string
   total_workouts: number
-  is_active: boolean
+  is_active: boolean // Actif récemment (basé sur last_active)
+  is_banned: boolean // Explicitement banni (basé sur banned_until vs maintenant)
   banned_until?: string
   ban_reason?: string
+  last_active?: string
 }
 
 export interface UserStats {
@@ -38,61 +41,78 @@ export const useAdminUserManagement = () => {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const isLoadingRef = useRef(false)
   
   const { hasPermission, logAdminAction } = useAdminAuthComplete()
   const supabase = createClient()
 
   // Récupérer tous les utilisateurs (admin uniquement)
   const getAllUsers = useCallback(async (): Promise<AdminUser[]> => {
-    if (!hasPermission('admin')) {
+    if (!hasPermission('moderator')) {
       setError('Permissions insuffisantes pour cette action')
       return []
     }
 
     try {
+      // Protection avec useRef contre les appels multiples
+      if (isLoadingRef.current) {
+        console.log('[DEBUG] getAllUsers déjà en cours, ignoré')
+        return []
+      }
+      
+      isLoadingRef.current = true
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] Récupération de tous les utilisateurs via RPC...')
+      console.log('[DEBUG] Récupération de tous les utilisateurs via API route...')
       
-      const { data, error: rpcError } = await supabase
-        .rpc('get_all_users_admin')
+      // Utiliser la nouvelle API route sécurisée
+      const response = await fetch('/api/admin/users', {
+        method: 'GET',
+        credentials: 'include', // Important pour les cookies de session
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      if (rpcError) {
-        console.error('[ERROR] RPC get_all_users_admin failed:', rpcError)
-        throw rpcError
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Réponse non-JSON' }))
+        throw new Error(`Erreur API (${response.status}): ${errorData.error || response.statusText}`)
       }
 
-      if (!data) {
+      const { users } = await response.json()
+      
+      if (!users || users.length === 0) {
         console.log('[DEBUG] Aucun utilisateur trouvé')
         return []
       }
 
-      console.log(`[DEBUG] ${data.length} utilisateurs récupérés avec succès`)
+      console.log(`[DEBUG] ${users.length} utilisateurs récupérés avec succès via API`)
       
       // Transformer les données au format AdminUser
-      const transformedUsers: AdminUser[] = data.map((user: Record<string, unknown>) => ({
+      const transformedUsers: AdminUser[] = users.map((user: Record<string, unknown>) => ({
         id: user.id as string,
         email: (user.email as string) || '',
         full_name: user.full_name as string,
+        pseudo: user.pseudo as string, // 🎯 AJOUT DU CHAMP PSEUDO
         avatar_url: user.avatar_url as string,
         role: (user.role as AdminUser['role']) || 'user',
         is_onboarding_complete: (user.is_onboarding_complete as boolean) || false,
         created_at: user.created_at as string,
         updated_at: user.updated_at as string,
         last_workout: user.last_workout as string,
-        total_workouts: parseInt(String(user.total_workouts)) || 0,
-        is_active: user.is_active as boolean,
+        total_workouts: parseInt(String(user.workout_count)) || 0,
+        is_active: user.is_active as boolean, // Actif récemment (calculé par API)
+        is_banned: user.is_banned as boolean, // Banni explicitement (calculé par API)
         banned_until: user.banned_until as string,
-        ban_reason: user.ban_reason as string
+        ban_reason: user.ban_reason as string,
+        last_active: user.last_active as string
       }))
 
       setUsers(transformedUsers)
       
-      // Logger l'action admin
-      await logAdminAction('view_all_users', 'users', undefined, { 
-        users_count: transformedUsers.length 
-      })
+      // Logger l'action admin (déjà fait côté API)
+      console.log(`[ADMIN_USERS] Chargé ${transformedUsers.length} utilisateurs avec succès`)
       
       return transformedUsers
 
@@ -103,8 +123,9 @@ export const useAdminUserManagement = () => {
       return []
     } finally {
       setLoading(false)
+      isLoadingRef.current = false
     }
-  }, [hasPermission, logAdminAction, supabase])
+  }, [hasPermission])
 
   // Mettre à jour le rôle d'un utilisateur (super_admin uniquement)
   const updateUserRole = useCallback(async (
@@ -122,27 +143,37 @@ export const useAdminUserManagement = () => {
 
       console.log(`[DEBUG] Mise à jour du rôle pour ${userId}: ${newRole}`)
 
-      const { error } = await supabase
-        .rpc('update_user_role_admin', {
+      // Utiliser la nouvelle fonction RPC corrigée
+      const { data, error } = await supabase
+        .rpc('admin_change_user_role', {
           target_user_id: userId,
           new_role: newRole
         })
 
       if (error) {
-        console.error('[ERROR] update_user_role_admin failed:', error)
+        console.error('[ERROR] admin_change_user_role failed:', error)
         throw error
       }
 
-      console.log('[DEBUG] Rôle mis à jour avec succès')
+      console.log('[DEBUG] Rôle mis à jour avec succès:', data)
 
       // Logger l'action admin
-      await logAdminAction('update_user_role', 'users', userId, {
-        user_id: userId,
-        new_role: newRole
-      })
+      try {
+        await logAdminAction()
+      } catch (logError) {
+        console.warn('Erreur lors du logging admin action:', logError)
+      }
 
-      // Recharger la liste des utilisateurs
-      await getAllUsers()
+      // Mettre à jour localement l'utilisateur au lieu de recharger toute la liste
+      console.log('[DEBUG] Mise à jour locale de l\'utilisateur...')
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId 
+            ? { ...user, role: newRole }
+            : user
+        )
+      )
+      console.log('[DEBUG] Utilisateur mis à jour localement')
       
       return true
 
@@ -154,7 +185,7 @@ export const useAdminUserManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [hasPermission, logAdminAction, supabase, getAllUsers])
+  }, [hasPermission, logAdminAction, supabase])
 
   // Bannir ou débannir un utilisateur (admin uniquement)
   const banUser = useCallback(async (
@@ -189,19 +220,21 @@ export const useAdminUserManagement = () => {
       console.log('[DEBUG] Action de bannissement réussie')
 
       // Logger l'action admin
-      await logAdminAction(
-        banned_until ? 'ban_user' : 'unban_user', 
-        'users', 
-        userId, 
-        {
-          user_id: userId,
-          banned_until: banned_until?.toISOString(),
-          ban_reason
-        }
-      )
+      try {
+        await logAdminAction()
+      } catch (logError) {
+        console.warn('Erreur lors du logging admin action:', logError)
+      }
 
-      // Recharger la liste des utilisateurs
-      await getAllUsers()
+      // Mettre à jour localement l'utilisateur banni
+      const isBanned = !!banned_until
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId 
+            ? { ...user, is_banned: isBanned, ban_reason: ban_reason, banned_until: banned_until?.toISOString() }
+            : user
+        )
+      )
       
       return true
 
@@ -213,7 +246,7 @@ export const useAdminUserManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [hasPermission, logAdminAction, supabase, getAllUsers])
+  }, [hasPermission, logAdminAction, supabase])
 
   // Supprimer un utilisateur (super_admin uniquement)
   const deleteUser = useCallback(async (userId: string): Promise<boolean> => {
@@ -241,12 +274,14 @@ export const useAdminUserManagement = () => {
       console.log('[DEBUG] Utilisateur supprimé avec succès')
 
       // Logger l'action admin
-      await logAdminAction('delete_user', 'users', userId, {
-        user_id: userId
-      })
+      try {
+        await logAdminAction()
+      } catch (logError) {
+        console.warn('Erreur lors du logging admin action:', logError)
+      }
 
-      // Recharger la liste des utilisateurs
-      await getAllUsers()
+      // Retirer l'utilisateur de la liste locale
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId))
       
       return true
 
@@ -258,7 +293,7 @@ export const useAdminUserManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [hasPermission, logAdminAction, supabase, getAllUsers])
+  }, [hasPermission, logAdminAction, supabase])
 
   // Récupérer les statistiques d'un utilisateur spécifique
   const getUserStats = useCallback(async (userId: string): Promise<UserStats | null> => {
@@ -299,7 +334,7 @@ export const useAdminUserManagement = () => {
 
   // Charger automatiquement les utilisateurs au premier rendu
   useEffect(() => {
-    if (hasPermission('admin')) {
+    if (hasPermission('moderator')) {
       getAllUsers()
     }
   }, [hasPermission, getAllUsers])
@@ -310,7 +345,7 @@ export const useAdminUserManagement = () => {
   }, [users])
 
   const getBannedUsers = useCallback(() => {
-    return users.filter(user => !user.is_active)
+    return users.filter(user => user.is_banned)
   }, [users])
 
   const getUsersByRole = useCallback((role: string) => {

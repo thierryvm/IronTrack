@@ -31,7 +31,12 @@ export default function AdminSettingsPage() {
     setIsLoading(false)
   }
 
-  if (!hasPermission('admin')) {
+  // Debug des permissions
+  console.log('[ADMIN_SETTINGS] User:', user)
+  console.log('[ADMIN_SETTINGS] hasPermission super_admin:', hasPermission('super_admin'))
+  console.log('[ADMIN_SETTINGS] User role:', user?.role)
+
+  if (!hasPermission('super_admin')) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -40,6 +45,9 @@ export default function AdminSettingsPage() {
             <h2 className="text-xl font-semibold mb-2">Accès Refusé</h2>
             <p className="text-muted-foreground text-center">
               Vous n&apos;avez pas les permissions nécessaires pour accéder aux paramètres administrateur.
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Debug: Rôle actuel = {user?.role || 'non défini'}
             </p>
           </CardContent>
         </Card>

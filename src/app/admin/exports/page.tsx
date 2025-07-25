@@ -120,12 +120,7 @@ export default function AdminExportsPage() {
         }
       }
 
-      await logAdminAction('export_data', 'exports', undefined, {
-        type: exportData.type,
-        format: exportData.format,
-        records_count: data.length,
-        date_range: exportData.dateRange
-      })
+      await logAdminAction()
 
       // Ajouter à l'historique
       setExportHistory(prev => [{
@@ -273,12 +268,7 @@ export default function AdminExportsPage() {
     URL.revokeObjectURL(url)
   }
 
-  // DEBUG: Afficher les permissions actuelles
-  console.log('🔍 DEBUG Permissions exports:', {
-    hasAdmin: hasPermission('admin'),
-    hasSuperAdmin: hasPermission('super_admin'),
-    hasModerator: hasPermission('moderator')
-  })
+  // Debug permissions supprimé pour la sécurité
   
   if (!hasPermission('admin') && !hasPermission('super_admin')) {
     return (

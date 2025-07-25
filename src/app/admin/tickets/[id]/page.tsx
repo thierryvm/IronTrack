@@ -58,9 +58,7 @@ export default function AdminTicketDetailPage() {
       setTicket(ticketData)
       setResponses(responsesData)
       
-      await logAdminAction('view_ticket_detail', 'tickets', ticketId, {
-        ticket_id: ticketId
-      })
+      await logAdminAction()
     } catch (error) {
       console.error('Erreur chargement ticket:', error)
       router.push('/admin/tickets')
@@ -90,11 +88,7 @@ export default function AdminTicketDetailPage() {
         setResponseMessage('')
         await loadTicketData()
         
-        await logAdminAction('add_ticket_response', 'tickets', ticket.id, {
-          ticket_id: ticket.id,
-          is_internal: isInternalNote,
-          message_length: responseMessage.length
-        })
+        await logAdminAction()
       }
     } catch (error) {
       console.error('Erreur envoi réponse:', error)
@@ -111,11 +105,7 @@ export default function AdminTicketDetailPage() {
       const success = await updateTicketStatus(ticket.id, newStatus)
       if (success) {
         setTicket({ ...ticket, status: newStatus })
-        await logAdminAction('update_ticket_status', 'tickets', ticket.id, {
-          ticket_id: ticket.id,
-          old_status: ticket.status,
-          new_status: newStatus
-        })
+        await logAdminAction()
       }
     } catch (error) {
       console.error('Erreur changement statut:', error)
@@ -130,11 +120,7 @@ export default function AdminTicketDetailPage() {
       const success = await updateTicketPriority(ticket.id, newPriority)
       if (success) {
         setTicket({ ...ticket, priority: newPriority })
-        await logAdminAction('update_ticket_priority', 'tickets', ticket.id, {
-          ticket_id: ticket.id,
-          old_priority: ticket.priority,
-          new_priority: newPriority
-        })
+        await logAdminAction()
       }
     } catch (error) {
       console.error('Erreur changement priorité:', error)

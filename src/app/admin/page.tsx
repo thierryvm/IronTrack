@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Users, 
@@ -17,6 +17,7 @@ import {
   Eye
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAdminAuthComplete as useAdminAuth, AdminStats } from '@/hooks/useAdminAuthComplete'
 import { createClient } from '@/utils/supabase/client'
 
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
   const [refreshing, setRefreshing] = useState(false)
   
   const { user, hasPermission, getAdminStats, logAdminAction } = useAdminAuth()
+  const router = useRouter()
   const supabase = createClient()
 
   const quickActions: QuickAction[] = [
@@ -88,15 +90,18 @@ export default function AdminDashboard() {
   const REFRESH_COOLDOWN = 5000 // 5 secondes minimum entre les rafraîchissements
 
   // Charger les données du dashboard avec throttling
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
+    console.log('[ADMIN_DASHBOARD] Début chargement dashboard...')
     const now = Date.now()
     if (refreshing || (now - lastRefreshTime) < REFRESH_COOLDOWN) {
+      console.log('[ADMIN_DASHBOARD] Chargement ignoré (throttling)')
       return // Ignore si déjà en cours ou trop récent
     }
     
     setLastRefreshTime(now)
     try {
       setRefreshing(true)
+      console.log('[ADMIN_DASHBOARD] Début récupération stats...')
       
       // Statistiques via API sécurisée (remplacement d'appels admin côté client)
       try {
@@ -150,15 +155,16 @@ export default function AdminDashboard() {
       
       setRecentTickets(ticketsData || [])
       
-      await logAdminAction('dashboard_view', 'admin_panel')
+      await logAdminAction()
       
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
     } finally {
+      console.log('[ADMIN_DASHBOARD] Fin chargement dashboard')
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [refreshing, lastRefreshTime, logAdminAction, supabase, getAdminStats, hasPermission])
 
   useEffect(() => {
     if (hasPermission('moderator')) {
@@ -173,7 +179,7 @@ export default function AdminDashboard() {
       
       return () => clearInterval(interval)
     }
-  }, [hasPermission]) // Chargement uniquement quand les permissions changent
+  }, [hasPermission, loadDashboardData, loading, refreshing])
 
   const getActionColor = (color: string) => {
     const colors = {
@@ -396,7 +402,7 @@ export default function AdminDashboard() {
               </p>
             ) : (
               recentTickets.map((ticket) => (
-                <Link key={String(ticket.id || '')} href={`/admin/tickets/${ticket.id}`}>
+                <div key={String(ticket.id || '')} className="cursor-pointer" onClick={() => router.push('/admin/tickets')}>
                   <div className="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2">
@@ -414,7 +420,7 @@ export default function AdminDashboard() {
                       <span>{new Date(String(ticket.created_at || new Date().toISOString())).toLocaleDateString('fr-FR')}</span>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))
             )}
           </div>

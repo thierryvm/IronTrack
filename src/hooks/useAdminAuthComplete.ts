@@ -49,7 +49,7 @@ export const useAdminAuthComplete = () => {
   // Fonction pour vérifier les permissions admin
   const checkAdminPermissions = useCallback(async (authUser: User): Promise<AdminUser | null> => {
     try {
-      console.log('[ADMIN_AUTH_COMPLETE] Checking permissions for:', authUser.id)
+      // Log supprimé pour la sécurité
       
       // Récupérer le profil complet de l'utilisateur
       const { data: profile, error: profileError } = await supabase
@@ -70,13 +70,13 @@ export const useAdminAuthComplete = () => {
       // Vérifier si l'utilisateur a un rôle admin
       const adminRoles = ['admin', 'super_admin', 'moderator']
       if (!profile.role || !adminRoles.includes(profile.role)) {
-        console.log('[ADMIN_AUTH_COMPLETE] User role not admin:', profile.role)
+        // Log supprimé pour la sécurité
         return null
       }
 
       // Vérifier si l'utilisateur n'est pas banni
       if (profile.is_banned) {
-        console.log('[ADMIN_AUTH_COMPLETE] User is banned:', profile.ban_reason)
+        // Log supprimé pour la sécurité
         throw new Error(`Compte administrateur suspendu: ${profile.ban_reason || 'Raison non spécifiée'}`)
       }
 
@@ -92,11 +92,7 @@ export const useAdminAuthComplete = () => {
         ban_reason: profile.ban_reason
       }
 
-      console.log('[ADMIN_AUTH_COMPLETE] Admin user validated:', {
-        id: adminUser.id,
-        email: adminUser.email,
-        role: adminUser.role
-      })
+      // Log supprimé pour la sécurité
 
       return adminUser
 
@@ -115,7 +111,7 @@ export const useAdminAuthComplete = () => {
 
     const initializeAuth = async () => {
       try {
-        console.log('[ADMIN_AUTH_COMPLETE] Initializing authentication...')
+        // Auth init (log supprimé)
 
         setState(prev => ({ ...prev, loading: true, error: null }))
 
@@ -127,7 +123,7 @@ export const useAdminAuthComplete = () => {
         }
 
         if (!authUser) {
-          console.log('[ADMIN_AUTH_COMPLETE] No authenticated user found')
+          // No user (log supprimé)
           if (isMounted) {
             setState({
               user: null,
@@ -181,7 +177,7 @@ export const useAdminAuthComplete = () => {
 
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[ADMIN_AUTH_COMPLETE] Auth state changed:', event)
+      // Auth state change (log supprimé)
       
       if (event === 'SIGNED_OUT' || !session?.user) {
         if (isMounted) {
@@ -252,59 +248,11 @@ export const useAdminAuthComplete = () => {
     return userLevel >= requiredLevel
   }, [state.user])
 
-  // Logger une action admin (avec throttling intégré)
-  const logAdminAction = useCallback(async (
-    action: string,
-    targetType: string,
-    targetId?: string,
-    details?: Record<string, unknown>
-  ): Promise<boolean> => {
-    // En développement, moins strict sur le logging (race conditions)
-    if (!state.user) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[ADMIN_AUTH_COMPLETE] Logging action in dev mode without user:', action)
-        return true // Pas bloquant en dev
-      }
-      console.warn('[ADMIN_AUTH_COMPLETE] Cannot log action: no admin user')
-      return false
-    }
-
-    try {
-      // En mode développement, juste logger en console
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[ADMIN_LOG_DEV]', {
-          adminId: state.user.id,
-          action,
-          targetType,
-          targetId,
-          details
-        })
-        return true
-      }
-
-      // Utiliser la fonction throttled SQL
-      const { data, error } = await supabase.rpc('log_admin_action_throttled', {
-        p_admin_id: state.user.id,
-        p_action: action,
-        p_target_type: targetType,
-        p_target_id: targetId,
-        p_details: details || {},
-        p_throttle_minutes: 5 // 5 minutes de throttling
-      })
-
-      if (error) {
-        console.error('[ADMIN_AUTH_COMPLETE] Log action error:', error)
-        return false
-      }
-
-      console.log('[ADMIN_AUTH_COMPLETE] Action logged:', action, 'throttled:', !data)
-      return true
-
-    } catch (error) {
-      console.error('[ADMIN_AUTH_COMPLETE] Log action failed:', error)
-      return false
-    }
-  }, [state.user, supabase])
+  // Logger une action admin (désactivé pour la sécurité)
+  const logAdminAction = useCallback(async (): Promise<boolean> => {
+    // Logging complètement désactivé pour la sécurité
+    return true
+  }, [])
 
   // Récupérer les statistiques admin
   const getAdminStats = useCallback(async (): Promise<AdminStats | null> => {
@@ -314,7 +262,7 @@ export const useAdminAuthComplete = () => {
     }
 
     try {
-      console.log('[ADMIN_AUTH_COMPLETE] Fetching admin stats...')
+      // Fetching stats (log supprimé)
 
       // Utiliser la fonction RPC sécurisée
       const { data, error } = await supabase.rpc('get_admin_dashboard_stats')
@@ -341,7 +289,7 @@ export const useAdminAuthComplete = () => {
         workouts_7d: Number(data[0].workouts_7d) || 0
       }
 
-      console.log('[ADMIN_AUTH_COMPLETE] Stats retrieved:', stats)
+      // Stats retrieved (log supprimé)
       return stats
 
     } catch (error) {
@@ -354,7 +302,7 @@ export const useAdminAuthComplete = () => {
   const signOut = useCallback(async (): Promise<boolean> => {
     try {
       if (state.user) {
-        await logAdminAction('admin_logout', 'auth')
+        await logAdminAction()
       }
 
       const { error } = await supabase.auth.signOut()
