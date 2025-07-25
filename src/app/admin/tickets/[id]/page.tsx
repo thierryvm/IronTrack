@@ -104,7 +104,10 @@ export default function AdminTicketDetailPage() {
     try {
       const success = await updateTicketStatus(ticket.id, newStatus)
       if (success) {
-        setTicket({ ...ticket, status: newStatus })
+        // Mettre à jour immédiatement l'état local
+        setTicket({ ...ticket, status: newStatus, updated_at: new Date().toISOString() })
+        // Recharger les données complètes depuis la base
+        await loadTicketData()
         await logAdminAction()
       }
     } catch (error) {
@@ -119,7 +122,10 @@ export default function AdminTicketDetailPage() {
     try {
       const success = await updateTicketPriority(ticket.id, newPriority)
       if (success) {
-        setTicket({ ...ticket, priority: newPriority })
+        // Mettre à jour immédiatement l'état local
+        setTicket({ ...ticket, priority: newPriority, updated_at: new Date().toISOString() })
+        // Recharger les données complètes depuis la base
+        await loadTicketData()
         await logAdminAction()
       }
     } catch (error) {

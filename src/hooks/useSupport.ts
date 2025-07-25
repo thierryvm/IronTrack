@@ -311,30 +311,38 @@ export const useSupport = () => {
     }
   }, [supabase])
 
-  // Mettre à jour le statut d'un ticket - Mémoïsé
-  const updateTicketStatus = useCallback(async (ticketId: string, newStatus: string): Promise<boolean> => {
+  // Mettre à jour le statut d'un ticket - Via API sécurisée
+  const updateTicketStatus = useCallback(async (ticketId: string, newStatus: string, adminNote?: string): Promise<boolean> => {
     try {
       setLoading(true)
       setError(null)
 
-      const { error } = await supabase
-        .from('support_tickets')
-        .update({ 
+      const response = await fetch(`/api/admin/tickets/${ticketId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
           status: newStatus,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', ticketId)
+          admin_note: adminNote 
+        }),
+      })
 
-      if (error) throw error
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erreur lors de la mise à jour')
+      }
+
       return true
     } catch (err) {
+      console.error('Erreur update ticket status:', err)
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la mise à jour du statut'
       setError(errorMessage)
       return false
     } finally {
       setLoading(false)
     }
-  }, [supabase])
+  }, [])
 
   // Mettre à jour la priorité d'un ticket - Mémoïsé
   const updateTicketPriority = useCallback(async (ticketId: string, newPriority: string): Promise<boolean> => {

@@ -243,36 +243,37 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Header avec refresh */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Dashboard {user?.role === 'super_admin' ? 'Super Administrateur' : 
-                      user?.role === 'admin' ? 'Administrateur' : 
-                      user?.role === 'moderator' ? 'Modérateur' : 'Administrateur'}
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+            Dashboard {user?.role === 'super_admin' ? 'Super Admin' : 
+                      user?.role === 'admin' ? 'Admin' : 
+                      user?.role === 'moderator' ? 'Modérateur' : 'Admin'}
           </h1>
-          <p className="text-gray-600">
-            Bonjour {user?.email.split('@')[0]}, voici un aperçu de l&apos;activité IronTrack
+          <p className="text-sm sm:text-base text-gray-600 truncate">
+            Bonjour {user?.email.split('@')[0]} 👋
           </p>
         </div>
         
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <div className="flex items-center text-sm text-gray-500">
-            <Shield className="h-4 w-4 mr-1" />
-            {user?.role.replace('_', ' ').toUpperCase()}
+        <div className="mt-3 sm:mt-0 flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
+          <div className="flex items-center text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+            <span className="hidden xs:inline">{user?.role.replace('_', ' ').toUpperCase()}</span>
+            <span className="xs:hidden">{user?.role === 'super_admin' ? 'S.ADM' : user?.role === 'admin' ? 'ADM' : 'MOD'}</span>
           </div>
           
           <button
             onClick={loadDashboardData}
             disabled={refreshing}
-            className="flex items-center px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Actualiser</span>
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''} ${refreshing ? '' : 'sm:mr-2'}`} />
+            <span className="hidden sm:inline ml-2">Actualiser</span>
           </button>
         </div>
       </div>
 
       {/* Statistiques principales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           {
             title: 'Tickets Ouverts',
@@ -316,15 +317,15 @@ export default function AdminDashboard() {
               transition={{ delay: index * 0.1 }}
             >
               <Link href={stat.href}>
-                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-lg ${
+                <div className="bg-white p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer">
+                  <div className="flex items-center justify-between mb-2 sm:mb-4">
+                    <div className={`p-2 sm:p-3 rounded-lg ${
                       stat.color === 'orange' ? 'bg-orange-100' :
                       stat.color === 'blue' ? 'bg-blue-100' :
                       stat.color === 'green' ? 'bg-green-100' :
                       'bg-purple-100'
                     }`}>
-                      <Icon className={`h-6 w-6 ${
+                      <Icon className={`h-4 w-4 sm:h-6 sm:w-6 ${
                         stat.color === 'orange' ? 'text-orange-600' :
                         stat.color === 'blue' ? 'text-blue-600' :
                         stat.color === 'green' ? 'text-green-600' :
@@ -335,13 +336,13 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-gray-600 mb-1">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 truncate">
                       {stat.title}
                     </h3>
-                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
                       {stat.value.toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 truncate">
                       {stat.change}
                     </p>
                   </div>
