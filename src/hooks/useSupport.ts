@@ -385,9 +385,11 @@ export const useSupport = () => {
         .insert({
           ticket_id: ticketId,
           user_id: user.id,
-          responder_email: user.email,
           message,
-          is_from_admin: isFromAdmin
+          is_internal: isFromAdmin, // Correction: is_internal au lieu de is_from_admin
+          is_solution: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
 
       if (error) throw error
