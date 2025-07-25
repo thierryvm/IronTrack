@@ -8,7 +8,7 @@ import { MascotGlobal } from "@/components/ui/Mascot";
 import { FloatingSupport } from "@/components/ui/FloatingSupport";
 import { ErrorHandler } from "@/components/ui/ErrorHandler";
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   subsets: ["latin"],
