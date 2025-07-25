@@ -665,7 +665,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
               onClick={() => setShowDetails(false)}
             />
             
@@ -773,7 +773,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
               onClick={() => setShowRoleModal(false)}
             />
             
@@ -836,7 +836,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
               onClick={() => setShowBanModal(false)}
             />
             
@@ -921,7 +921,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
               onClick={() => setShowDeleteModal(false)}
             />
             

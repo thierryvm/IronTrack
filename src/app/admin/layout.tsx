@@ -324,7 +324,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+                className="lg:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
                 onClick={() => setSidebarOpen(false)}
               />
               
