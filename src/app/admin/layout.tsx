@@ -19,7 +19,19 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useAdminAuth, AdminStats } from '@/hooks/useAdminAuth'
+import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+
+interface AdminStats {
+  open_tickets: number
+  in_progress_tickets: number
+  tickets_24h: number
+  tickets_7d: number
+  new_users_24h: number
+  new_users_7d: number
+  admin_users: number
+  workouts_24h: number
+  workouts_7d: number
+}
 import { createClient } from '@/utils/supabase/client'
 
 interface AdminLayoutProps {
@@ -32,7 +44,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading, error, isAuthenticated, hasPermission, getAdminStats, logAdminAction } = useAdminAuth()
+  const { user, loading, error, isAuthenticated, hasPermission, logAdminAction } = useAdminAuthComplete()
   const supabase = createClient()
 
   // Navigation items avec permissions
@@ -50,7 +62,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: MessageSquare,
       permission: 'moderator',
       active: pathname.startsWith('/admin/tickets'),
-      badge: stats?.open_tickets || 0
+      badge: stats?.open_tickets
     },
     {
       name: 'Utilisateurs',
@@ -82,12 +94,32 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   ] as const
 
-  // Charger les statistiques
+  // Charger les statistiques via API route sécurisée
   useEffect(() => {
     if (isAuthenticated) {
       const loadStats = async () => {
-        const adminStats = await getAdminStats()
-        setStats(adminStats)
+        try {
+          const response = await fetch('/api/admin/stats', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          
+          if (!response.ok) {
+            console.error('Erreur récupération stats admin:', response.status, response.statusText)
+            return
+          }
+          
+          const data = await response.json()
+          if (data.stats) {
+            setStats(data.stats)
+            console.log('[ADMIN_STATS] Statistiques chargées:', data.stats)
+          }
+        } catch (error) {
+          console.error('Erreur appel API stats:', error)
+        }
       }
       
       loadStats()
@@ -95,11 +127,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       const interval = setInterval(loadStats, 300000)
       return () => clearInterval(interval)
     }
-  }, [isAuthenticated, getAdminStats])
+  }, [isAuthenticated])
 
   // Gestion de la déconnexion
   const handleLogout = async () => {
-    await logAdminAction('admin_logout', 'auth')
+    try {
+      await logAdminAction()
+    } catch (error) {
+      console.warn('Erreur lors du logging de déconnexion:', error)
+    }
     await supabase.auth.signOut()
     router.push('/')
   }
@@ -246,7 +282,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.name}
-                  {'badge' in item && item.badge && item.badge > 0 && (
+                  {'badge' in item && typeof item.badge === 'number' && item.badge > 0 && (
                     <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[1.25rem] text-center">
                       {item.badge > 99 ? '99+' : item.badge}
                     </span>
@@ -329,7 +365,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       >
                         <Icon className="h-5 w-5 mr-3" />
                         {item.name}
-                        {'badge' in item && item.badge && item.badge > 0 && (
+                        {'badge' in item && typeof item.badge === 'number' && item.badge > 0 && (
                           <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
                             {item.badge > 99 ? '99+' : item.badge}
                           </span>

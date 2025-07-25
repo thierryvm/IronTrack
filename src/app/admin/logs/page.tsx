@@ -16,8 +16,7 @@ import {
   ChevronRight,
   Calendar
 } from 'lucide-react'
-import { useAdminAuthComplete as useAdminAuth } from '@/hooks/useAdminAuthComplete'
-import { createClient } from '@/utils/supabase/client'
+import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
 
 interface AdminLog {
   id: string
@@ -52,80 +51,49 @@ export default function AdminLogsPage() {
     search: ''
   })
 
-  const { hasPermission, logAdminAction } = useAdminAuth()
-  const supabase = createClient()
+  const { hasPermission } = useAdminAuthComplete()
 
   // Optimisation : Charger les logs avec pagination et filtres
   const loadLogs = useCallback(async (page = 1, newFilters = filters) => {
-    if (!hasPermission('admin')) return
+    if (!hasPermission('moderator')) return
 
     try {
       setLoading(page === 1)
       setRefreshing(page !== 1)
 
-      // Construire la requête avec filtres
-      let query = supabase
-        .from('admin_logs')
-        .select('id, admin_id, action, target_type, target_id, created_at, details', { count: 'exact' })
+      // Utiliser l'API route admin pour les logs
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: LOGS_PER_PAGE.toString(),
+        date_range: newFilters.date_range,
+        ...(newFilters.action && { action: newFilters.action }),
+        ...(newFilters.target_type && { target_type: newFilters.target_type }),
+        ...(newFilters.search && { search: newFilters.search })
+      })
 
-      // Filtrage par date (optimisation performance)
-      const now = new Date()
-      let dateThreshold = new Date()
-      switch (newFilters.date_range) {
-        case '1h':
-          dateThreshold = new Date(now.getTime() - 60 * 60 * 1000)
-          break
-        case '24h':
-          dateThreshold = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-          break
-        case '7d':
-          dateThreshold = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-          break
-        case '30d':
-          dateThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-          break
-        default:
-          dateThreshold = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      const response = await fetch(`/api/admin/logs?${params}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erreur API logs (${response.status}): ${response.statusText}`)
       }
 
-      query = query.gte('created_at', dateThreshold.toISOString())
-
-      // Filtres additionnels
-      if (newFilters.action) {
-        query = query.eq('action', newFilters.action)
-      }
-      if (newFilters.target_type) {
-        query = query.eq('target_type', newFilters.target_type)
-      }
-      if (newFilters.search) {
-        query = query.ilike('action', `%${newFilters.search}%`)
-      }
-
-      // Pagination optimisée
-      const from = (page - 1) * LOGS_PER_PAGE
-      const to = Math.min(from + LOGS_PER_PAGE - 1, MAX_LOGS_TOTAL - 1)
-
-      query = query
-        .order('created_at', { ascending: false })
-        .range(from, to)
-
-      const { data, error, count } = await query
-
-      if (error) {
-        console.error('Erreur chargement logs:', error)
-        return
-      }
-
-      setLogs(data || [])
-      setTotalLogs(Math.min(count || 0, MAX_LOGS_TOTAL))
+      const { logs: apiLogs, meta } = await response.json()
+      
+      setLogs(apiLogs || [])
+      setTotalLogs(Math.min(meta?.total || 0, MAX_LOGS_TOTAL))
       setCurrentPage(page)
+      
+      console.log(`[ADMIN_LOGS] Chargé ${apiLogs?.length || 0} logs via API`)
 
-      // Log de consultation (avec throttling pour éviter spam)
-      if (page === 1) {
-        await logAdminAction('view_admin_logs', 'admin_logs', undefined, {
-          filters: newFilters,
-          logs_count: data?.length || 0
-        })
+      // Log de consultation (déjà fait par l'API)
+      if (page === 1 && apiLogs?.length) {
+        console.log('[ADMIN_LOGS] Consultation logs enregistrée via API')
       }
 
     } catch (error) {
@@ -134,14 +102,14 @@ export default function AdminLogsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [hasPermission, logAdminAction, supabase, filters])
+  }, [hasPermission, filters])
 
   // Chargement initial avec useCallback stabilisé
   useEffect(() => {
-    if (hasPermission('admin')) {
+    if (hasPermission('moderator')) {
       loadLogs(1, filters)
     }
-  }, [hasPermission]) // loadLogs n'est pas inclus car il change à chaque render
+  }, [hasPermission, filters, loadLogs])
 
   // Gestionnaires
   const handleRefresh = () => loadLogs(currentPage, filters)

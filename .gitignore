@@ -30,6 +30,14 @@ irontrack_ux_audit.md
 claude_code_specification_optimized.md
 claude.md
 GUIDE_CLAUDE_CODE.md
+GUIDE_PERMISSIONS_ROLES.md
+
+# Documentation technique interne (ne pas commiter - sensible)
+docs/
+documentation/
+*_security.md
+*_password_security.md
+supabase_*.md
 
 # 🚨 FICHIERS INTERNES CLAUDE - JAMAIS À COMMITER
 CLAUDE.md
@@ -88,11 +96,13 @@ public/workbox-*
 
 # Fichiers de debug et analyse temporaires
 RAPPORT-*.md
+RAPPORT_*.md
 PLAN-*.md
 check-*.js
 check-*.mjs
 diagnose-*.mjs
 test-*.mjs
+get_complete_database_structure.js
 nul
 
 # 🚨 FICHIERS SQL TEMPORAIRES - TOUS INTERDITS
@@ -191,3 +201,9 @@ supabase/*.toml
 
 .env.local
 .env
+
+# Ne jamais versionner les scripts de kill des serveurs de dev
+kill_dev.bat
+kill_port.bat
+kill-port.bat
+kill-port.ps1

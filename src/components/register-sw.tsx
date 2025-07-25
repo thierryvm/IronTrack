@@ -4,11 +4,13 @@ import { useEffect } from 'react';
 
 export default function RegisterSW() {
   useEffect(() => {
-    // Activer le SW même en dev, mais avec protection contre les erreurs
+    // Détection de l'environnement avec Next.js
     const isDev = process.env.NODE_ENV === 'development';
     
+    // TEMPORAIRE: Désactiver SW pour déboguer les problèmes de navigation
     if (isDev) {
-      console.log('Service Worker activé en mode développement (avec protection)');
+      console.log('Service Worker temporairement désactivé en dev pour débogage');
+      return;
     }
 
     if ('serviceWorker' in navigator) {
@@ -23,6 +25,20 @@ export default function RegisterSW() {
             } else {
               console.log('SW production enregistré (complet):', registration);
             }
+            
+            // Écouter les mises à jour du service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Nouveau service worker disponible, recharger la page proprement
+                    console.log('Nouveau service worker installé, rechargement...');
+                    window.location.reload();
+                  }
+                });
+              }
+            });
           })
           .catch((error) => {
             if (isDev) {

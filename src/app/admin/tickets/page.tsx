@@ -20,7 +20,7 @@ import {
   Paperclip,
   Download
 } from 'lucide-react'
-import { useAdminAuthComplete as useAdminAuth } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
 import { useSupport } from '@/hooks/useSupport'
 import { SupportTicket, SupportTicketPriority, SupportTicketStatus, SupportTicketCategory } from '@/types/support'
 
@@ -53,18 +53,22 @@ export default function AdminTicketsPage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [showFilters, setShowFilters] = useState(false)
 
-  const { logAdminAction, hasPermission } = useAdminAuth()
+  const { logAdminAction, hasPermission } = useAdminAuthComplete()
   const { getAllTickets, updateTicketStatus, updateTicketPriority, refreshSchemaCache } = useSupport()
 
   // Charger les tickets - Version finale sans dépendances problématiques  
   const loadTickets = async () => {
     setLoading(true)
+    console.log('[ADMIN_TICKETS] Début chargement des tickets...')
     try {
       const allTickets = await getAllTickets()
+      console.log('[ADMIN_TICKETS] Tickets récupérés:', allTickets?.length || 0)
       setTickets(allTickets)
-      await logAdminAction('view_tickets', 'tickets', undefined, { count: allTickets.length })
+      await logAdminAction()
+      console.log('[ADMIN_TICKETS] Chargement terminé avec succès')
     } catch (error) {
       console.error('[ERROR] Erreur chargement tickets:', error)
+      setTickets([]) // S'assurer qu'on a au moins un tableau vide
     } finally {
       setLoading(false)
     }
@@ -111,12 +115,11 @@ export default function AdminTicketsPage() {
   // Gérer le changement de statut
   const handleStatusChange = async (ticketId: string, newStatus: SupportTicketStatus) => {
     try {
+      console.log('[ADMIN_TICKETS] Changement statut:', ticketId, 'vers', newStatus)
       await updateTicketStatus(ticketId, newStatus)
-      await logAdminAction('update_ticket_status', 'tickets', ticketId, { 
-        ticket_id: ticketId, 
-        new_status: newStatus 
-      })
-      await loadTickets()
+      await logAdminAction()
+      console.log('[ADMIN_TICKETS] Rechargement après changement statut...')
+      await loadTickets() // Recharger immédiatement
     } catch (error) {
       console.error('Erreur mise à jour statut:', error)
     }
@@ -125,12 +128,11 @@ export default function AdminTicketsPage() {
   // Gérer le changement de priorité
   const handlePriorityChange = async (ticketId: string, newPriority: SupportTicketPriority) => {
     try {
+      console.log('[ADMIN_TICKETS] Changement priorité:', ticketId, 'vers', newPriority)
       await updateTicketPriority(ticketId, newPriority)
-      await logAdminAction('update_ticket_priority', 'tickets', ticketId, { 
-        ticket_id: ticketId, 
-        new_priority: newPriority 
-      })
-      await loadTickets()
+      await logAdminAction()
+      console.log('[ADMIN_TICKETS] Rechargement après changement priorité...')
+      await loadTickets() // Recharger immédiatement
     } catch (error) {
       console.error('Erreur mise à jour priorité:', error)
     }
@@ -669,7 +671,7 @@ export default function AdminTicketsPage() {
                               <option value="low">Basse</option>
                               <option value="medium">Moyenne</option>
                               <option value="high">Haute</option>
-                              <option value="urgent">Urgente</option>
+                              <option value="critical">Critique</option>
                             </select>
                           </div>
                         </div>
