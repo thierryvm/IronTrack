@@ -245,7 +245,9 @@ export default function AdminDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Dashboard Administrateur
+            Dashboard {user?.role === 'super_admin' ? 'Super Administrateur' : 
+                      user?.role === 'admin' ? 'Administrateur' : 
+                      user?.role === 'moderator' ? 'Modérateur' : 'Administrateur'}
           </h1>
           <p className="text-gray-600">
             Bonjour {user?.email.split('@')[0]}, voici un aperçu de l&apos;activité IronTrack

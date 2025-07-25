@@ -87,6 +87,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth', request.url))
   }
 
+  // Routes admin - vérification des permissions spécifiques
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/auth', request.url))
+    }
+
+    // Vérifier les permissions admin dans user_roles
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role, is_active, expires_at')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .is('expires_at', null)
+      .single()
+
+    if (roleError || !userRole) {
+      console.error('[MIDDLEWARE] Admin role check failed:', roleError)
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Vérifier si le rôle est admin/super_admin/moderator
+    const adminRoles = ['admin', 'super_admin', 'moderator']
+    if (!adminRoles.includes(userRole.role)) {
+      console.error('[MIDDLEWARE] Insufficient permissions for admin access')
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+  }
+
   return response
 }
 

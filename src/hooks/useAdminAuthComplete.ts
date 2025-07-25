@@ -51,10 +51,37 @@ export const useAdminAuthComplete = () => {
     try {
       // Log supprimé pour la sécurité
       
-      // Récupérer le profil complet de l'utilisateur
+      // CORRECTION CRITIQUE: Utiliser user_roles au lieu de profiles.role
+      // Récupérer le rôle depuis user_roles (système principal)
+      const { data: userRole, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role, granted_at, is_active, expires_at')
+        .eq('user_id', authUser.id)
+        .eq('is_active', true)
+        .is('expires_at', null) // Pas de date d'expiration
+        .single()
+
+      if (roleError) {
+        console.error('[ADMIN_AUTH_COMPLETE] User role error:', roleError)
+        // Si pas de rôle admin dans user_roles, pas d'accès
+        return null
+      }
+
+      if (!userRole) {
+        // Aucun rôle admin actif trouvé
+        return null
+      }
+
+      // Vérifier si le rôle est bien un rôle admin
+      const adminRoles = ['admin', 'super_admin', 'moderator']
+      if (!adminRoles.includes(userRole.role)) {
+        return null
+      }
+
+      // Récupérer les infos du profil pour les données complémentaires
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('email, full_name, is_banned, ban_reason, created_at')
         .eq('id', authUser.id)
         .single()
 
@@ -67,26 +94,19 @@ export const useAdminAuthComplete = () => {
         throw new Error('Profil utilisateur introuvable')
       }
 
-      // Vérifier si l'utilisateur a un rôle admin
-      const adminRoles = ['admin', 'super_admin', 'moderator']
-      if (!profile.role || !adminRoles.includes(profile.role)) {
-        // Log supprimé pour la sécurité
-        return null
-      }
-
       // Vérifier si l'utilisateur n'est pas banni
       if (profile.is_banned) {
         // Log supprimé pour la sécurité
         throw new Error(`Compte administrateur suspendu: ${profile.ban_reason || 'Raison non spécifiée'}`)
       }
 
-      // Construire l'objet AdminUser
+      // Construire l'objet AdminUser avec données de user_roles
       const adminUser: AdminUser = {
         id: authUser.id,
         email: profile.email || authUser.email || '',
-        role: profile.role as 'admin' | 'super_admin' | 'moderator',
-        granted_at: profile.created_at,
-        is_active: true,
+        role: userRole.role as 'admin' | 'super_admin' | 'moderator',
+        granted_at: userRole.granted_at,
+        is_active: userRole.is_active,
         full_name: profile.full_name,
         is_banned: profile.is_banned || false,
         ban_reason: profile.ban_reason

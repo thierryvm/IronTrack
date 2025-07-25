@@ -518,7 +518,7 @@ export default function AdminTicketsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
               onClick={() => setShowDetails(false)}
             />
             
