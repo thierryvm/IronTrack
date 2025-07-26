@@ -312,13 +312,30 @@ export function MascotWidget() {
 export function MascotGlobal() {
   const [minimized, setMinimized] = useState(false)
   const [joke, setJoke] = useState<string | null>(null)
+  const [shouldShow, setShouldShow] = useState(true)
   const pathname = usePathname();
+  
   useEffect(() => {
     const hide = localStorage.getItem('hideMascot')
     setMinimized(hide === '1')
     // Affiche une blague à chaque navigation
     const randomJoke = jokes[Math.floor(Math.random() * jokes.length)]
     setJoke(randomJoke)
+    
+    // Masquer sur certaines pages pour éviter conflit avec boutons validation
+    const hiddenPaths = [
+      '/auth', 
+      '/onboarding',
+      '/admin', // Pas besoin dans l'admin
+      '/exercises/new', // Éviter conflit avec boutons validation
+      '/workouts/new' // Éviter conflit avec boutons validation
+    ]
+    
+    const shouldHide = hiddenPaths.some(path => 
+      pathname.startsWith(path)
+    ) || pathname.includes('/edit') // Masquer sur toutes les pages d'édition
+    
+    setShouldShow(!shouldHide)
   }, [pathname])
 
   const handleMinimize = () => {
@@ -329,6 +346,9 @@ export function MascotGlobal() {
     localStorage.removeItem('hideMascot')
     setMinimized(false)
   }
+
+  // Ne pas afficher si shouldShow est false
+  if (!shouldShow) return null
 
   return (
     <ClientOnly>

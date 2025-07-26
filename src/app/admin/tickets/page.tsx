@@ -120,6 +120,12 @@ export default function AdminTicketsPage() {
       await logAdminAction()
       console.log('[ADMIN_TICKETS] Rechargement après changement statut...')
       await loadTickets() // Recharger immédiatement
+      
+      // Mettre à jour selectedTicket si c'est le ticket modifié
+      if (selectedTicket && selectedTicket.id === ticketId) {
+        setSelectedTicket({ ...selectedTicket, status: newStatus })
+        console.log('[ADMIN_TICKETS] selectedTicket mis à jour avec nouveau statut:', newStatus)
+      }
     } catch (error) {
       console.error('Erreur mise à jour statut:', error)
     }
@@ -133,6 +139,12 @@ export default function AdminTicketsPage() {
       await logAdminAction()
       console.log('[ADMIN_TICKETS] Rechargement après changement priorité...')
       await loadTickets() // Recharger immédiatement
+      
+      // Mettre à jour selectedTicket si c'est le ticket modifié
+      if (selectedTicket && selectedTicket.id === ticketId) {
+        setSelectedTicket({ ...selectedTicket, priority: newPriority })
+        console.log('[ADMIN_TICKETS] selectedTicket mis à jour avec nouvelle priorité:', newPriority)
+      }
     } catch (error) {
       console.error('Erreur mise à jour priorité:', error)
     }
