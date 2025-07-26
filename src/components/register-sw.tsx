@@ -4,6 +4,16 @@ import { useEffect } from 'react';
 
 export default function RegisterSW() {
   useEffect(() => {
+    // Supprimer les erreurs runtime.lastError causées par les extensions
+    const originalError = console.error;
+    console.error = (...args) => {
+      if (args[0]?.includes?.('runtime.lastError') || args[0]?.includes?.('message channel closed')) {
+        // Ignorer silencieusement les erreurs d'extensions
+        return;
+      }
+      originalError.apply(console, args);
+    };
+    
     // Détection de l'environnement avec Next.js
     const isDev = process.env.NODE_ENV === 'development';
     
@@ -41,10 +51,25 @@ export default function RegisterSW() {
             });
           })
           .catch((error) => {
-            if (isDev) {
-              console.warn('SW dev - erreur:', error.message);
-            } else {
-              console.error('Erreur SW production:', error);
+            // Ignorer les erreurs courantes non critiques
+            const ignoredErrors = [
+              'Load failed',
+              'Request failed',
+              'script error',
+              'network error'
+            ];
+            
+            const shouldIgnore = ignoredErrors.some(ignored => 
+              error.message?.toLowerCase().includes(ignored.toLowerCase())
+            );
+            
+            if (!shouldIgnore) {
+              if (isDev) {
+                console.warn('SW dev - erreur:', error.message);
+              } else {
+                // En production, loguer de manière silencieuse pour éviter le spam d'erreurs
+                console.warn('Service Worker: ', error.message || 'Erreur mineure ignorée');
+              }
             }
           });
       });
