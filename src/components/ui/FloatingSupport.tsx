@@ -56,9 +56,9 @@ export const FloatingSupport = () => {
 
   return (
     <>
-      {/* Bouton principal flottant - Positionné pour éviter conflit avec mascotte */}
+      {/* Bouton principal flottant - Positionnement mobile-first sans conflit */}
       <motion.div
-        className="fixed bottom-4 right-20 z-[70]"
+        className="fixed bottom-4 left-4 z-[70] md:bottom-4 md:left-20"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 2 }} // Apparaît après 2 secondes
@@ -114,7 +114,7 @@ export const FloatingSupport = () => {
               animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 20, y: 20 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="fixed bottom-20 right-20 z-[70] bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 p-2 min-w-[280px]"
+              className="fixed bottom-20 left-4 z-[70] bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 p-2 min-w-[280px] max-w-[calc(100vw-2rem)] md:bottom-20 md:left-20"
             >
               {/* Header */}
               <div className="px-4 py-3 border-b border-gray-100">

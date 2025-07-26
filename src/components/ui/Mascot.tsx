@@ -333,14 +333,14 @@ export function MascotGlobal() {
   return (
     <ClientOnly>
       {minimized ? (
-        <div className="fixed bottom-4 right-4 z-[60] cursor-pointer" onClick={handleRestore} title="Afficher la mascotte">
+        <div className="fixed bottom-20 right-4 z-[60] cursor-pointer md:bottom-4" onClick={handleRestore} title="Afficher la mascotte">
           <div className="bg-white rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
             <Dumbbell className="h-6 w-6 text-orange-600" />
           </div>
         </div>
       ) : (
         <motion.div 
-          className="fixed bottom-4 right-4 z-[60]"
+          className="fixed bottom-20 right-4 z-[60] md:bottom-4"
           animate={{ 
             x: 0, 
             y: 0,
