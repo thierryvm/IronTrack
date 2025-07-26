@@ -446,17 +446,10 @@ export const useSupport = () => {
         return { ticket: null, responses: [] }
       }
 
-      // Récupérer les réponses du ticket
+      // Récupérer les réponses du ticket sans jointure 
       const { data: responsesData, error: responsesError } = await supabase
         .from('ticket_responses')
-        .select(`
-          *,
-          profiles!ticket_responses_user_id_fkey (
-            full_name,
-            email,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('ticket_id', ticketId)
         .order('created_at', { ascending: true })
 
@@ -465,15 +458,39 @@ export const useSupport = () => {
         // Continuer même si les réponses échouent
       }
 
+      // Enrichir avec les données utilisateur si les réponses existent
+      let enrichedResponses = []
+      if (responsesData && responsesData.length > 0) {
+        // Récupérer les profils des utilisateurs ayant répondu
+        const userIds = [...new Set(responsesData.map(r => r.user_id))]
+        const { data: userProfiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, avatar_url')
+          .in('id', userIds)
+
+        // Créer un map pour les profils
+        const profilesMap: Record<string, { id: string; full_name?: string; email?: string; avatar_url?: string }> = {}
+        userProfiles?.forEach(profile => {
+          profilesMap[profile.id] = profile
+        })
+
+        // Enrichir les réponses avec les données utilisateur
+        enrichedResponses = responsesData.map(response => ({
+          ...response,
+          profiles: profilesMap[response.user_id],
+          user_email: profilesMap[response.user_id]?.email || 'Email non disponible'
+        }))
+      }
+
       console.log('[DEBUG] Ticket récupéré avec succès:', {
         ticketId: ticketData.id,
         title: ticketData.title,
-        responsesCount: responsesData?.length || 0
+        responsesCount: enrichedResponses.length
       })
 
       return {
         ticket: ticketData as SupportTicket,
-        responses: (responsesData || []) as TicketResponse[]
+        responses: enrichedResponses as TicketResponse[]
       }
 
     } catch (err) {

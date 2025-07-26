@@ -82,10 +82,11 @@ export default function AdminTicketDetailPage() {
 
     setSendingResponse(true)
     try {
-      const success = await addTicketResponse(ticket.id, responseMessage, true)
+      const success = await addTicketResponse(ticket.id, responseMessage, isInternalNote)
       
       if (success) {
         setResponseMessage('')
+        setIsInternalNote(false) // Reset du checkbox après envoi
         await loadTicketData()
         
         await logAdminAction()
