@@ -83,17 +83,25 @@ export default function AdminDashboard() {
     }
   ]
 
-  // Throttling pour éviter les appels trop fréquents
+  // Protection contre les appels multiples simultanés
   const [lastRefreshTime, setLastRefreshTime] = useState(0)
-  const REFRESH_COOLDOWN = 5000 // 5 secondes minimum entre les rafraîchissements
+  const REFRESH_COOLDOWN = 2000 // 2 secondes minimum (réduit de 5s)
 
-  // Charger les données du dashboard avec throttling
+  // Charger les données du dashboard avec protection simple
   const loadDashboardData = useCallback(async () => {
     console.log('[ADMIN_DASHBOARD] Début chargement dashboard...')
+    
+    // Protection simple contre appels simultanés uniquement
+    if (refreshing) {
+      console.log('[ADMIN_DASHBOARD] Chargement ignoré (déjà en cours)')
+      return
+    }
+    
+    // Throttling léger seulement pour éviter spam
     const now = Date.now()
-    if (refreshing || (now - lastRefreshTime) < REFRESH_COOLDOWN) {
-      console.log('[ADMIN_DASHBOARD] Chargement ignoré (throttling)')
-      return // Ignore si déjà en cours ou trop récent
+    if ((now - lastRefreshTime) < REFRESH_COOLDOWN) {
+      console.log('[ADMIN_DASHBOARD] Chargement ignoré (throttling léger)')
+      return
     }
     
     setLastRefreshTime(now)
@@ -164,20 +172,22 @@ export default function AdminDashboard() {
     }
   }, [refreshing, lastRefreshTime, logAdminAction, supabase, getAdminStats, hasPermission])
 
+  // Fonction de refresh manuel pour éviter les boucles
+  const handleManualRefresh = useCallback(async () => {
+    if (refreshing) return
+    
+    console.log('[ADMIN_DASHBOARD] Refresh manuel déclenché')
+    setStats(null) // Reset stats pour forcer le rechargement
+    await loadDashboardData()
+  }, [refreshing, loadDashboardData])
+
   useEffect(() => {
-    if (hasPermission('moderator')) {
+    // Chargement initial seulement si pas déjà chargé
+    if (hasPermission('moderator') && !stats && !loading) {
+      console.log('[ADMIN_DASHBOARD] Chargement initial...')
       loadDashboardData()
-      
-      // Actualisation automatique toutes les 10 minutes pour éviter surcharge API
-      const interval = setInterval(() => {
-        if (!loading && !refreshing) {
-          loadDashboardData()
-        }
-      }, 600000)
-      
-      return () => clearInterval(interval)
     }
-  }, [hasPermission, loadDashboardData, loading, refreshing])
+  }, [hasPermission, stats, loading, loadDashboardData])
 
   const getActionColor = (color: string) => {
     const colors = {
@@ -323,7 +333,7 @@ export default function AdminDashboard() {
           </div>
           
           <button
-            onClick={loadDashboardData}
+            onClick={handleManualRefresh}
             disabled={refreshing}
             className="flex items-center px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
           >
