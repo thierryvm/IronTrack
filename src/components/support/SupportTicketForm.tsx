@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Bug, Lightbulb, HelpCircle, MessageSquare, User, CreditCard, Send, AlertTriangle, Info, Paperclip } from 'lucide-react'
 import { SupportTicketCategory, CreateTicketRequest } from '@/types/support'
@@ -71,6 +71,12 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
   const [showSuccess, setShowSuccess] = useState(false)
 
   const { createTicket, loading, error } = useSupport()
+
+  // Mettre à jour la catégorie sélectionnée quand initialCategory change
+  useEffect(() => {
+    console.log('[DEBUG] SupportTicketForm - initialCategory changed:', initialCategory)
+    setSelectedCategory(initialCategory)
+  }, [initialCategory])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
