@@ -17,12 +17,14 @@ export const FloatingSupport = () => {
       '/auth', 
       '/onboarding',
       '/support/contact', // Pas besoin sur la page de contact elle-même
-      '/admin' // Pas besoin dans l'admin
+      '/admin', // Pas besoin dans l'admin
+      '/exercises/new', // Éviter conflit avec boutons validation
+      '/workouts/new' // Éviter conflit avec boutons validation
     ]
     
     const shouldHide = hiddenPaths.some(path => 
       pathname.startsWith(path)
-    )
+    ) || pathname.includes('/edit') // Masquer sur toutes les pages d'édition
     
     setShouldShow(!shouldHide)
     setIsOpen(false) // Fermer à chaque changement de page
