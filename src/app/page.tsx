@@ -550,38 +550,116 @@ export default function HomePage() {
     setTimeout(()=>setShowMascot(false), 4000);
   }
 
-  // 1. Ajout de skeletons pendant le loading
+  // CLS Optimisé : Skeletons avec dimensions exactes du contenu final
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Skeleton stats */}
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Section Skeleton - Dimensions fixes */}
+        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-12 min-h-[160px] flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="animate-pulse">
+              <div className="h-8 w-2/3 bg-orange-400 rounded mb-2" />
+              <div className="h-4 w-1/2 bg-orange-300 rounded" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Séance du jour Skeleton - Dimensions fixes */}
+          <div className="mb-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-8 text-white shadow-lg min-h-[180px] flex items-center">
+            <div className="animate-pulse w-full">
+              <div className="h-8 w-1/3 bg-orange-300 rounded mb-4" />
+              <div className="h-6 w-2/3 bg-orange-200 rounded mb-6" />
+              <div className="flex gap-4">
+                <div className="h-12 w-48 bg-white/30 rounded-xl" />
+                <div className="h-12 w-36 bg-orange-600/50 rounded-xl" />
+              </div>
+            </div>
+          </div>
+          
+          {/* Stats Skeleton - Dimensions exactes */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] animate-pulse">
-                <div className="h-4 w-1/3 bg-gray-200 rounded mb-2" />
-                <div className="h-8 w-2/3 bg-gray-200 rounded" />
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] min-w-[180px] animate-pulse">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-2" />
+                    <div className="h-8 w-1/2 bg-gray-300 rounded" />
+                  </div>
+                  <div className="w-12 h-12 bg-gray-200 rounded-full" />
+                </div>
               </div>
             ))}
           </div>
-          {/* Skeleton quickActions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Actions et Exercices Skeleton - Layout exact */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-md p-6 min-h-[220px] animate-pulse">
-                <div className="h-6 w-1/4 bg-gray-200 rounded mb-6" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="rounded-xl p-6 shadow-md bg-gray-100 min-h-[90px]" />
+              <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 min-h-[280px] animate-pulse">
+                <div className="h-6 w-1/3 bg-gray-200 rounded mb-6" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="rounded-xl p-4 sm:p-6 shadow-md bg-gray-100 min-h-[80px] sm:min-h-[90px]">
+                      <div className="flex items-center mb-2">
+                        <div className="w-6 h-6 bg-gray-300 rounded mr-3" />
+                        <div className="h-4 w-2/3 bg-gray-300 rounded" />
+                      </div>
+                      <div className="h-3 w-full bg-gray-200 rounded" />
+                    </div>
                   ))}
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-6 w-full">
-              <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            
+            <div className="flex flex-col gap-4 lg:gap-6 w-full">
+              {/* QuickTimer Skeleton */}
+              <div className="bg-white rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
+                <div className="h-5 w-1/2 bg-gray-200 rounded mb-4" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full bg-gray-200 rounded" />
+                  <div className="h-8 w-full bg-gray-300 rounded" />
+                </div>
+              </div>
+              
+              {/* Exercices récents Skeleton */}
+              <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px] animate-pulse">
+                <div className="h-6 w-1/2 bg-gray-200 rounded mb-4" />
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
+                        <div className="h-4 w-2/3 bg-gray-300 rounded mb-1" />
+                        <div className="h-3 w-1/3 bg-gray-200 rounded" />
+                      </div>
+                      <div className="text-right">
+                        <div className="h-4 w-16 bg-orange-200 rounded mb-1" />
+                        <div className="h-3 w-12 bg-gray-200 rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          {/* Skeleton barre de progression */}
-          <div className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 min-h-[120px] animate-pulse" />
+          
+          {/* Motivation Section Skeleton - Dimensions fixes */}
+          <div className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[140px] relative animate-pulse">
+            <div className="text-center">
+              <div className="h-8 w-1/3 bg-purple-400 rounded mx-auto mb-4" />
+              <div className="h-6 w-2/3 bg-purple-300 rounded mx-auto mb-6" />
+              <div className="flex justify-center items-center gap-8">
+                <div className="text-center">
+                  <div className="h-12 w-16 bg-purple-400 rounded mb-2" />
+                  <div className="h-4 w-20 bg-purple-300 rounded" />
+                </div>
+                <div className="flex-1 max-w-md">
+                  <div className="h-4 bg-purple-600 rounded-full mb-2" />
+                  <div className="h-3 w-full bg-purple-300 rounded" />
+                </div>
+                <div className="w-20 h-20 bg-purple-600 rounded-lg" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -634,22 +712,15 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* Statistiques */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        >
-          {statCards.map((stat, index) => {
+        {/* Statistiques - Dimensions fixes pour éviter CLS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {statCards.map((stat) => {
             const Icon = stat.icon
             return (
-              <motion.div
+              <div
                 key={stat.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow min-h-[110px] min-w-[180px]"
+                style={{ minHeight: '110px', minWidth: '180px' }}
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -660,18 +731,14 @@ export default function HomePage() {
                     <Icon className={`h-6 w-6 ${stat.color} dark:text-yellow-400`} />
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )
           })}
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Actions rapides */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-2"
-          >
+          {/* Actions rapides - Layout fixe */}
+          <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-0">Actions rapides</h2>
@@ -706,23 +773,21 @@ export default function HomePage() {
                 })}
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Colonne de droite : timer + exercices récents */}
           <div className="flex flex-col gap-4 lg:gap-6 w-full">
             {/* Temps de repos rapide (réduit) */}
             <QuickTimer />
-            {/* Exercices récents */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px]">
+            {/* Exercices récents - Dimensions fixes */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px]" style={{ minHeight: '180px' }}>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Exercices récents</h2>
               <div className="space-y-2 sm:space-y-3">
-                {recentExercises.map((exercise: ExerciseItem, index: number) => (
-                  <motion.div
+                {recentExercises.map((exercise: ExerciseItem) => (
+                  <div
                     key={exercise.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    style={{ minHeight: '60px' }}
                   >
                     <div className="flex-1 min-w-0 pr-2 sm:pr-3">
                       <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base truncate">
@@ -740,7 +805,7 @@ export default function HomePage() {
                         {exercise.displayLabel || 'Dernière performance'}
                       </p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
                 {recentExercises.length === 0 && (
                   <div className="text-center py-6 text-gray-500 dark:text-gray-400">
@@ -759,12 +824,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Section motivation améliorée */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+        {/* Section motivation - Dimensions fixes */}
+        <div
           className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white min-h-[140px] relative"
+          style={{ minHeight: '140px' }}
         >
           {/* Info bulle explicative */}
           <div className="absolute top-4 right-4 group">
@@ -877,7 +940,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Mascotte */}
