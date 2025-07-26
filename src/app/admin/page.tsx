@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { 
   Users, 
   MessageSquare, 
-  TrendingUp, 
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -292,12 +291,12 @@ export default function AdminDashboard() {
             href: '/admin/users'
           },
           {
-            title: 'Entraînements',
-            value: stats?.workouts_7d || 0,
-            change: '+' + (stats?.workouts_24h || 0) + ' aujourd\'hui',
-            icon: TrendingUp,
+            title: 'Feedback',
+            value: stats?.feedback_tickets || 0,
+            change: 'Retours utilisateurs',
+            icon: MessageSquare,
             color: 'green',
-            href: '#'
+            href: '/admin/tickets?category=feedback'
           },
           {
             title: 'Admins Actifs',
