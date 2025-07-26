@@ -22,6 +22,7 @@ export interface AdminStats {
   banned_users: number
   open_tickets: number
   tickets_24h: number
+  feedback_tickets: number
   resolved_tickets: number
   workouts_24h: number
   workouts_7d: number
@@ -304,6 +305,7 @@ export const useAdminAuthComplete = () => {
         banned_users: Number(data[0].banned_users) || 0,
         open_tickets: Number(data[0].open_tickets) || 0,
         tickets_24h: Number(data[0].tickets_24h) || 0,
+        feedback_tickets: Number(data[0].feedback_tickets) || 0,
         resolved_tickets: Number(data[0].resolved_tickets) || 0,
         workouts_24h: Number(data[0].workouts_24h) || 0,
         workouts_7d: Number(data[0].workouts_7d) || 0

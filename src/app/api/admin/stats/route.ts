@@ -14,6 +14,7 @@ interface AdminStats {
   in_progress_tickets: number
   tickets_24h: number
   tickets_7d: number
+  feedback_tickets: number
   new_users_24h: number
   new_users_7d: number
   admin_users: number
@@ -100,6 +101,7 @@ export async function GET() {
 interface SupportTicket {
   id: string
   status: string
+  category: string
   created_at: string
 }
 
@@ -137,6 +139,7 @@ async function getAdminStatsSecure(supabase: SupabaseClient): Promise<AdminStats
         in_progress_tickets: Number(stats.in_progress_tickets || 0),
         tickets_24h: Number(stats.tickets_24h || 0),
         tickets_7d: Number(stats.tickets_7d || 0),
+        feedback_tickets: Number(stats.feedback_tickets || 0),
         new_users_24h: Number(stats.new_users_24h || 0),
         new_users_7d: Number(stats.new_users_7d || 0),
         admin_users: Number(stats.admin_users || 0),
@@ -150,7 +153,7 @@ async function getAdminStatsSecure(supabase: SupabaseClient): Promise<AdminStats
       // Tickets stats
       supabase
         .from('support_tickets')
-        .select('id, status, created_at')
+        .select('id, status, category, created_at')
         .order('created_at', { ascending: false }),
       
       // Users stats (via user_roles pour respecter RLS)
@@ -178,6 +181,7 @@ async function getAdminStatsSecure(supabase: SupabaseClient): Promise<AdminStats
       in_progress_tickets: typedTickets.filter(t => t.status === 'in_progress').length,
       tickets_24h: typedTickets.filter(t => new Date(t.created_at) >= yesterday).length,
       tickets_7d: typedTickets.filter(t => new Date(t.created_at) >= weekAgo).length,
+      feedback_tickets: typedTickets.filter(t => t.category === 'feedback' && !['closed', 'resolved'].includes(t.status)).length,
       new_users_24h: typedUsers.filter(u => new Date(u.granted_at || u.created_at) >= yesterday).length,
       new_users_7d: typedUsers.filter(u => new Date(u.granted_at || u.created_at) >= weekAgo).length,
       admin_users: typedUsers.filter(u => ['admin', 'super_admin', 'moderator'].includes(u.role)).length,
@@ -194,6 +198,7 @@ async function getAdminStatsSecure(supabase: SupabaseClient): Promise<AdminStats
       in_progress_tickets: 0,
       tickets_24h: 0,
       tickets_7d: 0,
+      feedback_tickets: 0,
       new_users_24h: 0,
       new_users_7d: 0,
       admin_users: 0,
