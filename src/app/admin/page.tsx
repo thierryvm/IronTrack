@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
 import { 
   Users, 
   MessageSquare, 
@@ -219,20 +218,83 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="space-y-6">
-        {/* Header Skeleton */}
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
+        {/* Header Skeleton - Dimensions fixes */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between min-h-[80px] animate-pulse">
+          <div className="flex-1">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+          </div>
+          <div className="mt-3 sm:mt-0 flex items-center space-x-3">
+            <div className="h-8 w-20 bg-gray-200 rounded-full" />
+            <div className="h-10 w-24 bg-gray-200 rounded-lg" />
+          </div>
         </div>
         
-        {/* Stats Skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stats Skeleton - Dimensions exactes */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl shadow-sm animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-              <div className="h-8 bg-gray-200 rounded w-1/3" />
+            <div key={i} className="bg-white p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
+              <div className="flex items-center justify-between mb-2 sm:mb-4">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-200 rounded-lg" />
+                <div className="w-4 h-4 bg-gray-200 rounded" />
+              </div>
+              <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2 mb-1" />
+              <div className="h-6 sm:h-8 bg-gray-300 rounded w-1/3 mb-1" />
+              <div className="h-3 bg-gray-200 rounded w-2/3" />
             </div>
           ))}
+        </div>
+        
+        {/* Actions Skeleton - Dimensions fixes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[200px] animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="p-4 border-2 border-gray-100 rounded-xl min-h-[100px]">
+                <div className="flex items-center mb-3">
+                  <div className="w-5 h-5 bg-gray-200 rounded mr-2" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                </div>
+                <div className="h-3 bg-gray-200 rounded w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Grid Sections Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px] animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="p-3 border border-gray-100 rounded-lg min-h-[80px]">
+                  <div className="flex justify-between mb-2">
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="w-4 h-4 bg-gray-200 rounded" />
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px] animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg min-h-[70px]">
+                  <div className="w-2 h-2 bg-gray-300 rounded-full mt-2" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-1" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -271,7 +333,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Statistiques principales */}
+      {/* Statistiques principales - CLS Fix */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           {
@@ -306,17 +368,15 @@ export default function AdminDashboard() {
             color: 'purple',
             href: '/admin/users?role=admin'
           }
-        ].map((stat, index) => {
+        ].map((stat) => {
           const Icon = stat.icon
           return (
-            <motion.div
-              key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
+            <div key={stat.title}>
               <Link href={stat.href}>
-                <div className="bg-white p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer">
+                <div 
+                  className="bg-white p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer min-h-[120px]"
+                  style={{ minHeight: '120px' }}
+                >
                   <div className="flex items-center justify-between mb-2 sm:mb-4">
                     <div className={`p-2 sm:p-3 rounded-lg ${
                       stat.color === 'orange' ? 'bg-orange-100' :
@@ -347,13 +407,13 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           )
         })}
       </div>
 
-      {/* Actions rapides */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      {/* Actions rapides - Dimensions fixes */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[200px]" style={{ minHeight: '200px' }}>
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />
           Actions Rapides
@@ -382,8 +442,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Tickets récents */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {/* Tickets récents - Dimensions fixes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -428,8 +488,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Activité récente (optimisée) */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {/* Activité récente - Dimensions fixes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center">
               <Activity className="h-5 w-5 mr-2" />
@@ -464,7 +524,7 @@ export default function AdminDashboard() {
             ) : (
               <>
                 {recentActivity.slice(0, 3).map((activity) => ( // LIMITÉ à 3 au lieu de tous
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg min-h-[70px]" style={{ minHeight: '70px' }}>
                     <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-900">
