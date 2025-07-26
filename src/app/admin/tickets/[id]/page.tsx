@@ -44,16 +44,22 @@ export default function AdminTicketDetailPage() {
     updateTicketPriority 
   } = useSupport()
 
-  // Charger le ticket et ses réponses
-  const loadTicketData = async () => {
+  // Charger le ticket et ses réponses avec force refresh
+  const loadTicketData = async (forceRefresh = false) => {
     setLoading(true)
     try {
+      console.log('[DEBUG] loadTicketData - forceRefresh:', forceRefresh)
+      
       const { ticket: ticketData, responses: responsesData } = await getTicketWithResponses(ticketId)
       
       if (!ticketData) {
+        console.log('[DEBUG] Aucun ticket trouvé, redirection')
         router.push('/admin/tickets')
         return
       }
+
+      console.log('[DEBUG] Ticket chargé:', ticketData.id, 'status:', ticketData.status)
+      console.log('[DEBUG] Réponses chargées:', responsesData.length)
 
       setTicket(ticketData)
       setResponses(responsesData)
@@ -82,12 +88,14 @@ export default function AdminTicketDetailPage() {
 
     setSendingResponse(true)
     try {
+      console.log('[DEBUG] Envoi réponse:', isInternalNote ? 'INTERNE' : 'PUBLIC')
       const success = await addTicketResponse(ticket.id, responseMessage, isInternalNote)
       
       if (success) {
+        console.log('[DEBUG] Réponse envoyée avec succès, rechargement données...')
         setResponseMessage('')
         setIsInternalNote(false) // Reset du checkbox après envoi
-        await loadTicketData()
+        await loadTicketData(true) // Force refresh
         
         await logAdminAction()
       }
@@ -103,12 +111,12 @@ export default function AdminTicketDetailPage() {
     if (!ticket) return
 
     try {
+      console.log('[DEBUG] Changement statut:', ticket.status, '→', newStatus)
       const success = await updateTicketStatus(ticket.id, newStatus)
       if (success) {
-        // Mettre à jour immédiatement l'état local
-        setTicket({ ...ticket, status: newStatus, updated_at: new Date().toISOString() })
-        // Recharger les données complètes depuis la base
-        await loadTicketData()
+        console.log('[DEBUG] Statut changé avec succès, rechargement données...')
+        // Recharger les données complètes depuis la base FIRST
+        await loadTicketData(true)
         await logAdminAction()
       }
     } catch (error) {
@@ -121,12 +129,12 @@ export default function AdminTicketDetailPage() {
     if (!ticket) return
 
     try {
+      console.log('[DEBUG] Changement priorité:', ticket.priority, '→', newPriority)
       const success = await updateTicketPriority(ticket.id, newPriority)
       if (success) {
-        // Mettre à jour immédiatement l'état local
-        setTicket({ ...ticket, priority: newPriority, updated_at: new Date().toISOString() })
-        // Recharger les données complètes depuis la base
-        await loadTicketData()
+        console.log('[DEBUG] Priorité changée avec succès, rechargement données...')
+        // Recharger les données complètes depuis la base FIRST
+        await loadTicketData(true)
         await logAdminAction()
       }
     } catch (error) {
