@@ -22,6 +22,7 @@ import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
 import { useBadges } from '@/hooks/useBadges'
 import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
+import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
 
 interface UserSound {
   id: string;
@@ -1086,6 +1087,9 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Prompt d'installation PWA */}
+      <PWAInstallPrompt />
     </div>
   )
 }
