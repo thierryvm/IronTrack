@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { motion, PanInfo } from 'framer-motion'
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -120,6 +120,7 @@ export default function CalendarPage() {
     };
     checkAuth();
   }, [router]);
+  
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
@@ -128,6 +129,10 @@ export default function CalendarPage() {
   const [, setSharePlanning] = useState(false)
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar')
+  
+  // État pour la navigation swipe
+  const [isSwipeTransition, setIsSwipeTransition] = useState(false)
+  const calendarRef = useRef<HTMLDivElement>(null)
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
@@ -293,6 +298,23 @@ export default function CalendarPage() {
     return workoutType?.color || 'bg-gray-500'
   }
 
+  // Système de couleurs modernes inspiré Apple/Fitness
+  const getModernTypeColor = (type: string) => {
+    const modernColors: Record<string, string> = {
+      'Musculation': 'linear-gradient(135deg, #FF6B35, #F7931E)', // Orange dynamique
+      'Cardio': 'linear-gradient(135deg, #4FC3F7, #29B6F6)',      // Bleu ciel
+      'Étirement': 'linear-gradient(135deg, #81C784, #66BB6A)',   // Vert nature
+      'Repos': 'linear-gradient(135deg, #90A4AE, #78909C)',       // Gris relaxant
+      'Cours collectif': 'linear-gradient(135deg, #BA68C8, #AB47BC)', // Violet énergique
+      'Gainage': 'linear-gradient(135deg, #FFB74D, #FFA726)',     // Orange chaud
+      'Natation': 'linear-gradient(135deg, #4DD0E1, #26C6DA)',    // Cyan aquatique
+      'Crossfit': 'linear-gradient(135deg, #E57373, #EF5350)',    // Rouge intense
+      'Yoga': 'linear-gradient(135deg, #AED581, #9CCC65)',        // Vert zen
+      'Pilates': 'linear-gradient(135deg, #F48FB1, #EC407A)'      // Rose doux
+    }
+    return modernColors[type] || modernColors['Musculation']
+  }
+
   const getPartnerTypeColor = (type: string) => {
     const colorMap: Record<string, string> = {
       'bg-orange-500': 'linear-gradient(135deg, #e65100, #ff6f00)', // Musculation - orange foncé
@@ -331,6 +353,45 @@ export default function CalendarPage() {
 
   const days = getDaysInMonth(currentDate)
   const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+
+  // Fonctions de navigation swipe (Apple pattern)
+  const handleSwipeNavigation = useCallback((direction: 'left' | 'right') => {
+    if (isSwipeTransition) return
+    
+    setIsSwipeTransition(true)
+    const newDate = new Date(currentDate)
+    
+    if (direction === 'left') {
+      // Swipe gauche = mois suivant (comme Apple Calendar)
+      newDate.setMonth(newDate.getMonth() + 1)
+    } else {
+      // Swipe droite = mois précédent
+      newDate.setMonth(newDate.getMonth() - 1)
+    }
+    
+    setCurrentDate(newDate)
+    
+    // Réactiver swipe après animation
+    setTimeout(() => setIsSwipeTransition(false), 300)
+  }, [currentDate, isSwipeTransition])
+
+  const handlePanEnd = useCallback((_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50 // Distance minimale pour déclencher swipe
+    const velocityThreshold = 500 // Vélocité minimale
+    
+    const { offset, velocity } = info
+    
+    // Détection swipe horizontal uniquement
+    if (Math.abs(offset.x) > Math.abs(offset.y) && 
+        (Math.abs(offset.x) > swipeThreshold || Math.abs(velocity.x) > velocityThreshold)) {
+      
+      if (offset.x > 0) {
+        handleSwipeNavigation('right') // Swipe vers droite
+      } else {
+        handleSwipeNavigation('left')  // Swipe vers gauche
+      }
+    }
+  }, [handleSwipeNavigation])
 
   // Calculs statistiques avancés pour le mois courant
   const year = currentDate.getFullYear();
@@ -484,33 +545,58 @@ export default function CalendarPage() {
             <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
               {viewMode === 'calendar' ? (
                 <>
-                  {/* Navigation du calendrier */}
+                  {/* Navigation du calendrier améliorée */}
                   <div className="flex items-center justify-between mb-4 sm:mb-6">
-                    <button
-                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                      className="p-3 hover:bg-gray-100 rounded-lg transition-colors"
+                    <motion.button
+                      onClick={() => !isSwipeTransition && handleSwipeNavigation('right')}
+                      className="p-3 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                      whileTap={{ scale: 0.95 }}
+                      disabled={isSwipeTransition}
                     >
                       <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 capitalize">{monthName}</h2>
+                    </motion.button>
+                    
+                    <motion.h2 
+                      key={monthName}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-xl sm:text-2xl font-bold text-gray-900 capitalize"
+                    >
+                      {monthName}
+                    </motion.h2>
+                    
                     <div className="flex items-center gap-2">
-                      <button
+                      <motion.button
                         onClick={() => setCurrentDate(new Date())}
-                        className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
+                        className="px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all touch-manipulation"
+                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.02 }}
                       >
-                        Aujourd&apos;hui
-                      </button>
-                      <button
-                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                        className="p-3 hover:bg-gray-100 rounded-lg transition-colors"
+                        <span className="hidden sm:inline">Aujourd&apos;hui</span>
+                        <span className="sm:hidden">Auj.</span>
+                      </motion.button>
+                      
+                      <motion.button
+                        onClick={() => !isSwipeTransition && handleSwipeNavigation('left')}
+                        className="p-3 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                        whileTap={{ scale: 0.95 }}
+                        disabled={isSwipeTransition}
                       >
                         <ChevronRight className="h-5 w-5" />
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
 
-                  {/* Grille du calendrier */}
-                  <div className="grid grid-cols-7 gap-1">
+                  {/* Grille du calendrier avec navigation swipe */}
+                  <motion.div 
+                    ref={calendarRef}
+                    className="grid grid-cols-7 gap-1 touch-pan-y"
+                    onPanEnd={handlePanEnd}
+                    drag={false}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                  >
                     {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
                     {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
                       <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
@@ -523,10 +609,12 @@ export default function CalendarPage() {
                       let sessions: CalendarSession[] = [];
                       const dayYMD = formatDateToYMD(day.date);
                       
-                      // Séances personnelles
+                      // Séances personnelles avec couleurs modernes
                       const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
                       const personalSessions = workoutsForDate.map(w => {
                         const correctedType = getCorrectType(w);
+                        const modernColor = getModernTypeColor(correctedType);
+                        
                         return {
                           id: String(w.id),
                           name: w.name,
@@ -538,6 +626,7 @@ export default function CalendarPage() {
                           scheduled_date: w.scheduled_date,
                           time: (w as { time?: string }).time || '',
                           exercises: w.exercises || [],
+                          color: modernColor, // Nouvelle couleur moderne Apple-style
                         };
                       });
 
@@ -595,6 +684,15 @@ export default function CalendarPage() {
                       );
                       return cell;
                     })}
+                  </motion.div>
+                  
+                  {/* Indicateur swipe pour mobile */}
+                  <div className="block sm:hidden mt-4 text-center">
+                    <p className="text-xs text-gray-400 flex items-center justify-center gap-2">
+                      <span>←</span>
+                      <span>Glissez pour naviguer</span>
+                      <span>→</span>
+                    </p>
                   </div>
                 </>
               ) : (
