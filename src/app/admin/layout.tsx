@@ -19,7 +19,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext'
+import { AuthDebug } from '@/components/debug/AuthDebug'
 
 interface AdminStats {
   open_tickets: number
@@ -38,13 +39,33 @@ interface AdminLayoutProps {
   children: React.ReactNode
 }
 
+// Wrapper avec Provider - encapsule toute l'authentification admin
 export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <AdminAuthProvider>
+      <AdminLayoutInternal>{children}</AdminLayoutInternal>
+    </AdminAuthProvider>
+  )
+}
+
+// Layout interne qui consomme le context d'authentification
+function AdminLayoutInternal({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [stats, setStats] = useState<AdminStats | null>(null)
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading, error, isAuthenticated, hasPermission, logAdminAction } = useAdminAuthComplete()
+  const { user, loading, error, isAuthenticated, hasPermission, logAdminAction } = useAdminAuth()
+  
+  // DEBUGGING: Log l'état d'authentification
+  useEffect(() => {
+    console.log('[ADMIN_LAYOUT] État auth:', {
+      user: user ? `${user.email} (${user.role})` : null,
+      loading,
+      error,
+      isAuthenticated
+    })
+  }, [user, loading, error, isAuthenticated])
   const supabase = createClient()
 
   // Navigation items avec permissions
@@ -132,7 +153,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Gestion de la déconnexion
   const handleLogout = async () => {
     try {
-      await logAdminAction()
+      await logAdminAction('logout', 'session')
     } catch (error) {
       console.warn('Erreur lors du logging de déconnexion:', error)
     }
@@ -187,6 +208,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Debug auth temporaire */}
+      <AuthDebug />
       {/* Header Mobile */}
       <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-3">
