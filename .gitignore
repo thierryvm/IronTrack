@@ -105,6 +105,13 @@ test-*.mjs
 get_complete_database_structure.js
 nul
 
+# 🤖 FICHIERS CHALLENGE ET PATCH TEMPORAIRES (ne pas commiter)
+CLAUDE_CHALLENGE_REPORT.md
+*_CHALLENGE_*.md
+*_PATCH.txt
+*_TRANSLATION_PATCH.txt
+FRENCH_TRANSLATION_PATCH.txt
+
 # 🚨 FICHIERS SQL TEMPORAIRES - TOUS INTERDITS
 # Scripts SQL créés pendant le développement (JAMAIS À COMMITER)
 *.sql
