@@ -254,13 +254,14 @@ export default function CalendarPage() {
     const firstDay = new Date(year, month, 1)
     const lastDay = new Date(year, month + 1, 0)
     const daysInMonth = lastDay.getDate()
-    const startingDayOfWeek = firstDay.getDay()
-
+    
+    // Convertir le dimanche (0) en 7 pour le standard européen (Lundi = 1, Dimanche = 7)
+    const startingDayOfWeek = firstDay.getDay() === 0 ? 7 : firstDay.getDay()
     const days = []
     
-    // Ajouter les jours du mois précédent
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      const prevDate = new Date(year, month, -startingDayOfWeek + i + 1)
+    // Ajouter les jours du mois précédent (Lundi = jour 1)
+    for (let i = 1; i < startingDayOfWeek; i++) {
+      const prevDate = new Date(year, month, -(startingDayOfWeek - i - 1))
       days.push({ date: prevDate, isCurrentMonth: false })
     }
 
@@ -270,8 +271,8 @@ export default function CalendarPage() {
       days.push({ date: currentDate, isCurrentMonth: true })
     }
 
-    // Compléter avec les jours du mois suivant
-    const remainingDays = 42 - days.length // 6 semaines * 7 jours
+    // Compléter avec les jours du mois suivant pour faire 42 jours (6 semaines)
+    const remainingDays = 42 - days.length
     for (let i = 1; i <= remainingDays; i++) {
       const nextDate = new Date(year, month + 1, i)
       days.push({ date: nextDate, isCurrentMonth: false })
@@ -417,10 +418,10 @@ export default function CalendarPage() {
                 </span>
               </button>
               
-              {/* Bouton sidebar mobile */}
+              {/* Bouton sidebar mobile/tablette */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
-                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                className="xl:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
                 title="Afficher les statistiques"
               >
                 <Menu className="h-4 w-4" />
@@ -510,8 +511,8 @@ export default function CalendarPage() {
 
                   {/* Grille du calendrier */}
                   <div className="grid grid-cols-7 gap-1">
-                    {/* En-têtes des jours */}
-                    {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
+                    {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
+                    {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
                       <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
                         {day}
                       </div>
@@ -698,11 +699,11 @@ export default function CalendarPage() {
             </div>
           </motion.div>
 
-          {/* Panneau latéral - Desktop uniquement */}
+          {/* Panneau latéral - Visible sur desktop, caché sur mobile */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="hidden lg:block space-y-6"
+            className="hidden xl:block space-y-6"
           >
             {/* Date sélectionnée */}
             {selectedDate && (
@@ -969,9 +970,9 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Sidebar Mobile Modal/Drawer */}
+      {/* Sidebar Mobile/Tablette Modal/Drawer */}
       {showMobileSidebar && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           {/* Overlay */}
           <div 
             className="absolute inset-0 bg-black/50" 
