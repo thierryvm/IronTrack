@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search, TrendingUp, MessageSquare } from 'lucide-react'
+import { Users, Dumbbell, Calendar, HelpCircle, ChevronDown, ChevronUp, Search, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 interface FAQItem {
@@ -403,14 +403,6 @@ export default function FAQPage() {
           </div>
         </div>
 
-        {/* Bouton de contact rapide fixe */}
-        <Link
-          href="/support/contact"
-          className="fixed bottom-6 right-6 bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-105 z-50"
-          title="Contacter le support"
-        >
-          <MessageSquare className="h-6 w-6" />
-        </Link>
       </div>
     </div>
   )
