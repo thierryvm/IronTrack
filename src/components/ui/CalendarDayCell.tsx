@@ -68,16 +68,15 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className="relative min-h-20 sm:h-24 p-1 sm:pb-14 pb-8 border border-gray-200 rounded-md bg-white flex flex-col overflow-hidden">
-      <div className="text-xs font-semibold mb-1 text-gray-700">{date}</div>
-      <div className="flex-1 flex flex-col gap-1">
+    <div className="relative min-h-24 sm:h-28 p-2 sm:p-3 border border-gray-200 rounded-lg bg-white flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="text-sm sm:text-base font-bold mb-2 text-gray-800">{date}</div>
+      <div className="flex-1 flex flex-col gap-2">
         {displayedSessions.map((session) => (
           <div key={session.id} className="flex items-center gap-1 group">
             <div
-              className="flex-1 h-5 sm:h-6 flex items-center px-1 sm:px-2 text-xs text-white font-medium rounded-full shadow-md cursor-pointer transition-transform duration-150"
+              className="flex-1 min-h-11 sm:h-8 flex items-center px-2 sm:px-3 py-2 sm:py-1 text-sm sm:text-xs text-white font-medium rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:scale-105 active:scale-95"
               style={{
                 background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
-                borderRadius: '12px',
                 minWidth: 0,
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
@@ -100,26 +99,33 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                   <Avatar
                     src={session.participants[0].avatarUrl}
                     name={session.participants[0].name}
-                    size={20}
-                    className="mr-1 border-2 border-white shadow-sm bg-white"
+                    size={isMobile ? 24 : 20}
+                    className="mr-2 border-2 border-white shadow-sm bg-white"
                   />
                 </Tooltip>
               )}
-              <span className="truncate text-xs sm:text-xs">{session.name}{session.time && <span className="opacity-80 hidden sm:inline"> à {session.time.slice(0,5)}</span>}</span>
+              <span className="truncate text-sm sm:text-xs font-medium">
+                {session.name}
+                {session.time && (
+                  <span className="opacity-90 block sm:inline text-xs">
+                    <span className="sm:hidden">🕒 </span>
+                    <span className="hidden sm:inline"> à </span>
+                    {session.time.slice(0,5)}
+                  </span>
+                )}
+              </span>
             </div>
           </div>
         ))}
         {extraSessions > 0 && (
           <button
-            className="mt-1 text-xs text-orange-600 hover:underline focus:outline-none"
+            className="mt-2 py-2 text-sm text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300 font-medium"
             onClick={() => setShowPopover(true)}
           >
-            +{extraSessions} séance{extraSessions > 1 ? 's' : ''}…
+            +{extraSessions} autre{extraSessions > 1 ? 's' : ''} séance{extraSessions > 1 ? 's' : ''}
           </button>
         )}
       </div>
-      {/* Espace réservé pour l'avatar en bas */}
-      <div className="h-6 sm:h-8 w-full" />
       {/* Popover pour afficher toutes les séances du jour */}
       {showPopover && (
         <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">
