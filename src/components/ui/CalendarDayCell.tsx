@@ -170,11 +170,23 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
       </div>
       {/* Popover pour afficher toutes les séances du jour */}
       {showPopover && (
-        <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 max-w-full bg-white border border-gray-300 rounded-lg shadow-2xl p-3 animate-fade-in overflow-y-auto max-h-96">
-          <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
-            <span className="font-semibold text-sm">Séances du {date}</span>
-            <button className="text-gray-400 hover:text-gray-700" onClick={() => setShowPopover(false)}>✕</button>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setShowPopover(false)}>
+          <div 
+            className="w-80 max-w-[90vw] bg-white border border-gray-300 rounded-lg shadow-2xl p-3 overflow-y-auto max-h-[80vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
+              <span className="font-semibold text-sm">Séances du {date}</span>
+              <button 
+                className="text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPopover(false);
+                }}
+              >
+                ✕
+              </button>
+            </div>
           <ul>
             {sessions.map((session) => (
               <li key={session.id} className="flex flex-col gap-1 p-2 border-b last:border-b-0">
@@ -224,13 +236,25 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
               </li>
             ))}
           </ul>
+          </div>
         </div>
       )}
       {/* Popover mobile pour détail séance */}
       {mobileSessionDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-          <div className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative">
-            <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-700" onClick={() => setMobileSessionDetail(null)}>✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30" onClick={() => setMobileSessionDetail(null)}>
+          <div 
+            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-[90vw] relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setMobileSessionDetail(null);
+              }}
+            >
+              ✕
+            </button>
             <div className="flex items-center gap-2 mb-2">
               <div className="h-6 w-6 rounded-full" style={{ background: (mobileSessionDetail.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)') }}></div>
               <span className="font-semibold text-base">{mobileSessionDetail.name || 'Séance'}</span>
