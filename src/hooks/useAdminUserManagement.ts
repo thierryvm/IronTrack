@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 // Types pour la gestion des utilisateurs
 export interface AdminUser {
@@ -43,7 +43,7 @@ export const useAdminUserManagement = () => {
   const [error, setError] = useState<string | null>(null)
   const isLoadingRef = useRef(false)
   
-  const { hasPermission, logAdminAction } = useAdminAuthComplete()
+  const { hasPermission, logAdminAction, refreshUserRoles } = useAdminAuth()
   const supabase = createClient()
 
   // Récupérer tous les utilisateurs (admin uniquement)
@@ -159,7 +159,7 @@ export const useAdminUserManagement = () => {
 
       // Logger l'action admin
       try {
-        await logAdminAction()
+        await logAdminAction('update_user_role', 'user_account', userId, { new_role: newRole })
       } catch (logError) {
         console.warn('Erreur lors du logging admin action:', logError)
       }
@@ -175,6 +175,16 @@ export const useAdminUserManagement = () => {
       )
       console.log('[DEBUG] Utilisateur mis à jour localement')
       
+      // 🚀 SOLUTION CRITIQUE: Rafraîchir user_roles dans AdminAuthContext
+      console.log('[DEBUG] 🔄 Rafraîchissement AdminAuthContext après modification rôle...')
+      try {
+        await refreshUserRoles()
+        console.log('[DEBUG] ✅ AdminAuthContext rafraîchi avec succès')
+      } catch (refreshError) {
+        console.warn('[DEBUG] ⚠️ Erreur rafraîchissement AdminAuthContext:', refreshError)
+        // Ne pas faire échouer toute l'opération pour ça
+      }
+      
       return true
 
     } catch (err) {
@@ -185,7 +195,7 @@ export const useAdminUserManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [hasPermission, logAdminAction, supabase])
+  }, [hasPermission, logAdminAction, refreshUserRoles, supabase])
 
   // Bannir ou débannir un utilisateur (admin uniquement)
   const banUser = useCallback(async (
@@ -221,7 +231,7 @@ export const useAdminUserManagement = () => {
 
       // Logger l'action admin
       try {
-        await logAdminAction()
+        await logAdminAction('ban_user', 'user_account', userId, { banned_until, ban_reason })
       } catch (logError) {
         console.warn('Erreur lors du logging admin action:', logError)
       }
@@ -275,7 +285,7 @@ export const useAdminUserManagement = () => {
 
       // Logger l'action admin
       try {
-        await logAdminAction()
+        await logAdminAction('delete_user', 'user_account', userId)
       } catch (logError) {
         console.warn('Erreur lors du logging admin action:', logError)
       }

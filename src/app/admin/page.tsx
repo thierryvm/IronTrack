@@ -18,7 +18,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { AdminStats } from '@/hooks/useAdminAuthFixed'
-import { AuthDebug } from '@/components/debug/AuthDebug'
 import { createClient } from '@/utils/supabase/client'
 
 interface QuickAction {
@@ -334,7 +333,6 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Composants de debug */}
-      <AuthDebug />
       
       {/* Header avec refresh */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

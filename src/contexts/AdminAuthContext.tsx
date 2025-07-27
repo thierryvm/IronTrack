@@ -13,6 +13,7 @@ interface AdminAuthContextType {
   getAdminStats: () => Promise<AdminStats | null>
   logAdminAction: (action: string, targetType: string, targetId?: string, details?: Record<string, unknown>) => Promise<boolean>
   reload: () => Promise<void>
+  refreshUserRoles: () => Promise<void>
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | null>(null)
@@ -31,6 +32,19 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   // UNE SEULE instance du hook d'auth pour toute l'app admin
   const authState = useAdminAuthFixed()
   
+  // 🚀 SOLUTION CRITIQUE: Ajouter refreshUserRoles pour rafraîchissement après modification
+  const refreshUserRoles = async () => {
+    console.log('[AdminAuthProvider] 🔄 Rafraîchissement user_roles demandé')
+    await authState.reload()
+    console.log('[AdminAuthProvider] ✅ Rafraîchissement user_roles terminé')
+  }
+  
+  // Enrichir authState avec la fonction de rafraîchissement
+  const contextValue = {
+    ...authState,
+    refreshUserRoles
+  }
+  
   console.log('[AdminAuthProvider] 📤 État partagé:', {
     user: authState.user?.email || 'null',
     loading: authState.loading,
@@ -38,7 +52,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   })
 
   return (
-    <AdminAuthContext.Provider value={authState}>
+    <AdminAuthContext.Provider value={contextValue}>
       {children}
     </AdminAuthContext.Provider>
   )

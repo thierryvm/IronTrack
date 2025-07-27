@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { useAdminUserManagement, AdminUser, BanUserOptions } from '@/hooks/useAdminUserManagement'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 // Types pour les filtres
 interface UserFilters {
@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   // Hooks
-  const { hasPermission } = useAdminAuthComplete()
+  const { hasPermission } = useAdminAuth()
   const {
     users,
     loading,
