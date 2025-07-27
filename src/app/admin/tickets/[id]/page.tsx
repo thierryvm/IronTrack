@@ -82,25 +82,59 @@ export default function AdminTicketDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId, hasPermission])
 
-  // Envoyer une réponse
+  // Envoyer une réponse avec mise à jour optimiste
   const handleSendResponse = async () => {
     if (!responseMessage.trim() || !ticket) return
 
     setSendingResponse(true)
+    
+    // 🚀 OPTIMISATION UX: Ajouter immédiatement la réponse à l'interface
+    const tempResponse: TicketResponse = {
+      id: `temp-${Date.now()}`,
+      ticket_id: ticket.id,
+      user_id: 'current-admin-user', // Sera remplacé par la vraie réponse
+      user_email: 'Vous',
+      message: responseMessage,
+      is_internal: isInternalNote,
+      is_solution: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    
+    // Ajouter temporairement à la liste
+    setResponses(prevResponses => [...prevResponses, tempResponse])
+    
+    // Nettoyer le formulaire immédiatement
+    const savedMessage = responseMessage
+    const savedIsInternal = isInternalNote
+    setResponseMessage('')
+    setIsInternalNote(false)
+
     try {
-      console.log('[DEBUG] Envoi réponse:', isInternalNote ? 'INTERNE' : 'PUBLIC')
-      const success = await addTicketResponse(ticket.id, responseMessage, isInternalNote)
+      console.log('[DEBUG] Envoi réponse:', savedIsInternal ? 'INTERNE' : 'PUBLIC')
+      const success = await addTicketResponse(ticket.id, savedMessage, savedIsInternal)
       
       if (success) {
-        console.log('[DEBUG] Réponse envoyée avec succès, rechargement données...')
-        setResponseMessage('')
-        setIsInternalNote(false) // Reset du checkbox après envoi
-        await loadTicketData(true) // Force refresh
+        console.log('[DEBUG] Réponse envoyée avec succès - synchronisation background')
+        
+        // 🔄 SYNCHRONISATION EN BACKGROUND: Recharger seulement les réponses pour avoir les IDs corrects
+        const { responses: freshResponses } = await getTicketWithResponses(ticket.id)
+        setResponses(freshResponses)
         
         await logAdminAction('send_ticket_response', 'support_ticket', ticket.id)
+      } else {
+        // 🔄 ROLLBACK: Restaurer l'état en cas d'échec
+        console.log('[DEBUG] Échec envoi réponse, rollback interface')
+        setResponses(prevResponses => prevResponses.filter(r => r.id !== tempResponse.id))
+        setResponseMessage(savedMessage)
+        setIsInternalNote(savedIsInternal)
       }
     } catch (error) {
       console.error('Erreur envoi réponse:', error)
+      // 🔄 ROLLBACK: Restaurer l'état en cas d'erreur
+      setResponses(prevResponses => prevResponses.filter(r => r.id !== tempResponse.id))
+      setResponseMessage(savedMessage)
+      setIsInternalNote(savedIsInternal)
     } finally {
       setSendingResponse(false)
     }
