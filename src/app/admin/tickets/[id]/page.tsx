@@ -18,7 +18,7 @@ import {
   XCircle,
   UserCheck
 } from 'lucide-react'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useSupport } from '@/hooks/useSupport'
 import { SupportTicket, SupportTicketStatus, SupportTicketPriority, TicketResponse } from '@/types/support'
 import DOMPurify from 'dompurify'
@@ -36,7 +36,7 @@ export default function AdminTicketDetailPage() {
   const [isInternalNote, setIsInternalNote] = useState(false)
   const [showInternalNotes, setShowInternalNotes] = useState(true)
 
-  const { hasPermission, logAdminAction } = useAdminAuthComplete()
+  const { hasPermission, logAdminAction } = useAdminAuth()
   const { 
     getTicketWithResponses, 
     addTicketResponse, 
@@ -64,7 +64,7 @@ export default function AdminTicketDetailPage() {
       setTicket(ticketData)
       setResponses(responsesData)
       
-      await logAdminAction()
+      await logAdminAction('view_ticket_details', 'support_ticket', ticketId)
     } catch (error) {
       console.error('Erreur chargement ticket:', error)
       router.push('/admin/tickets')
@@ -97,7 +97,7 @@ export default function AdminTicketDetailPage() {
         setIsInternalNote(false) // Reset du checkbox après envoi
         await loadTicketData(true) // Force refresh
         
-        await logAdminAction()
+        await logAdminAction('send_ticket_response', 'support_ticket', ticket.id)
       }
     } catch (error) {
       console.error('Erreur envoi réponse:', error)
@@ -110,17 +110,27 @@ export default function AdminTicketDetailPage() {
   const handleStatusChange = async (newStatus: SupportTicketStatus) => {
     if (!ticket) return
 
+    // 🚀 OPTIMISATION UX: Mise à jour immédiate de l'interface
+    const previousStatus = ticket.status
+    setTicket(prevTicket => prevTicket ? { ...prevTicket, status: newStatus } : null)
+
     try {
-      console.log('[DEBUG] Changement statut:', ticket.status, '→', newStatus)
+      console.log('[DEBUG] Changement statut:', previousStatus, '→', newStatus)
       const success = await updateTicketStatus(ticket.id, newStatus)
       if (success) {
-        console.log('[DEBUG] Statut changé avec succès, rechargement données...')
-        // Recharger les données complètes depuis la base FIRST
-        await loadTicketData(true)
-        await logAdminAction()
+        console.log('[DEBUG] Statut changé avec succès côté serveur')
+        await logAdminAction('update_ticket_status', 'support_ticket', ticket.id)
+        // Optionnel: recharger en background pour synchroniser
+        // await loadTicketData(true)
+      } else {
+        // 🔄 ROLLBACK: Restaurer l'ancien statut en cas d'échec
+        console.log('[DEBUG] Échec changement statut, rollback interface')
+        setTicket(prevTicket => prevTicket ? { ...prevTicket, status: previousStatus } : null)
       }
     } catch (error) {
       console.error('Erreur changement statut:', error)
+      // 🔄 ROLLBACK: Restaurer l'ancien statut en cas d'erreur
+      setTicket(prevTicket => prevTicket ? { ...prevTicket, status: previousStatus } : null)
     }
   }
 
@@ -128,17 +138,27 @@ export default function AdminTicketDetailPage() {
   const handlePriorityChange = async (newPriority: SupportTicketPriority) => {
     if (!ticket) return
 
+    // 🚀 OPTIMISATION UX: Mise à jour immédiate de l'interface
+    const previousPriority = ticket.priority
+    setTicket(prevTicket => prevTicket ? { ...prevTicket, priority: newPriority } : null)
+
     try {
-      console.log('[DEBUG] Changement priorité:', ticket.priority, '→', newPriority)
+      console.log('[DEBUG] Changement priorité:', previousPriority, '→', newPriority)
       const success = await updateTicketPriority(ticket.id, newPriority)
       if (success) {
-        console.log('[DEBUG] Priorité changée avec succès, rechargement données...')
-        // Recharger les données complètes depuis la base FIRST
-        await loadTicketData(true)
-        await logAdminAction()
+        console.log('[DEBUG] Priorité changée avec succès côté serveur')
+        await logAdminAction('update_ticket_priority', 'support_ticket', ticket.id)
+        // Optionnel: recharger en background pour synchroniser
+        // await loadTicketData(true)
+      } else {
+        // 🔄 ROLLBACK: Restaurer l'ancienne priorité en cas d'échec
+        console.log('[DEBUG] Échec changement priorité, rollback interface')
+        setTicket(prevTicket => prevTicket ? { ...prevTicket, priority: previousPriority } : null)
       }
     } catch (error) {
       console.error('Erreur changement priorité:', error)
+      // 🔄 ROLLBACK: Restaurer l'ancienne priorité en cas d'erreur
+      setTicket(prevTicket => prevTicket ? { ...prevTicket, priority: previousPriority } : null)
     }
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 
 export default function AdminSettingsPage() {
-  const { user, hasPermission } = useAdminAuthComplete()
+  const { user, hasPermission } = useAdminAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   // Simuler une action de configuration

@@ -16,7 +16,7 @@ import {
   ChevronRight,
   Calendar
 } from 'lucide-react'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 interface AdminLog {
   id: string
@@ -51,7 +51,7 @@ export default function AdminLogsPage() {
     search: ''
   })
 
-  const { hasPermission } = useAdminAuthComplete()
+  const { hasPermission } = useAdminAuth()
 
   // Optimisation : Charger les logs avec pagination et filtres
   const loadLogs = useCallback(async (page = 1, newFilters = filters) => {
