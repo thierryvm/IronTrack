@@ -4,8 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import RegisterSW from '../components/register-sw';
-import { MascotGlobal } from "@/components/ui/Mascot";
-import { FloatingSupport } from "@/components/ui/FloatingSupport";
+import { ClientIronBuddyWrapper } from "@/components/ui/ClientIronBuddyWrapper";
 import { ErrorHandler } from "@/components/ui/ErrorHandler";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
@@ -34,12 +33,6 @@ export const viewport: Viewport = {
   themeColor: "#f97316",
 };
 
-// Wrapper client pour la mascotte
-function ClientMascotWrapper() {
-  'use client';
-  return <MascotGlobal />;
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -56,11 +49,10 @@ export default function RootLayout({
           <ErrorHandler />
           <div className="min-h-screen flex flex-col">
             <Header />
-            <ClientMascotWrapper />
+            <ClientIronBuddyWrapper />
             <main className="flex-1">
               {children}
             </main>
-            <FloatingSupport />
           </div>
           <RegisterSW />
         </ThemeProvider>

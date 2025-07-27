@@ -99,6 +99,12 @@ const faqData: FAQItem[] = [
     answer: 'Depuis la page Exercices, cliquez sur l&apos;icône œil pour voir les détails → "Modifier l&apos;exercice" pour changer les infos de base, ou "Nouvelle performance" pour ajouter des résultats. Pour modifier une performance existante, utilisez l&apos;icône crayon dans l&apos;historique. Toutes vos modifications incluent les nouvelles métriques cardio avancées.',
     category: 'workouts'
   },
+  {
+    id: 'workouts-9',
+    question: 'Comment utiliser la mascotte IronBuddy pendant mes entraînements ?',
+    answer: 'IronBuddy est votre coach personnel accessible via le bouton flottant orange en bas à droite. Deux modes : "Support" pour l&apos;aide technique, "Coach" pour motivation/conseils. La mascotte s&apos;adapte à votre niveau de punchlines choisi dans Profil (Discret/Normal/Ambianceur) et propose 30+ blagues, conseils, motivations et défis par catégorie.',
+    category: 'workouts'
+  },
 
   // General
   {
@@ -129,6 +135,12 @@ const faqData: FAQItem[] = [
     id: 'general-5',
     question: 'L\'application fonctionne-t-elle hors ligne ?',
     answer: 'L\'application peut afficher une page hors ligne personnalisée, mais vous avez besoin d\'une connexion internet pour synchroniser vos données et voir les séances de vos partenaires.',
+    category: 'general'
+  },
+  {
+    id: 'general-6',
+    question: 'Comment personnaliser ma mascotte IronBuddy ?',
+    answer: 'Dans "Profil" → section "Mascotte IronBuddy" → choisissez votre mascotte (IronBuddy, Félix, RoboCoach, SuperStar) et votre niveau de punchlines (Discret, Normal, Ambianceur). Le niveau détermine l\'intensité des blagues et motivations. Chaque mascotte a sa personnalité unique !',
     category: 'general'
   },
 
@@ -214,7 +226,7 @@ const categories = [
   { id: 'partners', label: 'Training Partners', icon: Users, count: faqData.filter(f => f.category === 'partners').length },
   { id: 'workouts', label: 'Séances & Exercices', icon: Dumbbell, count: faqData.filter(f => f.category === 'workouts').length },
   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, count: faqData.filter(f => f.category === 'progression').length },
-  { id: 'general', label: 'Général', icon: Calendar, count: faqData.filter(f => f.category === 'general').length },
+  { id: 'general', label: 'Général & Mascotte', icon: Calendar, count: faqData.filter(f => f.category === 'general').length },
   { id: 'technical', label: 'Technique', icon: HelpCircle, count: faqData.filter(f => f.category === 'technical').length }
 ]
 

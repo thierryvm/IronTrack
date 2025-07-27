@@ -13,11 +13,9 @@ import {
   Target,
   TrendingUp
 } from 'lucide-react'
-import { MascotWidget } from '@/components/ui/Mascot'
 import SessionTimer from '@/components/ui/SessionTimer'
 import SoundLibrary from '@/components/ui/SoundLibrary'
 import { createClient } from '@/utils/supabase/client'
-import Mascot from '@/components/ui/Mascot'
 import { useRouter } from 'next/navigation'
 import { QuickTimer } from '@/components/ui/Timer'
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -99,15 +97,7 @@ export default function HomePage() {
     return sessionSteps.map(() => null);
   });
   const [userId, setUserId] = useState<string | null>(null)
-  const [mascotMsg, setMascotMsg] = useState<string|null>(null)
-  const [showMascot, setShowMascot] = useState(false)
-  const mascotJokes = [
-    "Ce son a été benché hors de la playlist ! 🏋️‍♂️",
-    "IronBuddy dit : 'Un de moins, la playlist respire !' 😅",
-    "Supprimé ! Ce son n'était pas assez musclé pour rester... 💪",
-    "IronBuddy a mis ce son à la retraite anticipée ! 🦾",
-    "Adieu petit son, tu as bien vibré dans nos oreilles ! 🎶"
-  ];
+  // Mascottes gérées par la nouvelle FAB unifiée
   const router = useRouter();
   const [allExercises, setAllExercises] = useState<ExerciseItem[]>([])
 
@@ -544,10 +534,8 @@ export default function HomePage() {
   };
 
   function handleSoundDeleted() {
-    const msg = mascotJokes[Math.floor(Math.random()*mascotJokes.length)];
-    setMascotMsg(msg);
-    setShowMascot(true);
-    setTimeout(()=>setShowMascot(false), 4000);
+    // Son supprimé - Feedback géré par IronBuddyFAB 
+    console.log('🎵 Son supprimé de la playlist')
   }
 
   // CLS Optimisé : Skeletons avec dimensions exactes du contenu final
@@ -943,8 +931,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Mascotte */}
-      <MascotWidget />
 
       {/* Notification nouveau badge */}
       {newBadgeEarned && (
@@ -961,8 +947,6 @@ export default function HomePage() {
       {/* Modal SessionTimer */}
       {showSessionTimer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          {/* Mascotte blague suppression son */}
-          <Mascot message={mascotMsg || undefined} type="success" show={showMascot} />
           <div className="bg-white rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] max-h-[90vh] overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-white rounded-t-3xl">
