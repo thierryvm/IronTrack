@@ -16,7 +16,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAdminAuthComplete as useAdminAuth, AdminStats } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import { AdminStats } from '@/hooks/useAdminAuthFixed'
+import { AuthDebug } from '@/components/debug/AuthDebug'
 import { createClient } from '@/utils/supabase/client'
 
 interface QuickAction {
@@ -38,15 +40,24 @@ interface RecentActivity {
 }
 
 export default function AdminDashboard() {
+  console.log('[ADMIN_DASHBOARD] 🏁 Composant AdminDashboard rendu')
+  
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
   const [recentTickets, setRecentTickets] = useState<Array<Record<string, unknown>>>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   
-  const { user, hasPermission, getAdminStats, logAdminAction } = useAdminAuth()
+  console.log('[ADMIN_DASHBOARD] 📞 Appel du hook useAdminAuth...')
+  const { user, hasPermission, getAdminStats, logAdminAction, loading: authLoading } = useAdminAuth()
+  console.log('[ADMIN_DASHBOARD] ✅ Hook useAdminAuth terminé')
   const router = useRouter()
   const supabase = createClient()
+
+  // Debug du hook admin corrigé
+  console.log('[ADMIN_DASHBOARD] Hook corrigé - User:', user?.email || 'null')
+  console.log('[ADMIN_DASHBOARD] Hook corrigé - hasPermission super_admin:', hasPermission('super_admin'))
+  console.log('[ADMIN_DASHBOARD] Hook corrigé - Role:', user?.role || 'null')
 
   const quickActions: QuickAction[] = [
     {
@@ -161,7 +172,7 @@ export default function AdminDashboard() {
       
       setRecentTickets(ticketsData || [])
       
-      await logAdminAction()
+      await logAdminAction('dashboard_viewed', 'dashboard')
       
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
@@ -182,12 +193,22 @@ export default function AdminDashboard() {
   }, [refreshing, loadDashboardData])
 
   useEffect(() => {
-    // Chargement initial seulement si pas déjà chargé
-    if (hasPermission('moderator') && !stats && !loading) {
+    // Debug des conditions de chargement
+    console.log('[ADMIN_DASHBOARD] useEffect conditions:', {
+      hasModeratorPermission: hasPermission('moderator'),
+      hasStats: !!stats,
+      authLoading: authLoading,
+      localLoading: loading,
+      shouldLoad: hasPermission('moderator') && !stats && !authLoading
+    })
+    
+    // Chargement initial seulement si pas déjà chargé ET auth terminée
+    if (hasPermission('moderator') && !stats && !authLoading) {
       console.log('[ADMIN_DASHBOARD] Chargement initial...')
+      setLoading(false) // Met à jour le loading local
       loadDashboardData()
     }
-  }, [hasPermission, stats, loading, loadDashboardData])
+  }, [hasPermission, stats, authLoading, loadDashboardData])
 
   const getActionColor = (color: string) => {
     const colors = {
@@ -312,6 +333,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Composants de debug */}
+      <AuthDebug />
+      
       {/* Header avec refresh */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <div className="flex-1 min-w-0">

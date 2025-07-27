@@ -20,7 +20,7 @@ import {
   Paperclip,
   Download
 } from 'lucide-react'
-import { useAdminAuthComplete } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useSupport } from '@/hooks/useSupport'
 import { SupportTicket, SupportTicketPriority, SupportTicketStatus, SupportTicketCategory } from '@/types/support'
 
@@ -53,7 +53,7 @@ export default function AdminTicketsPage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [showFilters, setShowFilters] = useState(false)
 
-  const { logAdminAction, hasPermission } = useAdminAuthComplete()
+  const { logAdminAction, hasPermission } = useAdminAuth()
   const { getAllTickets, updateTicketStatus, updateTicketPriority, refreshSchemaCache } = useSupport()
 
   // Charger les tickets - Version finale sans dépendances problématiques  
@@ -64,7 +64,7 @@ export default function AdminTicketsPage() {
       const allTickets = await getAllTickets()
       console.log('[ADMIN_TICKETS] Tickets récupérés:', allTickets?.length || 0)
       setTickets(allTickets)
-      await logAdminAction()
+      await logAdminAction('tickets_viewed', 'tickets')
       console.log('[ADMIN_TICKETS] Chargement terminé avec succès')
     } catch (error) {
       console.error('[ERROR] Erreur chargement tickets:', error)
@@ -117,7 +117,7 @@ export default function AdminTicketsPage() {
     try {
       console.log('[ADMIN_TICKETS] Changement statut:', ticketId, 'vers', newStatus)
       await updateTicketStatus(ticketId, newStatus)
-      await logAdminAction()
+      await logAdminAction('tickets_viewed', 'tickets')
       console.log('[ADMIN_TICKETS] Rechargement après changement statut...')
       await loadTickets() // Recharger immédiatement
       
@@ -136,7 +136,7 @@ export default function AdminTicketsPage() {
     try {
       console.log('[ADMIN_TICKETS] Changement priorité:', ticketId, 'vers', newPriority)
       await updateTicketPriority(ticketId, newPriority)
-      await logAdminAction()
+      await logAdminAction('tickets_viewed', 'tickets')
       console.log('[ADMIN_TICKETS] Rechargement après changement priorité...')
       await loadTickets() // Recharger immédiatement
       

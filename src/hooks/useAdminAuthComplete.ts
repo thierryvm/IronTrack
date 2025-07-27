@@ -37,6 +37,8 @@ interface AdminAuthState {
 }
 
 export const useAdminAuthComplete = () => {
+  console.log('[useAdminAuthComplete] Hook initialisé')
+  
   const [state, setState] = useState<AdminAuthState>({
     user: null,
     loading: true,
@@ -46,14 +48,16 @@ export const useAdminAuthComplete = () => {
   })
 
   const supabase = createClient()
+  console.log('[useAdminAuthComplete] Supabase client créé')
 
   // Fonction pour vérifier les permissions admin
   const checkAdminPermissions = useCallback(async (authUser: User): Promise<AdminUser | null> => {
     try {
-      // Log supprimé pour la sécurité
+      console.log('[checkAdminPermissions] Vérification pour utilisateur:', authUser.id)
       
       // CORRECTION CRITIQUE: Utiliser user_roles au lieu de profiles.role
       // Récupérer le rôle depuis user_roles (système principal)
+      console.log('[checkAdminPermissions] Requête user_roles...')
       const { data: userRole, error: roleError } = await supabase
         .from('user_roles')
         .select('role, granted_at, is_active, expires_at')
@@ -63,10 +67,12 @@ export const useAdminAuthComplete = () => {
         .single()
 
       if (roleError) {
-        console.error('[ADMIN_AUTH_COMPLETE] User role error:', roleError)
+        console.error('[checkAdminPermissions] User role error:', roleError)
         // Si pas de rôle admin dans user_roles, pas d'accès
         return null
       }
+
+      console.log('[checkAdminPermissions] Rôle trouvé:', userRole?.role)
 
       if (!userRole) {
         // Aucun rôle admin actif trouvé
@@ -128,11 +134,12 @@ export const useAdminAuthComplete = () => {
 
   // Initialisation de l'authentification
   useEffect(() => {
+    console.log('[useAdminAuthComplete] useEffect déclenché')
     let isMounted = true
 
     const initializeAuth = async () => {
       try {
-        // Auth init (log supprimé)
+        console.log('[useAdminAuthComplete] Initialisation de l\'authentification...')
 
         setState(prev => ({ ...prev, loading: true, error: null }))
 
@@ -144,7 +151,7 @@ export const useAdminAuthComplete = () => {
         }
 
         if (!authUser) {
-          // No user (log supprimé)
+          console.log('[useAdminAuthComplete] Aucun utilisateur authentifié')
           if (isMounted) {
             setState({
               user: null,
@@ -157,12 +164,16 @@ export const useAdminAuthComplete = () => {
           return
         }
 
+        console.log('[useAdminAuthComplete] Utilisateur trouvé:', authUser.email)
+
         // Vérifier les permissions admin
+        console.log('[useAdminAuthComplete] Vérification permissions admin...')
         const adminUser = await checkAdminPermissions(authUser)
 
         if (!isMounted) return
 
         if (adminUser) {
+          console.log('[useAdminAuthComplete] Admin confirmé:', adminUser.role)
           setState({
             user: adminUser,
             loading: false,
@@ -171,6 +182,7 @@ export const useAdminAuthComplete = () => {
             isInitialized: true
           })
         } else {
+          console.log('[useAdminAuthComplete] Permissions admin refusées')
           setState({
             user: null,
             loading: false,
