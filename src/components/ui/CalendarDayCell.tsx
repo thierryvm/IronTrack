@@ -61,68 +61,110 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
   const [showPopover, setShowPopover] = useState(false);
   const [mobileSessionDetail, setMobileSessionDetail] = useState<null | Session>(null);
-  const displayedSessions = sessions.slice(0, 2); // Changed from MAX_SESSIONS_DISPLAY to 2
-  const extraSessions = sessions.length - 2; // Changed from MAX_SESSIONS_DISPLAY to 2
 
   // Détection mobile simple
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className="relative min-h-24 sm:h-28 p-2 sm:p-3 border border-gray-200 rounded-lg bg-white flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="text-sm sm:text-base font-bold mb-2 text-gray-800">{date}</div>
-      <div className="flex-1 flex flex-col gap-2">
-        {displayedSessions.map((session) => (
-          <div key={session.id} className="flex items-center gap-1 group">
+    <div className={`relative min-h-20 sm:min-h-24 p-1.5 sm:p-2 border rounded-lg bg-white flex flex-col overflow-hidden transition-all duration-200 ${
+      sessions.length > 0 ? 'border-orange-200 bg-orange-50/30' : 'border-gray-200 hover:border-gray-300'
+    }`}>
+      <div className={`text-sm font-semibold mb-1 ${
+        sessions.length > 0 ? 'text-orange-900' : 'text-gray-700'
+      }`}>{date}</div>
+      
+      <div className="flex-1 flex flex-col gap-1">
+        {/* Mode compact avec dots pour plus de 2 séances */}
+        {sessions.length > 2 ? (
+          <div className="space-y-1">
+            {/* Première séance en détail */}
             <div
-              className="flex-1 min-h-11 sm:h-8 flex items-center px-2 sm:px-3 py-2 sm:py-1 text-sm sm:text-xs text-white font-medium rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:scale-105 active:scale-95"
+              className="flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
               style={{
-                background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
-                minWidth: 0,
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
+                background: sessions[0].color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
               }}
-              title={
-                !isMobile && session.participants && session.participants.length > 0
-                  ? `Séance partagée : ${session.name}\n${formatDateTime(session.scheduled_date || '', session.time || '')}\nPartagée par : ${session.participants[0].name}`
-                  : !isMobile
-                  ? `${session.name}${session.time ? ' à ' + session.time : ''}`
-                  : undefined
-              }
               onClick={() => {
-                if (isMobile) setMobileSessionDetail(session);
+                if (isMobile) setMobileSessionDetail(sessions[0]);
               }}
             >
-              {/* Avatar à gauche si séance partagée */}
-              {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
-                <Tooltip text={session.participants[0].name}>
-                  <Avatar
-                    src={session.participants[0].avatarUrl}
-                    name={session.participants[0].name}
-                    size={isMobile ? 24 : 20}
-                    className="mr-2 border-2 border-white shadow-sm bg-white"
-                  />
-                </Tooltip>
+              <span className="truncate">{sessions[0].name}</span>
+            </div>
+            
+            {/* Dots pour les autres séances */}
+            <div className="flex items-center gap-1">
+              {sessions.slice(1, 5).map((session, idx) => (
+                <div
+                  key={idx}
+                  className="w-2 h-2 rounded-full shadow-sm cursor-pointer hover:scale-125 transition-transform"
+                  style={{
+                    background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
+                  }}
+                  title={session.name}
+                  onClick={() => {
+                    if (isMobile) setMobileSessionDetail(session);
+                  }}
+                />
+              ))}
+              {sessions.length > 5 && (
+                <span className="text-xs text-gray-500 ml-1">+{sessions.length - 5}</span>
               )}
-              <span className="truncate text-sm sm:text-xs font-medium">
-                {session.name}
-                {session.time && (
-                  <span className="opacity-90 block sm:inline text-xs">
-                    <span className="sm:hidden">🕒 </span>
-                    <span className="hidden sm:inline"> à </span>
-                    {session.time.slice(0,5)}
-                  </span>
-                )}
-              </span>
             </div>
           </div>
-        ))}
-        {extraSessions > 0 && (
+        ) : (
+          /* Mode normal pour 1-2 séances */
+          sessions.slice(0, 2).map((session) => (
+            <div key={session.id} className="flex items-center group">
+              <div
+                className="flex-1 min-h-8 flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
+                style={{
+                  background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
+                title={
+                  !isMobile && session.participants && session.participants.length > 0
+                    ? `Séance partagée : ${session.name}\n${formatDateTime(session.scheduled_date || '', session.time || '')}\nPartagée par : ${session.participants[0].name}`
+                    : !isMobile
+                    ? `${session.name}${session.time ? ' à ' + session.time : ''}`
+                    : undefined
+                }
+                onClick={() => {
+                  if (isMobile) setMobileSessionDetail(session);
+                }}
+              >
+                {/* Avatar compact pour séances partagées */}
+                {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
+                  <Tooltip text={session.participants[0].name}>
+                    <Avatar
+                      src={session.participants[0].avatarUrl}
+                      name={session.participants[0].name}
+                      size={16}
+                      className="mr-1 border border-white shadow-sm bg-white"
+                    />
+                  </Tooltip>
+                )}
+                <span className="truncate">
+                  {session.name}
+                  {session.time && (
+                    <span className="opacity-80 ml-1 text-xs hidden sm:inline">
+                      {session.time.slice(0,5)}
+                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+        
+        {/* Bouton pour voir toutes les séances si plus de 2 */}
+        {sessions.length > 2 && (
           <button
-            className="mt-2 py-2 text-sm text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300 font-medium"
+            className="mt-1 py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium"
             onClick={() => setShowPopover(true)}
           >
-            +{extraSessions} autre{extraSessions > 1 ? 's' : ''} séance{extraSessions > 1 ? 's' : ''}
+            Voir tout ({sessions.length})
           </button>
         )}
       </div>
