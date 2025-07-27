@@ -17,7 +17,10 @@ import {
   Waves,
   Zap,
   Flower,
-  Smile
+  Smile,
+  Menu,
+  List,
+  X
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -123,6 +126,8 @@ export default function CalendarPage() {
   const [partnersWorkouts, setPartnersWorkouts] = useState<WorkoutWithProfile[]>([])
   const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
   const [, setSharePlanning] = useState(false)
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar')
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
@@ -396,6 +401,32 @@ export default function CalendarPage() {
               <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Bouton vue mobile */}
+              <button
+                onClick={() => setViewMode(viewMode === 'calendar' ? 'list' : 'calendar')}
+                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                title={viewMode === 'calendar' ? 'Passer en vue liste' : 'Passer en vue calendrier'}
+              >
+                {viewMode === 'calendar' ? (
+                  <List className="h-4 w-4" />
+                ) : (
+                  <CalendarIcon className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">
+                  {viewMode === 'calendar' ? 'Liste' : 'Calendrier'}
+                </span>
+              </button>
+              
+              {/* Bouton sidebar mobile */}
+              <button
+                onClick={() => setShowMobileSidebar(true)}
+                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                title="Afficher les statistiques"
+              >
+                <Menu className="h-4 w-4" />
+                <span className="hidden sm:inline">Stats</span>
+              </button>
+              
               <button
                 onClick={() => {
                   if (partnersWorkouts.length === 0) {
@@ -443,134 +474,235 @@ export default function CalendarPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-8">
-          {/* Calendrier */}
+          {/* Calendrier et Vue Liste */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="xl:col-span-2"
           >
             <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
-              {/* Navigation du calendrier */}
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <button
-                  onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronLeft className="h-4 sm:h-5 w-4 sm:w-5" />
-                </button>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 capitalize">{monthName}</h2>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <button
-                    onClick={() => setCurrentDate(new Date())}
-                    className="px-2 sm:px-3 py-1 bg-orange-500 text-white rounded-lg text-xs sm:text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
-                  >
-                    <span className="hidden sm:inline">Aujourd&apos;hui</span>
-                    <span className="sm:hidden">Auj.</span>
-                  </button>
-                  <button
-                    onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Grille du calendrier */}
-              <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
-                {/* En-têtes des jours */}
-                {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
-                  <div key={day} className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-gray-500">
-                    {day}
-                  </div>
-                ))}
-
-                {/* Jours du mois */}
-                {days.map((day, index) => {
-                  let sessions: CalendarSession[] = [];
-                  const dayYMD = formatDateToYMD(day.date);
-                  
-                  // Séances personnelles
-                  const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
-                  const personalSessions = workoutsForDate.map(w => {
-                    const correctedType = getCorrectType(w);
-                    return {
-                      id: String(w.id),
-                      name: w.name,
-                      type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                      status: w.status as 'Planifié' | 'Terminé' | 'Annulé',
-                      duration: w.duration,
-                      isShared: false,
-                      participants: [],
-                      scheduled_date: w.scheduled_date,
-                      time: (w as { time?: string }).time || '',
-                      exercises: w.exercises || [],
-                    };
-                  });
-
-                  // Séances des partenaires (si activées)
-                  let partnerSessions: CalendarSession[] = [];
-                  if (showPartnersWorkouts) {
-                    const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
-                    partnerSessions = partnersForDate.map(pw => {
-                      const partner = pw.profiles;
-                      const participant = {
-                        id: partner?.id || '',
-                        name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
-                        avatarUrl: partner?.avatar_url || '/default-avatar.png',
-                      };
-                      const correctedType = getCorrectType(pw);
-                      
-                      // Couleur différente pour les séances partagées (dégradé plus sombre)
-                      const partnerColor = getPartnerTypeColor(correctedType);
-                      
-                      return {
-                        id: `partner-${pw.id}`,
-                        name: `👥 ${pw.name}`, // Préfixe pour identifier visuellement
-                        type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                        status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
-                        duration: pw.duration,
-                        isShared: true,
-                        participants: [participant],
-                        scheduled_date: pw.scheduled_date,
-                        time: pw.start_time || '',
-                        exercises: [],
-                        color: partnerColor, // Couleur personnalisée pour les séances partagées
-                      };
-                    });
-                  }
-
-                  sessions = [...personalSessions, ...partnerSessions];
-                  
-                  // Trier par heure si disponible
-                  sessions.sort((a, b) => {
-                    if (a.time && b.time) {
-                      return a.time.localeCompare(b.time);
-                    }
-                    return 0;
-                  });
-                  const isCurrentDay = isToday(day.date);
-                  const isSelectedDay = isSelected(day.date);
-                  const cell = (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedDate(day.date)}
-                      className={`cursor-pointer transition-all ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+              {viewMode === 'calendar' ? (
+                <>
+                  {/* Navigation du calendrier */}
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <button
+                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                      className="p-3 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <CalendarDayCell date={day.date.getDate()} sessions={sessions} />
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 capitalize">{monthName}</h2>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentDate(new Date())}
+                        className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
+                      >
+                        Aujourd&apos;hui
+                      </button>
+                      <button
+                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                        className="p-3 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
                     </div>
-                  );
-                  return cell;
-                })}
-              </div>
+                  </div>
+
+                  {/* Grille du calendrier */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {/* En-têtes des jours */}
+                    {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
+                      <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                        {day}
+                      </div>
+                    ))}
+
+                    {/* Jours du mois */}
+                    {days.map((day, index) => {
+                      let sessions: CalendarSession[] = [];
+                      const dayYMD = formatDateToYMD(day.date);
+                      
+                      // Séances personnelles
+                      const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
+                      const personalSessions = workoutsForDate.map(w => {
+                        const correctedType = getCorrectType(w);
+                        return {
+                          id: String(w.id),
+                          name: w.name,
+                          type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                          status: w.status as 'Planifié' | 'Terminé' | 'Annulé',
+                          duration: w.duration,
+                          isShared: false,
+                          participants: [],
+                          scheduled_date: w.scheduled_date,
+                          time: (w as { time?: string }).time || '',
+                          exercises: w.exercises || [],
+                        };
+                      });
+
+                      // Séances des partenaires (si activées)
+                      let partnerSessions: CalendarSession[] = [];
+                      if (showPartnersWorkouts) {
+                        const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
+                        partnerSessions = partnersForDate.map(pw => {
+                          const partner = pw.profiles;
+                          const participant = {
+                            id: partner?.id || '',
+                            name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
+                            avatarUrl: partner?.avatar_url || '/default-avatar.png',
+                          };
+                          const correctedType = getCorrectType(pw);
+                          
+                          // Couleur différente pour les séances partagées (dégradé plus sombre)
+                          const partnerColor = getPartnerTypeColor(correctedType);
+                          
+                          return {
+                            id: `partner-${pw.id}`,
+                            name: `👥 ${pw.name}`, // Préfixe pour identifier visuellement
+                            type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                            status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
+                            duration: pw.duration,
+                            isShared: true,
+                            participants: [participant],
+                            scheduled_date: pw.scheduled_date,
+                            time: pw.start_time || '',
+                            exercises: [],
+                            color: partnerColor, // Couleur personnalisée pour les séances partagées
+                          };
+                        });
+                      }
+
+                      sessions = [...personalSessions, ...partnerSessions];
+                      
+                      // Trier par heure si disponible
+                      sessions.sort((a, b) => {
+                        if (a.time && b.time) {
+                          return a.time.localeCompare(b.time);
+                        }
+                        return 0;
+                      });
+                      const isCurrentDay = isToday(day.date);
+                      const isSelectedDay = isSelected(day.date);
+                      const cell = (
+                        <div
+                          key={index}
+                          onClick={() => setSelectedDate(day.date)}
+                          className={`cursor-pointer transition-all ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+                        >
+                          <CalendarDayCell date={day.date.getDate()} sessions={sessions} />
+                        </div>
+                      );
+                      return cell;
+                    })}
+                  </div>
+                </>
+              ) : (
+                /* Vue liste mobile */
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-gray-900">Vue agenda</h2>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <span className="text-lg font-medium capitalize px-4">{monthName}</span>
+                      <button
+                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {(() => {
+                      // Récupérer toutes les séances du mois avec dates
+                      const monthWorkouts = workouts.filter(w => {
+                        const date = new Date(w.scheduled_date);
+                        return date.getFullYear() === currentDate.getFullYear() && 
+                               date.getMonth() === currentDate.getMonth();
+                      }).sort((a, b) => {
+                        const dateA = new Date(a.scheduled_date);
+                        const dateB = new Date(b.scheduled_date);
+                        if (dateA.getTime() !== dateB.getTime()) {
+                          return dateA.getTime() - dateB.getTime();
+                        }
+                        // Si même jour, trier par heure si disponible
+                        const timeA = (a as { time?: string }).time || '';
+                        const timeB = (b as { time?: string }).time || '';
+                        return timeA.localeCompare(timeB);
+                      });
+                      
+                      if (monthWorkouts.length === 0) {
+                        return (
+                          <div className="text-center py-12 text-gray-500">
+                            <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                            <p className="text-lg font-medium">Aucune séance planifiée</p>
+                            <p className="text-sm">Commence par ajouter une séance !</p>
+                          </div>
+                        );
+                      }
+                      
+                      return monthWorkouts.map(workout => {
+                        const date = new Date(workout.scheduled_date);
+                        const correctedType = getCorrectType(workout);
+                        const typeObj = workoutTypes.find(t => t.name === correctedType);
+                        const Icon = typeObj?.icon;
+                        
+                        return (
+                          <div key={workout.id} className="bg-gray-50 rounded-lg p-4 border-l-4 border-orange-500">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex items-center gap-3">
+                                {Icon && <Icon className="h-5 w-5 text-orange-600" />}
+                                <div>
+                                  <h3 className="font-semibold text-gray-900">{workout.name}</h3>
+                                  <p className="text-sm text-gray-600">
+                                    {date.toLocaleDateString('fr-FR', { 
+                                      weekday: 'long', 
+                                      day: 'numeric', 
+                                      month: 'long' 
+                                    })}
+                                    {(workout as { time?: string }).time && ` à ${(workout as { time?: string }).time?.slice(0,5)}`}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${getTypeColor(correctedType)}`}>
+                                  {correctedType}
+                                </span>
+                                {workout.duration && (
+                                  <span className="flex items-center gap-1 text-sm text-gray-500">
+                                    <Clock className="h-4 w-4" />
+                                    {workout.duration}min
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {workout.exercises && workout.exercises.length > 0 && (
+                              <div className="text-sm text-gray-600">
+                                <strong>Exercices :</strong> {workout.exercises.slice(0, 3).join(', ')}
+                                {workout.exercises.length > 3 && ` +${workout.exercises.length - 3} autres`}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
 
-          {/* Panneau latéral */}
+          {/* Panneau latéral - Desktop uniquement */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4 lg:space-y-6"
+            className="hidden lg:block space-y-6"
           >
             {/* Date sélectionnée */}
             {selectedDate && (
@@ -836,6 +968,204 @@ export default function CalendarPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* Sidebar Mobile Modal/Drawer */}
+      {showMobileSidebar && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setShowMobileSidebar(false)}
+          />
+          
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 20 }}
+            className="absolute right-0 top-0 h-full w-80 max-w-full bg-white shadow-xl overflow-y-auto"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Statistiques</h2>
+              <button
+                onClick={() => setShowMobileSidebar(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            {/* Contenu */}
+            <div className="p-4 space-y-6">
+              {/* Date sélectionnée */}
+              {selectedDate && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    {formatDate(selectedDate)}
+                  </h3>
+                  <div className="space-y-3">
+                    {(() => {
+                      let sessions: CalendarSession[] = [];
+                      const dayYMD = formatDateToYMD(selectedDate);
+                      
+                      // Séances personnelles
+                      const personalSessions = getWorkoutsForDate(selectedDate).map(workout => ({
+                        id: `perso-${String(workout.id)}`,
+                        name: workout.name,
+                        type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                        status: workout.status,
+                        duration: workout.duration,
+                        isShared: false,
+                        participants: [],
+                        scheduled_date: workout.scheduled_date,
+                        time: (workout as { time?: string }).time || '',
+                        exercises: workout.exercises || [],
+                      }));
+
+                      // Séances des partenaires (si activées)
+                      let partnerSessions: CalendarSession[] = [];
+                      if (showPartnersWorkouts) {
+                        const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
+                        partnerSessions = partnersForDate.map(pw => {
+                          const partner = pw.profiles;
+                          const participant = {
+                            id: partner?.id || '',
+                            name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
+                            avatarUrl: partner?.avatar_url || '/default-avatar.png',
+                          };
+                          const correctedType = getCorrectType(pw);
+                          
+                          return {
+                            id: `partner-${pw.id}`,
+                            name: `👥 ${pw.name}`,
+                            type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
+                            status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
+                            duration: pw.duration,
+                            isShared: true,
+                            participants: [participant],
+                            scheduled_date: pw.scheduled_date,
+                            time: pw.start_time || '',
+                            exercises: [],
+                          };
+                        });
+                      }
+
+                      sessions = [...personalSessions, ...partnerSessions];
+                      
+                      // Trier par heure si disponible
+                      sessions.sort((a, b) => {
+                        if (a.time && b.time) {
+                          return a.time.localeCompare(b.time);
+                        }
+                        return 0;
+                      });
+                      
+                      if (sessions.length === 0) {
+                        return (
+                          <div className="text-center py-6 text-gray-500">
+                            <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                            <p>Aucune séance planifiée</p>
+                          </div>
+                        );
+                      }
+                      return sessions.map(item => (
+                        <div key={item.id} className="p-3 bg-white rounded-lg border flex flex-col gap-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                              {item.name}
+                              {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
+                            </h4>
+                            <div className={`w-3 h-3 rounded-full ${getTypeColor(item.type)}`} title={`Type: ${item.type}`} />
+                          </div>
+                          <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getTypeColor(item.type)}`}>{item.type}</span>
+                          {item.duration && (
+                            <span className="flex items-center space-x-1 text-sm text-gray-600">
+                              <Clock className="h-3 w-3" />
+                              <span>{item.duration} min</span>
+                            </span>
+                          )}
+                          {item.time && (
+                            <span className="flex items-center space-x-1 text-sm text-gray-600">
+                              <Clock className="h-3 w-3" />
+                              <span>{item.time}</span>
+                            </span>
+                          )}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowMobileSidebar(false);
+                      router.push('/workouts/new');
+                    }}
+                    className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <Plus className="h-5 w-5" />
+                    <span>Ajouter une séance</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Statistiques du mois */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <span className="text-gray-700">Terminées</span>
+                    </div>
+                    <span className="bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full">
+                      {seancesTerminees}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-blue-500" />
+                      <span className="text-gray-700">Planifiées</span>
+                    </div>
+                    <span className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full">
+                      {seancesPlanifiees}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-orange-500" />
+                      <span className="text-gray-700">Temps total</span>
+                    </div>
+                    <span className="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full">
+                      {tempsTotal} min
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Répartition par type en version compacte */}
+                <div className="mt-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Types d&apos;exercices</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {repartitionTypes.filter(type => type.count > 0).map(type => {
+                      const typeObj = workoutTypes.find(t => t.name === type.name)
+                      const Icon = typeObj?.icon
+                      return (
+                        <div key={type.name} className="flex items-center gap-2 p-2 bg-white rounded border">
+                          {Icon && <Icon className="h-4 w-4 text-gray-600" />}
+                          <span className="text-sm">{type.name}</span>
+                          <span className="ml-auto font-bold text-orange-600">{type.count}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 } 
