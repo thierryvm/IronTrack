@@ -9,12 +9,11 @@ import {
   AlertTriangle, 
   CheckCircle, 
   Loader2,
-  Plus,
   Shield,
   Smartphone
 } from 'lucide-react'
 import Image from 'next/image'
-import { uploadExercisePhoto, SecureAttachment, FileUploadError } from '@/utils/fileUpload'
+import { uploadExercisePhoto, SecureAttachment } from '@/utils/fileUpload'
 
 interface ExercisePhotoUploadProps {
   onPhotoUploaded: (attachment: SecureAttachment) => void
@@ -38,7 +37,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   currentPhoto,
   disabled = false,
   className = '',
-  maxPhotos = 2
+  maxPhotos = 2 // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
   const [uploadState, setUploadState] = useState<UploadState>({
     isUploading: false,
@@ -201,7 +200,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-900 flex items-center">
           <Camera className="h-4 w-4 mr-2" />
-          Photo de l'exercice
+          Photo de l&apos;exercice
         </h4>
         <div className="flex items-center text-xs text-gray-500">
           <Smartphone className="h-3 w-3 mr-1" />
@@ -424,7 +423,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               📱 Compatible iPhone/iPad
             </h5>
             <p className="text-xs text-blue-800">
-              Les photos HEIC d'Apple sont automatiquement prises en charge. 
+              Les photos HEIC d&apos;Apple sont automatiquement prises en charge. 
               Prenez vos photos directement avec votre iPhone pour la meilleure qualité.
             </p>
           </div>
