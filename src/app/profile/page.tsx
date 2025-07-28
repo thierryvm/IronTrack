@@ -30,6 +30,7 @@ import Cropper from 'react-easy-crop'
 import { useBadges } from '@/hooks/useBadges'
 import { useProgressionStats } from '@/hooks/useProgressionStats'
 import { ProfileInfoSection } from '@/components/profile/ProfileInfoSection'
+import { UserTicketsSection } from '@/components/profile/UserTicketsSection'
 // import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
@@ -882,6 +883,16 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
+
+            {/* Section tickets de support */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8"
+            >
+              <UserTicketsSection />
+            </motion.div>
           </motion.div>
         )}
 
