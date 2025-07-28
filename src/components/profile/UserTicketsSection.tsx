@@ -210,7 +210,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
         </div>
         <Link
           href="/support/contact"
-          className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors text-sm"
+          className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors text-sm min-h-[44px] touch-manipulation"
         >
           <Plus className="h-4 w-4" />
           Nouveau ticket
@@ -228,7 +228,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           </p>
           <Link
             href="/support/contact"
-            className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+            className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors min-h-[44px] touch-manipulation"
           >
             <Plus className="h-4 w-4" />
             Créer mon premier ticket
@@ -243,7 +243,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow touch-manipulation"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
@@ -291,8 +291,8 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
                 {/* Action pour voir les détails - Futur lien vers une page dédiée */}
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <button className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-1">
-                    <ExternalLink className="h-3 w-3" />
+                  <button className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start">
+                    <ExternalLink className="h-4 w-4" />
                     Voir les détails et réponses
                   </button>
                 </div>

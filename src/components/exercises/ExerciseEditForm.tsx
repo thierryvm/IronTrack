@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Save, X } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'react-hot-toast'
+import { ExercisePhotoUpload } from '@/components/exercises/ExercisePhotoUpload'
+import { SecureAttachment } from '@/utils/fileUpload'
 
 interface ExerciseEditFormProps {
   exerciseId: string
@@ -16,6 +18,7 @@ interface ExerciseData {
   equipment_id: number
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
+  image_url?: string
   // Métriques musculation
   weight?: number
   reps?: number
@@ -38,6 +41,8 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
   const [saving, setSaving] = useState(false)
   const [exercise, setExercise] = useState<ExerciseData | null>(null)
   const [equipmentOptions, setEquipmentOptions] = useState<{id: number, name: string}[]>([])
+  const [exercisePhoto, setExercisePhoto] = useState<SecureAttachment | null>(null)
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +83,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
           equipment_id: exerciseData.equipment_id || 1,
           difficulty: exerciseData.difficulty || 'Débutant',
           description: exerciseData.description || '',
+          image_url: exerciseData.image_url || undefined,
           sets: exerciseData.sets || undefined,
           duration_minutes: exerciseData.duration_minutes || undefined,
           duration_seconds: exerciseData.duration_seconds || undefined,
@@ -91,6 +97,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
         
         setExercise(formattedExercise)
         setEquipmentOptions(equipmentData || [])
+        setCurrentPhotoUrl(formattedExercise.image_url)
       } catch (error) {
         console.error('Erreur:', error)
         toast.error('Erreur lors du chargement')
@@ -101,6 +108,22 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
 
     fetchData()
   }, [exerciseId])
+
+  const handlePhotoUploaded = (attachment: SecureAttachment) => {
+    setExercisePhoto(attachment)
+    setCurrentPhotoUrl(attachment.url)
+    if (exercise) {
+      setExercise(prev => prev ? { ...prev, image_url: attachment.url } : null)
+    }
+  }
+
+  const handlePhotoRemoved = () => {
+    setExercisePhoto(null)
+    setCurrentPhotoUrl(undefined)
+    if (exercise) {
+      setExercise(prev => prev ? { ...prev, image_url: undefined } : null)
+    }
+  }
 
   const handleSave = async () => {
     if (!exercise) return
@@ -118,6 +141,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
           equipment_id: exercise.equipment_id,
           difficulty: exercise.difficulty,
           description: exercise.description,
+          image_url: exercise.image_url || null,
           // Métriques musculation
           weight: exercise.weight || null,
           reps: exercise.reps || null,
@@ -297,6 +321,16 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                 placeholder="Description de l'exercice..."
+              />
+            </div>
+
+            {/* Photo de l'exercice */}
+            <div>
+              <ExercisePhotoUpload
+                onPhotoUploaded={handlePhotoUploaded}
+                onPhotoRemoved={handlePhotoRemoved}
+                currentPhoto={currentPhotoUrl}
+                disabled={saving}
               />
             </div>
 
