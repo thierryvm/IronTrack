@@ -178,7 +178,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       {/* Zone d'upload ou photo actuelle */}
       {currentPhoto ? (
         <div className="relative group">
-          <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100">
+          <div className="relative w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-100">
             <Image
               src={currentPhoto}
               alt="Photo de l'exercice"
@@ -191,18 +191,18 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
                 <button
                   onClick={openFileDialog}
-                  className="bg-white text-gray-900 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center"
+                  className="bg-white text-gray-900 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
                   disabled={disabled || uploadState.isUploading}
                 >
-                  <Camera className="h-4 w-4 mr-1" />
+                  <Camera className="h-4 w-4 mr-2" />
                   Changer
                 </button>
                 <button
                   onClick={removePhoto}
-                  className="bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-red-700 flex items-center"
+                  className="bg-red-600 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-red-700 flex items-center min-h-[44px] touch-manipulation"
                   disabled={disabled || uploadState.isUploading}
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="h-4 w-4 mr-2" />
                   Supprimer
                 </button>
               </div>
@@ -217,8 +217,8 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onDrop={handleDrop}
           onClick={openFileDialog}
           className={`
-            relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-            transition-all duration-200 hover:bg-gray-50
+            relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer
+            transition-all duration-200 hover:bg-gray-50 touch-manipulation min-h-[200px] sm:min-h-[240px]
             ${isDragging 
               ? 'border-orange-500 bg-orange-50' 
               : 'border-gray-300'
@@ -242,9 +242,9 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-center">
               {uploadState.isUploading ? (
-                <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+                <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
               ) : (
-                <Camera className={`h-12 w-12 ${isDragging ? 'text-orange-500' : 'text-gray-400'}`} />
+                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-500' : 'text-gray-400'}`} />
               )}
             </div>
             
@@ -262,13 +262,13 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                 </div>
               ) : (
                 <>
-                  <p className="text-lg font-medium text-gray-900 mb-1">
+                  <p className="text-lg sm:text-xl font-medium text-gray-900 mb-2">
                     {isDragging ? 'Relâchez pour uploader' : 'Ajoutez une photo'}
                   </p>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm sm:text-base text-gray-600 mb-3">
                     Glissez votre photo ici ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span>
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500">
                     PNG, JPEG, GIF, HEIC • Max 5MB
                   </p>
                 </>
