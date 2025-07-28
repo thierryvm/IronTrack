@@ -26,13 +26,16 @@ export interface UploadResult {
 
 // Configuration sécurisée
 const SECURITY_CONFIG = {
-  // Types MIME autorisés (whitelist stricte)
+  // Types MIME autorisés (whitelist avec variantes mobiles/iCloud)
   ALLOWED_MIME_TYPES: [
     'image/png',
     'image/jpeg',
+    'image/jpg', // Variante parfois utilisée
     'image/gif',
     'image/heic',
-    'image/heif'
+    'image/heif',
+    'application/octet-stream', // iCloud/mobile parfois
+    '' // Type vide sur certains mobiles
   ] as const,
   
   // Extensions autorisées (double validation)
@@ -42,7 +45,9 @@ const SECURITY_CONFIG = {
     'jpg',
     'gif',
     'heic',
-    'heif'
+    'heif',
+    'jfif', // Format JPEG alternatif
+    'webp'  // Format moderne supporté
   ] as const,
   
   // Limites strictes
@@ -76,10 +81,39 @@ export class FileUploadError extends Error {
 // ============================================================================
 
 /**
- * Valide le type MIME d'un fichier
+ * Valide le type MIME d'un fichier avec fallback pour mobiles/iCloud
  */
 function validateMimeType(file: File): boolean {
-  return (SECURITY_CONFIG.ALLOWED_MIME_TYPES as readonly string[]).includes(file.type)
+  console.log('[DEBUG] Validating file:', {
+    name: file.name,
+    type: file.type,
+    size: file.size
+  })
+  
+  // Si le type MIME est défini et reconnu (incluant types vides)
+  if ((SECURITY_CONFIG.ALLOWED_MIME_TYPES as readonly string[]).includes(file.type as any)) {
+    console.log('[DEBUG] MIME type accepted:', file.type)
+    return true
+  }
+  
+  // Fallback spécial pour iCloud et mobiles
+  const ext = file.name.split('.').pop()?.toLowerCase()
+  if (ext && (SECURITY_CONFIG.ALLOWED_EXTENSIONS as readonly string[]).includes(ext)) {
+    console.log('[DEBUG] Extension accepted as fallback:', ext)
+    return true
+  }
+  
+  // Fallback pour types MIME non standards mais extensions valides
+  if (file.type && file.type.startsWith('image/') && ext) {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic', 'heif', 'jfif', 'webp']
+    if (imageExtensions.includes(ext)) {
+      console.log('[DEBUG] Image type with valid extension accepted:', file.type, ext)
+      return true
+    }
+  }
+  
+  console.log('[DEBUG] File rejected:', { type: file.type, extension: ext })
+  return false
 }
 
 /**
@@ -116,7 +150,7 @@ function validateFilename(filename: string): boolean {
 }
 
 /**
- * Valide les magic bytes (signature fichier)
+ * Valide les magic bytes (signature fichier) avec fallback mobile
  */
 async function validateMagicBytes(file: File): Promise<boolean> {
   return new Promise((resolve) => {
@@ -129,13 +163,33 @@ async function validateMagicBytes(file: File): Promise<boolean> {
         return
       }
       
-      const bytes = new Uint8Array(arrayBuffer.slice(0, 12)) // Augmenté pour HEIC
+      const bytes = new Uint8Array(arrayBuffer.slice(0, 12))
+      
+      // Détecter automatiquement le type de fichier par magic bytes
+      const detectedType = detectFileTypeByMagicBytes(bytes)
+      
+      if (detectedType) {
+        // Si on détecte un type image valide, accepter
+        const validImageTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/heic', 'image/heif']
+        resolve(validImageTypes.includes(detectedType))
+        return
+      }
+      
+      // Fallback: vérification par type MIME déclaré
       const expectedBytes = SECURITY_CONFIG.MAGIC_BYTES[file.type as keyof typeof SECURITY_CONFIG.MAGIC_BYTES]
       
       if (!expectedBytes) {
-        // Pour les types non référencés, validation basique par extension
-        if (file.type === 'image/heic' || file.type === 'image/heif') {
-          // Validation HEIC plus flexible - recherche des signatures ftyphei
+        // Pour les types non référencés ou vides, validation flexible
+        if (!file.type || file.type === '' || file.type === 'application/octet-stream') {
+          // Essayer de détecter JPEG, PNG ou HEIC par signature
+          if (detectFileTypeByMagicBytes(bytes)) {
+            resolve(true)
+            return
+          }
+        }
+        
+        // HEIC spécifique
+        if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().includes('.heic')) {
           const heicSignatures = [
             [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63], // ftyp heic
             [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x78], // ftyp heix  
@@ -144,7 +198,6 @@ async function validateMagicBytes(file: File): Promise<boolean> {
           
           const bytesHex = Array.from(bytes)
           const hasHeicSignature = heicSignatures.some(signature => {
-            // Chercher la signature dans les premiers 12 bytes
             for (let i = 0; i <= bytesHex.length - signature.length; i++) {
               if (signature.every((byte, j) => bytesHex[i + j] === byte)) {
                 return true
@@ -168,6 +221,40 @@ async function validateMagicBytes(file: File): Promise<boolean> {
     reader.onerror = () => resolve(false)
     reader.readAsArrayBuffer(file.slice(0, 12))
   })
+}
+
+/**
+ * Détecte le type de fichier par magic bytes
+ */
+function detectFileTypeByMagicBytes(bytes: Uint8Array): string | null {
+  const signatures: { [key: string]: number[] } = {
+    'image/png': [0x89, 0x50, 0x4E, 0x47],
+    'image/jpeg': [0xFF, 0xD8, 0xFF],
+    'image/gif': [0x47, 0x49, 0x46],
+  }
+  
+  for (const [type, signature] of Object.entries(signatures)) {
+    if (signature.every((byte, index) => bytes[index] === byte)) {
+      return type
+    }
+  }
+  
+  // Vérification HEIC plus flexible
+  const bytesArray = Array.from(bytes)
+  const heicPatterns = [
+    [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63], // ftyp heic
+    [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x78], // ftyp heix
+  ]
+  
+  for (const pattern of heicPatterns) {
+    for (let i = 0; i <= bytesArray.length - pattern.length; i++) {
+      if (pattern.every((byte, j) => bytesArray[i + j] === byte)) {
+        return 'image/heic'
+      }
+    }
+  }
+  
+  return null
 }
 
 /**
@@ -223,10 +310,17 @@ export async function validateFile(file: File): Promise<void> {
   }
   
   if (!validateMimeType(file)) {
+    console.log('[DEBUG] MIME validation failed:', {
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      allowedTypes: SECURITY_CONFIG.ALLOWED_MIME_TYPES
+    })
+    
     throw new FileUploadError(
-      `Type de fichier non autorisé (${file.type || 'inconnu'}). Formats acceptés : PNG, JPEG, GIF, HEIC (iPhone). Vérifiez que votre photo n'est pas corrompue.`,
+      `Type de fichier non autorisé (${file.type || 'type vide/mobile'}). Formats acceptés : PNG, JPEG, GIF, HEIC. Extensions acceptées : ${SECURITY_CONFIG.ALLOWED_EXTENSIONS.join(', ')}.`,
       'INVALID_MIME_TYPE',
-      { fileType: file.type, allowedTypes: SECURITY_CONFIG.ALLOWED_MIME_TYPES }
+      { fileType: file.type, fileName: file.name, allowedTypes: SECURITY_CONFIG.ALLOWED_MIME_TYPES }
     )
   }
   

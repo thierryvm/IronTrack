@@ -49,8 +49,8 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Formats acceptés avec HEIC
-  const acceptedTypes = 'image/png,image/jpeg,image/jpg,image/gif,image/heic,image/heif'
+  // Formats acceptés avec HEIC et variantes mobiles/iCloud
+  const acceptedTypes = 'image/png,image/jpeg,image/jpg,image/gif,image/heic,image/heif,image/webp,.png,.jpg,.jpeg,.gif,.heic,.heif,.jfif,.webp'
   
   // Détection mobile pour optimiser l'interface
   const [isMobile, setIsMobile] = useState(false)
@@ -350,7 +350,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     }
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    PNG, JPEG, GIF, HEIC • Max 10MB
+                    PNG, JPEG, GIF, HEIC, WebP • Max 10MB
                   </p>
                 </>
               )}
