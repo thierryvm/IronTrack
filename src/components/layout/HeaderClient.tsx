@@ -14,8 +14,7 @@ import {
   X,
   LogOut,
   LogIn,
-  Shield,
-  Download
+  Shield
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { createClient } from '@/utils/supabase/client'
@@ -37,7 +36,6 @@ export default function HeaderClient() {
     { name: 'Progression', href: '/progress', icon: BarChart3 },
     { name: 'Nutrition', href: '/nutrition', icon: Apple },
     { name: 'Profil', href: '/profile', icon: User },
-    { name: '📱 Installer App', href: '/pwa-guide', icon: Download },
   ]
 
   // Navigation admin (conditionnelle)
