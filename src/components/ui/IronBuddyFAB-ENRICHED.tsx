@@ -881,13 +881,22 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                       })}
 
                       <div className="border-t border-gray-100 pt-2 mt-3">
-                        <Link
-                          href="/faq"
-                          onClick={() => setIsOpen(false)}
-                          className="flex items-center justify-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                        >
-                          📚 Consulter la FAQ
-                        </Link>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href="/faq"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center justify-center px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            📚 FAQ
+                          </Link>
+                          <Link
+                            href="/pwa-guide"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center justify-center px-3 py-2 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors font-medium"
+                          >
+                            📱 Installer App
+                          </Link>
+                        </div>
                       </div>
                     </motion.div>
                   )}
