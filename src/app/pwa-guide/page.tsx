@@ -132,12 +132,12 @@ export default function PWAGuidePage() {
         },
         {
           step: 2,
-          title: 'Popup d'installation (automatique)',
-          description: 'Une bannière "Installer l'app" devrait apparaître automatiquement',
+          title: 'Popup d\'installation (automatique)',
+          description: 'Une bannière "Installer l\'app" devrait apparaître automatiquement',
           icon: <Download className="h-5 w-5" />,
           details: [
             'La bannière apparaît en bas de l\'écran après quelques secondes',
-            'Si elle n'apparaît pas, continuez à l\'étape 3',
+            'Si elle n\'apparaît pas, continuez à l\'étape 3',
             'Appuyez sur "Installer" si vous la voyez'
           ]
         },
@@ -148,7 +148,7 @@ export default function PWAGuidePage() {
           icon: <Plus className="h-5 w-5" />,
           details: [
             'Appuyez sur les 3 points verticaux en haut à droite',
-            'Cherchez "Ajouter à l\'écran d\'accueil" ou "Installer l'app"',
+            'Cherchez "Ajouter à l\'écran d\'accueil" ou "Installer l\'app"',
             'L\'option peut être dans un sous-menu "Partager"'
           ]
         },
@@ -223,7 +223,7 @@ export default function PWAGuidePage() {
           icon: <CheckCircle className="h-5 w-5" />,
           details: [
             'Vérifiez que le nom est "IronTrack"',
-            'L'icône devrait apparaître automatiquement',
+            'L\'icône devrait apparaître automatiquement',
             'Appuyez sur "Ajouter" ou "OK" pour terminer'
           ]
         }
@@ -255,27 +255,27 @@ export default function PWAGuidePage() {
           details: [
             'Chrome et Edge offrent la meilleure expérience PWA',
             'Firefox supporte les PWA depuis la version 100',
-            'Tapez l'URL complète dans la barre d\'adresse'
+            'Tapez l\'URL complète dans la barre d\'adresse'
           ]
         },
         {
           step: 2,
-          title: 'Icône d'installation',
-          description: 'Cherchez l\'icône d'installation (⊕) dans la barre d\'adresse',
+          title: 'Icône d\'installation',
+          description: 'Cherchez l\'icône d\'installation (⊕) dans la barre d\'adresse',
           icon: <Download className="h-5 w-5" />,
           details: [
-            'L'icône apparaît à droite de la barre d\'adresse',
+            'L\'icône apparaît à droite de la barre d\'adresse',
             'Elle ressemble à un "+" dans un cercle ou un ordinateur',
             'Si vous ne la voyez pas, attendez quelques secondes'
           ]
         },
         {
           step: 3,
-          title: 'Installer l'application',
+          title: 'Installer l\'application',
           description: 'Cliquez sur l\'icône et sélectionnez "Installer IronTrack"',
           icon: <Plus className="h-5 w-5" />,
           details: [
-            'Une popup d'installation apparaîtra',
+            'Une popup d\'installation apparaîtra',
             'Vérifiez que c\'est bien "IronTrack" qui sera installé',
             'Cliquez sur "Installer" pour continuer'
           ]
