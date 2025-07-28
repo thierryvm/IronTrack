@@ -51,6 +51,7 @@ export interface CustomExercise {
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
   instructions?: string
+  image_url?: string
   
   // Musculation specific
   weight?: number

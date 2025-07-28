@@ -4,6 +4,8 @@ import { Settings, ArrowLeft, ArrowRight, Target, Save } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { CustomExercise, EquipmentItem, FormFieldProps } from '@/types/exercise-wizard'
 import { validateForm } from '@/utils/security'
+import { ExercisePhotoUpload } from '@/components/exercises/ExercisePhotoUpload'
+import { SecureAttachment } from '@/utils/fileUpload'
 
 // Réutilisation des constantes existantes (tous les groupes musculaires)
 const muscleGroups = [
@@ -97,6 +99,8 @@ export const CustomForm: React.FC<CustomFormProps> = ({
   const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>([])
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
+  const [exercisePhoto, setExercisePhoto] = useState<SecureAttachment | null>(null)
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(initialData?.image_url)
 
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -116,6 +120,18 @@ export const CustomForm: React.FC<CustomFormProps> = ({
     }
     fetchEquipment()
   }, [initialData])
+
+  const handlePhotoUploaded = (attachment: SecureAttachment) => {
+    setExercisePhoto(attachment)
+    setCurrentPhotoUrl(attachment.url)
+    setFormData(prev => ({ ...prev, image_url: attachment.url }))
+  }
+
+  const handlePhotoRemoved = () => {
+    setExercisePhoto(null)
+    setCurrentPhotoUrl(undefined)
+    setFormData(prev => ({ ...prev, image_url: undefined }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -354,6 +370,19 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
+        >
+          <ExercisePhotoUpload
+            onPhotoUploaded={handlePhotoUploaded}
+            onPhotoRemoved={handlePhotoRemoved}
+            currentPhoto={currentPhotoUrl}
+            disabled={loading}
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
           className="flex gap-4 pt-6"
         >
           <button
@@ -413,7 +442,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.9 }}
         className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200"
       >
         <div className="flex items-center gap-2 mb-2">
@@ -422,7 +451,8 @@ export const CustomForm: React.FC<CustomFormProps> = ({
         </div>
         <p className="text-sm text-blue-700">
           Choisis un nom descriptif pour ton exercice. La difficulté et le groupe musculaire 
-          nous aideront à te proposer des suggestions personnalisées plus tard.
+          nous aideront à te proposer des suggestions personnalisées plus tard. 
+          Une photo claire de l'exercice aidera les utilisateurs à mieux comprendre le mouvement.
         </p>
       </motion.div>
     </div>
