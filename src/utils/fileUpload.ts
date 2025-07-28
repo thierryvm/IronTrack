@@ -46,7 +46,7 @@ const SECURITY_CONFIG = {
   ] as const,
   
   // Limites strictes
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB (augmenté pour photos iPhone HEIC)
   MAX_FILES_PER_TICKET: 5,
   
   // Magic bytes pour validation contenu
@@ -129,10 +129,33 @@ async function validateMagicBytes(file: File): Promise<boolean> {
         return
       }
       
-      const bytes = new Uint8Array(arrayBuffer.slice(0, 8))
+      const bytes = new Uint8Array(arrayBuffer.slice(0, 12)) // Augmenté pour HEIC
       const expectedBytes = SECURITY_CONFIG.MAGIC_BYTES[file.type as keyof typeof SECURITY_CONFIG.MAGIC_BYTES]
       
       if (!expectedBytes) {
+        // Pour les types non référencés, validation basique par extension
+        if (file.type === 'image/heic' || file.type === 'image/heif') {
+          // Validation HEIC plus flexible - recherche des signatures ftyphei
+          const heicSignatures = [
+            [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63], // ftyp heic
+            [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x78], // ftyp heix  
+            [0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x76, 0x63], // ftyp hevc
+          ]
+          
+          const bytesHex = Array.from(bytes)
+          const hasHeicSignature = heicSignatures.some(signature => {
+            // Chercher la signature dans les premiers 12 bytes
+            for (let i = 0; i <= bytesHex.length - signature.length; i++) {
+              if (signature.every((byte, j) => bytesHex[i + j] === byte)) {
+                return true
+              }
+            }
+            return false
+          })
+          
+          resolve(hasHeicSignature)
+          return
+        }
         resolve(false)
         return
       }
@@ -143,7 +166,7 @@ async function validateMagicBytes(file: File): Promise<boolean> {
     }
     
     reader.onerror = () => resolve(false)
-    reader.readAsArrayBuffer(file.slice(0, 8))
+    reader.readAsArrayBuffer(file.slice(0, 12))
   })
 }
 
@@ -201,7 +224,7 @@ export async function validateFile(file: File): Promise<void> {
   
   if (!validateMimeType(file)) {
     throw new FileUploadError(
-      'Type de fichier non autorisé. Seules les images PNG, JPEG et GIF sont acceptées.',
+      `Type de fichier non autorisé (${file.type || 'inconnu'}). Formats acceptés : PNG, JPEG, GIF, HEIC (iPhone). Vérifiez que votre photo n'est pas corrompue.`,
       'INVALID_MIME_TYPE',
       { fileType: file.type, allowedTypes: SECURITY_CONFIG.ALLOWED_MIME_TYPES }
     )
@@ -216,8 +239,10 @@ export async function validateFile(file: File): Promise<void> {
   }
   
   if (!validateFileSize(file)) {
+    const fileSizeMB = (file.size / 1024 / 1024).toFixed(1)
+    const maxSizeMB = (SECURITY_CONFIG.MAX_FILE_SIZE / 1024 / 1024).toFixed(0)
     throw new FileUploadError(
-      `Fichier trop volumineux. Taille maximum : ${SECURITY_CONFIG.MAX_FILE_SIZE / 1024 / 1024}MB.`,
+      `Fichier trop volumineux (${fileSizeMB}MB). Taille maximum autorisée : ${maxSizeMB}MB. Conseil : compressez votre photo avant l'upload.`,
       'FILE_TOO_LARGE',
       { fileSize: file.size, maxSize: SECURITY_CONFIG.MAX_FILE_SIZE }
     )
@@ -277,7 +302,7 @@ function sanitizeFilename(filename: string): string {
  */
 export async function uploadSecureFile(
   file: File,
-  bucket: string = 'support-attachments'
+  bucket: string = 'avatars'
 ): Promise<UploadResult> {
   try {
     // 1. Validation complète
@@ -384,15 +409,16 @@ export async function uploadMultipleFiles(
 
 /**
  * Upload spécialisé pour les photos d'exercices
+ * Utilise le bucket 'exercise-images' existant dans Supabase Storage
  */
 export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
-  return uploadSecureFile(file, 'exercise-photos')
+  return uploadSecureFile(file, 'exercise-images')
 }
 
 /**
  * Supprime un fichier du storage (cleanup)
  */
-export async function deleteSecureFile(filename: string, bucket: string = 'support-attachments'): Promise<boolean> {
+export async function deleteSecureFile(filename: string, bucket: string = 'avatars'): Promise<boolean> {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
