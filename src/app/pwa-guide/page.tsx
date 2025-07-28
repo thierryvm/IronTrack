@@ -80,12 +80,12 @@ export default function PWAGuidePage() {
         },
         {
           step: 3,
-          title: 'Ajouter à l'écran d'accueil',
-          description: 'Sélectionnez "Ajouter à l'écran d'accueil" dans le menu',
+          title: 'Ajouter à l\'écran d\'accueil',
+          description: 'Sélectionnez "Ajouter à l\'écran d\'accueil" dans le menu',
           icon: <Plus className="h-5 w-5" />,
           details: [
             'Faites défiler dans le menu pour trouver cette option',
-            'L'icône ressemble à un "+" avec un carré',
+            'L\'icône ressemble à un "+" avec un carré',
             'Appuyez dessus pour continuer'
           ]
         },
@@ -102,7 +102,7 @@ export default function PWAGuidePage() {
         }
       ],
       tips: [
-        'L'icône apparaîtra sur votre écran d\'accueil comme une vraie app',
+        'L\'icône apparaîtra sur votre écran d\'accueil comme une vraie app',
         'L\'app s\'ouvrira en mode plein écran sans les barres Safari',
         'Vous recevrez des notifications comme une app native',
         'Fonctionne même en mode avion (pour les données mises en cache)'
@@ -126,7 +126,7 @@ export default function PWAGuidePage() {
           icon: <Chrome className="h-5 w-5" />,
           details: [
             'Utilisez Google Chrome ou Samsung Internet',
-            'Tapez l'URL complète dans la barre d\'adresse',
+            'Tapez l\'URL complète dans la barre d\'adresse',
             'Attendez le chargement complet de la page'
           ]
         },
@@ -190,7 +190,7 @@ export default function PWAGuidePage() {
           icon: <Chrome className="h-5 w-5" />,
           details: [
             'Utilisez le navigateur Samsung Internet (icône bleue)',
-            'Tapez l'URL complète dans la barre d\'adresse',
+            'Tapez l\'URL complète dans la barre d\'adresse',
             'Assurez-vous que la page est entièrement chargée'
           ]
         },
@@ -207,7 +207,7 @@ export default function PWAGuidePage() {
         },
         {
           step: 3,
-          title: 'Ajouter à l'écran d'accueil',
+          title: 'Ajouter à l\'écran d\'accueil',
           description: 'Sélectionnez "Ajouter page à" → "Écran d\'accueil"',
           icon: <Plus className="h-5 w-5" />,
           details: [
