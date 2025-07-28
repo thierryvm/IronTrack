@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft, Trophy, Trash2, Edit3, Plus } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
@@ -16,6 +17,7 @@ interface Exercise {
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
   instructions?: string
+  image_url?: string
   sets?: number
   reps?: number
   duration?: number
@@ -62,7 +64,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       // Charger les données de l'exercice
       const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercises')
-        .select('*')
+        .select('*, image_url')
         .eq('id', exerciseId)
         .single()
 
@@ -178,6 +180,18 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               </div>
             ) : exercise ? (
               <div className="space-y-6">
+                {/* Photo de l'exercice */}
+                {exercise.image_url && (
+                  <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100">
+                    <Image
+                      src={exercise.image_url}
+                      alt={`Photo de ${exercise.name}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                    />
+                  </div>
+                )}
                 {/* Info exercice */}
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{exercise.name}</h3>
