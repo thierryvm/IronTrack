@@ -30,7 +30,7 @@ export default function SupportPage() {
               <h3 className="font-semibold text-gray-900 mb-4">Sections</h3>
               <nav className="space-y-2">
                 {[
-                  { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d'entraînement' },
+                  { id: 'partners', label: 'Training Partners', icon: Users, desc: 'Partenaires d\'entraînement' },
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
                   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, desc: 'Suivi des performances' },
                   { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' },
