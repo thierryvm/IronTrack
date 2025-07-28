@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
@@ -21,6 +22,7 @@ interface Exercise {
   last_duration?: number
   last_date?: string
   description?: string
+  image_url?: string
   created_at?: string
 }
 
@@ -100,7 +102,7 @@ export default function ExercisesPage() {
     const to = from + PAGE_SIZE - 1;
     const { data: exercisesData, error } = await supabase
       .from('exercises')
-      .select('*')
+      .select('*, image_url')
       .order('created_at', { ascending: false })
       .range(from, to);
 
@@ -346,6 +348,24 @@ export default function ExercisesPage() {
                 className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${difficultyColor.border} overflow-hidden`}
                 onClick={() => setSelectedExerciseId(exercise.id.toString())}
               >
+                {/* Image de l'exercice */}
+                {exercise.image_url && (
+                  <div className="relative h-32 sm:h-40 bg-gray-100">
+                    <Image
+                      src={exercise.image_url}
+                      alt={`Photo de ${exercise.name}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                    {/* Overlay avec difficulté */}
+                    <div className="absolute top-2 right-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white shadow-lg`}>
+                        {exercise.difficulty}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3 min-w-0 flex-1">
@@ -381,9 +401,13 @@ export default function ExercisesPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white`}>
-                      {exercise.difficulty}
-                    </span>
+                    {/* Afficher difficulté uniquement si pas d'image */}
+                    {!exercise.image_url && (
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white`}>
+                        {exercise.difficulty}
+                      </span>
+                    )}
+                    {exercise.image_url && <div></div>}
 
                     <div className="flex space-x-1 flex-shrink-0">
                       <button

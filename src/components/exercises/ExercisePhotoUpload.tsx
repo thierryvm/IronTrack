@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Camera, 
@@ -51,6 +51,18 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
 
   // Formats acceptés avec HEIC
   const acceptedTypes = 'image/png,image/jpeg,image/jpg,image/gif,image/heic,image/heif'
+  
+  // Détection mobile pour optimiser l'interface
+  const [isMobile, setIsMobile] = useState(false)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const resetUploadState = useCallback(() => {
     setUploadState({
@@ -154,6 +166,20 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       fileInputRef.current.click()
     }
   }
+  
+  const openCameraDialog = () => {
+    if (!disabled && !uploadState.isUploading && fileInputRef.current) {
+      // Déclencher l'input avec capture pour ouvrir la caméra
+      fileInputRef.current.setAttribute('capture', 'environment')
+      fileInputRef.current.click()
+      // Remettre capture à false après
+      setTimeout(() => {
+        if (fileInputRef.current) {
+          fileInputRef.current.removeAttribute('capture')
+        }
+      }, 100)
+    }
+  }
 
   const removePhoto = () => {
     if (onPhotoRemoved) {
@@ -189,14 +215,35 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
             {/* Overlay avec actions */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
-                <button
-                  onClick={openFileDialog}
-                  className="bg-white text-gray-900 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
-                  disabled={disabled || uploadState.isUploading}
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  Changer
-                </button>
+                {isMobile ? (
+                  <>
+                    <button
+                      onClick={openCameraDialog}
+                      className="bg-orange-500 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-orange-600 flex items-center min-h-[44px] touch-manipulation"
+                      disabled={disabled || uploadState.isUploading}
+                    >
+                      <Camera className="h-4 w-4 mr-1" />
+                      Caméra
+                    </button>
+                    <button
+                      onClick={openFileDialog}
+                      className="bg-white text-gray-900 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
+                      disabled={disabled || uploadState.isUploading}
+                    >
+                      <ImageIcon className="h-4 w-4 mr-1" />
+                      Photos
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={openFileDialog}
+                    className="bg-white text-gray-900 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
+                    disabled={disabled || uploadState.isUploading}
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Changer
+                  </button>
+                )}
                 <button
                   onClick={removePhoto}
                   className="bg-red-600 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-red-700 flex items-center min-h-[44px] touch-manipulation"
@@ -215,9 +262,9 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          onClick={openFileDialog}
+          onClick={isMobile ? undefined : openFileDialog}
           className={`
-            relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer
+            relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center ${isMobile ? '' : 'cursor-pointer'}
             transition-all duration-200 hover:bg-gray-50 touch-manipulation min-h-[200px] sm:min-h-[240px]
             ${isDragging 
               ? 'border-orange-500 bg-orange-50' 
@@ -233,11 +280,42 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
-              openFileDialog()
+              if (!isMobile) openFileDialog()
             }
           }}
           aria-label="Zone d'upload de photo d'exercice"
         >
+          {/* Boutons mobiles overlay */}
+          {isMobile && !uploadState.isUploading && (
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 flex flex-col items-center justify-center space-y-4">
+              <div className="flex space-x-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openCameraDialog()
+                  }}
+                  className="bg-orange-500 text-white px-6 py-4 rounded-xl font-medium hover:bg-orange-600 flex items-center min-h-[56px] touch-manipulation shadow-lg"
+                  disabled={disabled || uploadState.isUploading}
+                >
+                  <Camera className="h-6 w-6 mr-3" />
+                  Prendre une photo
+                </button>
+              </div>
+              <div className="flex space-x-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openFileDialog()
+                  }}
+                  className="bg-blue-500 text-white px-6 py-4 rounded-xl font-medium hover:bg-blue-600 flex items-center min-h-[56px] touch-manipulation shadow-lg"
+                  disabled={disabled || uploadState.isUploading}
+                >
+                  <ImageIcon className="h-6 w-6 mr-3" />
+                  Choisir de la photothèque
+                </button>
+              </div>
+            </div>
+          )}
           {/* Contenu de la zone d'upload */}
           <div className="space-y-3">
             <div className="flex items-center justify-center">
@@ -266,7 +344,10 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     {isDragging ? 'Relâchez pour uploader' : 'Ajoutez une photo'}
                   </p>
                   <p className="text-sm sm:text-base text-gray-600 mb-3">
-                    Glissez votre photo ici ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span>
+                    {isMobile 
+                      ? <><span className="text-orange-600 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
+                      : <>Glissez votre photo ici ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span></>
+                    }
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
                     PNG, JPEG, GIF, HEIC • Max 10MB
