@@ -30,14 +30,19 @@ const SECURITY_CONFIG = {
   ALLOWED_MIME_TYPES: [
     'image/png',
     'image/jpeg',
-    'image/gif'
+    'image/gif',
+    'image/heic',
+    'image/heif'
   ] as const,
   
   // Extensions autorisées (double validation)
   ALLOWED_EXTENSIONS: [
     'png',
     'jpeg',
-    'gif'
+    'jpg',
+    'gif',
+    'heic',
+    'heif'
   ] as const,
   
   // Limites strictes
@@ -48,7 +53,9 @@ const SECURITY_CONFIG = {
   MAGIC_BYTES: {
     'image/png': [0x89, 0x50, 0x4E, 0x47],
     'image/jpeg': [0xFF, 0xD8, 0xFF],
-    'image/gif': [0x47, 0x49, 0x46]
+    'image/gif': [0x47, 0x49, 0x46],
+    'image/heic': [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63],
+    'image/heif': [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x66]
   }
 } as const
 
@@ -269,7 +276,8 @@ function sanitizeFilename(filename: string): string {
  * Upload sécurisé d'un fichier vers Supabase Storage
  */
 export async function uploadSecureFile(
-  file: File
+  file: File,
+  bucket: string = 'support-attachments'
 ): Promise<UploadResult> {
   try {
     // 1. Validation complète
@@ -289,7 +297,7 @@ export async function uploadSecureFile(
     
     // 4. Upload vers Supabase Storage
     const { error: uploadError } = await supabase.storage
-      .from('support-attachments')
+      .from(bucket)
       .upload(secureFilename, file, {
         cacheControl: '3600',
         upsert: false // Pas d'écrasement
@@ -305,7 +313,7 @@ export async function uploadSecureFile(
     
     // 5. Générer URL signée sécurisée
     const { data: urlData } = await supabase.storage
-      .from('support-attachments')
+      .from(bucket)
       .createSignedUrl(secureFilename, 24 * 60 * 60) // 24h
     
     if (!urlData?.signedUrl) {
@@ -375,9 +383,16 @@ export async function uploadMultipleFiles(
 }
 
 /**
+ * Upload spécialisé pour les photos d'exercices
+ */
+export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
+  return uploadSecureFile(file, 'exercise-photos')
+}
+
+/**
  * Supprime un fichier du storage (cleanup)
  */
-export async function deleteSecureFile(filename: string): Promise<boolean> {
+export async function deleteSecureFile(filename: string, bucket: string = 'support-attachments'): Promise<boolean> {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -388,7 +403,7 @@ export async function deleteSecureFile(filename: string): Promise<boolean> {
     if (!filename.startsWith(user.id + '/')) return false
     
     const { error } = await supabase.storage
-      .from('support-attachments')
+      .from(bucket)
       .remove([filename])
     
     return !error
