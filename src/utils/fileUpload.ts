@@ -126,7 +126,7 @@ function validateMimeType(file: File): boolean {
   })
   
   // Si le type MIME est défini et reconnu (incluant types vides)
-  if ((SECURITY_CONFIG.ALLOWED_MIME_TYPES as readonly string[]).includes(file.type as any)) {
+  if ((SECURITY_CONFIG.ALLOWED_MIME_TYPES as readonly string[]).includes(file.type as string)) {
     console.log('[DEBUG] MIME type accepted:', file.type)
     return true
   }
@@ -587,13 +587,31 @@ export async function uploadSecureFile(
       )
     }
     
-    // 5. Générer URL signée sécurisée
-    const { data: urlData } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(secureFilename, 24 * 60 * 60) // 24h
+    // 5. Générer URL publique persistante (pour images d'exercices)
+    let publicUrl: string
     
-    if (!urlData?.signedUrl) {
-      throw new FileUploadError('Impossible de générer l\'URL du fichier', 'URL_GENERATION_FAILED')
+    if (bucket === 'exercise-images') {
+      // Pour les images d'exercices : URL publique persistante
+      const { data: urlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(secureFilename)
+      
+      publicUrl = urlData.publicUrl
+      
+      if (!publicUrl) {
+        throw new FileUploadError('Impossible de générer l\'URL publique du fichier', 'URL_GENERATION_FAILED')
+      }
+    } else {
+      // Pour autres buckets : URL signée temporaire
+      const { data: urlData } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(secureFilename, 24 * 60 * 60) // 24h
+      
+      if (!urlData?.signedUrl) {
+        throw new FileUploadError('Impossible de générer l\'URL du fichier', 'URL_GENERATION_FAILED')
+      }
+      
+      publicUrl = urlData.signedUrl
     }
     
     // 6. Créer objet attachment sécurisé
@@ -603,7 +621,7 @@ export async function uploadSecureFile(
       originalName: sanitizedOriginalName,
       type: file.type,
       size: file.size,
-      url: urlData.signedUrl,
+      url: publicUrl,
       uploadedAt: new Date().toISOString()
     }
     

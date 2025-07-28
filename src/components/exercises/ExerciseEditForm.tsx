@@ -41,7 +41,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
   const [saving, setSaving] = useState(false)
   const [exercise, setExercise] = useState<ExerciseData | null>(null)
   const [equipmentOptions, setEquipmentOptions] = useState<{id: number, name: string}[]>([])
-  const [exercisePhoto, setExercisePhoto] = useState<SecureAttachment | null>(null)
+  const [, setExercisePhoto] = useState<SecureAttachment | null>(null)
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -208,7 +208,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
               <ArrowLeft className="w-5 h-5 text-gray-500" />
             </button>
             <h1 className="text-lg font-semibold text-gray-900">
-              Modifier l'exercice
+              Modifier l&apos;exercice
             </h1>
           </div>
           <button
@@ -230,7 +230,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
             {/* Nom */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom de l'exercice
+                Nom de l&apos;exercice
               </label>
               <input
                 type="text"
@@ -244,7 +244,7 @@ export const ExerciseEditForm: React.FC<ExerciseEditFormProps> = ({ exerciseId }
             {/* Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type d'exercice
+                Type d&apos;exercice
               </label>
               <select
                 value={exercise.exercise_type}
