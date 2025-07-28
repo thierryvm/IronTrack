@@ -303,7 +303,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
           >
             <h4 className="text-sm font-medium text-gray-900 flex items-center">
               <FileImage className="h-4 w-4 mr-2" />
-              Progression de l&apos;upload
+              Progression de l'upload
             </h4>
             
             {uploadProgress.map((progress) => (

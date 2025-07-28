@@ -22,7 +22,7 @@ export default function AuthCodeErrorPage() {
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Erreur de connexion</h1>
         <p className="text-gray-700 mb-4">
-          Le lien d&apos;inscription ou de connexion est invalide, expiré ou a déjà été utilisé.<br />
+          Le lien d'inscription ou de connexion est invalide, expiré ou a déjà été utilisé.<br />
           Merci de recommencer la procédure.
         </p>
         <p className="text-gray-500 text-sm mb-4">Tu vas être redirigé automatiquement vers la page de connexion...</p>

@@ -429,7 +429,7 @@ export default function WorkoutsPage() {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🏋️</div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucune séance trouvée</h3>
-                <p className="text-gray-500 mb-6">Commence par créer ta première séance d&apos;entraînement !</p>
+                <p className="text-gray-500 mb-6">Commence par créer ta première séance d'entraînement !</p>
                 <Link
                   href="/workouts/new"
                   className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors inline-flex items-center space-x-2"

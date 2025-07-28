@@ -307,7 +307,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
           <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
           <p className="text-sm">Aucun aliment trouvé pour &quot;{query}&quot;</p>
           <p className="text-xs text-gray-400 mt-1">
-            Essayez un terme plus général ou vérifiez l&apos;orthographe
+            Essayez un terme plus général ou vérifiez l'orthographe
           </p>
         </div>
       )}

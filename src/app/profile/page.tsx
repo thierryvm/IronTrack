@@ -894,7 +894,7 @@ export default function ProfilePage() {
           >
             {/* Statistiques détaillées */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Statistiques d&apos;entraînement</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Statistiques d'entraînement</h3>
               
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -1117,7 +1117,7 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Rappels d&apos;entraînement</p>
+                    <p className="font-medium text-gray-900">Rappels d'entraînement</p>
                     <p className="text-sm text-gray-600">Recevoir des notifications pour tes séances</p>
                   </div>
                   <button
@@ -1199,7 +1199,7 @@ export default function ProfilePage() {
                       </div>
                     </button>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1 font-medium">Niveau de punchlines d&apos;IronBuddy</p>
+                      <p className="text-sm text-gray-600 mb-1 font-medium">Niveau de punchlines d'IronBuddy</p>
                       <div className="flex gap-2">
                         <button
                           className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'discret' ? 'bg-gray-200 border-orange-500' : 'bg-gray-50 border-gray-300'}`}
@@ -1214,7 +1214,7 @@ export default function ProfilePage() {
                           onClick={() => handleIronBuddyLevelChange('ambianceur')}
                         >Ambianceur</button>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">IronBuddy s&apos;adapte à ton humeur&nbsp;!</p>
+                      <p className="text-xs text-gray-500 mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
                     </div>
                   </div>
                   <div>
@@ -1226,14 +1226,14 @@ export default function ProfilePage() {
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">Aide & support</p>
-                        <p className="text-sm text-gray-600">Besoin d&apos;un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
+                        <p className="text-sm text-gray-600">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
                     <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3">
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">FAQ</p>
-                        <p className="text-sm text-gray-600">Les questions que m&apos;ême IronBuddy se pose parfois…</p>
+                        <p className="text-sm text-gray-600">Les questions que m'ême IronBuddy se pose parfois…</p>
                       </div>
                     </button>
                   </div>
@@ -1292,7 +1292,7 @@ export default function ProfilePage() {
                       <span className="mt-1 text-xs font-bold text-center">SuperStar</span>
                     </button>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l&apos;app et t&apos;encouragera à chaque étape !</p>
+                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l'app et t'encouragera à chaque étape !</p>
                 </div>
               </div>
             </div>
@@ -1305,7 +1305,7 @@ export default function ProfilePage() {
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
             <DialogTitle className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</DialogTitle>
-            <DialogDescription className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s&apos;en remettre…</DialogDescription>
+            <DialogDescription className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s'en remettre…</DialogDescription>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
               <button onClick={confirmDeleteAccount} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold">Oui, supprimer</button>
@@ -1318,9 +1318,9 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d&apos;avatar</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d'avatar</DialogTitle>
             <DialogDescription className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</DialogDescription>
-            <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n&apos;est jamais partagée sans ton accord. (RGPD friendly !)</div>
+            <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)</div>
             {selectedFile ? (
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative w-48 h-48 bg-gray-100 rounded-full overflow-hidden">

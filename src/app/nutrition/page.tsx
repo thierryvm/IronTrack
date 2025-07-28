@@ -512,7 +512,7 @@ export default function NutritionPage() {
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
                 <Calendar className="h-4 w-4" />
-                <span>Aujourd&apos;hui</span>
+                <span>Aujourd'hui</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">{todayMeals.length} repas enregistrés</span>

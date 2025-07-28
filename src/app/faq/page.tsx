@@ -84,7 +84,7 @@ const faqData: FAQItem[] = [
   {
     id: 'workouts-6',
     question: 'Quelles métriques puis-je saisir pour le cardio ?',
-    answer: 'Pour le cardio, vous pouvez saisir : distance (km/m selon l&apos;exercice), durée, calories, vitesse. Métriques spécialisées - Rameur : SPM (coups/minute), watts (puissance), rythme cardiaque. Course/Tapis : rythme cardiaque, inclinaison (%). Vélo : cadence (RPM), résistance, rythme cardiaque. Toutes les métriques sont adaptées aux standards belges.',
+    answer: 'Pour le cardio, vous pouvez saisir : distance (km/m selon l\'exercice), durée, calories, vitesse. Métriques spécialisées - Rameur : SPM (coups/minute), watts (puissance), rythme cardiaque. Course/Tapis : rythme cardiaque, inclinaison (%). Vélo : cadence (RPM), résistance, rythme cardiaque. Toutes les métriques sont adaptées aux standards belges.',
     category: 'workouts'
   },
   {
@@ -96,13 +96,13 @@ const faqData: FAQItem[] = [
   {
     id: 'workouts-8',
     question: 'Comment modifier un exercice ou une performance existante ?',
-    answer: 'Depuis la page Exercices, cliquez sur l&apos;icône œil pour voir les détails → "Modifier l&apos;exercice" pour changer les infos de base, ou "Nouvelle performance" pour ajouter des résultats. Pour modifier une performance existante, utilisez l&apos;icône crayon dans l&apos;historique. Toutes vos modifications incluent les nouvelles métriques cardio avancées.',
+    answer: 'Depuis la page Exercices, cliquez sur l\'icône œil pour voir les détails → "Modifier l\'exercice" pour changer les infos de base, ou "Nouvelle performance" pour ajouter des résultats. Pour modifier une performance existante, utilisez l\'icône crayon dans l\'historique. Toutes vos modifications incluent les nouvelles métriques cardio avancées.',
     category: 'workouts'
   },
   {
     id: 'workouts-9',
     question: 'Comment utiliser la mascotte IronBuddy pendant mes entraînements ?',
-    answer: 'IronBuddy est votre coach personnel accessible via le bouton flottant orange en bas à droite. Deux modes : "Support" pour l&apos;aide technique, "Coach" pour motivation/conseils. La mascotte s&apos;adapte à votre niveau de punchlines choisi dans Profil (Discret/Normal/Ambianceur) et propose 30+ blagues, conseils, motivations et défis par catégorie.',
+    answer: 'IronBuddy est votre coach personnel accessible via le bouton flottant orange en bas à droite. Deux modes : "Support" pour l'aide technique, "Coach" pour motivation/conseils. La mascotte s'adapte à votre niveau de punchlines choisi dans Profil (Discret/Normal/Ambianceur) et propose 30+ blagues, conseils, motivations et défis par catégorie.',
     category: 'workouts'
   },
 

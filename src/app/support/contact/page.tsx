@@ -190,7 +190,7 @@ function ContactSupportPageContent() {
                 <li>• Soyez précis dans votre description</li>
                 <li>• Mentionnez les étapes pour reproduire le problème</li>
                 <li>• Précisez votre navigateur et appareil</li>
-                <li>• Joignez des captures d&apos;écran si possible</li>
+                <li>• Joignez des captures d'écran si possible</li>
               </ul>
             </div>
 
@@ -210,7 +210,7 @@ function ContactSupportPageContent() {
                   href="/support"
                   className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <p className="font-medium text-gray-900 mb-1">Guide d&apos;utilisation</p>
+                  <p className="font-medium text-gray-900 mb-1">Guide d'utilisation</p>
                   <p className="text-xs text-gray-600">Documentation complète</p>
                 </Link>
               </div>

@@ -214,7 +214,7 @@ export default function ExercisesPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">Exercices</h1>
-              <p className="text-orange-100">Gère ta bibliothèque d&apos;exercices</p>
+              <p className="text-orange-100">Gère ta bibliothèque d'exercices</p>
             </div>
             <Link
               href="/exercises/new"
@@ -487,7 +487,7 @@ export default function ExercisesPage() {
             <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <Trash2 className="h-6 w-6 text-red-500" /> 
-                Supprimer l&apos;exercice ?
+                Supprimer l'exercice ?
               </h2>
               <p className="mb-6">
                 Tu es sûr de vouloir supprimer &quot;{exerciseToDelete?.name}&quot; ? 

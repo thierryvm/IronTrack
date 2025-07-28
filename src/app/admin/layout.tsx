@@ -191,7 +191,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
               href="/"
               className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
             >
-              Retour à l&apos;accueil
+              Retour à l'accueil
             </Link>
             <button
               onClick={() => window.location.reload()}

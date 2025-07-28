@@ -78,7 +78,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
               </div>
               <div>
                 <p className="text-sm font-medium text-amber-800">
-                  Google n&apos;autorise pas la connexion depuis les applications sociales
+                  Google n'autorise pas la connexion depuis les applications sociales
                 </p>
                 <p className="text-sm text-amber-700 mt-1">
                   Pour votre sécurité, veuillez ouvrir ce lien dans votre navigateur principal.

@@ -262,7 +262,7 @@ export default function AdminTicketDetailPage() {
       <div className="text-center py-12">
         <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">Ticket non trouvé</h3>
-        <p className="text-gray-500 mb-4">Ce ticket n&apos;existe pas ou a été supprimé.</p>
+        <p className="text-gray-500 mb-4">Ce ticket n'existe pas ou a été supprimé.</p>
         <button
           onClick={() => router.push('/admin/tickets')}
           className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
@@ -493,7 +493,7 @@ export default function AdminTicketDetailPage() {
                       onChange={(e) => setIsInternalNote(e.target.checked)}
                       className="w-4 h-4 text-orange-600 focus:ring-orange-500 rounded"
                     />
-                    <span className="text-sm text-gray-700">Note interne (non visible par l&apos;utilisateur)</span>
+                    <span className="text-sm text-gray-700">Note interne (non visible par l'utilisateur)</span>
                   </label>
                 </div>
 
@@ -503,8 +503,8 @@ export default function AdminTicketDetailPage() {
                   rows={6}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                   placeholder={isInternalNote 
-                    ? "Rédigez une note interne pour l&apos;équipe..."
-                    : "Rédigez votre réponse à l&apos;utilisateur..."
+                    ? "Rédigez une note interne pour l'équipe..."
+                    : "Rédigez votre réponse à l'utilisateur..."
                   }
                 />
 

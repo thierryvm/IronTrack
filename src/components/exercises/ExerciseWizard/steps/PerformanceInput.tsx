@@ -35,7 +35,7 @@ const StrengthPerformanceForm: React.FC<{
           placeholder="60"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
-        <p className="text-xs text-gray-500 mt-1">Poids total utilisé pour l&apos;exercice</p>
+        <p className="text-xs text-gray-500 mt-1">Poids total utilisé pour l'exercice</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -216,7 +216,7 @@ const CardioPerformanceForm: React.FC<{
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
           />
           {isRowing && (
-            <p className="text-xs text-gray-500 mt-1">Vitesse en km/h si affichée sur l&apos;écran du rameur</p>
+            <p className="text-xs text-gray-500 mt-1">Vitesse en km/h si affichée sur l'écran du rameur</p>
           )}
         </div>
         <div>
@@ -250,7 +250,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="24"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-500 mt-1">Affiché sur l&apos;écran du rameur - Laissez vide si introuvable</p>
+            <p className="text-xs text-gray-500 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -264,7 +264,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="120"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-500 mt-1">Affiché sur l&apos;écran du rameur - Laissez vide si introuvable</p>
+            <p className="text-xs text-gray-500 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
           </div>
         </div>
       )}
@@ -432,7 +432,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
             Ta première performance
           </h2>
           <p className="text-gray-600">
-            Ajoute tes performances pour suivre tes progrès ! Tu peux aussi passer cette étape et l&apos;ajouter plus tard.
+            Ajoute tes performances pour suivre tes progrès ! Tu peux aussi passer cette étape et l'ajouter plus tard.
           </p>
         </div>
 

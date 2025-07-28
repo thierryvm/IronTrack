@@ -573,7 +573,7 @@ export default function CalendarPage() {
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.02 }}
                       >
-                        <span className="hidden sm:inline">Aujourd&apos;hui</span>
+                        <span className="hidden sm:inline">Aujourd'hui</span>
                         <span className="sm:hidden">Auj.</span>
                       </motion.button>
                       
@@ -1024,7 +1024,7 @@ export default function CalendarPage() {
                   <div className="space-y-2">
                     <p>Pour voir les séances de tes partenaires :</p>
                     <ul className="ml-4 space-y-1">
-                      <li>• Assure-toi d&apos;avoir des partenaires acceptés</li>
+                      <li>• Assure-toi d'avoir des partenaires acceptés</li>
                       <li>• Vérifie que tes partenaires ont activé le partage des entraînements</li>
                       <li>• Demande-leur de configurer leurs paramètres de partage</li>
                     </ul>
@@ -1245,7 +1245,7 @@ export default function CalendarPage() {
                 
                 {/* Répartition par type en version compacte */}
                 <div className="mt-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Types d&apos;exercices</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">Types d'exercices</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {repartitionTypes.filter(type => type.count > 0).map(type => {
                       const typeObj = workoutTypes.find(t => t.name === type.name)

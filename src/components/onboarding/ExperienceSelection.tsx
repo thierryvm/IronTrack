@@ -40,10 +40,10 @@ export function ExperienceSelection({ value, onChange }: ExperienceSelectionProp
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Quel est votre niveau d&apos;expérience ?
+          Quel est votre niveau d'expérience ?
         </h2>
         <p className="text-gray-600">
-          Cela nous aidera à adapter l&apos;intensité et la complexité de vos entraînements
+          Cela nous aidera à adapter l'intensité et la complexité de vos entraînements
         </p>
       </div>
 

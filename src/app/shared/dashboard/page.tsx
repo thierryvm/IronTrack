@@ -311,7 +311,7 @@ export default function SharedDashboardPage() {
             </div>
             <div>
               <h4 className="font-medium mb-2">📈 Progrès</h4>
-              <p>Suivre l&apos;évolution des performances et objectifs de vos partenaires (bientôt).</p>
+              <p>Suivre l'évolution des performances et objectifs de vos partenaires (bientôt).</p>
             </div>
           </div>
         </div>

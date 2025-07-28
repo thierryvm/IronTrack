@@ -848,7 +848,7 @@ export default function AdminUsersPage() {
             >
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {!selectedUser.is_banned ? 'Bannir' : 'Débannir'} l&apos;utilisateur
+                  {!selectedUser.is_banned ? 'Bannir' : 'Débannir'} l'utilisateur
                 </h3>
                 <p className="text-sm text-gray-600">
                   {formatUserName(selectedUser)}
@@ -932,13 +932,13 @@ export default function AdminUsersPage() {
               className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white rounded-xl shadow-2xl p-6"
             >
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-red-900 mb-2">Supprimer l&apos;utilisateur</h3>
+                <h3 className="text-lg font-semibold text-red-900 mb-2">Supprimer l'utilisateur</h3>
                 <p className="text-sm text-gray-600">
                   Êtes-vous sûr de vouloir supprimer définitivement {formatUserName(selectedUser)} ?
                 </p>
                 <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-xs text-red-700">
-                    ⚠️ Cette action est irréversible et supprimera toutes les données de l&apos;utilisateur.
+                    ⚠️ Cette action est irréversible et supprimera toutes les données de l'utilisateur.
                   </p>
                 </div>
               </div>
