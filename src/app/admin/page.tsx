@@ -197,7 +197,6 @@ export default function AdminDashboard() {
       hasModeratorPermission: hasPermission('moderator'),
       hasStats: !!stats,
       authLoading: authLoading,
-      localLoading: loading,
       shouldLoad: hasPermission('moderator') && !stats && !authLoading
     })
     

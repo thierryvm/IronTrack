@@ -735,7 +735,6 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl shadow-md p-2 mb-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200"
-          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div className="flex space-x-0.5 min-w-[300px] md:min-w-0 w-full flex-nowrap">
             {tabs.map(tab => {
