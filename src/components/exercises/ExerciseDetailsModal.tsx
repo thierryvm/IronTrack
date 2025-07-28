@@ -160,7 +160,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               <ArrowLeft className="w-5 h-5 text-gray-500" />
             </button>
             <h2 className="text-lg font-semibold text-gray-900 text-center flex-1">
-              Détails de l&apos;exercice
+              Détails de l'exercice
             </h2>
             <button
               onClick={onClose}
@@ -222,7 +222,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <Edit3 className="h-4 w-4" />
-                    Modifier l&apos;exercice
+                    Modifier l'exercice
                   </button>
                   <button
                     onClick={() => {
@@ -300,7 +300,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               </div>
             ) : (
               <div className="text-center py-12 text-red-500">
-                Erreur lors du chargement de l&apos;exercice
+                Erreur lors du chargement de l'exercice
               </div>
             )}
           </div>

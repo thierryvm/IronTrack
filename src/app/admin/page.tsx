@@ -550,7 +550,7 @@ export default function AdminDashboard() {
                 <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-500 text-sm">Aucune activité dans la dernière heure</p>
                 <p className="text-gray-400 text-xs mt-1">
-                  Consultez les logs complets pour plus d&apos;historique
+                  Consultez les logs complets pour plus d'historique
                 </p>
               </div>
             ) : (

@@ -193,7 +193,7 @@ export default function AdminLogsPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="h-4 w-4 inline mr-1" />
-                Type d&apos;action
+                Type d'action
               </label>
               <select
                 value={filters.action}

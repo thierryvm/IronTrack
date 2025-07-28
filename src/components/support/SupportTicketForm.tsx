@@ -232,7 +232,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <Paperclip className="h-4 w-4 inline mr-1" />
-            Images et captures d&apos;écran (optionnel)
+            Images et captures d'écran (optionnel)
           </label>
           <SecureFileUpload
             onUploadComplete={(newAttachments) => {

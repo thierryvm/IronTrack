@@ -286,7 +286,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                   Entraînements
                 </h3>
                 <p className="text-sm text-gray-500">
-                  Partager vos séances d&apos;entraînement et exercices
+                  Partager vos séances d'entraînement et exercices
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">

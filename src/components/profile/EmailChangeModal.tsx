@@ -162,7 +162,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">
-                Changer d&apos;email
+                Changer d'email
               </h3>
               <p className="text-sm text-gray-600">Processus sécurisé</p>
             </div>
@@ -288,7 +288,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-yellow-800">
-                <strong>Important :</strong> Cliquez sur le lien dans l&apos;email pour confirmer le changement. 
+                <strong>Important :</strong> Cliquez sur le lien dans l'email pour confirmer le changement. 
                 Vérifiez également vos spams.
               </p>
             </div>

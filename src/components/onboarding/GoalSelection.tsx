@@ -47,7 +47,7 @@ export function GoalSelection({ value, onChange }: GoalSelectionProps) {
           Quel est votre objectif principal ?
         </h2>
         <p className="text-gray-600">
-          Choisissez l&apos;objectif qui vous correspond le mieux pour personnaliser votre programme
+          Choisissez l'objectif qui vous correspond le mieux pour personnaliser votre programme
         </p>
       </div>
 

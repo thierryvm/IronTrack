@@ -270,7 +270,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
             {/* Note d'aide */}
             <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-blue-700 text-sm">
-                💡 <strong>Astuce :</strong> Vous pourrez toujours ajouter des performances plus tard depuis la page de l&apos;exercice.
+                💡 <strong>Astuce :</strong> Vous pourrez toujours ajouter des performances plus tard depuis la page de l'exercice.
               </p>
             </div>
           </motion.div>

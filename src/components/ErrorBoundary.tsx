@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               Oups, une erreur est survenue
             </h2>
             <p className="text-gray-600 mb-6">
-              Une erreur inattendue s&apos;est produite. Veuillez actualiser la page.
+              Une erreur inattendue s'est produite. Veuillez actualiser la page.
             </p>
             <button
               onClick={() => window.location.reload()}

@@ -160,7 +160,7 @@ export default function SharedNutritionPage() {
                 <Info className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-red-900">Erreur d&apos;accès</h3>
+                <h3 className="text-lg font-semibold text-red-900">Erreur d'accès</h3>
                 <p className="text-red-700">{error}</p>
                 <div className="mt-4 space-y-2 text-sm text-red-600">
                   <p>Vérifiez que :</p>
@@ -375,7 +375,7 @@ export default function SharedNutritionPage() {
               Aucune donnée nutrition disponible
             </h3>
             <p className="text-gray-600">
-              {getPartnerDisplayName(nutritionData.partner)} n&apos;a pas encore enregistré de repas pour cette période.
+              {getPartnerDisplayName(nutritionData.partner)} n'a pas encore enregistré de repas pour cette période.
             </p>
           </div>
         )}

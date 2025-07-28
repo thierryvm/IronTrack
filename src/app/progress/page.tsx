@@ -1117,7 +1117,7 @@ export default function ProgressPage() {
           </div>
         )}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Type d&apos;objectif</label>
+          <label className="block text-gray-700 font-medium mb-2">Type d'objectif</label>
           <select
             value={goalType}
             onChange={e => setGoalType(e.target.value as GoalType)}
@@ -1618,7 +1618,7 @@ export default function ProgressPage() {
                 disabled={goalLoading}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
               >
-                {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l&apos;objectif</>}
+                {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l'objectif</>}
               </button>
             </form>
           </div>
@@ -1628,7 +1628,7 @@ export default function ProgressPage() {
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
             <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Trash2 className="h-6 w-6 text-red-500" /> Supprimer l&apos;objectif ?</h2>
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Trash2 className="h-6 w-6 text-red-500" /> Supprimer l'objectif ?</h2>
               <p className="mb-6">Tu es sûr de vouloir supprimer cet objectif ? IronBuddy va pleurer un peu…</p>
               <div className="flex justify-end gap-2">
                 <button onClick={cancelDeleteGoal} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>

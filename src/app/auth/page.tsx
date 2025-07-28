@@ -466,7 +466,7 @@ function AuthContent() {
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-base"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : 'S\'inscrire'.replace("'", "&apos;")}
+              {loading ? 'Inscription...' : 'S\'inscrire'.replace("'", "'")}
             </button>
             <div className="text-center mt-2">
               <button
@@ -555,7 +555,7 @@ function AuthContent() {
                 className="text-orange-600 hover:underline text-sm"
                 onClick={() => setShowSignUp(true)}
               >
-                Pas de compte ? S&apos;inscrire
+                Pas de compte ? S'inscrire
               </button>
             </div>
           </>
@@ -564,7 +564,7 @@ function AuthContent() {
           <p className="text-sm text-gray-500">
             En continuant, tu acceptes nos{' '}
             <a href="/legal/terms" className="text-orange-600 hover:text-orange-700 font-medium">
-              conditions d&apos;utilisation
+              conditions d'utilisation
             </a>
             {' '}et notre{' '}
             <a href="/legal/privacy" className="text-orange-600 hover:text-orange-700 font-medium">

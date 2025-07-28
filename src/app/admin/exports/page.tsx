@@ -290,7 +290,7 @@ export default function AdminExportsPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Export de Données</h1>
-            <p className="text-gray-600">Exportez les données de l&apos;application pour analyse ou sauvegarde</p>
+            <p className="text-gray-600">Exportez les données de l'application pour analyse ou sauvegarde</p>
           </div>
         </div>
 
@@ -330,7 +330,7 @@ export default function AdminExportsPage() {
 
       {/* Configuration d'export */}
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Configuration de l&apos;Export</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Configuration de l'Export</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Type de données */}
@@ -361,7 +361,7 @@ export default function AdminExportsPage() {
 
           {/* Format */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Format d&apos;export</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Format d'export</label>
             <div className="space-y-3">
               {[
                 { value: 'json', label: 'JSON (structure complète)' },
@@ -435,7 +435,7 @@ export default function AdminExportsPage() {
             ) : (
               <>
                 <Download className="h-5 w-5 mr-2" />
-                Lancer l&apos;export
+                Lancer l'export
               </>
             )}
           </button>

@@ -26,7 +26,7 @@ export default function TermsOfService() {
 
           <div className="flex items-center mb-6 sm:mb-8">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500 mr-3" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Conditions d&apos;Utilisation</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Conditions d'Utilisation</h1>
           </div>
           
           <div className="space-y-6 sm:space-y-8 text-gray-700 text-sm sm:text-base">
@@ -43,8 +43,8 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">2. Acceptation des conditions</h2>
               <p>
-                En utilisant l&apos;application IronTrack, vous acceptez pleinement et sans réserve les présentes conditions d&apos;utilisation.
-                Si vous n&apos;acceptez pas ces conditions, vous devez cesser immédiatement d&apos;utiliser l&apos;application.
+                En utilisant l'application IronTrack, vous acceptez pleinement et sans réserve les présentes conditions d'utilisation.
+                Si vous n'acceptez pas ces conditions, vous devez cesser immédiatement d'utiliser l'application.
               </p>
             </section>
 
@@ -54,8 +54,8 @@ export default function TermsOfService() {
                 IronTrack est une application de coaching sportif personnel qui permet :
               </p>
               <ul className="list-disc list-inside space-y-2 mt-4">
-                <li>La création et le suivi de programmes d&apos;entraînement</li>
-                <li>L&apos;enregistrement de séances de musculation</li>
+                <li>La création et le suivi de programmes d'entraînement</li>
+                <li>L'enregistrement de séances de musculation</li>
                 <li>Le suivi de la progression et des statistiques</li>
                 <li>La gestion de profils utilisateurs</li>
                 <li>La synchronisation des données entre appareils</li>
@@ -66,9 +66,9 @@ export default function TermsOfService() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">4. Inscription et compte utilisateur</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Conditions d&apos;inscription :</h3>
+                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Conditions d'inscription :</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Être âgé d&apos;au moins 16 ans</li>
+                    <li>Être âgé d'au moins 16 ans</li>
                     <li>Fournir des informations exactes et complètes</li>
                     <li>Maintenir la confidentialité de vos identifiants</li>
                     <li>Accepter la politique de confidentialité</li>
@@ -94,7 +94,7 @@ export default function TermsOfService() {
                     <h3 className="font-medium text-green-900">Autorisé</h3>
                   </div>
                   <ul className="text-sm space-y-1">
-                    <li>Usage personnel de l&apos;application</li>
+                    <li>Usage personnel de l'application</li>
                     <li>Enregistrement de vos entraînements</li>
                     <li>Partage de vos progrès (si fonctionnalité disponible)</li>
                     <li>Sauvegarde de vos données</li>
@@ -124,11 +124,11 @@ export default function TermsOfService() {
                   <h3 className="font-medium text-yellow-900">Important</h3>
                 </div>
                 <ul className="text-sm space-y-2">
-                  <li>Consultez un professionnel de santé avant de commencer un programme d&apos;entraînement</li>
-                  <li>L&apos;application ne remplace pas un avis médical professionnel</li>
-                  <li>Arrêtez l&apos;exercice en cas de douleur ou de malaise</li>
+                  <li>Consultez un professionnel de santé avant de commencer un programme d'entraînement</li>
+                  <li>L'application ne remplace pas un avis médical professionnel</li>
+                  <li>Arrêtez l'exercice en cas de douleur ou de malaise</li>
                   <li>Adaptez les exercices à votre niveau et condition physique</li>
-                  <li>Nous ne sommes pas responsables des blessures liées à l&apos;utilisation de l&apos;application</li>
+                  <li>Nous ne sommes pas responsables des blessures liées à l'utilisation de l'application</li>
                 </ul>
               </div>
             </section>
@@ -136,7 +136,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">7. Propriété intellectuelle</h2>
               <p>
-                L&apos;application IronTrack, son contenu, ses fonctionnalités et ses éléments graphiques sont protégés par le droit d&apos;auteur.
+                L'application IronTrack, son contenu, ses fonctionnalités et ses éléments graphiques sont protégés par le droit d'auteur.
                 Vous ne pouvez pas reproduire, distribuer ou créer des œuvres dérivées sans autorisation explicite.
               </p>
             </section>
@@ -144,7 +144,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">8. Disponibilité du service</h2>
               <p>
-                Nous nous efforçons de maintenir l&apos;application disponible 24h/24 et 7j/7, mais nous ne pouvons garantir une disponibilité absolue.
+                Nous nous efforçons de maintenir l'application disponible 24h/24 et 7j/7, mais nous ne pouvons garantir une disponibilité absolue.
                 Des interruptions peuvent survenir pour :
               </p>
               <ul className="list-disc list-inside space-y-2 mt-2">
@@ -161,10 +161,10 @@ export default function TermsOfService() {
                 Dans les limites autorisées par la loi belge, nous excluons toute responsabilité pour :
               </p>
               <ul className="list-disc list-inside space-y-2 mt-2">
-                <li>Les dommages directs ou indirects liés à l&apos;utilisation de l&apos;application</li>
+                <li>Les dommages directs ou indirects liés à l'utilisation de l'application</li>
                 <li>La perte de données due à des problèmes techniques</li>
-                <li>Les blessures résultant de l&apos;exercice physique</li>
-                <li>L&apos;utilisation non conforme de l&apos;application</li>
+                <li>Les blessures résultant de l'exercice physique</li>
+                <li>L'utilisation non conforme de l'application</li>
               </ul>
             </section>
 
@@ -172,8 +172,8 @@ export default function TermsOfService() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">10. Résiliation</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Résiliation par l&apos;utilisateur :</h3>
-                  <p className="text-sm">Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l&apos;application.</p>
+                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Résiliation par l'utilisateur :</h3>
+                  <p className="text-sm">Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l'application.</p>
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 text-sm sm:text-base">Résiliation par IronTrack :</h3>
@@ -185,8 +185,8 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">11. Modifications des conditions</h2>
               <p>
-                Nous nous réservons le droit de modifier ces conditions d&apos;utilisation à tout moment.
-                Les modifications prennent effet dès leur publication dans l&apos;application.
+                Nous nous réservons le droit de modifier ces conditions d'utilisation à tout moment.
+                Les modifications prennent effet dès leur publication dans l'application.
                 Votre utilisation continue constitue votre acceptation des nouvelles conditions.
               </p>
             </section>
@@ -194,7 +194,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">12. Droit applicable et juridiction</h2>
               <p>
-                Ces conditions d&apos;utilisation sont régies par le droit belge.
+                Ces conditions d'utilisation sont régies par le droit belge.
                 Tout litige relève de la compétence exclusive des tribunaux belges.
               </p>
             </section>

@@ -88,10 +88,10 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
           </div>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Quel type d&apos;exercice aujourd&apos;hui ?
+          Quel type d'exercice aujourd'hui ?
         </h2>
         <p className="text-gray-600 text-lg">
-          Choisis le type d&apos;entraînement qui correspond à tes objectifs
+          Choisis le type d'entraînement qui correspond à tes objectifs
         </p>
       </motion.div>
       
@@ -127,7 +127,7 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
         </div>
         <p className="text-sm text-blue-700">
           Pas sûr de ton choix ? La <strong>musculation</strong> est idéale pour développer force et masse musculaire, 
-          tandis que le <strong>cardio</strong> améliore l&apos;endurance et brûle les calories. 
+          tandis que le <strong>cardio</strong> améliore l'endurance et brûle les calories. 
           Tu peux toujours changer plus tard !
         </p>
       </motion.div>

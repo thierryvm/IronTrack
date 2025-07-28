@@ -44,7 +44,7 @@ export default function AdminSettingsPage() {
             <Shield className="h-12 w-12 text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold mb-2">Accès Refusé</h2>
             <p className="text-muted-foreground text-center">
-              Vous n&apos;avez pas les permissions nécessaires pour accéder aux paramètres administrateur.
+              Vous n'avez pas les permissions nécessaires pour accéder aux paramètres administrateur.
             </p>
             <p className="text-sm text-gray-500 mt-2">
               Debug: Rôle actuel = {user?.role || 'non défini'}
@@ -186,7 +186,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="font-medium">Rapports Hebdo</p>
                 <p className="text-sm text-muted-foreground">
-                  Rapport d&apos;activité chaque lundi
+                  Rapport d'activité chaque lundi
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -225,7 +225,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="font-medium">Validation Email</p>
                 <p className="text-sm text-muted-foreground">
-                  Exiger la validation d&apos;email pour nouveaux comptes
+                  Exiger la validation d'email pour nouveaux comptes
                 </p>
               </div>
               <div className="flex items-center gap-2">

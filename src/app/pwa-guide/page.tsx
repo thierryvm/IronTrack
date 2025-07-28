@@ -62,30 +62,30 @@ export default function PWAGuidePage() {
           description: 'Lancez Safari et accédez à iron-track-dusky.vercel.app',
           icon: <Chrome className="h-5 w-5" />,
           details: [
-            'Assurez-vous d&apos;utiliser Safari (pas Chrome ou Firefox)',
-            'Tapez l&apos;URL complète dans la barre d&apos;adresse',
+            'Assurez-vous d\'utiliser Safari (pas Chrome ou Firefox)',
+            'Tapez l\'URL complète dans la barre d\'adresse',
             'Attendez que la page soit entièrement chargée'
           ]
         },
         {
           step: 2,
           title: 'Ouvrir le menu Partage',
-          description: 'Appuyez sur l&apos;icône de partage en bas de l&apos;écran',
+          description: 'Appuyez sur l\'icône de partage en bas de l\'écran',
           icon: <Share className="h-5 w-5" />,
           details: [
-            'L&apos;icône ressemble à un carré avec une flèche vers le haut',
-            'Elle se trouve dans la barre d&apos;outils en bas',
+            'L\'icône ressemble à un carré avec une flèche vers le haut',
+            'Elle se trouve dans la barre d\'outils en bas',
             'Si vous ne la voyez pas, faites défiler la page vers le haut'
           ]
         },
         {
           step: 3,
-          title: 'Ajouter à l&apos;écran d&apos;accueil',
-          description: 'Sélectionnez "Ajouter à l&apos;écran d&apos;accueil" dans le menu',
+          title: 'Ajouter à l'écran d'accueil',
+          description: 'Sélectionnez "Ajouter à l'écran d'accueil" dans le menu',
           icon: <Plus className="h-5 w-5" />,
           details: [
             'Faites défiler dans le menu pour trouver cette option',
-            'L&apos;icône ressemble à un "+" avec un carré',
+            'L'icône ressemble à un "+" avec un carré',
             'Appuyez dessus pour continuer'
           ]
         },
@@ -102,7 +102,7 @@ export default function PWAGuidePage() {
         }
       ],
       tips: [
-        'L&apos;icône apparaîtra sur votre écran d\'accueil comme une vraie app',
+        'L'icône apparaîtra sur votre écran d\'accueil comme une vraie app',
         'L\'app s\'ouvrira en mode plein écran sans les barres Safari',
         'Vous recevrez des notifications comme une app native',
         'Fonctionne même en mode avion (pour les données mises en cache)'
@@ -126,18 +126,18 @@ export default function PWAGuidePage() {
           icon: <Chrome className="h-5 w-5" />,
           details: [
             'Utilisez Google Chrome ou Samsung Internet',
-            'Tapez l&apos;URL complète dans la barre d\'adresse',
+            'Tapez l'URL complète dans la barre d\'adresse',
             'Attendez le chargement complet de la page'
           ]
         },
         {
           step: 2,
-          title: 'Popup d&apos;installation (automatique)',
-          description: 'Une bannière "Installer l&apos;app" devrait apparaître automatiquement',
+          title: 'Popup d'installation (automatique)',
+          description: 'Une bannière "Installer l'app" devrait apparaître automatiquement',
           icon: <Download className="h-5 w-5" />,
           details: [
             'La bannière apparaît en bas de l\'écran après quelques secondes',
-            'Si elle n&apos;apparaît pas, continuez à l\'étape 3',
+            'Si elle n'apparaît pas, continuez à l\'étape 3',
             'Appuyez sur "Installer" si vous la voyez'
           ]
         },
@@ -148,7 +148,7 @@ export default function PWAGuidePage() {
           icon: <Plus className="h-5 w-5" />,
           details: [
             'Appuyez sur les 3 points verticaux en haut à droite',
-            'Cherchez "Ajouter à l\'écran d\'accueil" ou "Installer l&apos;app"',
+            'Cherchez "Ajouter à l\'écran d\'accueil" ou "Installer l'app"',
             'L\'option peut être dans un sous-menu "Partager"'
           ]
         },
@@ -190,7 +190,7 @@ export default function PWAGuidePage() {
           icon: <Chrome className="h-5 w-5" />,
           details: [
             'Utilisez le navigateur Samsung Internet (icône bleue)',
-            'Tapez l&apos;URL complète dans la barre d\'adresse',
+            'Tapez l'URL complète dans la barre d\'adresse',
             'Assurez-vous que la page est entièrement chargée'
           ]
         },
@@ -207,7 +207,7 @@ export default function PWAGuidePage() {
         },
         {
           step: 3,
-          title: 'Ajouter à l&apos;écran d&apos;accueil',
+          title: 'Ajouter à l'écran d'accueil',
           description: 'Sélectionnez "Ajouter page à" → "Écran d\'accueil"',
           icon: <Plus className="h-5 w-5" />,
           details: [
@@ -223,7 +223,7 @@ export default function PWAGuidePage() {
           icon: <CheckCircle className="h-5 w-5" />,
           details: [
             'Vérifiez que le nom est "IronTrack"',
-            'L&apos;icône devrait apparaître automatiquement',
+            'L'icône devrait apparaître automatiquement',
             'Appuyez sur "Ajouter" ou "OK" pour terminer'
           ]
         }
@@ -255,27 +255,27 @@ export default function PWAGuidePage() {
           details: [
             'Chrome et Edge offrent la meilleure expérience PWA',
             'Firefox supporte les PWA depuis la version 100',
-            'Tapez l&apos;URL complète dans la barre d\'adresse'
+            'Tapez l'URL complète dans la barre d\'adresse'
           ]
         },
         {
           step: 2,
-          title: 'Icône d&apos;installation',
-          description: 'Cherchez l\'icône d&apos;installation (⊕) dans la barre d\'adresse',
+          title: 'Icône d'installation',
+          description: 'Cherchez l\'icône d'installation (⊕) dans la barre d\'adresse',
           icon: <Download className="h-5 w-5" />,
           details: [
-            'L&apos;icône apparaît à droite de la barre d\'adresse',
+            'L'icône apparaît à droite de la barre d\'adresse',
             'Elle ressemble à un "+" dans un cercle ou un ordinateur',
             'Si vous ne la voyez pas, attendez quelques secondes'
           ]
         },
         {
           step: 3,
-          title: 'Installer l&apos;application',
+          title: 'Installer l'application',
           description: 'Cliquez sur l\'icône et sélectionnez "Installer IronTrack"',
           icon: <Plus className="h-5 w-5" />,
           details: [
-            'Une popup d&apos;installation apparaîtra',
+            'Une popup d'installation apparaîtra',
             'Vérifiez que c\'est bien "IronTrack" qui sera installé',
             'Cliquez sur "Installer" pour continuer'
           ]
@@ -347,7 +347,7 @@ export default function PWAGuidePage() {
               Installer IronTrack sur votre appareil
             </h1>
             <p className="text-xl text-orange-100 max-w-3xl mx-auto">
-              Profitez d&apos;une expérience mobile optimale avec notre Progressive Web App. 
+              Profitez d'une expérience mobile optimale avec notre Progressive Web App. 
               Installation simple, performance native, fonctionnement hors-ligne.
             </p>
           </motion.div>
@@ -431,7 +431,7 @@ export default function PWAGuidePage() {
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900">{selectedGuide.name}</h3>
-              <p className="text-gray-600">Guide d&apos;installation étape par étape</p>
+              <p className="text-gray-600">Guide d'installation étape par étape</p>
             </div>
           </div>
 
@@ -453,7 +453,7 @@ export default function PWAGuidePage() {
 
           {/* Étapes */}
           <div className="mb-8">
-            <h4 className="text-lg font-semibold text-gray-900 mb-6">Étapes d&apos;installation</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-6">Étapes d'installation</h4>
             <div className="space-y-4">
               {selectedGuide.steps.map((step) => (
                 <div key={step.step} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -531,8 +531,8 @@ export default function PWAGuidePage() {
           <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Prêt à commencer ?</h3>
             <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
-              Suivez le guide ci-dessus pour installer IronTrack et profiter d&apos;une expérience 
-              d&apos;entraînement optimale sur votre appareil.
+              Suivez le guide ci-dessus pour installer IronTrack et profiter d'une expérience 
+              d'entraînement optimale sur votre appareil.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -540,13 +540,13 @@ export default function PWAGuidePage() {
                 className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center justify-center"
               >
                 <Home className="h-5 w-5 mr-2" />
-                Retour à l&apos;accueil
+                Retour à l'accueil
               </Link>
               <Link
                 href="/support/contact"
                 className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors border border-orange-400 inline-flex items-center justify-center"
               >
-                Besoin d&apos;aide ?
+                Besoin d'aide ?
               </Link>
             </div>
           </div>

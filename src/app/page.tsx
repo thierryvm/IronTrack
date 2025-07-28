@@ -731,7 +731,7 @@ export default function HomePage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-0">Actions rapides</h2>
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd&apos;hui ?</span>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd'hui ?</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {quickActions.map((action, index) => {

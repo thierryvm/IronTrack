@@ -224,7 +224,7 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
           <div>
             <p className="text-sm font-semibold text-blue-800">Modification instantanée</p>
             <p className="text-xs text-blue-700">
-              Cliquez sur n&apos;importe quel champ pour le modifier. Vos changements sont sauvegardés automatiquement.
+              Cliquez sur n'importe quel champ pour le modifier. Vos changements sont sauvegardés automatiquement.
             </p>
           </div>
         </div>
