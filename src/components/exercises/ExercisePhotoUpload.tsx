@@ -269,7 +269,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     Glissez votre photo ici ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span>
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    PNG, JPEG, GIF, HEIC • Max 5MB
+                    PNG, JPEG, GIF, HEIC • Max 10MB
                   </p>
                 </>
               )}
