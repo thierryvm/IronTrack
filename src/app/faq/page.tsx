@@ -102,7 +102,7 @@ const faqData: FAQItem[] = [
   {
     id: 'workouts-9',
     question: 'Comment utiliser la mascotte IronBuddy pendant mes entraînements ?',
-    answer: 'IronBuddy est votre coach personnel accessible via le bouton flottant orange en bas à droite. Deux modes : "Support" pour l'aide technique, "Coach" pour motivation/conseils. La mascotte s'adapte à votre niveau de punchlines choisi dans Profil (Discret/Normal/Ambianceur) et propose 30+ blagues, conseils, motivations et défis par catégorie.',
+    answer: 'IronBuddy est votre coach personnel accessible via le bouton flottant orange en bas à droite. Deux modes : "Support" pour l\'aide technique, "Coach" pour motivation/conseils. La mascotte s\'adapte à votre niveau de punchlines choisi dans Profil (Discret/Normal/Ambianceur) et propose 30+ blagues, conseils, motivations et défis par catégorie.',
     category: 'workouts'
   },
 
