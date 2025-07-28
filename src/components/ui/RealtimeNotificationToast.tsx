@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Users, Check, UserX, Volume2, VolumeX } from 'lucide-react'
+import { X, Users, Check, UserX, Volume2, VolumeX, Wifi, WifiOff } from 'lucide-react'
 import { RealtimeNotification } from '@/hooks/useRealtimeNotifications'
 
 interface NotificationToastProps {
@@ -8,6 +8,8 @@ interface NotificationToastProps {
   onMarkAsRead: (id: string) => void
   soundEnabled: boolean
   onToggleSound: () => void
+  realtimeConnected?: boolean
+  fallbackEnabled?: boolean
 }
 
 export function RealtimeNotificationToast({
@@ -15,7 +17,9 @@ export function RealtimeNotificationToast({
   onRemove,
   onMarkAsRead,
   soundEnabled,
-  onToggleSound
+  onToggleSound,
+  realtimeConnected = false,
+  fallbackEnabled = false
 }: NotificationToastProps) {
   const getIcon = (type: string) => {
     switch (type) {
@@ -45,8 +49,9 @@ export function RealtimeNotificationToast({
 
   return (
     <>
-      {/* Contrôle du son - Toujours visible */}
-      <div className="fixed top-4 left-4 z-50">
+      {/* Contrôles - Toujours visibles */}
+      <div className="fixed top-4 left-4 z-50 flex flex-col space-y-2">
+        {/* Contrôle du son */}
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -60,6 +65,32 @@ export function RealtimeNotificationToast({
             <VolumeX className="h-5 w-5 text-gray-600" />
           )}
         </motion.button>
+
+        {/* Indicateur de statut realtime */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={`p-3 rounded-full shadow-lg border border-gray-200 ${
+            realtimeConnected 
+              ? 'bg-green-50 text-green-600' 
+              : fallbackEnabled 
+                ? 'bg-yellow-50 text-yellow-600' 
+                : 'bg-red-50 text-red-600'
+          }`}
+          title={
+            realtimeConnected 
+              ? 'Notifications temps réel actives' 
+              : fallbackEnabled 
+                ? 'Mode polling actif (fallback)' 
+                : 'Notifications temps réel déconnectées'
+          }
+        >
+          {realtimeConnected ? (
+            <Wifi className="h-5 w-5" />
+          ) : (
+            <WifiOff className="h-5 w-5" />
+          )}
+        </motion.div>
       </div>
 
       {/* Notifications */}

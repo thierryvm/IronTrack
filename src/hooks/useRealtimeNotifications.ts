@@ -17,9 +17,12 @@ export function useRealtimeNotifications() {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState<RealtimeNotification[]>([])
   const [soundEnabled, setSoundEnabled] = useState(true)
+  const [realtimeConnected, setRealtimeConnected] = useState(false)
+  const [fallbackEnabled, setFallbackEnabled] = useState(false)
   const supabase = createClient()
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const audioRef = useRef<{ play: () => void } | null>(null)
+  const lastCheckRef = useRef<number>(0)
 
   // Initialiser l'audio
   useEffect(() => {
@@ -124,10 +127,89 @@ export function useRealtimeNotifications() {
     )
   }
 
-  // Écouter les changements en temps réel
+  // Système de polling en fallback si realtime ne fonctionne pas
+  const checkForNewNotifications = useCallback(async () => {
+    if (!user || !fallbackEnabled) return
+
+    try {
+      const now = Date.now()
+      const since = new Date(lastCheckRef.current || now - 60000) // Dernière minute
+      
+      // Vérifier nouvelles invitations reçues
+      const { data: newInvitations } = await supabase
+        .from('training_partners')
+        .select('*, requester:profiles!requester_id(pseudo, full_name, email)')
+        .eq('partner_id', user.id)
+        .eq('status', 'pending')
+        .gte('created_at', since.toISOString())
+      
+      if (newInvitations) {
+        newInvitations.forEach(invitation => {
+          const requesterData = invitation.requester as any
+          const displayName = requesterData?.pseudo || requesterData?.full_name || requesterData?.email?.split('@')[0] || 'Un utilisateur'
+          
+          addNotification({
+            type: 'partnership_request',
+            title: 'Nouvelle demande de partenariat',
+            message: `${displayName} souhaite devenir votre partenaire d'entraînement`,
+            data: { partnershipId: invitation.id, requesterId: invitation.requester_id }
+          })
+        })
+      }
+      
+      // Vérifier réponses à mes invitations
+      const { data: updatedInvitations } = await supabase
+        .from('training_partners')
+        .select('*, partner:profiles!partner_id(pseudo, full_name, email)')
+        .eq('requester_id', user.id)
+        .in('status', ['accepted', 'declined'])
+        .gte('updated_at', since.toISOString())
+      
+      if (updatedInvitations) {
+        updatedInvitations.forEach(invitation => {
+          const partnerData = invitation.partner as any
+          const displayName = partnerData?.pseudo || partnerData?.full_name || partnerData?.email?.split('@')[0] || 'Un utilisateur'
+          
+          if (invitation.status === 'accepted') {
+            addNotification({
+              type: 'partnership_accepted',
+              title: 'Partenariat accepté !',
+              message: `${displayName} a accepté votre demande de partenariat`,
+              data: { partnershipId: invitation.id, partnerId: invitation.partner_id }
+            })
+          } else if (invitation.status === 'declined') {
+            addNotification({
+              type: 'partnership_declined',
+              title: 'Partenariat refusé',
+              message: `${displayName} a refusé votre demande de partenariat`,
+              data: { partnershipId: invitation.id, partnerId: invitation.partner_id }
+            })
+          }
+        })
+      }
+      
+      lastCheckRef.current = now
+    } catch (error) {
+      console.error('Erreur fallback notifications:', error)
+    }
+  }, [user, fallbackEnabled, addNotification])
+
+  // Polling fallback
+  useEffect(() => {
+    if (!fallbackEnabled || !user) return
+    
+    console.log('🔄 Système de polling activé (fallback)')
+    const interval = setInterval(checkForNewNotifications, 30000) // 30 secondes
+    
+    return () => clearInterval(interval)
+  }, [fallbackEnabled, user, checkForNewNotifications])
+
+  // Écouter les changements en temps réel avec fallback amélioré
   useEffect(() => {
     if (!user) return
 
+    console.log('📡 Initialisation canal realtime pour les notifications')
+    
     const channel = supabase.channel('training-partners-realtime')
       .on(
         'postgres_changes',
@@ -138,7 +220,8 @@ export function useRealtimeNotifications() {
           filter: `partner_id=eq.${user.id}`
         },
         async (payload) => {
-          console.log('🔔 Nouvelle demande de partenariat reçue:', payload)
+          console.log('✅ Nouvelle demande de partenariat reçue (realtime):', payload)
+          setRealtimeConnected(true)
           
           // Récupérer les informations du requester
           const { data: requesterData } = await supabase
@@ -168,7 +251,8 @@ export function useRealtimeNotifications() {
           filter: `requester_id=eq.${user.id}`
         },
         async (payload) => {
-          console.log('🔄 Mise à jour du partenariat:', payload)
+          console.log('✅ Mise à jour du partenariat (realtime):', payload)
+          setRealtimeConnected(true)
           
           if (payload.new.status === 'accepted' && payload.old.status === 'pending') {
             // Récupérer les informations du partner
@@ -209,7 +293,23 @@ export function useRealtimeNotifications() {
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('📡 Statut canal realtime:', status)
+        
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Canal realtime connecté avec succès')
+          setRealtimeConnected(true)
+          setFallbackEnabled(false) // Désactiver fallback
+        } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+          console.warn('⚠️ Erreur canal realtime, activation du fallback')
+          setRealtimeConnected(false)
+          setFallbackEnabled(true) // Activer fallback
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⏰ Timeout canal realtime, tentative de reconnexion')
+          setRealtimeConnected(false)
+          setFallbackEnabled(true)
+        }
+      })
 
     channelRef.current = channel
 
@@ -237,6 +337,8 @@ export function useRealtimeNotifications() {
     removeNotification,
     markAsRead,
     soundEnabled,
-    setSoundEnabled
+    setSoundEnabled,
+    realtimeConnected,
+    fallbackEnabled
   }
 }

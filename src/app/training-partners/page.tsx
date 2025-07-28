@@ -55,7 +55,9 @@ export default function TrainingPartnersPage() {
     removeNotification,
     markAsRead,
     soundEnabled,
-    setSoundEnabled
+    setSoundEnabled,
+    realtimeConnected,
+    fallbackEnabled
   } = useRealtimeNotifications()
 
   // Hook pour la mise à jour automatique
@@ -371,6 +373,8 @@ export default function TrainingPartnersPage() {
         onMarkAsRead={markAsRead}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
+        realtimeConnected={realtimeConnected}
+        fallbackEnabled={fallbackEnabled}
       />
 
       {/* Notification Toast */}
