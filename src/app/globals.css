@@ -27,6 +27,31 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Optimisations tactiles Android/Samsung */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Amélioration des délais tactiles pour Android */
+* {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Optimisation des éléments interactifs pour mobiles */
+button, 
+[role="button"], 
+input[type="button"], 
+input[type="submit"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes avatar-pop {
   0% { transform: scale(1) rotate(-2deg); filter: brightness(1.2) drop-shadow(0 0 8px #a855f7); }
   60% { transform: scale(1.15) rotate(2deg); filter: brightness(1.4) drop-shadow(0 0 16px #a855f7); }

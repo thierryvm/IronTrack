@@ -466,7 +466,7 @@ export default function CalendarPage() {
               {/* Bouton vue mobile */}
               <button
                 onClick={() => setViewMode(viewMode === 'calendar' ? 'list' : 'calendar')}
-                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
                 title={viewMode === 'calendar' ? 'Passer en vue liste' : 'Passer en vue calendrier'}
               >
                 {viewMode === 'calendar' ? (
@@ -482,7 +482,7 @@ export default function CalendarPage() {
               {/* Bouton sidebar mobile/tablette */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
-                className="xl:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                className="xl:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
                 title="Afficher les statistiques"
               >
                 <Menu className="h-4 w-4" />
@@ -497,7 +497,7 @@ export default function CalendarPage() {
                     setShowPartnersWorkouts(!showPartnersWorkouts);
                   }
                 }}
-                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base ${
+                className={`px-3 sm:px-4 py-3 rounded-lg transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation ${
                   showPartnersWorkouts 
                     ? 'bg-white/20 text-white border border-white/30' 
                     : 'bg-white/10 text-orange-100 hover:bg-white/20'
@@ -523,7 +523,7 @@ export default function CalendarPage() {
               </button>
               <button
                 onClick={() => router.push('/workouts/new')}
-                className="bg-white text-orange-600 px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
+                className="bg-white text-orange-600 px-3 sm:px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
               >
                 <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
                 <span className="hidden sm:inline">Nouvelle séance</span>
@@ -674,13 +674,14 @@ export default function CalendarPage() {
                       const isCurrentDay = isToday(day.date);
                       const isSelectedDay = isSelected(day.date);
                       const cell = (
-                        <div
+                        <button
                           key={index}
                           onClick={() => setSelectedDate(day.date)}
-                          className={`cursor-pointer transition-all ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+                          className={`w-full cursor-pointer transition-all touch-manipulation min-h-[44px] ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+                          aria-label={`Sélectionner le ${day.date.getDate()} ${monthName}`}
                         >
                           <CalendarDayCell date={day.date.getDate()} sessions={sessions} />
-                        </div>
+                        </button>
                       );
                       return cell;
                     })}
@@ -703,14 +704,16 @@ export default function CalendarPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-3 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px] touch-manipulation"
+                        aria-label="Mois précédent"
                       >
                         <ChevronLeft className="h-5 w-5" />
                       </button>
                       <span className="text-lg font-medium capitalize px-4">{monthName}</span>
                       <button
                         onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-3 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px] touch-manipulation"
+                        aria-label="Mois suivant"
                       >
                         <ChevronRight className="h-5 w-5" />
                       </button>
@@ -914,7 +917,7 @@ export default function CalendarPage() {
                 </div>
                 <button
                   onClick={() => router.push('/workouts/new')}
-                  className="w-full mt-4 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
+                  className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Ajouter une séance</span>
@@ -1032,13 +1035,13 @@ export default function CalendarPage() {
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => router.push('/training-partners')}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors min-h-[44px] touch-manipulation"
                     >
                       Gérer mes partenaires
                     </button>
                     <button
                       onClick={() => router.push('/shared/dashboard')}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                      className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors min-h-[44px] touch-manipulation"
                     >
                       Dashboard partage
                     </button>
@@ -1072,9 +1075,10 @@ export default function CalendarPage() {
       {showMobileSidebar && (
         <div className="fixed inset-0 z-50 xl:hidden">
           {/* Overlay */}
-          <div 
-            className="absolute inset-0 bg-black/50" 
+          <button 
+            className="absolute inset-0 bg-black/50 touch-manipulation" 
             onClick={() => setShowMobileSidebar(false)}
+            aria-label="Fermer le panneau"
           />
           
           {/* Drawer */}
@@ -1090,7 +1094,8 @@ export default function CalendarPage() {
               <h2 className="text-lg font-bold text-gray-900">Statistiques</h2>
               <button
                 onClick={() => setShowMobileSidebar(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-3 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px] touch-manipulation"
+                aria-label="Fermer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1200,7 +1205,7 @@ export default function CalendarPage() {
                       setShowMobileSidebar(false);
                       router.push('/workouts/new');
                     }}
-                    className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
+                    className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                   >
                     <Plus className="h-5 w-5" />
                     <span>Ajouter une séance</span>
