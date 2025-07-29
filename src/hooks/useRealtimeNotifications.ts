@@ -145,7 +145,7 @@ export function useRealtimeNotifications() {
       
       if (newInvitations) {
         newInvitations.forEach(invitation => {
-          const requesterData = invitation.requester as any
+          const requesterData = invitation.requester as { pseudo?: string; full_name?: string; email?: string }
           const displayName = requesterData?.pseudo || requesterData?.full_name || requesterData?.email?.split('@')[0] || 'Un utilisateur'
           
           addNotification({
@@ -167,7 +167,7 @@ export function useRealtimeNotifications() {
       
       if (updatedInvitations) {
         updatedInvitations.forEach(invitation => {
-          const partnerData = invitation.partner as any
+          const partnerData = invitation.partner as { pseudo?: string; full_name?: string; email?: string }
           const displayName = partnerData?.pseudo || partnerData?.full_name || partnerData?.email?.split('@')[0] || 'Un utilisateur'
           
           if (invitation.status === 'accepted') {
@@ -192,7 +192,7 @@ export function useRealtimeNotifications() {
     } catch (error) {
       console.error('Erreur fallback notifications:', error)
     }
-  }, [user, fallbackEnabled, addNotification])
+  }, [user, fallbackEnabled, addNotification, supabase])
 
   // Polling fallback
   useEffect(() => {
