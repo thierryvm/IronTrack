@@ -10,7 +10,6 @@ import {
   Plus, 
   Mail,
   ExternalLink,
-  User,
   Calendar,
   Tag
 } from 'lucide-react'

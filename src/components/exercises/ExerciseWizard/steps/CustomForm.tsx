@@ -99,7 +99,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
   const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>([])
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
-  const [exercisePhoto, setExercisePhoto] = useState<SecureAttachment | null>(null)
+  const [, setExercisePhoto] = useState<SecureAttachment | null>(null)
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(initialData?.image_url)
 
   useEffect(() => {
