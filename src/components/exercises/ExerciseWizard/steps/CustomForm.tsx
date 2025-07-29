@@ -452,7 +452,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
         <p className="text-sm text-blue-700">
           Choisis un nom descriptif pour ton exercice. La difficulté et le groupe musculaire 
           nous aideront à te proposer des suggestions personnalisées plus tard. 
-          Une photo claire de l'exercice aidera les utilisateurs à mieux comprendre le mouvement.
+          Une photo claire de l&apos;exercice aidera les utilisateurs à mieux comprendre le mouvement.
         </p>
       </motion.div>
     </div>

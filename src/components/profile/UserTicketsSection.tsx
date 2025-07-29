@@ -222,7 +222,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600 font-medium mb-2">Aucun ticket de support</p>
           <p className="text-gray-500 text-sm mb-4">
-            Vous n'avez pas encore créé de ticket de support. 
+            Vous n&apos;avez pas encore créé de ticket de support. 
             Notre équipe est là pour vous aider !
           </p>
           <Link
@@ -302,7 +302,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           {/* Footer avec lien vers support */}
           <div className="mt-6 pt-4 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600 mb-3">
-              Besoin d'aide supplémentaire ? Consultez notre documentation ou contactez l'équipe.
+              Besoin d&apos;aide supplémentaire ? Consultez notre documentation ou contactez l&apos;équipe.
             </p>
             <div className="flex justify-center gap-4">
               <Link
