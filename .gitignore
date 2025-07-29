@@ -79,6 +79,20 @@ README-DEV.md
 mcp.json
 mcp.json.backup
 
+# 🚨 Scripts temporaires et outils de développement (NE PAS COMMITER)
+scripts/analyze-*.js
+scripts/check-*.js
+scripts/test-*.js
+scripts/consolidate-*.js
+scripts/activate-*.js
+scripts/*-autonomous.js
+scripts/*-comprehensive.js
+scripts/*-duplicates.js
+scripts/*-structure.js
+scripts/*-stats.js
+scripts/*-status.js
+scripts/consolidation-*.md
+
 # Note: scripts/dev-setup.js est partagé avec l'équipe (pas de données sensibles)
 
 # Next.js/TypeScript
@@ -116,6 +130,7 @@ FRENCH_TRANSLATION_PATCH.txt
 # Scripts SQL créés pendant le développement (JAMAIS À COMMITER)
 *.sql
 !src/**/*.sql
+!supabase/migrations/*.sql
 create_*.sql
 debug_*.sql
 fix_*.sql
@@ -138,6 +153,9 @@ verify_support_tables*.sql
 check_support_tickets*.sql
 verify_new_fields*.sql
 execute_backup*.sql
+activate_*.sql
+analyze_*.sql
+dump_*.sql
 
 # Fichiers de cahier des charges et audit (ne pas commiter - IMPORTANT pour évolution app)
 # NOTE: CAHIER_des_CHARGES_UX.md doit exister localement mais ne pas être committé
