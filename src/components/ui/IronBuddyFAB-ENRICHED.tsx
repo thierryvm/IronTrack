@@ -579,9 +579,17 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
 
   return (
     <>
-      {/* FAB Principal */}
+      {/* FAB Principal - Format écrans 2025 optimisé */}
       <motion.div
-        className="fixed bottom-6 right-6 z-[80] md:bottom-8 md:right-8"
+        className="
+          fab-2025 fixed z-[80]
+          bottom-4 right-4
+          xs:bottom-5 xs:right-5
+          sm:bottom-6 sm:right-6 
+          md:bottom-8 md:right-8 
+          lg:bottom-10 lg:right-10
+          xl:bottom-12 xl:right-12
+        "
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ 
@@ -590,15 +598,30 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
           damping: 15,
           delay: 1.5
         }}
+        style={{
+          // Support écrans ultra-larges 2025 (iPhone 15 Pro Max: 430x932, Samsung S24 Ultra: 440x964)
+          bottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))',
+          right: 'max(1rem, env(safe-area-inset-right, 1rem))'
+        }}
       >
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           className={`
             ${mascot.bgColor} ${mascot.hoverColor} 
-            text-white p-4 rounded-full shadow-2xl 
+            text-white rounded-full shadow-2xl 
             transform transition-all duration-300 
             focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50
             border-2 border-white/20
+            touch-manipulation select-none
+            fab-enhanced smooth-120hz text-sharp
+            p-3 xs:p-3.5 sm:p-4 md:p-4.5 lg:p-5 xl:p-6
+            min-h-[56px] min-w-[56px] 
+            xs:min-h-[60px] xs:min-w-[60px]
+            sm:min-h-[64px] sm:min-w-[64px] 
+            md:min-h-[68px] md:min-w-[68px]
+            lg:min-h-[72px] lg:min-w-[72px]
+            xl:min-h-[76px] xl:min-w-[76px]
+            max-h-[80px] max-w-[80px]
           `}
           whileHover={{ scale: 1.1, rotate: 10 }}
           whileTap={{ scale: 0.9 }}
@@ -622,7 +645,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <X className="h-7 w-7" />
+                <X className="h-5 w-5 xs:h-5.5 xs:w-5.5 sm:h-6 sm:w-6 md:h-6.5 md:w-6.5 lg:h-7 lg:w-7 xl:h-8 xl:w-8" />
               </motion.div>
             ) : (
               <motion.div
@@ -633,7 +656,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                 transition={{ duration: 0.3 }}
                 className="relative"
               >
-                <MascotIcon className="h-7 w-7" />
+                <MascotIcon className="h-5 w-5 xs:h-5.5 xs:w-5.5 sm:h-6 sm:w-6 md:h-6.5 md:w-6.5 lg:h-7 lg:w-7 xl:h-8 xl:w-8" />
                 <motion.div
                   className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"
                   animate={{ scale: [1, 1.3, 1] }}
@@ -662,7 +685,29 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 50, y: 50 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="fixed bottom-24 right-6 z-[80] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 overflow-hidden min-w-[320px] max-w-[calc(100vw-3rem)] md:bottom-28 md:right-8"
+              className="
+                modal-2025 fixed z-[80] 
+                bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl 
+                border border-gray-200/50 overflow-hidden
+                smooth-120hz text-sharp
+                min-w-[300px] xs:min-w-[320px] sm:min-w-[340px]
+                max-w-[calc(100vw-2rem)] xs:max-w-[calc(100vw-2.5rem)] sm:max-w-[calc(100vw-3rem)]
+                bottom-20 right-4
+                xs:bottom-24 xs:right-5
+                sm:bottom-28 sm:right-6
+                md:bottom-32 md:right-8
+                lg:bottom-36 lg:right-10
+                xl:bottom-40 xl:right-12
+              "
+              style={{
+                // Positionnement adaptatif avec safe areas pour formats 2025
+                bottom: 'max(5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))',
+                right: 'max(1rem, calc(env(safe-area-inset-right, 0px) + 1rem))',
+                // Limites maximales adaptatives
+                maxHeight: 'min(80vh, 600px)',
+                // Optimisation largeur pour écrans ultra-larges 2025
+                minWidth: 'clamp(300px, 85vw, 380px)'
+              }}
             >
               {/* En-tête */}
               <div className={`${mascot.bgColor} px-6 py-4 text-white relative overflow-hidden`}>
