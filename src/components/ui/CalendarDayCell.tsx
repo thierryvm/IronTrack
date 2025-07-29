@@ -247,20 +247,27 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
       {/* Popover mobile pour détail séance */}
       {mobileSessionDetail && (
         <div 
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4" 
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm" 
           onClick={() => setMobileSessionDetail(null)}
           style={{ 
             position: 'fixed',
             top: 0,
             left: 0,
-            right: 0,
+            right: 0,  
             bottom: 0,
-            zIndex: 9999
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
           }}
         >
           <div 
-            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative animate-slide-up"
+            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              animation: 'slide-up 0.3s ease-out'
+            }}
           >
             <button 
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] touch-manipulation" 

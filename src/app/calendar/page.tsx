@@ -1248,6 +1248,35 @@ export default function CalendarPage() {
                   </div>
                 </div>
                 
+                {/* Statistiques avancées */}
+                <div className="mt-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Statistiques avancées</h4>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-white p-3 rounded border">
+                      <span className="text-xs text-gray-500 block">Total séances</span>
+                      <span className="font-bold text-gray-900 text-lg">{totalSeances}</span>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <span className="text-xs text-gray-500 block">Durée moyenne</span>
+                      <span className="font-bold text-gray-900 text-lg">{moyenneDuree} min</span>
+                    </div>
+                  </div>
+                  
+                  {maxDuree > 0 && seanceMax && (
+                    <div className="bg-white p-3 rounded border mb-2">
+                      <span className="text-xs text-gray-500 block">Séance la plus longue</span>
+                      <span className="font-bold text-orange-700 text-sm">{seanceMax.name} ({maxDuree} min)</span>
+                    </div>
+                  )}
+                  
+                  {minDuree > 0 && seanceMin && (
+                    <div className="bg-white p-3 rounded border mb-3">
+                      <span className="text-xs text-gray-500 block">Séance la plus courte</span>
+                      <span className="font-bold text-orange-700 text-sm">{seanceMin.name} ({minDuree} min)</span>
+                    </div>
+                  )}
+                </div>
+                
                 {/* Répartition par type en version compacte */}
                 <div className="mt-4">
                   <h4 className="font-semibold text-gray-900 mb-2">Types d'exercices</h4>
