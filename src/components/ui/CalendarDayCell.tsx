@@ -66,7 +66,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className={`relative min-h-20 sm:min-h-24 p-1.5 sm:p-2 border rounded-lg bg-white flex flex-col overflow-hidden transition-all duration-200 ${
+    <div className={`relative h-20 sm:h-24 p-1.5 sm:p-2 border rounded-lg bg-white flex flex-col overflow-hidden transition-all duration-200 ${
       sessions.length > 0 ? 'border-orange-200 bg-orange-50/30' : 'border-gray-200 hover:border-gray-300'
     }`}>
       <div className={`text-sm font-semibold mb-1 ${
@@ -78,28 +78,30 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
         {sessions.length > 2 ? (
           <div className="space-y-1">
             {/* Première séance en détail */}
-            <div
-              className="flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
+            <button
+              className="flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation w-full"
               style={{
                 background: sessions[0].color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
               }}
               onClick={() => {
                 if (isMobile) setMobileSessionDetail(sessions[0]);
               }}
+              aria-label={`Détails de la séance ${sessions[0].name}`}
             >
               <span className="truncate">{sessions[0].name}</span>
-            </div>
+            </button>
             
             {/* Dots pour les autres séances */}
             <div className="flex items-center gap-1">
               {sessions.slice(1, 5).map((session, idx) => (
-                <div
+                <button
                   key={idx}
-                  className="w-2 h-2 rounded-full shadow-sm cursor-pointer hover:scale-125 transition-transform"
+                  className="w-4 h-4 rounded-full shadow-sm cursor-pointer hover:scale-125 transition-transform touch-manipulation"
                   style={{
                     background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   }}
                   title={session.name}
+                  aria-label={`Séance ${session.name}`}
                   onClick={() => {
                     if (isMobile) setMobileSessionDetail(session);
                   }}
@@ -114,8 +116,8 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           /* Mode normal pour 1-2 séances */
           sessions.slice(0, 2).map((session) => (
             <div key={session.id} className="flex items-center group">
-              <div
-                className="flex-1 min-h-8 flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
+              <button
+                className="flex-1 min-h-8 flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation"
                 style={{
                   background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   minWidth: 0,
@@ -133,6 +135,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 onClick={() => {
                   if (isMobile) setMobileSessionDetail(session);
                 }}
+                aria-label={`Séance ${session.name}${session.time ? ' à ' + session.time : ''}`}
               >
                 {/* Avatar compact pour séances partagées */}
                 {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
@@ -153,7 +156,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                     </span>
                   )}
                 </span>
-              </div>
+              </button>
             </div>
           ))
         )}
@@ -161,8 +164,9 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
         {/* Bouton pour voir toutes les séances si plus de 2 */}
         {sessions.length > 2 && (
           <button
-            className="mt-1 py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium"
+            className="mt-1 py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium min-h-[44px] touch-manipulation"
             onClick={() => setShowPopover(true)}
+            aria-label={`Voir toutes les ${sessions.length} séances du ${date}`}
           >
             Voir tout ({sessions.length})
           </button>
@@ -178,11 +182,12 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
               <span className="font-semibold text-sm">Séances du {date}</span>
               <button 
-                className="text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors" 
+                className="text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors min-h-[44px] touch-manipulation" 
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowPopover(false);
                 }}
+                aria-label="Fermer la liste des séances"
               >
                 ✕
               </button>
@@ -241,17 +246,29 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
       )}
       {/* Popover mobile pour détail séance */}
       {mobileSessionDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30" onClick={() => setMobileSessionDetail(null)}>
+        <div 
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4" 
+          onClick={() => setMobileSessionDetail(null)}
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999
+          }}
+        >
           <div 
-            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-[90vw] relative"
+            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <button 
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors" 
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] touch-manipulation" 
               onClick={(e) => {
                 e.stopPropagation();
                 setMobileSessionDetail(null);
               }}
+              aria-label="Fermer les détails de la séance"
             >
               ✕
             </button>
