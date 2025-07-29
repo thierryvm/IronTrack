@@ -126,3 +126,99 @@ input[type="submit"] {
     background: #000 !important;
   }
 }
+
+/* ===== OPTIMISATIONS ÉCRANS MOBILES 2025 ===== */
+
+/* Support des safe areas pour écrans modernes */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Formats d'écrans ultra-larges 2025 */
+/* iPhone 15 Pro Max: 430x932, Samsung S24 Ultra: 440x964, Xiaomi 14 Ultra: 446x972 */
+@media screen and (min-width: 430px) and (min-height: 896px) {
+  .fab-2025 {
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 1rem)) !important;
+    right: max(1.5rem, env(safe-area-inset-right, 1rem)) !important;
+  }
+  
+  .modal-2025 {
+    bottom: max(6rem, calc(env(safe-area-inset-bottom, 0px) + 6rem)) !important;
+    right: max(1.5rem, calc(env(safe-area-inset-right, 0px) + 1.5rem)) !important;
+    min-width: 340px !important;
+  }
+}
+
+/* Écrans pliables déployés (Samsung Galaxy Z Fold, Google Pixel Fold) */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .fab-2025 {
+    bottom: 2rem !important;
+    right: 2rem !important;
+    transform: scale(1.2) !important;
+  }
+  
+  .modal-2025 {
+    bottom: 8rem !important;
+    right: 2rem !important;
+    min-width: 380px !important;
+    max-height: 65vh !important;
+  }
+}
+
+/* Mode paysage mobile (amélioration UX) */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .fab-2025 {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    transform: scale(0.9) !important;
+  }
+  
+  .modal-2025 {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Écrans très haute densité (Retina HD+, AMOLED) */
+@media screen and (-webkit-min-device-pixel-ratio: 3), 
+       screen and (min-resolution: 3dppx) {
+  .fab-enhanced {
+    border-width: 3px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
+  }
+  
+  .text-sharp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Animations optimisées pour écrans 120Hz+ */
+@media (prefers-reduced-motion: no-preference) {
+  .smooth-120hz {
+    will-change: transform, opacity;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* Support écrans avec encoche/Dynamic Island */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .avoid-notch {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
+
+/* Optimisation pour appareils avec bouton home virtuel */
+@media screen and (min-height: 812px) {
+  .avoid-home-indicator {
+    padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+  }
+}

@@ -5,7 +5,9 @@ import { createClient } from '@/utils/supabase/client'
 import { CustomExercise, EquipmentItem, FormFieldProps } from '@/types/exercise-wizard'
 import { validateForm } from '@/utils/security'
 import { ExercisePhotoUpload } from '@/components/exercises/ExercisePhotoUpload'
+import { ExerciseDuplicateModal } from '@/components/exercises/ExerciseDuplicateModal'
 import { SecureAttachment } from '@/utils/fileUpload'
+import { detectExerciseDuplicates, DuplicateDetectionResult, ExerciseDuplicate } from '@/utils/exerciseDuplicateDetection'
 
 // Réutilisation des constantes existantes (tous les groupes musculaires)
 const muscleGroups = [
@@ -101,6 +103,9 @@ export const CustomForm: React.FC<CustomFormProps> = ({
   const [errors, setErrors] = useState<string[]>([])
   const [, setExercisePhoto] = useState<SecureAttachment | null>(null)
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(initialData?.image_url)
+  const [duplicateResult, setDuplicateResult] = useState<DuplicateDetectionResult | null>(null)
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false)
+  const [pendingFormData, setPendingFormData] = useState<CustomExercise | null>(null)
 
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -171,11 +176,56 @@ export const CustomForm: React.FC<CustomFormProps> = ({
     }
 
     try {
+      // Détection des doublons (seulement en mode création, pas édition)
+      if (!isEditMode) {
+        const duplicates = await detectExerciseDuplicates(
+          formData.name,
+          formData.exercise_type,
+          formData.muscle_group
+        );
+
+        if (duplicates.isDuplicate) {
+          setDuplicateResult(duplicates);
+          setPendingFormData(formData);
+          setShowDuplicateModal(true);
+          setLoading(false);
+          return;
+        }
+      }
+
       onComplete(formData)
     } finally {
       setLoading(false)
     }
   }
+
+  const handleUseExisting = (exercise: ExerciseDuplicate) => {
+    setShowDuplicateModal(false);
+    // Rediriger vers l'exercice existant (logique à implémenter selon le contexte)
+    console.log('Utiliser exercice existant:', exercise);
+  };
+
+  const handleRename = (newName: string) => {
+    setFormData(prev => ({ ...prev, name: newName }));
+    setShowDuplicateModal(false);
+    setDuplicateResult(null);
+    setPendingFormData(null);
+  };
+
+  const handleCreateAnyway = () => {
+    if (pendingFormData) {
+      onComplete(pendingFormData);
+    }
+    setShowDuplicateModal(false);
+    setDuplicateResult(null);
+    setPendingFormData(null);
+  };
+
+  const handleCloseDuplicateModal = () => {
+    setShowDuplicateModal(false);
+    setDuplicateResult(null);
+    setPendingFormData(null);
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -455,6 +505,19 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           Une photo claire de l&apos;exercice aidera les utilisateurs à mieux comprendre le mouvement.
         </p>
       </motion.div>
+
+      {/* Modal de détection des doublons */}
+      {duplicateResult && (
+        <ExerciseDuplicateModal
+          isOpen={showDuplicateModal}
+          onClose={handleCloseDuplicateModal}
+          duplicateResult={duplicateResult}
+          proposedName={formData.name}
+          onUseExisting={handleUseExisting}
+          onRename={handleRename}
+          onCreateAnyway={handleCreateAnyway}
+        />
+      )}
     </div>
   )
 }
