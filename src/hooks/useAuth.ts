@@ -21,13 +21,17 @@ export function useAuth(): UseAuthReturn {
         const { data: { user }, error } = await supabase.auth.getUser()
         
         if (error) {
-          console.debug('Aucun utilisateur connecté:', error.message)
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('Aucun utilisateur connecté:', error.message)
+          }
           setUser(null)
         } else {
           setUser(user)
         }
       } catch (error) {
-        console.debug('Erreur lors de la récupération de l\'utilisateur:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Erreur lors de la récupération de l\'utilisateur:', error)
+        }
         setUser(null)
       } finally {
         setIsLoading(false)
@@ -39,7 +43,9 @@ export function useAuth(): UseAuthReturn {
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.debug('Auth state change:', event)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Auth state change:', event)
+        }
         setUser(session?.user ?? null)
         setIsLoading(false)
       }

@@ -41,7 +41,9 @@ interface AdminAuthState {
  * Basé sur le diagnostic emergency-debug qui fonctionne parfaitement
  */
 export const useAdminAuthFixed = () => {
-  console.log('[useAdminAuthFixed] 🚀 Hook démarré - version corrigée')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[useAdminAuthFixed] 🚀 Hook démarré - version corrigée')
+  }
   
   const [state, setState] = useState<AdminAuthState>({
     user: null,
@@ -56,13 +58,17 @@ export const useAdminAuthFixed = () => {
   // Fonction de vérification auth simplifiée (copie du diagnostic réussi)
   const checkAuth = useCallback(async () => {
     try {
-      console.log('[useAdminAuthFixed] 📡 Vérification auth...')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[useAdminAuthFixed] 📡 Vérification auth...')
+      }
 
       // Étape 1: Auth de base (identique au diagnostic)
       const { data: { user }, error: authError } = await supabase.auth.getUser()
       
       if (authError) {
-        console.error('[useAdminAuthFixed] ❌ Erreur auth:', authError)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[useAdminAuthFixed] ❌ Erreur auth:', authError)
+        }
         setState({
           user: null,
           loading: false,
@@ -74,7 +80,9 @@ export const useAdminAuthFixed = () => {
       }
 
       if (!user) {
-        console.log('[useAdminAuthFixed] 🚫 Pas d\'utilisateur connecté')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[useAdminAuthFixed] 🚫 Pas d\'utilisateur connecté')
+        }
         setState({
           user: null,
           loading: false,
@@ -85,7 +93,9 @@ export const useAdminAuthFixed = () => {
         return
       }
 
-      console.log('[useAdminAuthFixed] ✅ Utilisateur trouvé:', user.email)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[useAdminAuthFixed] ✅ Utilisateur trouvé:', user.email)
+      }
 
       // Étape 2: Profile (identique au diagnostic)
       const { data: profile, error: profileError } = await supabase
@@ -95,7 +105,9 @@ export const useAdminAuthFixed = () => {
         .single()
 
       if (profileError) {
-        console.error('[useAdminAuthFixed] ❌ Erreur profile:', profileError)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[useAdminAuthFixed] ❌ Erreur profile:', profileError)
+        }
         setState({
           user: null,
           loading: false,
@@ -114,7 +126,9 @@ export const useAdminAuthFixed = () => {
         .eq('is_active', true)
 
       if (rolesError) {
-        console.error('[useAdminAuthFixed] ❌ Erreur user_roles:', rolesError)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[useAdminAuthFixed] ❌ Erreur user_roles:', rolesError)
+        }
         setState({
           user: null,
           loading: false,
@@ -131,7 +145,9 @@ export const useAdminAuthFixed = () => {
       )
 
       if (!adminRole) {
-        console.log('[useAdminAuthFixed] 🚫 Pas de rôle admin actif')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[useAdminAuthFixed] 🚫 Pas de rôle admin actif')
+        }
         setState({
           user: null,
           loading: false,
@@ -154,7 +170,9 @@ export const useAdminAuthFixed = () => {
         ban_reason: profile?.ban_reason
       }
 
-      console.log('[useAdminAuthFixed] 🎯 Auth admin réussie:', adminUser.role)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[useAdminAuthFixed] 🎯 Auth admin réussie:', adminUser.role)
+      }
 
       setState({
         user: adminUser,
@@ -165,7 +183,9 @@ export const useAdminAuthFixed = () => {
       })
 
     } catch (error) {
-      console.error('[useAdminAuthFixed] 💥 Erreur générale:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[useAdminAuthFixed] 💥 Erreur générale:', error)
+      }
       setState({
         user: null,
         loading: false,
@@ -197,12 +217,16 @@ export const useAdminAuthFixed = () => {
     try {
       if (!state.isAuthenticated) return null
 
-      console.log('[useAdminAuthFixed] 📊 Récupération stats admin...')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[useAdminAuthFixed] 📊 Récupération stats admin...')
+      }
 
       const { data, error } = await supabase.rpc('get_admin_dashboard_stats')
 
       if (error) {
-        console.error('[useAdminAuthFixed] ❌ Erreur stats:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[useAdminAuthFixed] ❌ Erreur stats:', error)
+        }
         return null
       }
 
@@ -224,7 +248,9 @@ export const useAdminAuthFixed = () => {
 
       return null
     } catch (error) {
-      console.error('[useAdminAuthFixed] 💥 Erreur getAdminStats:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[useAdminAuthFixed] 💥 Erreur getAdminStats:', error)
+      }
       return null
     }
   }, [supabase, state.isAuthenticated])
@@ -250,28 +276,36 @@ export const useAdminAuthFixed = () => {
         })
 
       if (error) {
-        console.error('[useAdminAuthFixed] ❌ Erreur log action:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[useAdminAuthFixed] ❌ Erreur log action:', error)
+        }
         return false
       }
 
       return true
     } catch (error) {
-      console.error('[useAdminAuthFixed] 💥 Erreur logAdminAction:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[useAdminAuthFixed] 💥 Erreur logAdminAction:', error)
+      }
       return false
     }
   }, [supabase, state.user])
 
   // Effect principal
   useEffect(() => {
-    console.log('[useAdminAuthFixed] 🔄 useEffect déclenché')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[useAdminAuthFixed] 🔄 useEffect déclenché')
+    }
     checkAuth()
   }, [checkAuth])
 
-  console.log('[useAdminAuthFixed] 📤 Retour état:', {
-    user: state.user?.email || null,
-    loading: state.loading,
-    isAuthenticated: state.isAuthenticated
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[useAdminAuthFixed] 📤 Retour état:', {
+      user: state.user?.email || null,
+      loading: state.loading,
+      isAuthenticated: state.isAuthenticated
+    })
+  }
 
   return {
     user: state.user,

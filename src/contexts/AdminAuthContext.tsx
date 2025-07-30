@@ -27,16 +27,22 @@ interface AdminAuthProviderProps {
  * Résout le problème de double instanciation des hooks d'auth
  */
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
-  console.log('[AdminAuthProvider] 🏗️ Provider initialisé - auth centralisée')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[AdminAuthProvider] 🏗️ Provider initialisé - auth centralisée')
+  }
   
   // UNE SEULE instance du hook d'auth pour toute l'app admin
   const authState = useAdminAuthFixed()
   
   // 🚀 SOLUTION CRITIQUE: Ajouter refreshUserRoles pour rafraîchissement après modification
   const refreshUserRoles = async () => {
-    console.log('[AdminAuthProvider] 🔄 Rafraîchissement user_roles demandé')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AdminAuthProvider] 🔄 Rafraîchissement user_roles demandé')
+    }
     await authState.reload()
-    console.log('[AdminAuthProvider] ✅ Rafraîchissement user_roles terminé')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AdminAuthProvider] ✅ Rafraîchissement user_roles terminé')
+    }
   }
   
   // Enrichir authState avec la fonction de rafraîchissement
@@ -45,11 +51,13 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     refreshUserRoles
   }
   
-  console.log('[AdminAuthProvider] 📤 État partagé:', {
-    user: authState.user?.email || 'null',
-    loading: authState.loading,
-    isAuthenticated: authState.isAuthenticated
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[AdminAuthProvider] 📤 État partagé:', {
+      user: authState.user?.email || 'null',
+      loading: authState.loading,
+      isAuthenticated: authState.isAuthenticated
+    })
+  }
 
   return (
     <AdminAuthContext.Provider value={contextValue}>
@@ -69,10 +77,12 @@ export function useAdminAuth(): AdminAuthContextType {
     throw new Error('useAdminAuth doit être utilisé dans un AdminAuthProvider')
   }
   
-  console.log('[useAdminAuth] 📋 Context consommé:', {
-    user: context.user?.email || 'null',
-    hasAuth: context.isAuthenticated
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[useAdminAuth] 📋 Context consommé:', {
+      user: context.user?.email || 'null',
+      hasAuth: context.isAuthenticated
+    })
+  }
   
   return context
 }
