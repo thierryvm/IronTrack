@@ -2,26 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  User, 
-  Settings, 
-  Target, 
-  Trophy, 
-  Calendar,
-  TrendingUp,
-  X,
-  Bell,
-  Shield,
-  HelpCircle,
-  Camera,
-  Activity,
-  Dumbbell,
-  Download,
-  Cat,
-  Bot,
-  Star,
-  Award
-} from 'lucide-react'
+import * as Icons from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
@@ -407,9 +388,9 @@ export default function ProfilePage() {
   }
 
   const tabs = [
-    { id: 'profile', name: 'Profil', icon: User },
-    { id: 'stats', name: 'Statistiques', icon: TrendingUp },
-    { id: 'settings', name: 'Paramètres', icon: Settings }
+    { id: 'profile', name: 'Profil', icon: Icons.User },
+    { id: 'stats', name: 'Statistiques', icon: Icons.TrendingUp },
+    { id: 'settings', name: 'Paramètres', icon: Icons.Settings }
   ]
 
   // Handler : Changer mot de passe
@@ -709,7 +690,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Icons.User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600">Profil non trouvé</p>
         </div>
       </div>
@@ -792,7 +773,7 @@ export default function ProfilePage() {
                         onClick={handleChangeAvatar}
                         title="Changer l'avatar"
                       >
-                        <Camera className="h-4 w-4 text-gray-600" />
+                        <Icons.Camera className="h-4 w-4 text-gray-600" />
                       </button>
                     </div>
                     <div className="text-center">
@@ -909,7 +890,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-orange-50 rounded-lg group relative">
-                    <Trophy className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+                    <Icons.Trophy className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.totalWorkouts || 0}</p>
                     <p className="text-sm text-gray-600">Séances totales</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -918,7 +899,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
-                    <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                    <Icons.Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.currentStreak || 0}</p>
                     <p className="text-sm text-gray-600">Jours consécutifs</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -927,7 +908,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-green-50 rounded-lg group relative">
-                    <Activity className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                    <Icons.Activity className="h-8 w-8 text-green-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.averageWorkoutsPerWeek || 0}</p>
                     <p className="text-sm text-gray-600">Séances/semaine</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -936,7 +917,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-purple-50 rounded-lg group relative">
-                    <Target className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+                    <Icons.Target className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{userBadges?.length || 0}</p>
                     <p className="text-sm text-gray-600">Badges gagnés</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -948,7 +929,7 @@ export default function ProfilePage() {
                 <div className="border-t pt-6">
                   <h4 className="font-semibold text-gray-900 mb-3">Exercice préféré</h4>
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Dumbbell className="h-6 w-6 text-orange-500" />
+                    <Icons.Dumbbell className="h-6 w-6 text-orange-500" />
                     <span className="font-medium text-gray-900">{stats?.favoriteExercise || 'Aucun exercice préféré'}</span>
                   </div>
                 </div>
@@ -1031,7 +1012,7 @@ export default function ProfilePage() {
             {/* Section Badges validés */}
             <div className="bg-white rounded-xl shadow-md p-6 mt-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Award className="h-6 w-6 text-yellow-500" />
+                <Icons.Award className="h-6 w-6 text-yellow-500" />
                 <span>Badges validés</span>
               </h2>
               <div className="space-y-6">
@@ -1065,7 +1046,7 @@ export default function ProfilePage() {
                     {/* Affichage si aucun badge validé */}
                     {achievements.filter(achievement => achievement.status === 'Validé').length === 0 && (
                       <div className="col-span-2 text-center py-8 text-gray-500">
-                        <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <Icons.Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                         <h3 className="font-medium text-gray-900 mb-2">Aucun badge validé</h3>
                         <p className="text-sm">Crée des objectifs dans la page Progression pour débloquer tes premiers badges !</p>
                       </div>
@@ -1078,7 +1059,7 @@ export default function ProfilePage() {
             {/* Section Badges de réalisation */}
             <div className="bg-white rounded-xl shadow-md p-6 mt-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Star className="h-6 w-6 text-purple-500" />
+                <Icons.Star className="h-6 w-6 text-purple-500" />
                 <span>Badges de réalisation</span>
               </h2>
               <div className="space-y-6">
@@ -1101,7 +1082,7 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <Icons.Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-500">Aucun badge de réalisation pour le moment</p>
                     <p className="text-sm text-gray-400 mt-2">Continue tes entraînements pour débloquer des badges !</p>
                   </div>
@@ -1120,7 +1101,7 @@ export default function ProfilePage() {
             {/* Paramètres de notification */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Bell className="h-6 w-6 text-orange-500" />
+                <Icons.Bell className="h-6 w-6 text-orange-500" />
                 <span>Notifications</span>
               </h3>
               
@@ -1145,7 +1126,7 @@ export default function ProfilePage() {
             {/* Actions améliorées */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Settings className="h-6 w-6 text-orange-500" />
+                <Icons.Settings className="h-6 w-6 text-orange-500" />
                 <span>Actions & Paramètres</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1153,18 +1134,18 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                      <Shield className="h-5 w-5 text-blue-500" />
+                      <Icons.Shield className="h-5 w-5 text-blue-500" />
                       <span>Compte</span>
                     </h4>
                     <button onClick={handleChangePassword} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3 mb-2">
-                      <Settings className="h-5 w-5 text-gray-400" />
+                      <Icons.Settings className="h-5 w-5 text-gray-400" />
                       <div>
                         <p className="font-medium text-gray-900">Changer le mot de passe</p>
                         <p className="text-sm text-gray-600">Sécurise ton compte&nbsp;! (IronBuddy ne lit pas tes mots de passe, promis)</p>
                       </div>
                     </button>
                     <button onClick={handleDeleteAccount} className="w-full text-left p-4 border border-red-300 rounded-lg hover:bg-red-100 transition-colors flex items-center space-x-3 mb-2">
-                      <X className="h-5 w-5 text-red-500" />
+                      <Icons.X className="h-5 w-5 text-red-500" />
                       <div>
                         <p className="font-medium text-red-700">Supprimer mon compte</p>
                         <p className="text-sm text-red-500">Action irréversible&nbsp;! IronBuddy va pleurer… 😢</p>
@@ -1173,11 +1154,11 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                      <Target className="h-5 w-5 text-green-500" />
+                      <Icons.Target className="h-5 w-5 text-green-500" />
                       <span>Données</span>
                     </h4>
                     <button onClick={handleExportData} disabled={exporting} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3">
-                      <Download className="h-5 w-5 text-green-500" />
+                      <Icons.Download className="h-5 w-5 text-green-500" />
                       <div>
                         <p className="font-medium text-gray-900">Exporter mes données</p>
                         <p className="text-sm text-gray-600">Télécharge ton historique (IronBuddy adore les stats&nbsp;!)</p>
@@ -1191,18 +1172,18 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                      <Camera className="h-5 w-5 text-purple-500" />
+                      <Icons.Camera className="h-5 w-5 text-purple-500" />
                       <span>Personnalisation</span>
                     </h4>
                     <button onClick={handleChangeAvatar} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 mb-2">
-                      <Camera className="h-5 w-5 text-purple-400" />
+                      <Icons.Camera className="h-5 w-5 text-purple-400" />
                       <div>
                         <p className="font-medium text-gray-900">Changer mon avatar</p>
                         <p className="text-sm text-gray-600">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
                       </div>
                     </button>
                     <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2">
-                      <Dumbbell className="h-5 w-5 text-orange-400" />
+                      <Icons.Dumbbell className="h-5 w-5 text-orange-400" />
                       <div>
                         <p className="font-medium text-gray-900">Choisir ma mascotte</p>
                         <p className="text-sm text-gray-600">IronBuddy ou surprise du chef&nbsp;?</p>
@@ -1229,18 +1210,18 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                      <HelpCircle className="h-5 w-5 text-gray-400" />
+                      <Icons.HelpCircle className="h-5 w-5 text-gray-400" />
                       <span>Support</span>
                     </h4>
                     <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2">
-                      <HelpCircle className="h-5 w-5 text-blue-400" />
+                      <Icons.HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">Aide & support</p>
                         <p className="text-sm text-gray-600">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
                     <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3">
-                      <HelpCircle className="h-5 w-5 text-blue-400" />
+                      <Icons.HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">FAQ</p>
                         <p className="text-sm text-gray-600">Les questions que m'ême IronBuddy se pose parfois…</p>
@@ -1254,7 +1235,7 @@ export default function ProfilePage() {
             {/* Mascotte IronBuddy */}
             <div ref={mascotSectionRef} className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Dumbbell className="h-6 w-6 text-orange-500" />
+                <Icons.Dumbbell className="h-6 w-6 text-orange-500" />
                 <span>Mascotte IronBuddy</span>
               </h3>
               <div className="space-y-4">
@@ -1277,28 +1258,28 @@ export default function ProfilePage() {
                       className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('ironbuddy')}
                     >
-                      <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 animate-bounce" />
+                      <Icons.Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 animate-bounce" />
                       <span className="mt-1 text-xs font-bold text-center">IronBuddy</span>
                     </button>
                     <button
                       className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('cat')}
                     >
-                      <Cat className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 animate-pulse" />
+                      <Icons.Cat className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 animate-pulse" />
                       <span className="mt-1 text-xs font-bold text-center">Félix</span>
                     </button>
                     <button
                       className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('bot')}
                     >
-                      <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin-slow" />
+                      <Icons.Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin-slow" />
                       <span className="mt-1 text-xs font-bold text-center">RoboCoach</span>
                     </button>
                     <button
                       className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('star')}
                     >
-                      <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 animate-ping" />
+                      <Icons.Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 animate-ping" />
                       <span className="mt-1 text-xs font-bold text-center">SuperStar</span>
                     </button>
                   </div>
@@ -1314,7 +1295,7 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-red-600 mb-2 flex items-center"><Icons.X className="h-6 w-6 mr-2" /> Confirmation</DialogTitle>
             <DialogDescription className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s'en remettre…</DialogDescription>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
@@ -1328,7 +1309,7 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d'avatar</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Icons.Camera className="h-6 w-6 mr-2" /> Changer d'avatar</DialogTitle>
             <DialogDescription className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</DialogDescription>
             <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)</div>
             {selectedFile ? (
@@ -1408,7 +1389,7 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-orange-600 mb-2 flex items-center"><Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-orange-600 mb-2 flex items-center"><Icons.Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
             <DialogDescription className="mb-4 text-gray-700">Fonctionnalité à venir&nbsp;! IronBuddy révise son plus beau sourire…</DialogDescription>
             <div className="flex justify-end">
               <button onClick={() => setShowMascotModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Fermer</button>
