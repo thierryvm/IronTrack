@@ -674,14 +674,22 @@ export default function CalendarPage() {
                       const isCurrentDay = isToday(day.date);
                       const isSelectedDay = isSelected(day.date);
                       const cell = (
-                        <button
+                        <div
                           key={index}
                           onClick={() => setSelectedDate(day.date)}
                           className={`w-full cursor-pointer transition-all touch-manipulation min-h-[44px] ${isCurrentDay ? 'ring-2 ring-orange-500' : ''} ${isSelectedDay ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setSelectedDate(day.date);
+                            }
+                          }}
                           aria-label={`Sélectionner le ${day.date.getDate()} ${monthName}`}
                         >
                           <CalendarDayCell date={day.date.getDate()} sessions={sessions} />
-                        </button>
+                        </div>
                       );
                       return cell;
                     })}
