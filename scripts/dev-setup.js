@@ -1,11 +1,11 @@
 const { exec } = require('child_process');
 const { createClient } = require('@supabase/supabase-js');
 
-// Configuration
-const SUPABASE_URL = 'https://taspdceblvmpvdjixyit.supabase.co';
+// Configuration - SÉCURISÉE
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DEV_URL = 'http://localhost:3000';
-const PROD_URL = 'https://iron-track-dusky.vercel.app';
+const PROD_URL = process.env.VERCEL_URL || 'https://your-app.vercel.app';
 
 async function updateSupabaseConfig(siteUrl) {
   try {
