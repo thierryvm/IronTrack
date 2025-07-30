@@ -49,12 +49,14 @@ DIAGNOSTIC_*.md
 *_DIAGNOSTIC.md
 *_FIXED.md
 
-# 🚨 SCRIPTS SENSIBLES - APPROCHE SÉLECTIVE
-# Garder scripts/ en local mais éviter commit de fichiers avec données sensibles
+# 🚨 SCRIPTS SENSIBLES - LISTE EXPLICITE
+# Garder dossier scripts/ mais ignorer fichiers avec PROJECT ID/SERVICE KEYS
 scripts/dev-setup.js
-scripts/*-with-env.js
-scripts/analyze-*.js
-scripts/consolidate-*.js
+scripts/analyze-with-env.js
+scripts/analyze-duplicates-comprehensive.js
+scripts/analyze-exercises-duplicates.js
+scripts/consolidate-duplicates.js
+scripts/consolidate-duplicates-fixed.js
 REGLES_SECURITE_CLAUDE.md
 
 # Fichiers système et logs
@@ -90,18 +92,7 @@ mcp.json
 mcp.json.backup
 
 # 🚨 Scripts temporaires et outils de développement (NE PAS COMMITER)
-scripts/analyze-*.js
-scripts/check-*.js
-scripts/test-*.js
-scripts/consolidate-*.js
-scripts/activate-*.js
-scripts/*-autonomous.js
-scripts/*-comprehensive.js
-scripts/*-duplicates.js
-scripts/*-structure.js
-scripts/*-stats.js
-scripts/*-status.js
-scripts/consolidation-*.md
+# Anciens patterns supprimés - remplacés par liste explicite ci-dessus
 
 # Note: scripts/dev-setup.js est partagé avec l'équipe (pas de données sensibles)
 
