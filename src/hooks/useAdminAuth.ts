@@ -47,12 +47,16 @@ export const useAdminAuth = () => {
         .maybeSingle()
 
       if (roleError) {
-        console.error('[ADMIN_AUTH] Role query error:', roleError)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[ADMIN_AUTH] Role query error:', roleError)
+        }
         throw new Error('Erreur lors de la vérification des permissions')
       }
 
       if (!roleData) {
-        console.log('[ADMIN_AUTH] No admin role found for user:', userId)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[ADMIN_AUTH] No admin role found for user:', userId)
+        }
         throw new Error('Permissions administrateur insuffisantes')
       }
 
@@ -82,7 +86,9 @@ export const useAdminAuth = () => {
             }
           })
       } catch (logError) {
-        console.warn('[ADMIN_AUTH] Logging failed (non-critical):', logError)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[ADMIN_AUTH] Logging failed (non-critical):', logError)
+        }
       }
 
       return {
@@ -93,7 +99,9 @@ export const useAdminAuth = () => {
         is_active: roleData.is_active
       }
     } catch (error) {
-      console.error('[ADMIN_AUTH] Permission check failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN_AUTH] Permission check failed:', error)
+      }
       return null
     }
   }, [supabase])
@@ -123,7 +131,9 @@ export const useAdminAuth = () => {
 
         setUser(adminUser)
       } catch (error) {
-        console.error('[ADMIN_AUTH] Initialization failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[ADMIN_AUTH] Initialization failed:', error)
+        }
         setError('Erreur d\'authentification admin')
         router.push('/')
       } finally {
@@ -169,7 +179,9 @@ export const useAdminAuth = () => {
       
       return null
     } catch (error) {
-      console.error('[ADMIN_AUTH] Stats fetch failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN_AUTH] Stats fetch failed:', error)
+      }
       return null
     }
   }
@@ -198,7 +210,9 @@ export const useAdminAuth = () => {
           }
         })
     } catch (error) {
-      console.error('[ADMIN_AUTH] Logging failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN_AUTH] Logging failed:', error)
+      }
     }
   }, [user, supabase])
 
