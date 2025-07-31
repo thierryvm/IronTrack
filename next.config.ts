@@ -130,18 +130,9 @@ const nextConfig = {
           }
         ]
       },
-      {
-        source: '/globals.css',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'text/css; charset=utf-8'
-          }
-        ]
-      },
       // Headers généraux pour les pages
       {
-        source: '/((?!_next/static|favicon.ico|globals.css).*)',
+        source: '/((?!_next/static|favicon.ico).*)',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
