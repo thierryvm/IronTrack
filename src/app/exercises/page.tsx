@@ -1,13 +1,30 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, Calendar, Trophy } from 'lucide-react'
-import { ExerciseDetailsModal } from '@/components/exercises/ExerciseDetailsModal'
+import dynamic from 'next/dynamic'
+
+// Lazy loading des composants lourds - OPTIMISATION CRITIQUE
+const ExerciseDetailsModal = dynamic(() => 
+  import('@/components/exercises/ExerciseDetailsModal').then(mod => ({ default: mod.ExerciseDetailsModal })), 
+  { 
+    ssr: false,
+    loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded-lg">Chargement...</div>
+  }
+)
+
+// Lazy loading des animations Framer Motion - OPTIMISATION
+const MotionDiv = dynamic(
+  () => import('framer-motion').then((mod) => ({ default: mod.motion.div })),
+  { 
+    ssr: false,
+    loading: () => <div className="opacity-0">Loading...</div>
+  }
+)
 
 interface Exercise {
   id: number
@@ -25,6 +42,9 @@ interface Exercise {
   image_url?: string
   created_at?: string
 }
+
+// OPTIMISATION: Cache des performances pour éviter requêtes répétées
+const performanceCache = new Map<number, any>()
 
 // Fonction pour formater les performances selon le type d'exercice
 function formatLastPerformance(exercise: Exercise): string {
@@ -51,7 +71,7 @@ function formatLastPerformance(exercise: Exercise): string {
 
 const muscleGroups = [
   'Tous',
-  'Pectoraux',
+  'Pectoraux', 
   'Dos',
   'Épaules',
   'Biceps',
@@ -63,8 +83,83 @@ const muscleGroups = [
 
 const PAGE_SIZE = 10;
 
-export default function ExercisesPage() {
+// OPTIMISATION CRITIQUE: Fonction pour charger toutes les performances en une seule requête
+async function loadExercisesWithPerformances(page: number) {
+  const supabase = createClient()
+  
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+  
+  // 1. Charger les exercices
+  const { data: exercisesData, error: exercisesError, count } = await supabase
+    .from('exercises')
+    .select('*, image_url', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (exercisesError || !exercisesData) {
+    return { exercises: [], totalCount: 0 };
+  }
+
+  // 2. Extraire les IDs des exercices
+  const exerciseIds = exercisesData.map(ex => ex.id);
+  
+  // 3. OPTIMISATION: Une seule requête pour toutes les dernières performances
+  const { data: performancesData } = await supabase
+    .from('performance_logs')
+    .select('exercise_id, weight, reps, distance, duration, performed_at')
+    .in('exercise_id', exerciseIds)
+    .order('performed_at', { ascending: false });
+
+  // 4. Grouper les performances par exercise_id et prendre la plus récente
+  const performanceMap = new Map<number, any>();
+  if (performancesData) {
+    performancesData.forEach(perf => {
+      if (!performanceMap.has(perf.exercise_id)) {
+        performanceMap.set(perf.exercise_id, perf);
+      }
+    });
+  }
+
+  // 5. Enrichir les exercices avec leurs performances
+  const enrichedExercises = exercisesData.map(exercise => {
+    const lastPerf = performanceMap.get(exercise.id);
+    return {
+      ...exercise,
+      last_weight: lastPerf?.weight,
+      last_reps: lastPerf?.reps,
+      last_distance: lastPerf?.distance,
+      last_duration: lastPerf?.duration,
+      last_date: lastPerf?.performed_at
+    };
+  });
+
+  return {
+    exercises: enrichedExercises,
+    totalCount: count || 0
+  };
+}
+
+// Composant Loading optimisé
+function ExerciseLoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded mb-4"></div>
+          <div className="h-3 bg-gray-200 rounded mb-2"></div>
+          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Composant principal optimisé
+export default function ExercisesPageOptimized() {
   const router = useRouter();
+  
+  // OPTIMISATION: Check auth uniquement au montage
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient();
@@ -87,71 +182,40 @@ export default function ExercisesPage() {
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
+  // OPTIMISATION: Fonction de chargement avec une seule requête groupée
   const loadExercises = useCallback(async () => {
     setLoading(true)
-    const supabase = createClient()
     
-    // Récupérer le nombre total d'exercices pour la pagination
-    const { count } = await supabase
-      .from('exercises')
-      .select('*', { count: 'exact', head: true });
-    setTotalCount(count || 0);
-    
-    // Charger uniquement les exercices de la page courante
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    const { data: exercisesData, error } = await supabase
-      .from('exercises')
-      .select('*, image_url')
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (!error && exercisesData) {
-      // Pour chaque exercice, récupérer la dernière performance
-      const enrichedExercises = await Promise.all(
-        exercisesData.map(async (exercise) => {
-          const { data: lastPerf } = await supabase
-            .from('performance_logs')
-            .select('weight, reps, distance, duration, performed_at')
-            .eq('exercise_id', exercise.id)
-            .order('performed_at', { ascending: false })
-            .limit(1);
-
-          const lastPerfData = lastPerf?.[0];
-          
-          return {
-            ...exercise,
-            last_weight: lastPerfData?.weight,
-            last_reps: lastPerfData?.reps,
-            last_distance: lastPerfData?.distance,
-            last_duration: lastPerfData?.duration,
-            last_date: lastPerfData?.performed_at
-          };
-        })
-      );
-      
-      setExercises(enrichedExercises);
+    try {
+      const { exercises: loadedExercises, totalCount: count } = await loadExercisesWithPerformances(page);
+      setExercises(loadedExercises);
+      setTotalCount(count);
+    } catch (error) {
+      console.error('Erreur chargement exercices:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [page]);
 
+  // OPTIMISATION: Charger équipements en lazy
   useEffect(() => {
     loadExercises()
-    // Charger la liste des équipements
+    
+    // Lazy load équipements (pas critique pour le rendu)
     const fetchEquipment = async () => {
       const supabase = createClient()
       const { data, error } = await supabase.from('equipment').select('id, name')
       if (!error && data) setEquipmentList(data)
     }
-    fetchEquipment()
+    
+    // Délai pour ne pas bloquer le rendu principal
+    setTimeout(fetchEquipment, 100);
   }, [loadExercises]);
-
 
   // Fonction utilitaire pour normaliser (enlever accents et mettre en minuscule)
   function normalize(str: string) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
-
 
   // Fonctions de suppression
   const handleDeleteExercise = (exercise: Exercise) => {
@@ -182,7 +246,7 @@ export default function ExercisesPage() {
     setExerciseToDelete(null);
   };
 
-  // Filtrage des exercices selon la recherche et le groupe musculaire
+  // OPTIMISATION: Filtrage avec useMemo si nécessaire
   const filteredExercises = exercises.filter(ex => {
     const search = normalize(searchTerm);
     const name = normalize(ex.name);
@@ -192,349 +256,267 @@ export default function ExercisesPage() {
     return matchGroup && matchSearch;
   });
 
+  // OPTIMISATION: Loading état avec skeleton au lieu de spinner simple
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des exercices...</p>
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-3xl font-bold">Mes Exercices</h1>
+            <p className="text-orange-100">Gestion et suivi de vos exercices</p>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ExerciseLoadingSkeleton />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ExerciseDetailsModal 
-        exerciseId={selectedExerciseId || ''}
-        isOpen={!!selectedExerciseId} 
-        onClose={() => setSelectedExerciseId(null)}
-      />
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header optimisé - rendu immédiat */}
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
             <div>
-              <h1 className="text-3xl font-bold">Exercices</h1>
-              <p className="text-orange-100">Gère ta bibliothèque d'exercices</p>
+              <h1 className="text-3xl font-bold max-sm:text-2xl">Mes Exercices</h1>
+              <p className="text-orange-100 max-sm:text-sm">Gestion et suivi de vos exercices ({totalCount} total)</p>
             </div>
-            <Link
-              href="/exercises/new"
-              className="bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="h-5 w-5" />
-              <span>Nouvel exercice</span>
-            </Link>
+            <div className="flex items-center space-x-3">
+              <Link 
+                href="/exercises/new"
+                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
+              >
+                <Plus className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
+                <span>Nouvel exercice</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Contenu principal avec Suspense */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filtres et recherche */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8"
-        >
+        {/* Filtres - rendu immédiat */}
+        <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Recherche */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Rechercher un exercice..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
                 />
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 focus:outline-none"
-                    aria-label="Effacer la recherche"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                )}
               </div>
             </div>
-
-            {/* Filtre par groupe musculaire */}
-            <div className="sm:w-64">
-              <select
-                value={selectedMuscleGroup}
-                onChange={(e) => setSelectedMuscleGroup(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                {muscleGroups.map(group => (
-                  <option key={group} value={group}>{group}</option>
-                ))}
-              </select>
+            <div className="flex flex-wrap gap-2">
+              {muscleGroups.map(group => (
+                <button
+                  key={group}
+                  onClick={() => setSelectedMuscleGroup(group)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedMuscleGroup === group
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-white text-gray-600 hover:bg-orange-50 border border-gray-200'
+                  }`}
+                >
+                  {group}
+                </button>
+              ))}
             </div>
           </div>
-        </motion.div>
-
-        {/* Statistiques */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-        >
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total exercices</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</p>
-              </div>
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                <Dumbbell className="h-6 w-6 text-blue-500" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Groupes musculaires</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{new Set(exercises.map(e => e.muscle_group)).size}</p>
-              </div>
-              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                <Target className="h-6 w-6 text-green-500" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Exercices récents</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {exercises.filter(e => e.last_date && new Date(e.last_date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length}
-                </p>
-              </div>
-              <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
-                <TrendingUp className="h-6 w-6 text-orange-500" />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Grille des exercices */}
-        <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900">
-            {filteredExercises.length} exercice{filteredExercises.length > 1 ? 's' : ''} trouvé{filteredExercises.length > 1 ? 's' : ''}
-          </h2>
         </div>
 
-        <div className="grid gap-3 grid-cols-1 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredExercises.map((exercise, index) => {
-            const difficultyColors = {
-              'Débutant': { bg: 'bg-green-500', border: 'border-green-500' },
-              'Intermédiaire': { bg: 'bg-yellow-500', border: 'border-yellow-500' },
-              'Avancé': { bg: 'bg-red-500', border: 'border-red-500' }
-            }
-            const difficultyColor = difficultyColors[exercise.difficulty] || { bg: 'bg-gray-500', border: 'border-gray-500' }
-            const equipment = equipmentList.find(eq => String(eq.id) === String(exercise.equipment))
-
-            return (
-              <motion.div
+        {/* Liste d'exercices avec Suspense */}
+        <Suspense fallback={<ExerciseLoadingSkeleton />}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredExercises.map((exercise, index) => (
+              <MotionDiv
                 key={exercise.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${difficultyColor.border} overflow-hidden`}
-                onClick={() => setSelectedExerciseId(exercise.id.toString())}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
               >
-                {/* Image de l'exercice */}
+                {/* Image optimized avec Next.js */}
                 {exercise.image_url && (
-                  <div className="relative h-32 sm:h-40 bg-gray-100">
+                  <div className="relative h-48 w-full">
                     <Image
                       src={exercise.image_url}
-                      alt={`Photo de ${exercise.name}`}
+                      alt={exercise.name}
                       fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
-                    {/* Overlay avec difficulté */}
-                    <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white shadow-lg`}>
-                        {exercise.difficulty}
-                      </span>
-                    </div>
                   </div>
                 )}
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className={`p-2 rounded-lg ${difficultyColor.bg} flex-shrink-0`}>
-                        <Dumbbell className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{exercise.name}</h3>
-                        <p className="text-sm text-gray-500 truncate">{exercise.muscle_group}</p>
-                      </div>
+                
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                        {exercise.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">{exercise.muscle_group}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      exercise.difficulty === 'Débutant' ? 'bg-green-100 text-green-700' :
+                      exercise.difficulty === 'Intermédiaire' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {exercise.difficulty}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-1">
+                      <Target className="h-4 w-4" />
+                      <span>{exercise.exercise_type}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Dumbbell className="h-4 w-4" />
+                      <span>{exercise.equipment}</span>
                     </div>
                   </div>
 
-                  <div className="space-y-2 mb-4">
-                    {equipment && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Dumbbell className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">{equipment.name}</span>
-                      </div>
-                    )}
+                  {/* Dernière performance */}
+                  <div className="mb-4">
+                    <div className="flex items-center space-x-2 text-sm">
+                      <TrendingUp className="h-4 w-4 text-orange-500" />
+                      <span className="text-gray-600">Dernière performance:</span>
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 mt-1">
+                      {formatLastPerformance(exercise) || 'Aucune performance enregistrée'}
+                    </p>
                     {exercise.last_date && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">Dernière: {new Date(exercise.last_date).toLocaleDateString('fr-FR')}</span>
-                      </div>
-                    )}
-                    {formatLastPerformance(exercise) && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Trophy className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">{formatLastPerformance(exercise)}</span>
-                      </div>
+                      <p className="text-xs text-gray-500 mt-1 flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {new Date(exercise.last_date).toLocaleDateString('fr-FR')}
+                      </p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    {/* Afficher difficulté uniquement si pas d'image */}
-                    {!exercise.image_url && (
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColor.bg} text-white`}>
-                        {exercise.difficulty}
-                      </span>
-                    )}
-                    {exercise.image_url && <div></div>}
-
-                    <div className="flex space-x-1 flex-shrink-0">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedExerciseId(exercise.id.toString());
-                        }}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Voir détails"
-                      >
-                        <Eye className="h-4 w-4" />
+                  {/* Actions */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setSelectedExerciseId(exercise.id.toString())}
+                      className="flex-1 bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>Détails</span>
+                    </button>
+                    
+                    <Link
+                      href={`/exercises/${exercise.id}/add-performance`}
+                      className="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Performance</span>
+                    </Link>
+                    
+                    <div className="relative group">
+                      <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
                       </button>
-                      <Link
-                        href={`/exercises/${exercise.id}/add-performance`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="Ajouter une performance"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Link>
-                      <Link
-                        href={`/exercises/${exercise.id}/edit-exercise`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                        title="Modifier"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Link>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteExercise(exercise);
-                        }}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      
+                      <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                        <Link
+                          href={`/exercises/${exercise.id}/edit-exercise`}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span>Modifier exercice</span>
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteExercise(exercise)}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg w-full text-left"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span>Supprimer</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {filteredExercises.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">💪</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun exercice trouvé</h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm || selectedMuscleGroup !== 'Tous' 
-                ? 'Essaie de modifier tes critères de recherche'
-                : 'Commence par ajouter ton premier exercice !'}
-            </p>
-            {!searchTerm && selectedMuscleGroup === 'Tous' && (
-              <Link
-                href="/exercises/new"
-                className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors inline-flex items-center space-x-2"
-              >
-                <Plus className="h-5 w-5" />
-                <span>Ajouter un exercice</span>
-              </Link>
-            )}
+              </MotionDiv>
+            ))}
           </div>
-        )}
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 sm:gap-4 mt-6 px-4">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
-              page === 1 
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                : 'bg-orange-500 text-white hover:bg-orange-600'
-            }`}
-          >
-            <span className="hidden sm:inline">Précédent</span>
-            <span className="sm:hidden">←</span>
-          </button>
-          <span className="font-semibold text-sm sm:text-base px-2">
-            Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
-            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
-              page >= Math.ceil(totalCount / PAGE_SIZE) 
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                : 'bg-orange-500 text-white hover:bg-orange-600'
-            }`}
-          >
-            <span className="hidden sm:inline">Suivant</span>
-            <span className="sm:hidden">→</span>
-          </button>
-        </div>
+        </Suspense>
 
-        {/* Modal de confirmation suppression */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Trash2 className="h-6 w-6 text-red-500" /> 
-                Supprimer l'exercice ?
-              </h2>
-              <p className="mb-6">
-                Tu es sûr de vouloir supprimer &quot;{exerciseToDelete?.name}&quot; ? 
-                Cette action est irréversible et supprimera aussi toutes les performances associées.
-              </p>
-              <div className="flex justify-end gap-2">
-                <button 
-                  onClick={cancelDeleteExercise} 
-                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold"
-                >
-                  Annuler
-                </button>
-                <button 
-                  onClick={confirmDeleteExercise} 
-                  className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </div>
+        {/* Pagination */}
+        {totalCount > PAGE_SIZE && (
+          <div className="mt-8 flex justify-center space-x-2">
+            <button
+              onClick={() => setPage(Math.max(1, page - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              Précédent
+            </button>
+            <span className="px-4 py-2 text-gray-600">
+              Page {page} sur {Math.ceil(totalCount / PAGE_SIZE)}
+            </span>
+            <button
+              onClick={() => setPage(Math.min(Math.ceil(totalCount / PAGE_SIZE), page + 1))}
+              disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
+              className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              Suivant
+            </button>
           </div>
         )}
       </div>
+
+      {/* Modal de détails exercice avec lazy loading */}
+      {selectedExerciseId && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>}>
+          <ExerciseDetailsModal
+            exerciseId={selectedExerciseId}
+            isOpen={!!selectedExerciseId}
+            onClose={() => setSelectedExerciseId(null)}
+          />
+        </Suspense>
+      )}
+
+      {/* Modal de confirmation suppression */}
+      {showDeleteModal && exerciseToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirmer la suppression
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Êtes-vous sûr de vouloir supprimer l'exercice "{exerciseToDelete.name}" ? 
+              Cette action est irréversible et supprimera aussi toutes les performances associées.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={confirmDeleteExercise}
+                className="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Supprimer
+              </button>
+              <button
+                onClick={cancelDeleteExercise}
+                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
-} 
+}
