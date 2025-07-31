@@ -684,16 +684,20 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/workouts/new"
-                  className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                  className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  aria-label="Commencer une nouvelle séance d'entraînement"
+                  role="button"
                 >
-                  <Dumbbell className="h-6 w-6" />
+                  <Dumbbell className="h-6 w-6" aria-hidden="true" />
                   Commencer ma séance
                 </Link>
                 <Link
                   href="/calendar"
-                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-500"
+                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300"
+                  aria-label="Afficher le calendrier des entraînements"
+                  role="button"
                 >
-                  <Calendar className="h-5 w-5" />
+                  <Calendar className="h-5 w-5" aria-hidden="true" />
                   Voir le planning
                 </Link>
               </div>
@@ -821,19 +825,28 @@ export default function HomePage() {
           {/* Info bulle explicative */}
           <div className="absolute top-4 right-4 group">
             <button 
-              className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors"
+              className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300"
               onClick={(e) => {
                 e.stopPropagation()
                 setShowTooltip(!showTooltip)
               }}
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
+              aria-label={showTooltip ? "Masquer les informations" : "Afficher les informations sur les phrases de motivation"}
+              aria-expanded={showTooltip}
+              aria-controls="motivation-tooltip"
+              type="button"
             >
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
             </button>
-            <div className={`absolute right-0 md:right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 md:w-64 max-w-[calc(100vw-2rem)] transition-opacity pointer-events-none z-10 transform -translate-x-1/2 md:translate-x-0 left-1/2 md:left-auto ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
+            <div 
+              id="motivation-tooltip"
+              className={`absolute right-0 md:right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 md:w-64 max-w-[calc(100vw-2rem)] transition-opacity pointer-events-none z-10 transform -translate-x-1/2 md:translate-x-0 left-1/2 md:left-auto ${showTooltip ? 'opacity-100' : 'opacity-0'}`}
+              role="tooltip"
+              aria-hidden={!showTooltip}
+            >
               <p className="font-semibold mb-1">Comment ça marche ?</p>
               <p>Les objectifs se basent sur tes séances marquées comme &quot;Réalisé&quot; ou &quot;Terminé&quot;. Va dans &quot;Séances&quot; pour marquer tes entraînements comme terminés !</p>
             </div>
@@ -947,15 +960,22 @@ export default function HomePage() {
 
       {/* Modal SessionTimer */}
       {showSessionTimer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="session-timer-title"
+        >
           <div className="bg-white rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] max-h-[90vh] overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-white rounded-t-3xl">
-              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Configurer ta session</h2>
+              <h2 id="session-timer-title" className="text-2xl font-bold text-gray-900 tracking-tight">Configurer ta session</h2>
               <button
                 onClick={() => setShowSessionTimer(false)}
-                className="text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors"
+                className="text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:rounded"
                 title="Fermer"
+                aria-label="Fermer la fenêtre de configuration de session"
+                type="button"
               >
                 ✕
               </button>
