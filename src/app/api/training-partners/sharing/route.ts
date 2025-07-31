@@ -20,13 +20,17 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
 
     if (error) {
-      console.error('Erreur récupération paramètres partage:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erreur récupération paramètres partage:', error)
+      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ settings })
   } catch (error) {
-    console.error('Erreur API sharing settings:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erreur API sharing settings:', error)
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
@@ -95,20 +99,26 @@ export async function PATCH(request: NextRequest) {
           .single()
 
         if (createError) {
-          console.error('Erreur création paramètres partage:', createError)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Erreur création paramètres partage:', createError)
+          }
           return NextResponse.json({ error: createError.message }, { status: 500 })
         }
 
         return NextResponse.json({ settings: newData })
       } else {
-        console.error('Erreur mise à jour paramètres partage:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Erreur mise à jour paramètres partage:', error)
+        }
         return NextResponse.json({ error: error.message }, { status: 500 })
       }
     }
 
     return NextResponse.json({ settings: data })
   } catch (error) {
-    console.error('Erreur API sharing settings PATCH:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erreur API sharing settings PATCH:', error)
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

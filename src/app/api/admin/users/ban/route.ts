@@ -9,8 +9,11 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
-  try {
+  if (process.env.NODE_ENV === 'development') {
     console.log(`[API LOG] /api/admin/users/ban/route.ts - POST appelé à`, new Date().toISOString());
+  }
+  
+  try {
     const { userId, ban } = await request.json()
     
     if (!userId || typeof ban !== 'boolean') {
@@ -90,7 +93,9 @@ export async function POST(request: Request) {
     })
 
     if (banError) {
-      console.error('[ADMIN BAN] Erreur bannissement:', banError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN BAN] Erreur bannissement:', banError);
+      }
       return NextResponse.json({ error: 'Erreur lors du bannissement' }, { status: 500 })
     }
 
@@ -114,7 +119,9 @@ export async function POST(request: Request) {
     })
 
   } catch (error) {
-    console.error('[API ADMIN BAN] Erreur:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API ADMIN BAN] Erreur:', error);
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

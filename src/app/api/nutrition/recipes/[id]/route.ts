@@ -92,7 +92,11 @@ export async function GET(
       .single()
 
     if (error) {
-      console.error('Erreur récupération recette:', error)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur récupération recette:', error)
+
+      }
       return NextResponse.json({ error: 'Recette non trouvée' }, { status: 404 })
     }
 
@@ -107,7 +111,11 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Erreur API recipe GET:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API recipe GET:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
@@ -244,7 +252,11 @@ export async function PUT(
         .eq('recipe_id', recipeId)
 
       if (deleteError) {
-        console.error('Erreur suppression anciens ingrédients:', deleteError)
+        if (process.env.NODE_ENV === 'development') {
+
+          console.error('Erreur suppression anciens ingrédients:', deleteError)
+
+        }
         return NextResponse.json({ error: 'Erreur mise à jour ingrédients' }, { status: 500 })
       }
 
@@ -255,7 +267,11 @@ export async function PUT(
           .insert(validatedIngredients)
 
         if (insertError) {
-          console.error('Erreur ajout nouveaux ingrédients:', insertError)
+          if (process.env.NODE_ENV === 'development') {
+
+            console.error('Erreur ajout nouveaux ingrédients:', insertError)
+
+          }
           return NextResponse.json({ error: 'Erreur mise à jour ingrédients' }, { status: 500 })
         }
       }
@@ -270,7 +286,11 @@ export async function PUT(
       .single()
 
     if (updateError) {
-      console.error('Erreur mise à jour recette:', updateError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur mise à jour recette:', updateError)
+
+      }
       return NextResponse.json({ error: 'Erreur mise à jour recette' }, { status: 500 })
     }
 
@@ -282,7 +302,11 @@ export async function PUT(
       .single()
 
     if (fetchError) {
-      console.error('Erreur récupération recette mise à jour:', fetchError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur récupération recette mise à jour:', fetchError)
+
+      }
       return NextResponse.json({ error: 'Erreur récupération recette' }, { status: 500 })
     }
 
@@ -293,7 +317,11 @@ export async function PUT(
     })
 
   } catch (error) {
-    console.error('Erreur API recipe PUT:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API recipe PUT:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
@@ -326,7 +354,11 @@ export async function DELETE(
       .eq('id', recipeId)
 
     if (deleteError) {
-      console.error('Erreur suppression recette:', deleteError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur suppression recette:', deleteError)
+
+      }
       return NextResponse.json({ error: 'Erreur suppression recette' }, { status: 500 })
     }
 
@@ -336,7 +368,11 @@ export async function DELETE(
     })
 
   } catch (error) {
-    console.error('Erreur API recipe DELETE:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API recipe DELETE:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

@@ -99,7 +99,11 @@ export async function GET(request: NextRequest) {
     const { data: recipes, error } = await query
 
     if (error) {
-      console.error('Erreur récupération recettes:', error)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur récupération recettes:', error)
+
+      }
       return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
     }
 
@@ -110,7 +114,11 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Erreur API recipes GET:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API recipes GET:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
@@ -224,7 +232,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (recipeError) {
-      console.error('Erreur création recette:', recipeError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur création recette:', recipeError)
+
+      }
       return NextResponse.json({ error: 'Erreur création recette' }, { status: 500 })
     }
 
@@ -239,7 +251,11 @@ export async function POST(request: NextRequest) {
       .insert(ingredientsToInsert)
 
     if (ingredientsError) {
-      console.error('Erreur ajout ingrédients:', ingredientsError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur ajout ingrédients:', ingredientsError)
+
+      }
       // Supprimer la recette si l'ajout des ingrédients échoue
       await supabase.from('saved_recipes').delete().eq('id', recipe.id)
       return NextResponse.json({ error: 'Erreur ajout ingrédients' }, { status: 500 })
@@ -253,7 +269,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (fetchError) {
-      console.error('Erreur récupération recette complète:', fetchError)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur récupération recette complète:', fetchError)
+
+      }
       return NextResponse.json({ error: 'Erreur récupération recette' }, { status: 500 })
     }
 
@@ -264,7 +284,11 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Erreur API recipes POST:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API recipes POST:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

@@ -325,7 +325,11 @@ function transformProduct(product: OpenFoodFactsProduct): NutritionSearchResult 
       quantity: product.quantity?.replace(/[<>'"&]/g, '').substring(0, 50)
     }
   } catch (error) {
-    console.error('Erreur transformation produit:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur transformation produit:', error)
+
+    }
     return null
   }
 }
@@ -391,7 +395,11 @@ export async function GET(request: NextRequest) {
       
       // Debug: afficher les résultats locaux
       if (process.env.NODE_ENV === 'development') {
-        console.log('Local results for query:', sanitizedQuery, localResults.length)
+        if (process.env.NODE_ENV === 'development') {
+
+          console.log('Local results for query:', sanitizedQuery, localResults.length)
+
+        }
       }
 
       // Transformer et filtrer les produits OpenFoodFacts
@@ -437,7 +445,11 @@ export async function GET(request: NextRequest) {
                 .slice(0, 3) // Limiter à 3 résultats pour la recherche de fallback
             }
           } catch (fallbackError) {
-            console.error('Erreur recherche fallback:', fallbackError)
+            if (process.env.NODE_ENV === 'development') {
+
+              console.error('Erreur recherche fallback:', fallbackError)
+
+            }
           }
         }
       }
@@ -481,7 +493,11 @@ export async function GET(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Erreur API nutrition search:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API nutrition search:', error)
+
+    }
     
     return NextResponse.json({ 
       error: 'Erreur lors de la recherche nutrition',

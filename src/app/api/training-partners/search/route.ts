@@ -14,7 +14,11 @@ export async function GET(request: NextRequest) {
     
     // Si ça échoue, essayer l'auth par cookies
     if (authResult.error) {
-      console.log('Bearer auth failed, trying cookies...')
+      if (process.env.NODE_ENV === 'development') {
+
+        console.log('Bearer auth failed, trying cookies...')
+
+      }
       authResult = await authenticateRequestCookies()
     }
     
@@ -75,11 +79,21 @@ export async function GET(request: NextRequest) {
       .or(`pseudo.ilike.${sanitizedQuery},email.ilike.${sanitizedQuery}`)
       .limit(3) // Limite drastique
     
-    console.log('Résultats trouvés:', users?.length || 0, 'utilisateurs')
+    if (process.env.NODE_ENV === 'development') {
+
+    
+      console.log('Résultats trouvés:', users?.length || 0, 'utilisateurs')
+
+    
+    }
     if (error) console.log('Erreur SQL:', error)
 
     if (error) {
-      console.error('Erreur recherche utilisateurs:', error)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Erreur recherche utilisateurs:', error)
+
+      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -92,7 +106,11 @@ export async function GET(request: NextRequest) {
     // SÉCURITÉ : Vérifier s'il y a des doublons de pseudo
     const pseudoMatches = users?.filter(u => u.pseudo?.toLowerCase() === sanitizedQuery) || []
     if (pseudoMatches.length > 1) {
-      console.log('ALERTE : Plusieurs utilisateurs avec le même pseudo détectés!', pseudoMatches)
+      if (process.env.NODE_ENV === 'development') {
+
+        console.log('ALERTE : Plusieurs utilisateurs avec le même pseudo détectés!', pseudoMatches)
+
+      }
       return NextResponse.json({ 
         error: 'Plusieurs utilisateurs trouvés avec ce pseudo. Utilisez l\'email pour plus de précision.',
         suggestion: 'Essayez avec l\'email complet pour identifier précisément la personne.'
@@ -143,7 +161,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users: sortedUsers })
   } catch (error) {
-    console.error('Erreur API search users:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API search users:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
