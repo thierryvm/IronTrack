@@ -27,7 +27,9 @@ interface AdminTicket {
 }
 
 export async function GET() {
-  console.log(`[API LOG] /api/admin/tickets - appelé à`, new Date().toISOString());
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[API LOG] /api/admin/tickets - appelé à`, new Date().toISOString());
+  }
   
   try {
     const cookieStore = await cookies()

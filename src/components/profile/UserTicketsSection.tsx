@@ -18,8 +18,8 @@ import Link from 'next/link'
 
 interface UserTicket {
   id: string
-  subject: string
-  message: string
+  title: string
+  description: string
   category: string
   priority: string
   status: string
@@ -56,8 +56,8 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           .from('support_tickets')
           .select(`
             id,
-            subject,
-            message,
+            title,
+            description,
             category,
             priority,
             status,
@@ -76,8 +76,8 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
         // Formater les données pour inclure le nombre de réponses
         const formattedTickets: UserTicket[] = (data || []).map(ticket => ({
           id: ticket.id,
-          subject: ticket.subject,
-          message: ticket.message,
+          title: ticket.title,
+          description: ticket.description,
           category: ticket.category,
           priority: ticket.priority,
           status: ticket.status,
@@ -247,10 +247,10 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-900 truncate">
-                      {ticket.subject}
+                      {ticket.title}
                     </h4>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                      {ticket.message}
+                      {ticket.description}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 ml-4">
