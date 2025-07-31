@@ -103,27 +103,10 @@ const nextConfig = {
   // Headers de sécurité et performance pour HTTP/2+
   async headers() {
     return [
-      // Headers pour les assets CSS/JS - CORRECTION MIME
+      // Headers pour les assets statiques Next.js - FIX SYNTAX ERROR
       {
-        source: '/_next/static/css/:path*.css',
+        source: '/_next/static/:path*',
         headers: [
-          {
-            key: 'Content-Type',
-            value: 'text/css; charset=utf-8'
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable'
-          }
-        ]
-      },
-      {
-        source: '/_next/static/js/:path*.js',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/javascript; charset=utf-8'
-          },
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable'
