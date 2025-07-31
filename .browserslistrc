@@ -1,0 +1,24 @@
+# Configuration navigateurs modernes pour éviter polyfills ES6+ inutiles
+# Économise ~19kB (Array.at, Object.fromEntries, String.trimStart)
+
+# Chrome/Edge modernes
+chrome >= 85
+edge >= 85
+
+# Firefox moderne
+firefox >= 85
+
+# Safari moderne (macOS/iOS)
+safari >= 14
+ios_saf >= 14
+
+# Opera moderne
+opera >= 71
+
+# Pas de support IE (économise beaucoup de polyfills)
+not ie <= 11
+not ie_mob <= 11
+
+# Élimine les navigateurs morts
+not dead
+not < 0.25%

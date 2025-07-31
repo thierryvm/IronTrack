@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "perf:test": "node scripts/performance-test.js",
+    "perf:bundle": "npm run build:analyze && npx serve -s out",
+    "perf:lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html --chrome-flags='--headless'",
     "db:status": "npx supabase status",
     "db:start": "npx supabase start",
     "db:stop": "npx supabase stop",
@@ -69,6 +73,7 @@
     "supabase": "^2.31.8",
     "tailwindcss": "^4.1.11",
     "ts-jest": "^29.4.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }
