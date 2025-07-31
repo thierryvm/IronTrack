@@ -103,8 +103,45 @@ const nextConfig = {
   // Headers de sécurité et performance pour HTTP/2+
   async headers() {
     return [
+      // Headers pour les assets CSS/JS - CORRECTION MIME
       {
-        source: '/(.*)',
+        source: '/_next/static/css/:path*.css',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/_next/static/js/:path*.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/globals.css',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8'
+          }
+        ]
+      },
+      // Headers généraux pour les pages
+      {
+        source: '/((?!_next/static|favicon.ico|globals.css).*)',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
@@ -115,8 +152,8 @@ const nextConfig = {
             value: 'max-age=63072000; includeSubDomains; preload'
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            key: 'X-Frame-Options',
+            value: 'DENY'
           },
           {
             key: 'Referrer-Policy',
