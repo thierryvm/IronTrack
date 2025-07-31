@@ -438,12 +438,17 @@ export default function NutritionPage() {
             <div className="flex items-center space-x-4">
               <h2 className="text-xl font-bold text-gray-900">Repas du jour</h2>
               <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
+                <Calendar className="h-4 w-4 text-gray-500" aria-hidden="true" />
+                <label htmlFor="nutrition-date" className="sr-only">
+                  Sélectionner la date pour voir les repas
+                </label>
                 <input
+                  id="nutrition-date"
                   type="date"
                   value={selectedDate.toISOString().split('T')[0]}
                   onChange={(e) => setSelectedDate(new Date(e.target.value))}
                   className="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  aria-label="Date pour consulter les repas enregistrés"
                 />
               </div>
             </div>

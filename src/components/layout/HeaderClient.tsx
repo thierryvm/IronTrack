@@ -120,10 +120,12 @@ export default function HeaderClient() {
             {isLoggedIn && (
               <button
                 onClick={handleLogout}
-                className="hidden xl:flex items-center justify-center p-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white transition-colors shadow-sm"
+                className="hidden xl:flex items-center justify-center p-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-red-300"
                 title="Se déconnecter"
+                aria-label="Se déconnecter de l'application"
+                type="button"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-4 w-4" aria-hidden="true" />
               </button>
             )}
             <button

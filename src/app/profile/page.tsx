@@ -7,7 +7,12 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
 import Avatar from '@/components/ui/Avatar'
-import Cropper from 'react-easy-crop'
+import dynamic from 'next/dynamic'
+
+const Cropper = dynamic(() => import('react-easy-crop'), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center p-8">Chargement...</div>
+})
 import { useBadges } from '@/hooks/useBadges'
 import { useProgressionStats } from '@/hooks/useProgressionStats'
 import { ProfileInfoSection } from '@/components/profile/ProfileInfoSection'
@@ -1144,8 +1149,13 @@ export default function ProfilePage() {
                         <p className="text-sm text-gray-600">Sécurise ton compte&nbsp;! (IronBuddy ne lit pas tes mots de passe, promis)</p>
                       </div>
                     </button>
-                    <button onClick={handleDeleteAccount} className="w-full text-left p-4 border border-red-300 rounded-lg hover:bg-red-100 transition-colors flex items-center space-x-3 mb-2">
-                      <Icons.X className="h-5 w-5 text-red-500" />
+                    <button 
+                      onClick={handleDeleteAccount} 
+                      className="w-full text-left p-4 border border-red-300 rounded-lg hover:bg-red-100 transition-colors flex items-center space-x-3 mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      aria-label="Supprimer définitivement mon compte utilisateur"
+                      type="button"
+                    >
+                      <Icons.X className="h-5 w-5 text-red-500" aria-hidden="true" />
                       <div>
                         <p className="font-medium text-red-700">Supprimer mon compte</p>
                         <p className="text-sm text-red-500">Action irréversible&nbsp;! IronBuddy va pleurer… 😢</p>
@@ -1314,7 +1324,7 @@ export default function ProfilePage() {
             <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)</div>
             {selectedFile ? (
               <div className="flex flex-col items-center space-y-4">
-                <div className="relative w-48 h-48 bg-gray-100 rounded-full overflow-hidden">
+                <div className="relative w-48 h-48 bg-gray-100 rounded-lg">
                   <Cropper
                     image={URL.createObjectURL(selectedFile)}
                     crop={crop}
@@ -1322,19 +1332,41 @@ export default function ProfilePage() {
                     aspect={1}
                     cropShape="round"
                     showGrid={false}
+                    rotation={0}
+                    minZoom={1}
+                    maxZoom={3}
+                    zoomSpeed={1}
+                    restrictPosition={true}
+                    style={{ 
+                      containerStyle: { 
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '8px'
+                      }
+                    }}
+                    classes={{}}
+                    mediaProps={{}}
+                    cropperProps={{}}
+                    keyboardStep={10}
                     onCropChange={setCrop}
                     onZoomChange={setZoom}
                     onCropComplete={onCropComplete}
                   />
                 </div>
+                <label htmlFor="zoom-slider" className="sr-only">
+                  Niveau de zoom pour recadrer la photo
+                </label>
                 <input
+                  id="zoom-slider"
                   type="range"
                   min={1}
                   max={3}
                   step={0.01}
                   value={zoom}
                   onChange={e => setZoom(Number(e.target.value))}
-                  className="w-48"
+                  className="w-48 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  aria-label="Ajuster le niveau de zoom de la photo"
                 />
                 <div className="flex gap-2">
                   <button
