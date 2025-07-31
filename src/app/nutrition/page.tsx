@@ -5,9 +5,30 @@ import { motion } from 'framer-motion'
 import { Plus, ChefHat, Calendar, Trash2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import RecipeLibrary from '@/components/nutrition/RecipeLibrary'
-import UnifiedMealModal from '@/components/nutrition/UnifiedMealModal'
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import dynamic from 'next/dynamic'
+
+// Lazy loading des composants lourds pour réduire le bundle initial
+const RecipeLibrary = dynamic(() => import('@/components/nutrition/RecipeLibrary'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-gray-100 h-96 rounded-lg flex items-center justify-center">
+    <span className="text-gray-500">Chargement de la bibliothèque...</span>
+  </div>
+})
+
+const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMealModal'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+    <span className="text-gray-500">Chargement du modal...</span>
+  </div>
+})
+
+// Lazy loading des graphiques complets (approche component groupée)
+const NutritionCharts = dynamic(() => import('@/components/nutrition/NutritionCharts'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+    <span className="text-gray-500">Chargement des graphiques...</span>
+  </div>
+})
 
 interface Meal {
   id: number
@@ -381,49 +402,7 @@ export default function NutritionPage() {
             className="bg-white rounded-xl shadow-md p-6"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Répartition des macronutriments</h3>
-            {macroData.length > 0 ? (
-              <div className="flex items-center justify-center">
-                <div className="w-64 h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={macroData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {macroData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value, name) => [`${Math.round(Number(value) * 10) / 10}g`, name]} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="ml-6 space-y-3">
-                  {macroData.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <div 
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      ></div>
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <p className="text-sm text-gray-600">{Math.round(item.value * 10) / 10}g ({item.percentage}%)</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>Aucune donnée à afficher</p>
-                <p className="text-sm">Ajoutez des repas pour voir la répartition</p>
-              </div>
-            )}
+            <NutritionCharts macroData={macroData} weeklyData={[]} showWeekly={false} />
           </motion.div>
 
           {/* Évolution hebdomadaire */}
@@ -440,48 +419,7 @@ export default function NutritionPage() {
               </div>
             </div>
             
-            {weeklyData.every(day => day.calories === 0) ? (
-              <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-4">📊</div>
-                <p className="font-medium">Aucune donnée cette semaine</p>
-                <p className="text-sm mt-2">Commencez à enregistrer vos repas pour voir votre évolution nutritionnelle</p>
-              </div>
-            ) : (
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklyData}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                    <XAxis 
-                      dataKey="day" 
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value, index) => {
-                        const day = weeklyData[index]
-                        return day?.isToday ? `${value} 📅` : value
-                      }}
-                    />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      formatter={(value, name, props) => {
-                        const day = props.payload
-                        return [
-                          name === 'Calories' ? `${value} kcal` : `${value}g`,
-                          name,
-                          day.isToday ? '(Aujourd\'hui)' : '',
-                          `${day.mealsCount} repas`
-                        ]
-                      }}
-                      labelFormatter={(label, payload) => {
-                        const day = payload?.[0]?.payload
-                        return `${label}${day?.isToday ? ' (Aujourd\'hui)' : ''}`
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="calories" fill="#F97316" name="Calories" radius={[2, 2, 0, 0]} />
-                    <Bar dataKey="protein" fill="#3B82F6" name="Protéines (g)" radius={[2, 2, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            )}
+            <NutritionCharts macroData={[]} weeklyData={weeklyData} showWeekly={true} />
             
             <div className="mt-4 text-xs text-gray-500 text-center">
               💡 Ce graphique montre vos apports nutritionnels de la semaine. Les jours avec plus de repas indiquent une meilleure régularité.

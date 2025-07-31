@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -16,9 +16,17 @@ import {
   Pencil,
   Trash2
 } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { createClient } from '@/utils/supabase/client'
 import type { TrainingGoal } from '@/types/training-goal';
+import { MotionWrapper, fadeInUp } from '@/components/ui/MotionWrapper'
+
+// Lazy loading des graphiques lourds
+const ProgressCharts = dynamic(() => import('@/components/progress/ProgressCharts'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+    <span className="text-gray-500">Chargement des graphiques...</span>
+  </div>
+})
 
 interface ProgressData {
   date: string
@@ -1242,7 +1250,7 @@ export default function ProgressPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Statistiques générales */}
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
@@ -1295,11 +1303,11 @@ export default function ProgressPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </MotionWrapper>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Graphique de progression */}
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
@@ -1317,75 +1325,33 @@ export default function ProgressPage() {
                 <option value="1an">1 an</option>
               </select>
             </div>
-            {filteredProgressData.length < 2 ? (
-              <div className="text-center text-gray-500 py-8">
-                <span>Pas assez de données pour afficher une courbe de progression.</span>
-                <span className="block">Ajoute plus de séances pour voir ta progression !</span>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={filteredProgressData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="date" 
-                    tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
-                  />
-                  <YAxis />
-                  <Tooltip 
-                    labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                    formatter={(value: number | string) => [`${value} kg`, 'Poids']}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="weight" 
-                    stroke="#f97316" 
-                    strokeWidth={3}
-                    dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </motion.div>
+            <ProgressCharts 
+              progressData={filteredProgressData}
+              chartType="line"
+            />
+          </MotionWrapper>
 
           {/* Répartition par groupe musculaire */}
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <h2 className="text-xl font-bold text-gray-900 mb-6">Répartition par groupe musculaire</h2>
             
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={Object.entries(muscleGroupColors).map(([group, color]) => ({
-                    name: group,
-                    value: Math.floor(Math.random() * 20) + 10, // Données simulées
-                    color
-                  }))}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${percent !== undefined ? (percent * 100).toFixed(0) : '0'}%`}
-                >
-                  {Object.entries(muscleGroupColors).map(([group, color]) => (
-                    <Cell key={group} fill={color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </motion.div>
+            <ProgressCharts 
+              muscleGroupData={Object.entries(muscleGroupColors).map(([group, color]) => ({
+                name: group,
+                value: Math.floor(Math.random() * 20) + 10, // Données simulées
+                color
+              }))}
+              chartType="pie"
+            />
+          </MotionWrapper>
         </div>
 
         {/* Progression par exercice */}
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -1407,12 +1373,9 @@ export default function ProgressPage() {
               </thead>
               <tbody>
                 {exerciseProgress.map((exercise, index) => (
-                  <motion.tr
+                  <tr
                     key={`${exercise.exercise}-${index}-${exercise.muscle_group}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                   >
                     <td className="py-3 px-4 font-medium text-gray-900">{exercise.exercise}</td>
                     <td className="py-3 px-4 text-gray-600">{exercise.muscle_group}</td>
@@ -1432,15 +1395,15 @@ export default function ProgressPage() {
                     <td className="py-3 px-4">
                       {getTrendIcon(exercise.trend)}
                     </td>
-                  </motion.tr>
+                  </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </MotionWrapper>
 
         {/* Objectifs et badges */}
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -1574,7 +1537,7 @@ export default function ProgressPage() {
               )}
             </div>
           </div>
-        </motion.div>
+        </MotionWrapper>
 
         {/* Modal ajout objectif */}
         {showGoalModal && (
