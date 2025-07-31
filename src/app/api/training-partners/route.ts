@@ -23,13 +23,17 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Erreur récupération partenaires:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erreur récupération partenaires:', error);
+      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ partnerships })
   } catch (error) {
-    console.error('Erreur API training-partners:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erreur API training-partners:', error);
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
@@ -85,7 +89,9 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (error) {
-        console.error('Erreur création invitation:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Erreur création invitation:', error);
+        }
         return NextResponse.json({ error: error.message }, { status: 500 })
       }
 
@@ -94,7 +100,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: 'Action non supportée' }, { status: 400 })
   } catch (error) {
-    console.error('Erreur API training-partners POST:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erreur API training-partners POST:', error);
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

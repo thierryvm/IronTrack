@@ -65,12 +65,20 @@ export async function PATCH(
             })
           
           if (settingsError) {
-            console.error('Erreur création paramètres partage:', settingsError)
+            if (process.env.NODE_ENV === 'development') {
+
+              console.error('Erreur création paramètres partage:', settingsError)
+
+            }
             console.error('Détails erreur:', JSON.stringify(settingsError, null, 2))
             // Ne pas faire échouer l'acceptation si la création des paramètres échoue
           }
         } catch (tableError) {
-          console.error('Table partner_sharing_settings inaccessible:', tableError)
+          if (process.env.NODE_ENV === 'development') {
+
+            console.error('Table partner_sharing_settings inaccessible:', tableError)
+
+          }
           // Continuer sans les paramètres de partage si la table n'existe pas
         }
         break
@@ -148,7 +156,11 @@ export async function PATCH(
 
     return NextResponse.json({ error: 'Aucune mise à jour effectuée' }, { status: 400 })
   } catch (error) {
-    console.error('Erreur API training-partners PATCH:', error)
+    if (process.env.NODE_ENV === 'development') {
+
+      console.error('Erreur API training-partners PATCH:', error)
+
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

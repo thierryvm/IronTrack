@@ -8,8 +8,11 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 export async function GET() {
-  try {
+  if (process.env.NODE_ENV === 'development') {
     console.log(`[API LOG] /api/admin/activity/route.ts - GET appelé à`, new Date().toISOString());
+  }
+  
+  try {
     const cookieStore = await cookies()
     
     const supabase = createServerClient(
@@ -98,7 +101,9 @@ export async function GET() {
     }
 
     if (activityError) {
-      console.error('[ADMIN ACTIVITY] Erreur:', activityError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN ACTIVITY] Erreur:', activityError);
+      }
       return NextResponse.json({ error: 'Erreur récupération activité' }, { status: 500 })
     }
 
@@ -116,7 +121,9 @@ export async function GET() {
       .eq('is_active', true)
 
     if (usersError) {
-      console.error('[ADMIN ACTIVITY] Erreur récupération utilisateurs:', usersError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ADMIN ACTIVITY] Erreur récupération utilisateurs:', usersError);
+      }
     }
 
     // Créer un mapping sécurisé (sans exposer les emails complets)
@@ -161,7 +168,9 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('[API ADMIN ACTIVITY] Erreur:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API ADMIN ACTIVITY] Erreur:', error);
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

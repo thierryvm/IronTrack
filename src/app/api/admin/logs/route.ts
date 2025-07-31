@@ -22,7 +22,9 @@ interface AdminLog {
 }
 
 export async function GET(request: Request) {
-  console.log(`[API LOG] /api/admin/logs - appelé à`, new Date().toISOString());
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[API LOG] /api/admin/logs - appelé à`, new Date().toISOString());
+  }
   
   try {
     const { searchParams } = new URL(request.url)
@@ -113,7 +115,9 @@ export async function GET(request: Request) {
     const { data: logsData, error: logsError, count } = await query
 
     if (logsError) {
-      console.error('[API ADMIN LOGS] Erreur récupération logs:', logsError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[API ADMIN LOGS] Erreur récupération logs:', logsError);
+      }
       return NextResponse.json({ error: 'Erreur lors de la récupération des logs' }, { status: 500 })
     }
 
@@ -185,7 +189,9 @@ export async function GET(request: Request) {
     })
 
   } catch (error) {
-    console.error('[API ADMIN LOGS] Erreur générale:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API ADMIN LOGS] Erreur générale:', error);
+    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

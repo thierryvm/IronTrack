@@ -189,7 +189,9 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('[API ADMIN TEST-AUTH] Erreur générale:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API ADMIN TEST-AUTH] Erreur générale:', error)
+    }
     return NextResponse.json({
       success: false,
       message: 'Erreur serveur lors du test',

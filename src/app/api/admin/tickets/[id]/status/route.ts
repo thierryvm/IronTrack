@@ -50,7 +50,9 @@ export async function PATCH(
       .single()
 
     if (updateError) {
-      console.error('Erreur mise à jour ticket:', updateError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erreur mise à jour ticket:', updateError);
+      }
       return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 })
     }
 
@@ -68,7 +70,9 @@ export async function PATCH(
         })
 
       if (noteError) {
-        console.error('Erreur ajout note admin:', noteError)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Erreur ajout note admin:', noteError);
+        }
         // Ne pas faire échouer la requête pour autant
       }
     }
@@ -90,7 +94,9 @@ export async function PATCH(
       })
 
     if (logError) {
-      console.error('Erreur log admin:', logError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erreur log admin:', logError);
+      }
       // Ne pas faire échouer la requête
     }
 
@@ -101,7 +107,9 @@ export async function PATCH(
     })
 
   } catch (error) {
-    console.error('Erreur API update ticket status:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erreur API update ticket status:', error);
+    }
     return NextResponse.json(
       { error: 'Erreur serveur interne' }, 
       { status: 500 }
