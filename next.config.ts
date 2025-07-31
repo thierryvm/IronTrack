@@ -17,6 +17,11 @@ const nextConfig = {
     // Activer le pre-loading des composants
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  // Optimisations CSS render-blocking
+  compiler: {
+    // Supprimer les console.log en production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   // Headers de sécurité et performance pour HTTP/2+
   async headers() {
     return [

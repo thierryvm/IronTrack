@@ -8,6 +8,7 @@ import { ClientIronBuddyWrapper } from "@/components/ui/ClientIronBuddyWrapper";
 import { ErrorHandler } from "@/components/ui/ErrorHandler";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
+import SkipLink from "@/components/accessibility/SkipLink";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,14 +44,22 @@ export default function RootLayout({
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        {/* Préconnexions pour optimiser la latence réseau */}
+        <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" />
+        <link rel="preconnect" href="https://vitals.vercel-insights.com" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//vercel.app" />
+        {/* Préchargement CSS critique */}
+        <link rel="preload" href="/globals.css" as="style" />
       </head>
       <body className={`${inter.variable} antialiased h-full bg-gray-50 dark:bg-gray-900`} suppressHydrationWarning>
         <ThemeProvider>
+          <SkipLink />
           <ErrorHandler />
           <div className="min-h-screen flex flex-col">
             <Header />
             <ClientIronBuddyWrapper />
-            <main className="flex-1">
+            <main id="main-content" className="flex-1" role="main">
               {children}
             </main>
           </div>
