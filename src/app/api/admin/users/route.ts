@@ -23,7 +23,9 @@ interface AdminUser {
 }
 
 export async function GET() {
-  console.log(`[API LOG] /api/admin/users - appelé à`, new Date().toISOString());
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[API LOG] /api/admin/users - appelé à`, new Date().toISOString());
+  }
   
   try {
     const cookieStore = await cookies()
@@ -80,7 +82,9 @@ export async function GET() {
 
     // 🔒 3. Récupération sécurisée des utilisateurs
     // DÉSACTIVATION TEMPORAIRE RPC pour debug statut ban
-    console.log(`[API ADMIN USERS] Utilisation fallback manuel forcé (debug mode)`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[API ADMIN USERS] Utilisation fallback manuel forcé (debug mode)`);
+    }
 
     // Fallback : récupération manuelle avec calculs
     const { data: profilesData, error: profilesError } = await supabase
@@ -103,7 +107,9 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (profilesError) {
-      console.error('[API ADMIN USERS] Erreur récupération profiles:', profilesError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[API ADMIN USERS] Erreur récupération profiles:', profilesError);
+      }
       return NextResponse.json({ error: 'Erreur lors de la récupération des utilisateurs' }, { status: 500 })
     }
 

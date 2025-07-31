@@ -56,8 +56,12 @@ export default function RootLayout({
           </div>
           <RegisterSW />
         </ThemeProvider>
-        <SpeedInsights />
-        <Analytics />
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )}
       </body>
     </html>
   );
