@@ -49,8 +49,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//vercel.app" />
-        {/* Préchargement CSS critique */}
-        <link rel="preload" href="/globals.css" as="style" />
+        {/* Meta pour performance */}
+        <meta name="format-detection" content="telephone=no" />
       </head>
       <body className={`${inter.variable} antialiased h-full bg-gray-50 dark:bg-gray-900`} suppressHydrationWarning>
         <ThemeProvider>
