@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { Plus, Search, Dumbbell, Target, TrendingUp, Eye, Edit, Trash2, Calendar, Trophy } from 'lucide-react'
+import { UnifiedCard, CardHeader, CardActions } from '@/components/ui/UnifiedCard'
 import dynamic from 'next/dynamic'
 
 // Lazy loading des composants lourds - OPTIMISATION CRITIQUE
@@ -428,7 +429,7 @@ export default function ExercisesPageOptimized() {
                         </svg>
                       </button>
                       
-                      <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <Link
                           href={`/exercises/${exercise.id}/edit-exercise`}
                           className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
