@@ -56,6 +56,7 @@ export default function HeaderClient() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<Array<{id: string, type: 'exercise' | 'workout', name: string, href: string}>>([])
   const [notificationCount] = useState(3) // TODO: Connecter aux vraies données
 
   // Vérifier l'état de connexion
@@ -84,6 +85,26 @@ export default function HeaderClient() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isProfileDropdownOpen])
+
+  // Recherche intelligente en temps réel
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([])
+      return
+    }
+
+    // Simulation de recherche intelligente - à remplacer par API Supabase
+    const mockResults = [
+      { id: '1', type: 'exercise' as const, name: 'Développé couché', href: '/exercises/1' },
+      { id: '2', type: 'exercise' as const, name: 'Développé incliné', href: '/exercises/2' },
+      { id: '3', type: 'workout' as const, name: 'Séance Pectoraux A', href: '/workouts/1' },
+      { id: '4', type: 'workout' as const, name: 'Séance Push Pull', href: '/workouts/2' },
+    ].filter(item => 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    setSearchResults(mockResults.slice(0, 5)) // Limiter à 5 résultats
+  }, [searchQuery])
 
   const closeMenu = () => {
     setIsClosing(true)
@@ -128,8 +149,8 @@ export default function HeaderClient() {
             </div>
           </Link>
 
-          {/* Navigation desktop - Design GitHub-style */}
-          <div className="hidden lg:flex items-center gap-3 flex-1 ml-6">
+          {/* Navigation desktop - Design GitHub-style selon design-system-irontrack.html */}
+          <div className="hidden lg:flex items-center gap-3 flex-1 ml-2">
             {/* Menu principal */}
             <nav className="flex items-center gap-1">
               {primaryNavigation.map((item) => {
@@ -139,14 +160,13 @@ export default function HeaderClient() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
                       isActive
                         ? 'bg-brand-500 text-white shadow-sm'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        : 'text-gray-700 dark:text-gray-300'
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.name}</span>
+                    {item.name}
                   </Link>
                 )
               })}
@@ -155,18 +175,56 @@ export default function HeaderClient() {
 
           {/* Actions - GitHub-style */}
           <div className="flex items-center gap-2">
-            {/* Barre de recherche */}
+            {/* Barre de recherche avec résultats */}
             {isLoggedIn && (
               <div className="hidden md:block relative">
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Rechercher exercices, séances..."
+                    placeholder="Rechercher"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-64 h-9 pl-10 pr-4 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700 dark:text-white placeholder-gray-500 text-sm"
+                    onFocus={() => setIsSearchOpen(true)}
+                    onBlur={() => setTimeout(() => setIsSearchOpen(false), 200)}
+                    className="w-48 h-9 pl-9 pr-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700 dark:text-white placeholder-gray-500 text-sm"
                   />
+                  
+                  {/* Résultats de recherche */}
+                  {isSearchOpen && searchResults.length > 0 && (
+                    <div className="absolute top-full mt-1 w-64 bg-white dark:bg-surface-darkAlt border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden z-50">
+                      {searchResults.map((result) => (
+                        <Link
+                          key={result.id}
+                          href={result.href}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                          onClick={() => {
+                            setSearchQuery('')
+                            setIsSearchOpen(false)
+                          }}
+                        >
+                          {result.type === 'exercise' ? (
+                            <Dumbbell className="w-4 h-4 text-brand-500" />
+                          ) : (
+                            <Calendar className="w-4 h-4 text-blue-500" />
+                          )}
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">{result.name}</p>
+                            <p className="text-xs text-gray-500 capitalize">{result.type === 'exercise' ? 'Exercice' : 'Séance'}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Message "Aucun résultat" */}
+                  {isSearchOpen && searchQuery.length >= 2 && searchResults.length === 0 && (
+                    <div className="absolute top-full mt-1 w-64 bg-white dark:bg-surface-darkAlt border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden z-50">
+                      <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                        Aucun résultat pour "{searchQuery}"
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -199,9 +257,11 @@ export default function HeaderClient() {
                   aria-haspopup="true"
                   aria-expanded={isProfileDropdownOpen}
                 >
-                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center font-bold text-sm">
-                    T
-                  </div>
+                  <img 
+                    src="https://avatars.githubusercontent.com/u/1?v=4" 
+                    alt="avatar" 
+                    className="h-7 w-7 rounded-full"
+                  />
                   <ChevronDown className="w-4 h-4 text-gray-500" />
                 </button>
                 

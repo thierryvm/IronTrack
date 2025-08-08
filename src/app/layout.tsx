@@ -63,7 +63,7 @@ export default function RootLayout({
                   document.documentElement.classList.add('light');
                 }
               } catch (e) {
-                // Fallback selon préférence système
+                // Fallback selon préférence système  
                 document.documentElement.classList.remove('dark', 'light');
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                   document.documentElement.classList.add('dark');
