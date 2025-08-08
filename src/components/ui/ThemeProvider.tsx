@@ -18,32 +18,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as Theme
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
+    
+    // Synchroniser avec l'état actuel déjà appliqué par le script d'initialisation
+    const isDark = document.documentElement.classList.contains('dark')
+    setTheme(isDark ? 'dark' : 'light')
   }, [])
 
-  // Synchronise la classe 'dark' sur <html> à chaque changement de theme
-  useEffect(() => {
-    if (!mounted) return;
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [theme, mounted])
-
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
+    const el = document.documentElement
+    const wasDark = el.classList.contains('dark')
+    
+    // Nettoyer toutes les classes de thème
+    el.classList.remove('dark', 'light')
+    
+    // Basculer vers le thème opposé
+    const newTheme = wasDark ? 'light' : 'dark'
+    el.classList.add(newTheme)
+    
     setTheme(newTheme)
     localStorage.setItem('theme', newTheme)
-    
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
   }
 
   return (

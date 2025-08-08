@@ -8,6 +8,61 @@ export default {
   ],
   theme: {
     extend: {
+      // Système de couleurs complet IronTrack (ChatGPT optimisé)
+      colors: {
+        // Surfaces principales
+        surface: {
+          light: '#ffffff',      // Fond clair principal
+          lightAlt: '#f9fafb',   // Fond clair alternatif
+          dark: '#0b1220',       // Fond sombre principal
+          darkAlt: '#111827',    // Fond sombre alternatif
+        },
+        
+        // Brand - Orange IronTrack
+        brand: {
+          50: '#fff7ed',         // Orange très clair
+          100: '#ffedd5',        // Orange clair
+          200: '#fed7aa',        // Orange soft
+          300: '#fdba74',        // Orange light
+          400: '#fb923c',        // Orange medium
+          500: '#f97316',        // Orange principal
+          600: '#ea580c',        // Orange hover
+          700: '#c2410c',        // Orange pressed
+          800: '#9a3412',        // Orange darker
+          900: '#7c2d12',        // Orange darkest
+        },
+        
+        // États système
+        success: {
+          50: '#ecfdf5',
+          500: '#10b981',
+          600: '#059669',
+        },
+        warning: {
+          50: '#fffbeb',
+          500: '#f59e0b',
+          600: '#d97706',
+        },
+        danger: {
+          50: '#fef2f2',
+          500: '#ef4444',
+          600: '#dc2626',
+        },
+        
+        // Legacy ChatGPT (compatibilité)
+        chatgpt: {
+          'bg-primary': '#ffffff',
+          'bg-secondary': '#f9fafb',
+          'text-primary': '#0d0d0d',
+          'text-secondary': '#6b6b6b',
+          'border': '#e5e7eb',
+          'dark-bg-primary': '#0b1220',
+          'dark-bg-secondary': '#111827',
+          'dark-text-primary': '#f4f4f4',
+          'dark-text-secondary': '#a1a1aa',
+          'dark-border': '#374151',
+        }
+      },
       // Breakpoints adaptés aux formats d'écrans 2025
       screens: {
         'xs': '375px',    // iPhone 12 mini et plus grands
@@ -45,5 +100,8 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    // Plugin de contraste sécurisé WCAG 2.1 AA
+    require('./src/utils/tailwind/contrastPlugin.js')
+  ],
 }; 
