@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { 
@@ -78,17 +78,26 @@ export default function HeaderClient() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
+    <>
+      {/* Lien d'accessibilité - WCAG AA obligatoire */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-orange-600 focus:text-white focus:rounded focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Aller au contenu principal
+      </a>
+      
+      <header className="bg-white/90 dark:bg-surface-dark/80 backdrop-blur text-gray-900 dark:text-white shadow-lg border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
           <Link href="/" className="flex items-center space-x-3 group focus:outline-none">
-            <div className="flex-shrink-0">
-              <Dumbbell className="h-8 w-8 text-yellow-300 group-hover:scale-110 transition-transform" />
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform">
+              IT
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold">IronTrack</h1>
-              <p className="text-xs text-orange-100">Ton coach muscu personnel</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">IronTrack</h1>
+              <p className="text-xs text-gray-600 dark:text-gray-300">Ton coach muscu personnel</p>
             </div>
           </Link>
 
@@ -103,8 +112,8 @@ export default function HeaderClient() {
                   href={item.href}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-orange-600 text-white shadow-sm'
-                      : 'text-orange-100 hover:bg-orange-600 hover:text-white'
+                      ? 'bg-brand-500 text-white shadow-sm'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -130,7 +139,7 @@ export default function HeaderClient() {
             )}
             <button
               onClick={() => isMenuOpen ? closeMenu() : setIsMenuOpen(true)}
-              className="xl:hidden p-2 rounded-md text-orange-100 hover:bg-orange-600 hover:text-white transition-colors"
+              className="xl:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
               aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -151,11 +160,11 @@ export default function HeaderClient() {
             />
             
             {/* Drawer latéral amélioré */}
-            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
+            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-surface-light dark:bg-surface-dark z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
               isClosing ? '-translate-x-full' : 'translate-x-0'
             }`}>
               {/* Header du menu */}
-              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-orange-500 to-red-500">
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-brand-600 to-brand-700">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                     <Dumbbell className="h-6 w-6 text-white" />
@@ -168,7 +177,7 @@ export default function HeaderClient() {
                     >
                       IronTrack
                     </Link>
-                    <p className="text-orange-100 text-xs">Coach muscu personnel</p>
+                    <p className="text-white/80 text-xs">Coach muscu personnel</p>
                   </div>
                 </div>
                 <button 
@@ -192,8 +201,8 @@ export default function HeaderClient() {
                         href={item.href}
                         className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 ease-out group relative animate-slide-up ${
                           isActive
-                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-800 active:scale-[0.98]'
+                            ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-lg'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-surface-darkAlt active:scale-[0.98]'
                         }`}
                         onClick={closeMenu}
                         style={{ 
@@ -204,7 +213,7 @@ export default function HeaderClient() {
                         <div className={`p-2 rounded-lg transition-colors ${
                           isActive 
                             ? 'bg-white/20' 
-                            : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-orange-100 dark:group-hover:bg-gray-600'
+                            : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-brand-100 dark:group-hover:bg-gray-600'
                         }`}>
                           <Icon className="h-5 w-5" />
                         </div>
@@ -219,7 +228,7 @@ export default function HeaderClient() {
               </nav>
               
               {/* Footer avec actions */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-4 bg-surface-lightAlt dark:bg-surface-darkAlt border-t border-gray-200 dark:border-gray-700">
                 <div className="mb-3">
                   <ThemeToggle />
                 </div>
@@ -252,5 +261,6 @@ export default function HeaderClient() {
         )}
       </div>
     </header>
+    </>
   )
 } 
