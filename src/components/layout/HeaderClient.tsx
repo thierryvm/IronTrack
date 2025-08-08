@@ -14,7 +14,12 @@ import {
   X,
   LogOut,
   LogIn,
-  Shield
+  Shield,
+  Settings,
+  HelpCircle,
+  Search,
+  Bell,
+  ChevronDown
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { createClient } from '@/utils/supabase/client'
@@ -28,20 +33,30 @@ export default function HeaderClient() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { isAdmin, isModerator } = useAdminRole()
 
-  const navigation = [
-    { name: 'Exercices', href: '/exercises', icon: Dumbbell },
+  // MENU PRINCIPAL - Navigation fluide selon design system
+  const primaryNavigation = [
     { name: 'Calendrier', href: '/calendar', icon: Calendar },
+    { name: 'Exercices', href: '/exercises', icon: Dumbbell },
     { name: 'Séances', href: '/workouts', icon: Calendar },
     { name: 'Partenaires', href: '/training-partners', icon: Users },
-    { name: 'Progression', href: '/progress', icon: BarChart3 },
     { name: 'Nutrition', href: '/nutrition', icon: Apple },
-    { name: 'Profil', href: '/profile', icon: User },
+    { name: 'Progression', href: '/progress', icon: BarChart3 },
   ]
 
-  // Navigation admin (conditionnelle)
-  const adminNavigation = [
-    ...(isAdmin || isModerator ? [{ name: '👑 Admin', href: '/admin', icon: Shield }] : []),
+  // MENU SECONDAIRE - GitHub-style dropdown
+  const secondaryNavigation = [
+    { name: 'Profil', href: '/profile', icon: User },
+    { name: 'Paramètres', href: '/profile', icon: Settings },
+    { name: 'Support', href: '/support', icon: HelpCircle },
+    { name: 'FAQ', href: '/faq', icon: HelpCircle },
+    ...(isAdmin || isModerator ? [{ name: 'Admin', href: '/admin', icon: Shield }] : []),
   ]
+
+  // États pour les nouveaux features
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [notificationCount] = useState(3) // TODO: Connecter aux vraies données
 
   // Vérifier l'état de connexion
   useEffect(() => {
@@ -57,6 +72,18 @@ export default function HeaderClient() {
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  // Fermer dropdown si clic à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isProfileDropdownOpen && !(event.target as Element).closest('[data-profile-dropdown]')) {
+        setIsProfileDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isProfileDropdownOpen])
 
   const closeMenu = () => {
     setIsClosing(true)
@@ -87,7 +114,7 @@ export default function HeaderClient() {
         Aller au contenu principal
       </a>
       
-      <header className="bg-white/90 dark:bg-surface-dark/80 backdrop-blur text-gray-900 dark:text-white shadow-lg border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/80 backdrop-blur text-gray-900 dark:text-white shadow-lg border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
@@ -101,45 +128,135 @@ export default function HeaderClient() {
             </div>
           </Link>
 
-          {/* Navigation desktop */}
-          <nav className="hidden xl:flex space-x-4">
-            {[...navigation, ...adminNavigation].map((item) => {
-              const Icon = item.icon
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-brand-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              )
-            })}
-          </nav>
+          {/* Navigation desktop - Design GitHub-style */}
+          <div className="hidden lg:flex items-center gap-3 flex-1 ml-6">
+            {/* Menu principal */}
+            <nav className="flex items-center gap-1">
+              {primaryNavigation.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-brand-500 text-white shadow-sm'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+            </nav>
+          </div>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
+          {/* Actions - GitHub-style */}
+          <div className="flex items-center gap-2">
+            {/* Barre de recherche */}
+            {isLoggedIn && (
+              <div className="hidden md:block relative">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher exercices, séances..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-64 h-9 pl-10 pr-4 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700 dark:text-white placeholder-gray-500 text-sm"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Notifications */}
             {isLoggedIn && (
               <button
-                onClick={handleLogout}
-                className="hidden xl:flex items-center justify-center p-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                title="Se déconnecter"
-                aria-label="Se déconnecter de l'application"
-                type="button"
+                className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Notifications"
+                title="Notifications"
               >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
+                <Bell className="w-5 h-5" />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Profile dropdown - GitHub-style */}
+            {isLoggedIn && (
+              <div className="relative" data-profile-dropdown>
+                <button
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  aria-haspopup="true"
+                  aria-expanded={isProfileDropdownOpen}
+                >
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center font-bold text-sm">
+                    T
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                </button>
+                
+                {/* Dropdown menu */}
+                {isProfileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                      <p className="text-sm text-gray-500">Connecté en tant que</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">***REDACTED_EMAIL***</p>
+                    </div>
+                    <div className="py-1">
+                      {secondaryNavigation.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.name}
+                          </Link>
+                        )
+                      })}
+                      <div className="border-t border-gray-100 dark:border-gray-800 my-1"></div>
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          setIsProfileDropdownOpen(false)
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full text-left"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Déconnexion
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Login button for non-logged users */}
+            {!isLoggedIn && (
+              <button
+                onClick={handleLogin}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors"
+              >
+                <LogIn className="h-4 w-4" />
+                Se connecter
               </button>
             )}
             <button
               onClick={() => isMenuOpen ? closeMenu() : setIsMenuOpen(true)}
-              className="xl:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+              className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
               aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -189,10 +306,12 @@ export default function HeaderClient() {
                 </button>
               </div>
               
-              {/* Navigation principale */}
+              {/* Navigation principale mobile */}
               <nav className="flex-1 overflow-y-auto py-4 px-3">
-                <div className="space-y-1">
-                  {[...navigation, ...adminNavigation].map((item, index) => {
+                {/* Menu principal */}
+                <div className="space-y-1 mb-6">
+                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Navigation</h3>
+                  {primaryNavigation.map((item, index) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
                     return (
@@ -221,6 +340,50 @@ export default function HeaderClient() {
                         {isActive && (
                           <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                         )}
+                      </Link>
+                    )
+                  })}
+                </div>
+
+                {/* Barre de recherche mobile */}
+                {isLoggedIn && (
+                  <div className="px-4 mb-6">
+                    <div className="relative">
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Rechercher..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700 dark:text-white placeholder-gray-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Menu secondaire */}
+                <div className="space-y-1">
+                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Compte</h3>
+                  {secondaryNavigation.map((item, index) => {
+                    const Icon = item.icon
+                    const isActive = pathname === item.href
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`flex items-center space-x-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ease-out group relative animate-slide-up ${
+                          isActive
+                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-[0.98]'
+                        }`}
+                        onClick={closeMenu}
+                        style={{ 
+                          animationDelay: `${(primaryNavigation.length + index) * 80}ms`,
+                          animationFillMode: 'both'
+                        }}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="flex-1">{item.name}</span>
                       </Link>
                     )
                   })}
