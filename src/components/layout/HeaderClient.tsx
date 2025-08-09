@@ -133,7 +133,7 @@ export default function HeaderClient() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Charger les notifications réelles
+  // Charger les notifications réelles  
   useEffect(() => {
     if (!isLoggedIn) return
 
@@ -147,17 +147,32 @@ export default function HeaderClient() {
           console.debug('Utilisateur non authentifié, pas de chargement notifications')
           return
         }
+
+        console.debug('🔍 NOTIFICATIONS DEBUG:', { 
+          isAdmin, 
+          isModerator, 
+          userEmail: user.email,
+          userId: user.id 
+        });
         
         // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
         let tickets = null
         let error = null
-        if (isAdmin || isModerator) {
+        
+        // Vérification email admin en plus des hooks (fallback de sécurité)
+        const isAdminEmail = user.email === 'thierryvm@hotmail.com';
+        
+        if (isAdmin || isModerator || isAdminEmail) {
+          console.debug('🎯 Chargement tickets pour admin...');
           const result = await supabase
             .from('support_tickets')
             .select('*')
             .limit(3)
           tickets = result.data
           error = result.error
+          console.debug('📊 Tickets trouvés:', tickets?.length || 0, tickets);
+        } else {
+          console.debug('❌ Pas admin, pas de tickets chargés');
         }
           
         // Charger les invitations partenaires en attente
@@ -210,7 +225,7 @@ export default function HeaderClient() {
     }
 
     loadNotifications()
-  }, [isLoggedIn])
+  }, [isLoggedIn, isAdmin, isModerator])
 
   // Fermer dropdowns et menu mobile si clic à l'extérieur
   useEffect(() => {
@@ -381,7 +396,7 @@ export default function HeaderClient() {
               <img 
                 src="/logo.png" 
                 alt="IronTrack Logo" 
-                className="h-full w-full object-contain bg-white rounded-lg"
+                className="h-full w-full object-contain rounded-lg"
                 loading="eager"
                 width={40}
                 height={40}
@@ -499,13 +514,13 @@ export default function HeaderClient() {
                   )}
                 </button>
                 
-                {/* Notifications MOBILE-FRIENDLY */}
+                {/* Notifications MOBILE-OPTIMISÉES - Dimension large et lisible */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2 w-full max-w-sm sm:w-80 rounded-lg border border-gray-300 bg-white shadow-2xl overflow-hidden z-50">
+                  <div className="absolute right-0 mt-2 w-screen max-w-md sm:w-96 lg:w-80 rounded-lg border border-gray-300 bg-white dark:bg-surface-dark shadow-2xl overflow-hidden z-50 mx-4 sm:mx-0">
                     
-                    {/* Header lisible */}
-                    <div className="px-4 py-3 bg-orange-50 border-b border-orange-200">
-                      <h3 className="text-base font-bold text-gray-900">🔔 Notifications</h3>
+                    {/* Header lisible avec support mode sombre */}
+                    <div className="px-4 py-3 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-700">
+                      <h3 className="text-base font-bold text-gray-900 dark:text-white">🔔 Notifications</h3>
                     </div>
                     
                     {/* Contenu notifications */}
@@ -515,24 +530,24 @@ export default function HeaderClient() {
                           <Link 
                             key={notification.id} 
                             href={notification.href || '/notifications'}
-                            className="block px-4 py-4 hover:bg-orange-50 border-b border-gray-100 last:border-b-0"
+                            className="block px-4 py-4 hover:bg-orange-50 dark:hover:bg-orange-900/10 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
                             onClick={() => setIsNotificationOpen(false)}
                           >
                             <div className="flex items-start gap-3">
                               {notification.type === 'support' ? (
-                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                  💬
+                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-lg">💬</span>
                                 </div>
                               ) : (
-                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                  👥
+                                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-lg">👥</span>
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-gray-900 leading-5">
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white leading-5 mb-1">
                                   {notification.message}
                                 </p>
-                                <p className="text-xs text-gray-600 mt-1">
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
                                   {new Date(notification.created_at).toLocaleDateString('fr-FR', {
                                     day: '2-digit',
                                     month: 'short',
@@ -547,17 +562,17 @@ export default function HeaderClient() {
                       ) : (
                         <div className="px-4 py-8 text-center">
                           <div className="text-4xl mb-2">📭</div>
-                          <p className="text-gray-600 text-sm">Aucune notification</p>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">Aucune notification</p>
                         </div>
                       )}
                     </div>
                     
-                    {/* Footer */}
+                    {/* Footer avec support mode sombre */}
                     {notifications.length > 0 && (
-                      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                      <div className="px-4 py-3 bg-gray-50 dark:bg-surface-darkAlt border-t border-gray-200 dark:border-gray-700">
                         <Link 
                           href="/notifications" 
-                          className="block text-center text-sm text-orange-600 hover:text-orange-800 font-semibold"
+                          className="block text-center text-sm text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 font-semibold transition-colors"
                           onClick={() => setIsNotificationOpen(false)}
                         >
                           📋 Voir toutes les notifications
@@ -654,101 +669,187 @@ export default function HeaderClient() {
           </div>
         </div>
 
-        {/* Menu mobile ULTRA-SIMPLE - GARANTI FONCTIONNEL */}
+        {/* MENU MOBILE MODERNE 2025 - Design inspiré des meilleurs sites web */}
         {isMenuOpen && (
           <>
-            {/* Overlay cliquable */}
+            {/* Overlay avec animation fade */}
             <div
-              className="fixed inset-0 z-40 bg-black opacity-50"
+              className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+                isClosing ? 'opacity-0' : 'opacity-100'
+              }`}
               onClick={closeMenu}
               aria-label="Fermer le menu"
             />
             
-            {/* Menu latéral SIMPLE */}
-            <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-50 shadow-xl">
+            {/* Menu latéral avec animation slide */}
+            <div className={`fixed top-0 left-0 h-full w-80 max-w-[90vw] bg-white dark:bg-surface-dark z-50 shadow-2xl transform transition-transform duration-300 ease-out ${
+              isClosing ? '-translate-x-full' : 'translate-x-0'
+            }`}>
               
-              {/* Header simple */}
-              <div className="flex items-center justify-between p-4 bg-orange-600 text-white">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-white/20 rounded flex items-center justify-center overflow-hidden">
-                    <img 
-                      src="/logo.png" 
-                      alt="IronTrack Logo" 
-                      className="h-full w-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.outerHTML = '<div class="font-bold text-sm">IT</div>';
-                      }}
-                    />
+              {/* Header moderne avec dégradé */}
+              <div className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-orange-400 text-white">
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+                      <img 
+                        src="/logo.png" 
+                        alt="IronTrack Logo" 
+                        className="h-full w-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.outerHTML = '<div class="h-8 w-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-sm text-white">IT</div>';
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <h2 className="font-bold text-lg">IronTrack</h2>
+                      <p className="text-xs text-white/80">Coach personnel</p>
+                    </div>
                   </div>
-                  <span className="font-bold">IronTrack</span>
+                  <button 
+                    onClick={closeMenu} 
+                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                    aria-label="Fermer le menu"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <button 
-                  onClick={closeMenu} 
-                  className="p-1 hover:bg-white/10 rounded"
-                  aria-label="Fermer"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              
-              {/* Navigation ULTRA-SIMPLE */}
-              <div className="p-4">
-                <div className="space-y-2">
-                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">Navigation</div>
-                  
-                  <Link href="/calendar" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    📅 Calendrier
-                  </Link>
-                  
-                  <Link href="/exercises" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    💪 Exercices
-                  </Link>
-                  
-                  <Link href="/workouts" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    🏋️ Séances
-                  </Link>
-                  
-                  <Link href="/training-partners" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    👥 Partenaires
-                  </Link>
-                  
-                  <Link href="/nutrition" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    🍎 Nutrition
-                  </Link>
-                  
-                  <Link href="/progress" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
-                    📊 Progression
-                  </Link>
-                </div>
-
-                {/* Menu secondaire simple */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">Compte</div>
-                  <div className="space-y-2">
-                    <Link href="/profile" onClick={closeMenu} className="block p-2 text-gray-600 hover:text-orange-600 text-sm">
-                      👤 Profil
-                    </Link>
-                    <Link href="/support" onClick={closeMenu} className="block p-2 text-gray-600 hover:text-orange-600 text-sm">
-                      💬 Support
-                    </Link>
-                    {(isAdmin || isModerator) && (
-                      <Link href="/admin" onClick={closeMenu} className="block p-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        🛡️ Admin
-                      </Link>
+                
+                {/* Indicateur utilisateur */}
+                <div className="px-4 pb-4 border-t border-white/10 pt-3 mt-3">
+                  <div className="flex items-center gap-3">
+                    {userAvatar ? (
+                      <img 
+                        src={userAvatar} 
+                        alt="Avatar" 
+                        className="h-8 w-8 rounded-full object-cover ring-2 ring-white/20"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center font-bold text-sm">
+                        {userInitials || 'U'}
+                      </div>
                     )}
-                    <button
-                      onClick={() => {
-                        handleLogout()
-                        closeMenu()
-                      }}
-                      className="block w-full text-left p-2 text-red-600 hover:text-red-800 text-sm"
-                    >
-                      🚪 Déconnexion
-                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">
+                        {userEmail.split('@')[0] || 'Utilisateur'}
+                      </p>
+                      <p className="text-xs text-white/70">Membre IronTrack</p>
+                    </div>
                   </div>
                 </div>
               </div>
               
+              {/* Contenu principal avec scroll */}
+              <div className="flex-1 overflow-y-auto">
+                
+                {/* NAVIGATION PRIMAIRE - Cards modernes */}
+                <div className="p-4">
+                  <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+                    🏠 Navigation principale
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 mb-6">
+                    
+                    {primaryNavigation.map((item) => {
+                      const Icon = item.icon
+                      const isActive = pathname === item.href
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={closeMenu}
+                          className={`group p-4 rounded-xl border transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${
+                            isActive 
+                              ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white border-orange-400 shadow-lg' 
+                              : 'bg-gray-50 dark:bg-surface-darkAlt hover:bg-orange-50 dark:hover:bg-orange-900/10 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          <div className="flex flex-col items-center text-center gap-2">
+                            <div className={`p-2 rounded-lg transition-colors ${
+                              isActive 
+                                ? 'bg-white/20' 
+                                : 'bg-white dark:bg-surface-dark group-hover:bg-orange-100 dark:group-hover:bg-orange-900/20'
+                            }`}>
+                              <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-orange-600'}`} />
+                            </div>
+                            <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                              {item.name}
+                            </span>
+                          </div>
+                        </Link>
+                      )
+                    })}
+                    
+                  </div>
+                </div>
+                
+                {/* NAVIGATION SECONDAIRE - Liste compacte */}
+                <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-surface-darkAlt/50">
+                  <div className="p-4">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                      👤 Mon compte
+                    </h3>
+                    <div className="space-y-1">
+                      
+                      {secondaryNavigation.map((item) => {
+                        const Icon = item.icon
+                        const isActive = pathname === item.href
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={closeMenu}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                              isActive 
+                                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' 
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                            }`}
+                          >
+                            <Icon className={`h-4 w-4 ${isActive ? 'text-orange-600' : 'text-gray-400'}`} />
+                            {item.name}
+                            {item.name === 'Admin' && (
+                              <span className="ml-auto bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+                                Admin
+                              </span>
+                            )}
+                          </Link>
+                        )
+                      })}
+                      
+                      {/* Séparateur */}
+                      <div className="border-t border-gray-200 dark:border-gray-600 my-3"></div>
+                      
+                      {/* Déconnexion */}
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          closeMenu()
+                        }}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Déconnexion
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Footer avec infos */}
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                      <span className="font-semibold">IronTrack</span> v2025.1
+                    </p>
+                    <Link 
+                      href="/support"
+                      onClick={closeMenu}
+                      className="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 font-medium"
+                    >
+                      <HelpCircle className="h-3 w-3" />
+                      Besoin d'aide ?
+                    </Link>
+                  </div>
+                </div>
+                
+              </div>
             </div>
           </>
         )}
