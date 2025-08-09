@@ -249,7 +249,7 @@ export const useSupport = () => {
         }
       }
       
-      console.warn('[DEBUG] API failed, trying fallback:', response.status, response.statusText)
+      // Log admin sécurisé supprimé
       
       // SOLUTION 2: Fallback - Requêtes séparées (plus robuste)
       const { data: ticketsData, error: ticketsError } = await supabase
@@ -258,12 +258,12 @@ export const useSupport = () => {
         .order('created_at', { ascending: false })
 
       if (ticketsError) {
-        console.error('[DEBUG] Fallback tickets error:', ticketsError)
+        // Log admin sécurisé supprimé
         return []
       }
 
       if (!ticketsData || ticketsData.length === 0) {
-        console.log('[DEBUG] Aucun ticket trouvé')
+        // Log admin sécurisé supprimé
         return []
       }
 
@@ -293,17 +293,17 @@ export const useSupport = () => {
           
           return enrichedTickets
         } else {
-          console.warn('[DEBUG] Fallback profiles error:', profilesError?.message)
+          // Log admin sécurisé supprimé
         }
       }
       
       // SOLUTION 3: Données minimales sans profils (dernier recours)
-      console.log('[DEBUG] Retour des tickets sans données de profil')
+      // Log admin sécurisé supprimé
       return ticketsData
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des tickets'
-      console.error('[DEBUG] getAllTickets final error:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return []
     } finally {
@@ -437,7 +437,7 @@ export const useSupport = () => {
         .single()
 
       if (ticketError) {
-        console.error('[DEBUG] Erreur récupération ticket:', ticketError)
+        // Log admin sécurisé supprimé
         throw ticketError
       }
 
@@ -454,7 +454,7 @@ export const useSupport = () => {
         .order('created_at', { ascending: true })
 
       if (responsesError) {
-        console.error('[DEBUG] Erreur récupération réponses:', responsesError)
+        // Log admin sécurisé supprimé
         // Continuer même si les réponses échouent
       }
 
@@ -495,7 +495,7 @@ export const useSupport = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération du ticket'
-      console.error('[DEBUG] getTicketWithResponses final error:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return { ticket: null, responses: [] }
     } finally {
@@ -506,20 +506,20 @@ export const useSupport = () => {
   // Forcer le refresh du cache schema PostgREST (admin uniquement)
   const refreshSchemaCache = useCallback(async (): Promise<boolean> => {
     try {
-      console.log('[DEBUG] Refreshing PostgREST schema cache...')
+      // Log admin sécurisé supprimé
       
       const { data, error } = await supabase
         .rpc('refresh_postgrest_schema_cache')
 
       if (error) {
-        console.error('[DEBUG] Schema cache refresh error:', error)
+        // Log admin sécurisé supprimé
         return false
       }
 
       console.log('[DEBUG] Schema cache refresh result:', data)
       return true
     } catch (err) {
-      console.error('[DEBUG] Schema cache refresh exception:', err)
+      // Log admin sécurisé supprimé
       return false
     }
   }, [supabase])

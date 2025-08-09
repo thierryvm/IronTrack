@@ -39,7 +39,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           <span className="text-sm font-medium text-gray-700">
             Étape {currentStep + 1} sur {totalSteps}
           </span>
-          <span className="text-sm font-medium text-orange-600">
+          <span className="text-sm font-medium text-orange-800">
             {Math.round(progress)}%
           </span>
         </div>

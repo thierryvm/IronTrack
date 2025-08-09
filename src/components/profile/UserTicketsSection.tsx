@@ -104,7 +104,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       case 'open':
         return <Clock className="h-4 w-4 text-blue-500" />
       case 'in_progress':
-        return <AlertTriangle className="h-4 w-4 text-orange-500" />
+        return <AlertTriangle className="h-4 w-4 text-orange-800" />
       case 'resolved':
         return <CheckCircle className="h-4 w-4 text-green-500" />
       case 'closed':
@@ -149,7 +149,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       case 'high':
         return 'text-red-600'
       case 'medium':
-        return 'text-orange-600'
+        return 'text-orange-800'
       case 'low':
         return 'text-green-600'
       default:
@@ -172,7 +172,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
     return (
       <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
-          <MessageCircle className="h-6 w-6 text-orange-500" />
+          <MessageCircle className="h-6 w-6 text-orange-800" />
           <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
         </div>
         <div className="flex items-center justify-center py-8">
@@ -187,7 +187,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
     return (
       <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
-          <MessageCircle className="h-6 w-6 text-orange-500" />
+          <MessageCircle className="h-6 w-6 text-orange-800" />
           <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
         </div>
         <div className="text-center py-8">
@@ -204,12 +204,12 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       {/* En-tête */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <MessageCircle className="h-6 w-6 text-orange-500" />
+          <MessageCircle className="h-6 w-6 text-orange-800" />
           <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
         </div>
         <Link
           href="/support/contact"
-          className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors text-sm min-h-[44px] touch-manipulation"
+          className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm min-h-[44px] touch-manipulation"
         >
           <Plus className="h-4 w-4" />
           Nouveau ticket
@@ -227,7 +227,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           </p>
           <Link
             href="/support/contact"
-            className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors min-h-[44px] touch-manipulation"
+            className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors min-h-[44px] touch-manipulation"
           >
             <Plus className="h-4 w-4" />
             Créer mon premier ticket
@@ -290,7 +290,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
                 {/* Action pour voir les détails - Futur lien vers une page dédiée */}
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <button className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start">
+                  <button className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start">
                     <ExternalLink className="h-4 w-4" />
                     Voir les détails et réponses
                   </button>
@@ -307,14 +307,14 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
             <div className="flex justify-center gap-4">
               <Link
                 href="/support"
-                className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
+                className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
               >
                 <MessageCircle className="h-4 w-4" />
                 Centre de support
               </Link>
               <Link
                 href="/faq"
-                className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
+                className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
               >
                 <MessageCircle className="h-4 w-4" />
                 FAQ

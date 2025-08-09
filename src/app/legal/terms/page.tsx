@@ -8,7 +8,7 @@ export default function TermsOfService() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-500 via-red-500 to-purple-600 py-8 sm:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-orange-600 via-red-500 to-purple-600 py-8 sm:py-12">
       <div className="max-w-4xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -18,14 +18,14 @@ export default function TermsOfService() {
           {/* Bouton de retour */}
           <button
             onClick={() => router.back()}
-            className="flex items-center text-gray-600 hover:text-orange-600 transition-colors mb-6"
+            className="flex items-center text-gray-600 hover:text-orange-800 transition-colors mb-6"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             <span className="text-sm sm:text-base">Retour</span>
           </button>
 
           <div className="flex items-center mb-6 sm:mb-8">
-            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500 mr-3" />
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 mr-3" />
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Conditions d'Utilisation</h1>
           </div>
           

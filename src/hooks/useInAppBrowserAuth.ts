@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { detectBrowserInfo, type BrowserInfo } from '@/utils/browserDetection';
 import { validateEmail, validatePassword } from '@/utils/security';
+import { useRouter } from 'next/navigation';
 
 interface AuthState {
   isLoading: boolean;
@@ -24,6 +25,7 @@ interface AuthMethods {
 
 export function useInAppBrowserAuth(): AuthState & AuthMethods {
   const [supabase] = useState(() => createClient());
+  const router = useRouter();
   const [state, setState] = useState<AuthState>({
     isLoading: false,
     error: null,
@@ -108,9 +110,14 @@ export function useInAppBrowserAuth(): AuthState & AuthMethods {
       if (data.user) {
         setState(prev => ({ 
           ...prev, 
-          success: 'Connexion réussie !',
+          success: '✨ Connexion réussie ! Redirection...',
           isLoading: false 
         }));
+        
+        // Redirection après connexion réussie
+        setTimeout(() => {
+          router.push('/');
+        }, 1000);
       }
     } catch {
       setState(prev => ({ 
@@ -119,7 +126,7 @@ export function useInAppBrowserAuth(): AuthState & AuthMethods {
         isLoading: false 
       }));
     }
-  }, [supabase.auth]);
+  }, [supabase.auth, router]);
 
   // Méthode d'inscription par email
   const signUpWithEmail = useCallback(async (email: string, password: string) => {
@@ -161,7 +168,7 @@ export function useInAppBrowserAuth(): AuthState & AuthMethods {
       if (data.user) {
         setState(prev => ({ 
           ...prev, 
-          success: 'Inscription réussie ! Vérifiez votre email pour confirmer votre compte.',
+          success: '🎉 Inscription réussie ! Vérifiez votre email pour confirmer votre compte.',
           isLoading: false 
         }));
       }

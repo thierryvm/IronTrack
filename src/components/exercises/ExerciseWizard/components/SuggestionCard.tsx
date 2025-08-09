@@ -54,11 +54,11 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             {suggestion.type === 'Musculation' ? (
-              <Dumbbell className="w-4 h-4 text-orange-500" />
+              <Dumbbell className="w-4 h-4 text-orange-800" />
             ) : (
               <Clock className="w-4 h-4 text-blue-500" />
             )}
-            <h3 className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
+            <h3 className="font-semibold text-gray-900 group-hover:text-orange-800 transition-colors">
               {suggestion.name}
             </h3>
           </div>
@@ -75,7 +75,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
             </span>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
+        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-orange-800 transition-colors" />
       </div>
       
       <div className="flex items-center gap-4 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">

@@ -1,0 +1,88 @@
+import type { Metadata, Viewport } from "next";
+// ULTRAHARDCORE: Google Fonts complètement éliminé
+// import { Inter } from "next/font/google";
+import "./globals.css";
+import Header from "@/components/layout/Header";
+import { ThemeProvider } from "@/components/ui/ThemeProvider";
+// ULTRAHARDCORE: SW complètement désactivé
+// import RegisterSW from '../components/register-sw';
+import { ErrorHandler } from "@/components/ui/ErrorHandler";
+// ULTRAHARDCORE: CSS critique désactivé temporairement
+// import { CriticalCSS } from "@/components/CriticalCSS";
+// import { OptimizedComponents } from "@/components/PerformanceOptimizer"; // Désactivé temporairement
+import AccessibilityFixes from "@/components/AccessibilityFixes";
+// TEMPORAIRE: Désactiver Vercel Analytics en développement (404 errors)
+// import { SpeedInsights } from '@vercel/speed-insights/next';
+// import { Analytics } from '@vercel/analytics/next';
+import SkipLink from "@/components/accessibility/SkipLink";
+
+// ULTRAHARDCORE: Police système uniquement
+// const inter = Inter({ subsets: ["latin"], variable: "--font-inter", });
+
+export const metadata: Metadata = {
+  title: "IronTrack - Ton coach muscu personnel",
+  description: "Application de suivi de musculation avec minuterie, nutrition et progression. Suivi tes entraînements, ta nutrition et ta progression comme un(e) champion(ne) !",
+  keywords: ["musculation", "fitness", "nutrition", "entraînement", "progression", "minuterie"],
+  authors: [{ name: "IronTrack Team" }],
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/icon-192.png",
+  },
+  manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#f97316",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="fr" className="h-full" suppressHydrationWarning>
+      <head>
+        {/* ULTRAHARDCORE: CSS critique désactivé */}
+        {/* <CriticalCSS /> */
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        {/* Préconnexions pour optimiser la latence réseau */}
+        <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" />
+        <link rel="preconnect" href="https://vitals.vercel-insights.com" />
+        {/* TEMPORAIRE: Désactivé pour résoudre conflits SW */}
+        {/* <link rel="dns-prefetch" href="//fonts.googleapis.com" /> */}
+        <link rel="dns-prefetch" href="//vercel.app" />
+        {/* Meta pour performance */}
+        <meta name="format-detection" content="telephone=no" />
+        {/* PRELOAD - Font supprimé (fichier inexistant causait 404) */}
+      </head>
+      <body className="antialiased h-full bg-gray-50 dark:bg-gray-900" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}} suppressHydrationWarning>
+        <ThemeProvider>
+          <SkipLink />
+          <ErrorHandler />
+          <AccessibilityFixes />
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            {/* PERFORMANCE: IronBuddy supprimé du bundle initial pour économiser 18KB */}
+            <main id="main-content" className="flex-1" role="main">
+              {children}
+            </main>
+          </div>
+          {/* ULTRAHARDCORE: Service Worker complètement supprimé */}
+          {/* <RegisterSW /> */
+        </ThemeProvider>
+        {/* TEMPORAIRE: Désactiver Vercel Analytics (404 errors en dev)
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )} */}
+      </body>
+    </html>
+  );
+}

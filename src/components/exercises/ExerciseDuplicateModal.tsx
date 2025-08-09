@@ -47,7 +47,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  <AlertTriangle className="w-5 h-5 text-orange-800" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">
@@ -117,7 +117,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {hasSimilarMatch && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-orange-500" />
+                    <AlertTriangle className="w-4 h-4 text-orange-800" />
                     Exercices similaires ({duplicateResult.similarMatches.length})
                   </h3>
                   {duplicateResult.similarMatches.slice(0, 3).map((exercise) => (

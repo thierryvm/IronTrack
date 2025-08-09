@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎨 IronTrack Design System – 2025 (Light/Dark)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#fff7ed',
+                100: '#ffedd5',
+                200: '#fed7aa',
+                300: '#fdba74',
+                400: '#fb923c',
+                500: '#f97316', // primaire
+                600: '#ea580c', // accent
+                700: '#c2410c',
+                800: '#9a3412',
+                900: '#7c2d12'
+              },
+              success: { 50:'#ecfdf5', 500:'#10b981', 600:'#059669' },
+              warning: { 50:'#fffbeb', 500:'#f59e0b', 600:'#d97706' },
+              danger:  { 50:'#fef2f2', 500:'#ef4444', 600:'#dc2626' },
+              surface: {
+                light: '#ffffff',
+                lightAlt: '#f9fafb',
+                dark: '#0b1220',
+                darkAlt: '#111827'
+              }
+            },
+            boxShadow: {
+              card: '0 4px 12px rgba(0,0,0,0.08)',
+              cardLg: '0 10px 24px rgba(0,0,0,0.12)'
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      :root {
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+      }
+      .ds-section { scroll-margin-top: 96px; }
+      .ds-token { border-radius: var(--radius-sm); }
+      .card { border-radius: var(--radius-md); box-shadow: var(--tw-shadow, 0 0 #0000), 0 1px 2px 0 rgba(0,0,0,.05); }
+      html.dark .card { box-shadow: none; border: 1px solid rgba(255,255,255,0.08); }
+      .kbd { padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: 6px; background: #fff; font-size: 12px; }
+      html.dark .kbd { background: #0b1220; border-color: #1f2937; }
+    </style>
+  </head>
+  <body class="min-h-full bg-surface-light text-gray-900 dark:bg-surface-dark dark:text-gray-100">
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-surface-dark/70 backdrop-blur shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold">IT</div>
+          <div>
+            <h1 class="text-lg font-semibold">IronTrack – Design System 2025</h1>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Thèmes clair/sombre, composants UI, et patrons métiers</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="themeToggle" class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 flex items-center gap-2">
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:inline"></i>
+            <i data-lucide="moon" class="w-4 h-4 inline dark:hidden"></i>
+            <span class="text-sm">Theme</span>
+          </button>
+          <a href="#components" class="px-3 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm">Aller aux composants</a>
+        </div>
+      </div>
+      <nav class="border-t border-gray-100 dark:border-white/10">
+        <div class="max-w-7xl mx-auto overflow-x-auto">
+          <ul class="flex gap-4 px-4 py-2 text-sm whitespace-nowrap">
+            <li><a href="#palette" class="hover:text-brand-600">Couleurs</a></li>
+            <li><a href="#typography" class="hover:text-brand-600">Typo</a></li>
+            <li><a href="#foundations" class="hover:text-brand-600">Fondations</a></li>
+            <li><a href="#components" class="hover:text-brand-600">Composants UI</a></li>
+            <li><a href="#auth" class="hover:text-brand-600">Auth</a></li>
+            <li><a href="#exercises" class="hover:text-brand-600">Exercices</a></li>
+            <li><a href="#nutrition" class="hover:text-brand-600">Nutrition</a></li>
+            <li><a href="#calendar" class="hover:text-brand-600">Calendrier</a></li>
+            <li><a href="#partners" class="hover:text-brand-600">Partenaires</a></li>
+            <li><a href="#progress" class="hover:text-brand-600">Progression</a></li>
+            <li><a href="#admin" class="hover:text-brand-600">Admin</a></li>
+            <li><a href="#support" class="hover:text-brand-600">Support</a></li>
+            <li><a href="#pwa" class="hover:text-brand-600">PWA/Toasts</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+      <!-- Palette -->
+      <section id="palette" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🎨 Palette & Thèmes</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Palette cohérente brand/orange + états. Support natif dark avec <span class="kbd">.dark</span>.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <!-- Brand scale -->
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Brand</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-brand-50 ds-token"></div>
+              <div class="h-8 bg-brand-200 ds-token"></div>
+              <div class="h-8 bg-brand-400 ds-token"></div>
+              <div class="h-8 bg-brand-500 ds-token"></div>
+              <div class="h-8 bg-brand-600 ds-token"></div>
+              <div class="h-8 bg-brand-800 ds-token"></div>
+            </div>
+          </div>
+          <!-- Semantic -->
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Succès</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-success-50 ds-token"></div>
+              <div class="h-8 bg-success-500 ds-token"></div>
+              <div class="h-8 bg-success-600 ds-token"></div>
+            </div>
+          </div>
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Alerte</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-warning-50 ds-token"></div>
+              <div class="h-8 bg-warning-500 ds-token"></div>
+              <div class="h-8 bg-warning-600 ds-token"></div>
+            </div>
+          </div>
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Danger</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-danger-50 ds-token"></div>
+              <div class="h-8 bg-danger-500 ds-token"></div>
+              <div class="h-8 bg-danger-600 ds-token"></div>
+            </div>
+          </div>
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Surfaces (light)</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-white border ds-token"></div>
+              <div class="h-8 bg-surface-lightAlt ds-token"></div>
+            </div>
+          </div>
+          <div class="p-4 card bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Surfaces (dark)</p>
+            <div class="space-y-2">
+              <div class="h-8 bg-surface-dark ds-token"></div>
+              <div class="h-8 bg-surface-darkAlt ds-token"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation principale (démo) -->
+      <section id="navigation" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🧭 Navigation principale (démo responsive)</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Menu adaptatif avec liens clés (Calendrier, Exercices, Séances, Partenaires, Nutrition, Progression) et menu profil façon GitHub (Profil, Paramètres, Admin, Déconnexion).</n></p>
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <nav class="bg-white/90 dark:bg-surface-dark/80 backdrop-blur">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="flex h-14 items-center justify-between">
+                <!-- Left: brand + primary links -->
+                <div class="flex items-center gap-3">
+                  <a href="/" class="flex items-center gap-2">
+                    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold">IT</div>
+                    <span class="font-semibold hidden sm:inline">IronTrack</span>
+                  </a>
+                  <div class="hidden lg:flex items-center gap-1 ml-2">
+                    <a href="/calendar" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Calendrier</a>
+                    <a href="/exercises" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Exercices</a>
+                    <a href="/workouts" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Séances</a>
+                    <a href="/training-partners" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Partenaires</a>
+                    <a href="/nutrition" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Nutrition</a>
+                    <a href="/progress" class="px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Progression</a>
+                  </div>
+                </div>
+                <!-- Right: search, notifications, profile -->
+                <div class="flex items-center gap-2">
+                  <div class="hidden md:block">
+                    <div class="relative">
+                      <input placeholder="Rechercher" class="w-48 h-9 pl-9 pr-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" />
+                      <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                  </div>
+                  <button class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800" aria-label="Notifications">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                  </button>
+                  <!-- Profile dropdown (GitHub-like) -->
+                  <div class="relative">
+                    <button id="profileBtn" class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" aria-haspopup="true" aria-expanded="false">
+                      <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="avatar" class="h-7 w-7 rounded-full"/>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
+                    </button>
+                    <div id="profileMenu" class="hidden absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden">
+                      <div class="px-4 py-3">
+                        <p class="text-sm text-gray-500">Connecté en tant que</p>
+                        <p class="text-sm font-medium">thierry@irontrack.com</p>
+                      </div>
+                      <div class="py-1 border-t border-gray-100 dark:border-gray-800">
+                        <a href="/profile" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"><i data-lucide="user" class="w-4 h-4"></i> Profil</a>
+                        <a href="/admin/settings" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"><i data-lucide="settings" class="w-4 h-4"></i> Paramètres</a>
+                        <a href="/admin" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"><i data-lucide="shield" class="w-4 h-4"></i> Admin</a>
+                        <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
+                        <a href="/auth" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-danger-600"><i data-lucide="log-out" class="w-4 h-4"></i> Déconnexion</a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mobile hamburger -->
+                  <button id="mobileNavBtn" class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800" aria-label="Ouvrir le menu">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Mobile panel -->
+            <div id="mobileNavPanel" class="lg:hidden hidden border-t border-gray-100 dark:border-gray-800">
+              <div class="px-4 py-3 space-y-1">
+                <a href="/calendar" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Calendrier</a>
+                <a href="/exercises" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Exercices</a>
+                <a href="/workouts" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Séances</a>
+                <a href="/training-partners" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Partenaires</a>
+                <a href="/nutrition" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Nutrition</a>
+                <a href="/progress" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Progression</a>
+                <div class="border-t border-gray-100 dark:border-gray-800 my-2"></div>
+                <a href="/profile" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Profil</a>
+                <a href="/admin/settings" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Paramètres</a>
+                <a href="/admin" class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800">Admin</a>
+                <a href="/auth" class="block px-3 py-2 rounded-lg text-sm text-danger-600 hover:bg-gray-100 dark:hover:bg-gray-800">Déconnexion</a>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Typography -->
+      <section id="typography" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🔤 Typographie</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Titres</p>
+            <h1 class="text-4xl font-bold mb-2">Titre H1 – IronTrack</h1>
+            <h2 class="text-3xl font-bold mb-2">Titre H2 – Section</h2>
+            <h3 class="text-2xl font-semibold mb-2">Titre H3 – Sous-section</h3>
+            <h4 class="text-xl font-semibold mb-2">Titre H4 – Bloc</h4>
+          </div>
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Corps & UI</p>
+            <p class="text-base mb-2">Texte standard 16px. Lisible en clair/sombre.</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Texte secondaire 14px.</p>
+            <p class="text-xs text-gray-500">Légendes/Meta 12px.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Foundations -->
+      <section id="foundations" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🧱 Fondations (Rayons, Ombres, Spacing)</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Rayons</p>
+            <div class="flex items-center gap-4">
+              <div class="w-20 h-12 bg-brand-100 rounded-[8px]"></div>
+              <div class="w-20 h-12 bg-brand-100 rounded-[12px]"></div>
+              <div class="w-20 h-12 bg-brand-100 rounded-[16px]"></div>
+            </div>
+          </div>
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Ombres</p>
+            <div class="space-y-3">
+              <div class="p-4 bg-white dark:bg-surface-dark rounded-[12px] shadow">Shadow</div>
+              <div class="p-4 bg-white dark:bg-surface-dark rounded-[12px] shadow-md">Shadow md</div>
+              <div class="p-4 bg-white dark:bg-surface-dark rounded-[12px] shadow-lg">Shadow lg</div>
+            </div>
+          </div>
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <p class="text-sm font-semibold mb-3">Espacements (8px grid)</p>
+            <div class="flex items-end gap-2">
+              <div class="w-6 bg-brand-500 h-2"></div>
+              <div class="w-6 bg-brand-500 h-4"></div>
+              <div class="w-6 bg-brand-500 h-6"></div>
+              <div class="w-6 bg-brand-500 h-8"></div>
+              <div class="w-6 bg-brand-500 h-12"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Components -->
+      <section id="components" class="ds-section">
+        <h2 class="text-2xl font-bold mb-6">🧩 Composants UI</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <!-- Buttons -->
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Boutons</h3>
+            <div class="flex flex-wrap gap-3">
+              <button class="px-4 py-2 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow hover:from-brand-600 hover:to-brand-700">Primaire</button>
+              <button class="px-4 py-2 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">Secondaire</button>
+              <button class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">Ghost</button>
+              <button class="px-4 py-2 rounded-lg bg-danger-500 text-white hover:bg-danger-600">Destructif</button>
+              <button class="px-4 py-2 rounded-lg bg-success-500 text-white hover:bg-success-600">Succès</button>
+              <button class="px-4 py-2 rounded-lg bg-warning-500 text-white hover:bg-warning-600">Alerte</button>
+            </div>
+          </div>
+
+          <!-- Inputs -->
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Champs de formulaire</h3>
+            <div class="grid gap-4">
+              <div>
+                <label class="block text-sm mb-1">Email</label>
+                <input type="email" placeholder="exemple@email.com" class="w-full h-12 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:text-gray-100 dark:border-gray-700" />
+                <p class="text-xs text-gray-500 mt-1">Nous ne partagerons jamais votre email.</p>
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Mot de passe</label>
+                <div class="relative">
+                  <input type="password" value="Password123!" class="w-full h-12 pl-3 pr-10 rounded-lg border border-gray-300 bg-white text-gray-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:text-gray-100 dark:border-gray-700" />
+                  <button class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i data-lucide="eye" class="w-5 h-5"></i></button>
+                </div>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm mb-1">Sélection</label>
+                  <select class="w-full h-12 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:text-gray-100 dark:border-gray-700">
+                    <option>Option A</option>
+                    <option>Option B</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm mb-1">Nombre</label>
+                  <input type="number" class="w-full h-12 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:text-gray-100 dark:border-gray-700" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Description</label>
+                <textarea rows="3" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:text-gray-100 dark:border-gray-700" placeholder="Votre message..."></textarea>
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Toggle</label>
+                <button class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"><span class="w-10 h-6 bg-gray-300 rounded-full relative"><span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow"></span></span> Off</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges, Chips, Tabs -->
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Badges, Chips, Tabs</h3>
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">Nouveau</span>
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-success-50 text-success-600">Succès</span>
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-warning-50 text-warning-600">Alerte</span>
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-danger-50 text-danger-600">Erreur</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm">Tab 1</button>
+              <button class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm dark:bg-gray-800 dark:text-gray-100">Tab 2</button>
+              <button class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm dark:bg-gray-800 dark:text-gray-100">Tab 3</button>
+            </div>
+          </div>
+
+          <!-- Cards, Lists, Table -->
+          <div class="card p-6 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Cards & Table</h3>
+            <div class="grid gap-4">
+              <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                <p class="text-sm text-gray-500 mb-1">Card</p>
+                <p class="font-semibold">Titre de carte</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Description concise pour contextualiser.</p>
+              </div>
+              <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                <table class="min-w-full text-sm">
+                  <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                      <th class="text-left px-4 py-2">Nom</th>
+                      <th class="text-left px-4 py-2">Statut</th>
+                      <th class="text-left px-4 py-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tr>
+                      <td class="px-4 py-2">Élément A</td>
+                      <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs bg-success-50 text-success-600">Actif</span></td>
+                      <td class="px-4 py-2"><button class="text-brand-600 hover:underline text-sm">Voir</button></td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2">Élément B</td>
+                      <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs bg-warning-50 text-warning-600">En attente</span></td>
+                      <td class="px-4 py-2"><button class="text-brand-600 hover:underline text-sm">Voir</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Auth -->
+      <section id="auth" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🔐 Authentification</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Carte Login/Signup</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm mb-1">Email</label>
+                <input class="w-full h-12 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="exemple@email.com" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Mot de passe</label>
+                <input type="password" class="w-full h-12 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Au moins 8 caractères" />
+              </div>
+              <div class="flex items-center justify-between">
+                <button class="text-sm text-brand-600 hover:underline">Mot de passe oublié ?</button>
+                <div class="flex gap-2">
+                  <button class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">S'inscrire</button>
+                  <button class="px-4 py-2 rounded-lg bg-brand-600 text-white">Se connecter</button>
+                </div>
+              </div>
+              <div class="pt-2">
+                <button class="w-full h-11 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800"><i data-lucide="circle" class="w-4 h-4"></i> Continuer avec Google</button>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Messages/États</h3>
+            <div class="space-y-3">
+              <div class="p-3 rounded-lg bg-success-50 text-success-600 text-sm">Connexion réussie</div>
+              <div class="p-3 rounded-lg bg-danger-50 text-danger-600 text-sm">Email ou mot de passe incorrect</div>
+              <div class="p-3 rounded-lg bg-warning-50 text-warning-600 text-sm">Lien invalide/expiré</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exercises -->
+      <section id="exercises" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🏋️ Exercices & Performances</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <!-- Exercise Card 2025 -->
+          <div class="p-0 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <div class="relative h-40 bg-gradient-to-br from-brand-100 to-brand-200">
+              <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="dumbbell" class="h-14 w-14 text-brand-400"></i></div>
+              <div class="absolute top-4 right-4"><span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">Intermédiaire</span></div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">Développé couché</h3>
+              <p class="text-sm text-gray-500 mb-4">Pectoraux • Barre olympique</p>
+              <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">Dernière performance</div>
+                <div class="font-semibold">80kg × 8 reps × 3 sets</div>
+                <div class="text-xs text-gray-500">29/01/2025</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="flex-1 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-semibold py-3 rounded-lg hover:from-brand-600 hover:to-brand-700 flex items-center justify-center gap-2"><i data-lucide="plus" class="h-5 w-5"></i> Performance</button>
+                <button class="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100 flex items-center gap-2"><i data-lucide="eye" class="h-4 w-4"></i> <span class="hidden sm:inline">Détails</span></button>
+                <button class="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-800"><i data-lucide="more-vertical" class="h-4 w-4"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Performance Edit Row -->
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Ligne d'édition Performance</h3>
+            <div class="grid md:grid-cols-4 gap-3">
+              <div><label class="text-xs text-gray-500">Poids (kg)</label><input type="number" class="w-full h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" value="80"/></div>
+              <div><label class="text-xs text-gray-500">Reps</label><input type="number" class="w-full h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" value="8"/></div>
+              <div><label class="text-xs text-gray-500">Sets</label><input type="number" class="w-full h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" value="3"/></div>
+              <div class="flex items-end"><button class="w-full h-11 rounded-lg bg-success-500 text-white hover:bg-success-600">Enregistrer</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nutrition -->
+      <section id="nutrition" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🍎 Nutrition</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Carte Recette</h3>
+            <div class="flex gap-4">
+              <div class="h-24 w-24 rounded-lg bg-gray-100 dark:bg-gray-900 flex items-center justify-center"><i data-lucide="apple" class="h-8 w-8 text-brand-500"></i></div>
+              <div class="flex-1">
+                <p class="font-semibold">Poke Bowl Protéiné</p>
+                <p class="text-sm text-gray-500 mb-2">620 kcal • 45g prot • 60g gluc • 18g lip</p>
+                <div class="flex items-center gap-2">
+                  <button class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm">Ajouter au repas</button>
+                  <button class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm dark:bg-gray-800 dark:text-gray-100">Voir</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Constructeur de repas (inline)</h3>
+            <div class="grid md:grid-cols-3 gap-3">
+              <input class="h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Aliment"/>
+              <input type="number" class="h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Quantité (g)"/>
+              <button class="h-11 rounded-lg bg-brand-600 text-white">Ajouter</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendar -->
+      <section id="calendar" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🗓️ Calendrier & Séances Partagées</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Cellule Calendrier (Jour)</h3>
+            <div class="grid grid-cols-7 gap-2">
+              <!-- 7 jours d'aperçu -->
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+                <div class="text-xs text-gray-500">Lun</div>
+                <div class="mt-1 text-sm font-semibold">5</div>
+                <div class="mt-2 flex flex-col gap-1">
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-100 text-brand-800">Workout – Pecs</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-success-50 text-success-600">Partagé</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Mar</div><div class="mt-1 text-sm font-semibold">6</div></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Mer</div><div class="mt-1 text-sm font-semibold">7</div></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Jeu</div><div class="mt-1 text-sm font-semibold">8</div></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Ven</div><div class="mt-1 text-sm font-semibold">9</div></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Sam</div><div class="mt-1 text-sm font-semibold">10</div></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><div class="text-xs text-gray-500">Dim</div><div class="mt-1 text-sm font-semibold">11</div></div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-2">Bannière de partage</h3>
+            <div class="p-4 rounded-lg bg-brand-50 text-brand-800 border border-brand-200 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <i data-lucide="share-2" class="w-5 h-5"></i>
+                <p class="text-sm">Partage de séance activé pour <span class="font-semibold">lundi 5</span>.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1.5 rounded-lg bg-white border border-brand-200 text-sm">Copier lien</button>
+                <button class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Gérer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Partners -->
+      <section id="partners" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🤝 Partenaires d'entraînement</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Carte Partenaire</h3>
+            <div class="flex items-center gap-4">
+              <div class="h-12 w-12 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center font-bold">JV</div>
+              <div class="flex-1">
+                <p class="font-semibold">Jordan Vermeulen</p>
+                <p class="text-sm text-gray-500">5 séances partagées • 2 en attente</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-2 rounded-lg bg-gray-100 text-sm dark:bg-gray-800">Voir</button>
+                <button class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm">Partager</button>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-4">Demande de partenariat</h3>
+            <div class="flex items-center gap-3">
+              <input class="flex-1 h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Email du partenaire"/>
+              <button class="h-11 px-4 rounded-lg bg-brand-600 text-white">Inviter</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Progress -->
+      <section id="progress" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">📈 Progression</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-2">Tuiles KPI</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+                <p class="text-xs text-gray-500">Séances (30j)</p>
+                <p class="text-2xl font-bold">14</p>
+              </div>
+              <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+                <p class="text-xs text-gray-500">Temps total</p>
+                <p class="text-2xl font-bold">12h 40</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-2">Graphique (placeholder)</h3>
+            <div class="h-40 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-sm text-gray-500">Insérer composant charts (Lottie/Chart.js)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Admin -->
+      <section id="admin" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🛡️ Admin (Stats, Logs, Tickets, Users)</h2>
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Stats</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><p class="text-xs text-gray-500">Tickets ouverts</p><p class="text-xl font-bold">8</p></div>
+              <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900"><p class="text-xs text-gray-500">Nouveaux users (7j)</p><p class="text-xl font-bold">42</p></div>
+            </div>
+          </div>
+          <div class="lg:col-span-2 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt overflow-x-auto">
+            <h3 class="font-semibold mb-3">Tickets</h3>
+            <table class="min-w-full text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th class="text-left px-4 py-2">ID</th>
+                  <th class="text-left px-4 py-2">Sujet</th>
+                  <th class="text-left px-4 py-2">Statut</th>
+                  <th class="text-left px-4 py-2">Assigné</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <tr>
+                  <td class="px-4 py-2">#241</td>
+                  <td class="px-4 py-2">Problème de synchro</td>
+                  <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs bg-warning-50 text-warning-600">En cours</span></td>
+                  <td class="px-4 py-2">Thierry</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2">#242</td>
+                  <td class="px-4 py-2">Accès admin</td>
+                  <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs bg-success-50 text-success-600">Résolu</span></td>
+                  <td class="px-4 py-2">Admin</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Support -->
+      <section id="support" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">🧰 Support & Upload sécurisé</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Formulaire Ticket</h3>
+            <div class="space-y-3">
+              <input class="w-full h-11 px-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Sujet"/>
+              <textarea rows="4" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700" placeholder="Décrivez votre problème..."></textarea>
+              <div class="border border-dashed rounded-lg p-4 text-sm text-gray-500 dark:border-gray-700">Glissez un fichier ici ou <button class="text-brand-600">cliquez pour parcourir</button></div>
+              <div class="flex justify-end"><button class="px-4 py-2 rounded-lg bg-brand-600 text-white">Envoyer</button></div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Bonnes pratiques</h3>
+            <ul class="text-sm list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+              <li>Validation côté client et serveur</li>
+              <li>Taille max et type MIME autorisés</li>
+              <li>Scan antivirus côté serveur (si applicable)</li>
+              <li>Liaison ticket ↔ fichier en BDD</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PWA / Toasts -->
+      <section id="pwa" class="ds-section">
+        <h2 class="text-2xl font-bold mb-4">📲 PWA, Notifications & Toasts</h2>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Bannière PWA</h3>
+            <div class="p-4 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <i data-lucide="smartphone" class="w-5 h-5"></i>
+                <div>
+                  <p class="font-semibold">Installer IronTrack</p>
+                  <p class="text-xs text-white/80">Accès rapide, notifications, mode hors-ligne</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1.5 rounded-lg bg-white/10">Plus tard</button>
+                <button class="px-3 py-1.5 rounded-lg bg-white text-brand-700 font-medium">Installer</button>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt">
+            <h3 class="font-semibold mb-3">Toast Notification</h3>
+            <div class="flex items-center gap-3 p-4 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-800 shadow">
+              <i data-lucide="sparkles" class="w-5 h-5 text-brand-600"></i>
+              <div class="flex-1">
+                <p class="text-sm font-medium">Nouvelle performance enregistrée</p>
+                <p class="text-xs text-gray-500">Développé couché • 80kg × 8 × 3</p>
+              </div>
+              <button class="text-sm text-brand-600">Voir</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+      Made with 💪 & ☕ pour IronTrack — 2025
+    </footer>
+
+    <script>
+      // Theme toggle with localStorage
+      (function initTheme() {
+        const saved = localStorage.getItem('irontrack-theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        const el = document.documentElement;
+        const isDark = el.classList.toggle('dark');
+        localStorage.setItem('irontrack-theme', isDark ? 'dark' : 'light');
+      });
+      // Profile dropdown
+      (function initProfileMenu(){
+        const btn = document.getElementById('profileBtn');
+        const menu = document.getElementById('profileMenu');
+        if (!btn || !menu) return;
+        btn.addEventListener('click', () => {
+          const isHidden = menu.classList.contains('hidden');
+          if (isHidden) menu.classList.remove('hidden'); else menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', String(isHidden));
+        });
+        document.addEventListener('click', (e) => {
+          if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.add('hidden');
+        });
+      })();
+      // Mobile nav
+      (function initMobileNav(){
+        const btn = document.getElementById('mobileNavBtn');
+        const panel = document.getElementById('mobileNavPanel');
+        if (!btn || !panel) return;
+        btn.addEventListener('click', () => {
+          panel.classList.toggle('hidden');
+        });
+      })();
+      // Init icons
+      lucide.createIcons();
+    </script>
+  </body>
+  </html>
+
+

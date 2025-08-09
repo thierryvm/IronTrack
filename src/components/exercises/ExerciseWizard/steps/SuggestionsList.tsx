@@ -7,7 +7,7 @@ import { useUserProfile } from '@/hooks/useUserProfile'
 import { ExerciseSuggestion } from '@/types/exercise-wizard'
 
 interface SuggestionsListProps {
-  exerciseType: 'Musculation' | 'Cardio'
+  exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
   onSelectSuggestion: (suggestion: ExerciseSuggestion) => void
   onCreateCustom: () => void
 }
@@ -18,13 +18,20 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
   onCreateCustom 
 }) => {
   const { profile } = useUserProfile()
-  const suggestions = useIntelligentSuggestions(exerciseType)
+  const { suggestions, loading } = useIntelligentSuggestions(exerciseType)
 
   const getPersonalizedMessage = () => {
     if (!profile) return "Voici quelques suggestions populaires"
     
     // Le profil utilisateur actuel n'a pas goal/experience, on utilise des messages génériques
-    return `Suggestions ${exerciseType === 'Musculation' ? 'de force' : 'cardiovasculaires'} pour toi`
+    const typeMessages = {
+      'Musculation': 'de force',
+      'Cardio': 'cardiovasculaires', 
+      'Fitness': 'de fitness fonctionnel',
+      'Étirement': 'de mobilité',
+      'Échauffement': 'de préparation'
+    }
+    return `Suggestions ${typeMessages[exerciseType]} pour toi`
   }
 
   return (
@@ -36,7 +43,7 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Sparkles className="w-8 h-8 text-orange-500" />
+            <Sparkles className="w-8 h-8 text-orange-800" />
           </div>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -66,14 +73,53 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
       )}
       
       <div className="grid gap-4 mb-8">
-        {suggestions.map((suggestion, index) => (
-          <SuggestionCard
-            key={suggestion.id}
-            suggestion={suggestion}
-            onSelect={() => onSelectSuggestion(suggestion)}
-            delay={index * 0.1}
-          />
-        ))}
+        {loading ? (
+          // Skeleton loading
+          <>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="p-6 border border-gray-200 rounded-xl animate-pulse">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="w-20 h-8 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : suggestions.length > 0 ? (
+          suggestions.map((suggestion, index) => (
+            <SuggestionCard
+              key={suggestion.id}
+              suggestion={suggestion}
+              onSelect={() => onSelectSuggestion(suggestion)}
+              delay={index * 0.1}
+            />
+          ))
+        ) : (
+          // Aucune suggestion trouvée
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-8 px-4 border border-gray-200 rounded-xl bg-gray-50"
+          >
+            <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Aucune suggestion disponible
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Nous n'avons pas trouvé de suggestions pour ce type d'exercice.
+            </p>
+            <button
+              onClick={onCreateCustom}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              Créer un exercice personnalisé
+            </button>
+          </motion.div>
+        )}
       </div>
       
       <motion.div
@@ -91,13 +137,13 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
                      flex items-center justify-center gap-3 group"
         >
           <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-100 transition-colors">
-            <Plus className="w-6 h-6 text-gray-600 group-hover:text-orange-600" />
+            <Plus className="w-6 h-6 text-gray-600 group-hover:text-orange-800" />
           </div>
           <div className="text-left">
             <h3 className="font-semibold text-gray-900 group-hover:text-orange-800 transition-colors">
               Créer un exercice personnalisé
             </h3>
-            <p className="text-sm text-gray-600 group-hover:text-orange-600 transition-colors">
+            <p className="text-sm text-gray-600 group-hover:text-orange-800 transition-colors">
               Aucune suggestion ne te convient ? Crée ton propre exercice
             </p>
           </div>

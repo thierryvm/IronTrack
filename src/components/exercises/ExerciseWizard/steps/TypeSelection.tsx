@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Dumbbell, Clock, Target, Zap } from 'lucide-react'
+import { Dumbbell, Target, Zap, Heart, Flower2, Flame } from 'lucide-react'
 import { TypeCardProps } from '@/types/exercise-wizard'
 
 const TypeCard: React.FC<TypeCardProps> = ({ 
@@ -34,7 +34,7 @@ const TypeCard: React.FC<TypeCardProps> = ({
         {title}
       </h3>
       <p className={`text-sm ${
-        selected ? 'text-orange-600' : 'text-gray-600'
+        selected ? 'text-orange-800' : 'text-gray-600'
       }`}>
         {description}
       </p>
@@ -43,7 +43,7 @@ const TypeCard: React.FC<TypeCardProps> = ({
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        className="text-orange-500"
+        className="text-orange-800"
       >
         <Target className="w-6 h-6" />
       </motion.div>
@@ -52,8 +52,8 @@ const TypeCard: React.FC<TypeCardProps> = ({
 )
 
 interface TypeSelectionProps {
-  selectedType?: 'Musculation' | 'Cardio'
-  onNext: (type: 'Musculation' | 'Cardio') => void
+  selectedType?: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
+  onNext: (type: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement') => void
 }
 
 export const TypeSelection: React.FC<TypeSelectionProps> = ({ 
@@ -71,7 +71,25 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
       value: 'Cardio' as const,
       title: 'Cardio',
       description: 'Endurance, brûlage calories, condition physique',
-      icon: Clock
+      icon: Heart
+    },
+    {
+      value: 'Fitness' as const,
+      title: 'Fitness',
+      description: 'Exercices fonctionnels, gainage, pliométrie',
+      icon: Zap
+    },
+    {
+      value: 'Étirement' as const,
+      title: 'Étirement',
+      description: 'Mobilité, flexibilité, récupération',
+      icon: Flower2
+    },
+    {
+      value: 'Échauffement' as const,
+      title: 'Échauffement',
+      description: 'Mobilisation, activation, préparation',
+      icon: Flame
     }
   ]
 
@@ -84,7 +102,7 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Zap className="w-8 h-8 text-orange-500" />
+            <Zap className="w-8 h-8 text-orange-800" />
           </div>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -95,7 +113,7 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
         </p>
       </motion.div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {exerciseTypes.map((type, index) => (
           <motion.div
             key={type.value}
@@ -104,7 +122,6 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
             transition={{ delay: 0.1 * index }}
           >
             <TypeCard
-              type={type.value}
               title={type.title}
               description={type.description}
               icon={type.icon}
@@ -126,9 +143,9 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
           <h4 className="font-semibold text-blue-800">💡 Conseil</h4>
         </div>
         <p className="text-sm text-blue-700">
-          Pas sûr de ton choix ? La <strong>musculation</strong> est idéale pour développer force et masse musculaire, 
-          tandis que le <strong>cardio</strong> améliore l'endurance et brûle les calories. 
-          Tu peux toujours changer plus tard !
+          Pas sûr de ton choix ? L'<strong>échauffement</strong> prépare le corps, la <strong>musculation</strong> développe force et muscle, 
+          le <strong>cardio</strong> améliore l'endurance, le <strong>fitness</strong> combine force et cardio, 
+          et les <strong>étirements</strong> améliorent la mobilité. Tu peux toujours changer plus tard !
         </p>
       </motion.div>
     </div>

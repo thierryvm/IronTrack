@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Eye, Edit, X as LucideX, Filter, Clock, Calendar, CheckCircle, Target, Users, Activity, Waves, Zap, Flower, Smile, Dumbbell } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+// PERFORMANCE CRITICAL: Images optimisées WebP/AVIF
+// import { OptimizedAvatar, OptimizedImage } from '@/components/PerformanceImageOptimizer'
 
 interface Workout {
   id: string
@@ -84,6 +86,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
               <button
                 onClick={onClose}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Fermer la fenêtre de détails"
               >
                 <LucideX className="h-5 w-5 text-gray-500" />
               </button>
@@ -145,7 +148,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
               )}
               <Link
                 href={`/workouts/${workout.id}/edit`}
-                className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors text-center"
+                className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors text-center"
               >
                 ✏️ Modifier
               </Link>
@@ -268,16 +271,16 @@ export default function WorkoutsPage() {
         onStatusChange={changeWorkoutStatus}
       />
       
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold">Mes Séances</h1>
-              <p className="text-orange-100">Organise et suis tes entraînements</p>
+              <p className="text-white/90">Organise et suis tes entraînements</p>
             </div>
             <Link
               href="/workouts/new"
-              className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
+              className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
             >
               <Plus className="h-5 w-5" />
               <span>Nouvelle séance</span>
@@ -394,14 +397,16 @@ export default function WorkoutsPage() {
                             }}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Voir détails"
+                            aria-label="Voir les détails de la séance"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
                           <Link
                             href={`/workouts/${workout.id}/edit`}
                             onClick={(e) => e.stopPropagation()}
-                            className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
                             title="Modifier"
+                            aria-label="Modifier la séance"
                           >
                             <Edit className="h-4 w-4" />
                           </Link>
@@ -432,7 +437,7 @@ export default function WorkoutsPage() {
                 <p className="text-gray-500 mb-6">Commence par créer ta première séance d'entraînement !</p>
                 <Link
                   href="/workouts/new"
-                  className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors inline-flex items-center space-x-2"
+                  className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors inline-flex items-center space-x-2"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Créer une séance</span>
@@ -449,8 +454,9 @@ export default function WorkoutsPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                     page === 1 
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                      : 'bg-orange-500 text-white hover:bg-orange-600'
+                      : 'bg-orange-600 text-white hover:bg-orange-700'
                   }`}
+                  aria-label="Page précédente"
                 >
                   Précédent
                 </button>
@@ -463,8 +469,9 @@ export default function WorkoutsPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                     page >= Math.ceil(totalCount / PAGE_SIZE) 
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                      : 'bg-orange-500 text-white hover:bg-orange-600'
+                      : 'bg-orange-600 text-white hover:bg-orange-700'
                   }`}
+                  aria-label="Page suivante"
                 >
                   Suivant
                 </button>

@@ -240,7 +240,7 @@ export default function PWAGuidePage() {
       id: 'desktop',
       name: 'Ordinateur (Chrome/Edge)',
       icon: <Monitor className="h-6 w-6" />,
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-orange-600 to-orange-700',
       requirements: [
         'Chrome 73+, Edge 79+, ou Firefox 100+',
         'Windows 10+, macOS 10.12+, ou Linux',
@@ -331,7 +331,7 @@ export default function PWAGuidePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -346,7 +346,7 @@ export default function PWAGuidePage() {
             <h1 className="text-3xl sm:text-4xl font-bold mb-4">
               Installer IronTrack sur votre appareil
             </h1>
-            <p className="text-xl text-orange-100 max-w-3xl mx-auto">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
               Profitez d'une expérience mobile optimale avec notre Progressive Web App. 
               Installation simple, performance native, fonctionnement hors-ligne.
             </p>
@@ -404,6 +404,7 @@ export default function PWAGuidePage() {
                     ? 'border-orange-500 bg-orange-50'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
+                aria-label={`Sélectionner le guide pour ${device.name}`}
               >
                 <div className="flex items-center justify-center mb-3">
                   <div className={`p-3 rounded-lg bg-gradient-to-r ${device.color} text-white`}>
@@ -460,6 +461,8 @@ export default function PWAGuidePage() {
                   <button
                     onClick={() => setExpandedStep(expandedStep === step.step ? null : step.step)}
                     className="w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                    aria-label={`${expandedStep === step.step ? 'Réduire' : 'Développer'} l'étape ${step.step}: ${step.title}`}
+                    aria-expanded={expandedStep === step.step}
                   >
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4">
@@ -491,7 +494,7 @@ export default function PWAGuidePage() {
                         <ul className="space-y-2 flex-1">
                           {step.details.map((detail, index) => (
                             <li key={index} className="text-gray-700 text-sm flex items-start">
-                              <ArrowRight className="h-4 w-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <ArrowRight className="h-4 w-4 text-orange-800 mr-2 mt-0.5 flex-shrink-0" />
                               {detail}
                             </li>
                           ))}
@@ -528,23 +531,23 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-8 text-white">
+          <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Prêt à commencer ?</h3>
-            <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
+            <p className="text-white/90 mb-6 max-w-2xl mx-auto">
               Suivez le guide ci-dessus pour installer IronTrack et profiter d'une expérience 
               d'entraînement optimale sur votre appareil.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center justify-center"
+                className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center justify-center"
               >
                 <Home className="h-5 w-5 mr-2" />
                 Retour à l'accueil
               </Link>
               <Link
                 href="/support/contact"
-                className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors border border-orange-400 inline-flex items-center justify-center"
+                className="bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-800 transition-colors border border-orange-400 inline-flex items-center justify-center"
               >
                 Besoin d'aide ?
               </Link>

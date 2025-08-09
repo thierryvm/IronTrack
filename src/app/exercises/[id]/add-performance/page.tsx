@@ -1,13 +1,24 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { PerformanceInput } from '@/components/exercises/ExerciseWizard/steps/PerformanceInput'
+import { PerformanceAddForm } from '@/components/exercises/PerformanceAddForm'
 import { createClient } from '@/utils/supabase/client'
-import { CustomExercise } from '@/types/exercise-wizard'
-import { ArrowLeft } from 'lucide-react'
+import { ExerciseType } from '@/types/exercise'
+import { StrengthMetrics, CardioMetrics } from '@/types/performance'
+import { ArrowLeft, Dumbbell, Target } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/form'
+// Note: Remplacé toast par console.log temporairement
+
+interface ExerciseInfo {
+  id: number
+  name: string
+  type: ExerciseType
+  equipment: string
+}
 
 export default function AddPerformancePage() {
-  const [exercise, setExercise] = useState<CustomExercise | null>(null)
+  const [exercise, setExercise] = useState<ExerciseInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -27,25 +38,18 @@ export default function AddPerformancePage() {
           .single()
 
         if (error) {
+          console.error('❌ Erreur récupération exercice:', error)
           throw new Error(error.message)
         }
 
         if (data) {
-          // Transformer les données en format CustomExercise
-          const exerciseData: CustomExercise = {
+          console.log('📋 Exercice trouvé:', data)
+          // Transformer les données au nouveau format
+          const exerciseData: ExerciseInfo = {
+            id: data.id,
             name: data.name,
-            exercise_type: data.exercise_type as 'Musculation' | 'Cardio',
-            muscle_group: data.muscle_group,
-            equipment_id: data.equipment_id,
-            difficulty: data.difficulty,
-            sets: data.sets,
-            duration_minutes: data.duration_minutes,
-            duration_seconds: data.duration_seconds,
-            distance: data.distance,
-            distance_unit: data.distance_unit,
-            speed: data.speed,
-            speed_unit: data.speed_unit,
-            calories: data.calories
+            type: data.exercise_type as ExerciseType, // 🚨 CORRECTION: exercise_type pas type
+            equipment: data.equipment || 'Machine'
           }
           
           setExercise(exerciseData)
@@ -60,83 +64,63 @@ export default function AddPerformancePage() {
     fetchExercise()
   }, [id])
 
-  const handleComplete = async (finalData: { exercise: unknown; performance?: unknown }) => {
+  const handleComplete = async (performanceData: StrengthMetrics | CardioMetrics, notes?: string) => {
+    const supabase = createClient()
+    
     try {
-      const supabase = createClient()
+      // Récupérer l'utilisateur connecté pour RLS
       const { data: { user } } = await supabase.auth.getUser()
-      
       if (!user) {
         throw new Error('Utilisateur non connecté')
       }
 
-      // Ajouter la performance
-      if (finalData.performance) {
-        const performance = finalData.performance as {
-          weight?: number
-          reps?: number
-          sets?: number
-          duration?: number
-          distance?: number
-          distance_unit?: string
-          speed?: number
-          calories?: number
-          stroke_rate?: number
-          watts?: number
-          heart_rate?: number
-          incline?: number
-          cadence?: number
-          resistance?: number
-          notes?: string
-        }
-        
-        // Préparer les données de performance
-        const performanceData: Record<string, unknown> = {
-          user_id: user.id,
-          exercise_id: id,
-          performed_at: new Date().toISOString()
-        }
-
-        // Ajouter les champs spécifiques selon le type
-        if (exercise?.exercise_type === 'Musculation') {
-          if (performance.weight) performanceData.weight = performance.weight
-          if (performance.reps) performanceData.reps = performance.reps
-          if (performance.sets) performanceData.set_number = performance.sets
-        } else if (exercise?.exercise_type === 'Cardio') {
-          if (performance.duration) performanceData.duration = performance.duration * 60 // convertir en secondes
-          if (performance.distance) performanceData.distance = performance.distance
-          if (performance.distance_unit) performanceData.distance_unit = performance.distance_unit
-          if (performance.speed) performanceData.speed = performance.speed
-          if (performance.calories) performanceData.calories = performance.calories
-          
-          // Champs spécifiques rameur
-          if (performance.stroke_rate) performanceData.stroke_rate = performance.stroke_rate
-          if (performance.watts) performanceData.watts = performance.watts
-          
-          // Champs spécifiques course/tapis
-          if (performance.heart_rate) performanceData.heart_rate = performance.heart_rate
-          if (performance.incline) performanceData.incline = performance.incline
-          
-          // Champs spécifiques vélo
-          if (performance.cadence) performanceData.cadence = performance.cadence
-          if (performance.resistance) performanceData.resistance = performance.resistance
-        }
-
-        if (performance.notes) performanceData.notes = performance.notes
-
-        const { error } = await supabase
-          .from('performance_logs')
-          .insert(performanceData)
-
-        if (error) {
-          throw new Error(error.message)
-        }
+      // Construire l'insert selon le type d'exercice
+      const performanceInsert = {
+        user_id: user.id, // 🚨 CORRECTION CRITIQUE RLS
+        exercise_id: parseInt(id),
+        performed_at: new Date().toISOString(),
+        notes: notes || '',
+        // Métriques selon le type
+        ...(exercise?.type === 'Musculation' && {
+          weight: (performanceData as StrengthMetrics).weight,
+          reps: (performanceData as StrengthMetrics).reps,
+          sets: (performanceData as StrengthMetrics).sets,
+          rest_seconds: (performanceData as StrengthMetrics).rest_seconds,
+        }),
+        ...(exercise?.type === 'Cardio' && {
+          duration_seconds: (performanceData as CardioMetrics).duration_seconds,
+          distance: (performanceData as CardioMetrics).distance,
+          distance_unit: (performanceData as CardioMetrics).distance_unit,
+          heart_rate: (performanceData as CardioMetrics).heart_rate,
+          calories: (performanceData as CardioMetrics).calories,
+          stroke_rate: (performanceData as CardioMetrics).rowing?.stroke_rate,
+          watts: (performanceData as CardioMetrics).rowing?.watts,
+          incline: (performanceData as CardioMetrics).running?.incline,
+          cadence: (performanceData as CardioMetrics).cycling?.cadence,
+          resistance: (performanceData as CardioMetrics).cycling?.resistance,
+        })
       }
 
-      // Retourner à la liste des exercices
+      console.log('🚀 Données à insérer:', performanceInsert)
+      
+      const { data, error } = await supabase
+        .from('performance_logs')
+        .insert(performanceInsert)
+        .select()
+
+      console.log('📥 Réponse Supabase:', { data, error })
+
+      if (error) {
+        console.error('❌ Erreur Supabase détaillée:', error)
+        throw error
+      }
+
+      console.log(`✅ Performance ajoutée à "${exercise?.name}" !`)
       router.push('/exercises')
-    } catch (err) {
-      console.error('Erreur lors de l\'ajout de la performance:', err)
-      throw err
+    } catch (error) {
+      console.error('💥 Erreur création performance:', error)
+      console.error('📋 Détails erreur:', JSON.stringify(error, null, 2))
+      console.error('❗ Erreur lors de l\'ajout de la performance')
     }
   }
 
@@ -147,10 +131,18 @@ export default function AddPerformancePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="w-12 h-12 border-2 border-orange-500 border-t-transparent rounded-full mx-auto mb-4"
+          />
           <p className="text-gray-600">Chargement de l'exercice...</p>
-        </div>
+        </motion.div>
       </div>
     )
   }
@@ -158,15 +150,16 @@ export default function AddPerformancePage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 mb-4">Erreur: {error}</div>
-          <button
-            onClick={() => router.push('/exercises')}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-red-500 mb-4 font-medium">Erreur: {error}</div>
+          <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
-          </button>
-        </div>
+          </Button>
+        </motion.div>
       </div>
     )
   }
@@ -174,48 +167,70 @@ export default function AddPerformancePage() {
   if (!exercise) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Exercice non trouvé</p>
-          <button
-            onClick={() => router.push('/exercises')}
-            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <p className="text-gray-600 mb-4">Exercice non trouvé</p>
+          <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
-          </button>
-        </div>
+          </Button>
+        </motion.div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-500" />
-            </button>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Ajouter une performance - {exercise.name}
-            </h1>
+      {/* Header - Design 2025 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="sticky top-0 z-10 bg-white border-b border-gray-200"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+                leftIcon={<ArrowLeft className="h-4 w-4" />}
+              >
+                Retour
+              </Button>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                  {exercise.type === 'Musculation' ? (
+                    <Dumbbell className="h-5 w-5 text-orange-800" />
+                  ) : (
+                    <Target className="h-5 w-5 text-orange-800" />
+                  )}
+                  Nouvelle performance
+                </h1>
+                <p className="text-sm text-gray-500">{exercise.name}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Performance Input */}
-      <div className="py-8 px-4">
+      {/* Performance Input - Wrapper avec animation */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="py-8 px-4"
+      >
         <div className="max-w-4xl mx-auto">
-          <PerformanceInput
+          <PerformanceAddForm
             exercise={exercise}
             onComplete={handleComplete}
             onBack={handleBack}
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

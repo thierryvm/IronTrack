@@ -677,11 +677,75 @@ export async function uploadMultipleFiles(
 }
 
 /**
+ * Convertit un fichier HEIC en JPEG pour compatibilité Supabase Storage
+ * Utilise la bibliothèque heic2any pour conversion native
+ */
+async function convertHeicToJpeg(file: File): Promise<File> {
+  try {
+    // Import dynamique de heic2any (éviter erreurs SSR)
+    const heic2any = (await import('heic2any')).default
+    
+    console.log('[HEIC] Début conversion:', file.name, `${(file.size / 1024 / 1024).toFixed(1)}MB`)
+    
+    // Convertir HEIC vers JPEG avec qualité optimisée
+    const convertedBlob = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.85 // Qualité 85% pour bon compromis taille/qualité
+    }) as Blob
+    
+    // Créer nouveau fichier JPEG
+    const jpegFile = new File(
+      [convertedBlob],
+      file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+      {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      }
+    )
+    
+    console.log('[HEIC] Conversion réussie:', jpegFile.name, `${(jpegFile.size / 1024 / 1024).toFixed(1)}MB`)
+    
+    return jpegFile
+  } catch (error) {
+    console.error('[HEIC] Erreur conversion:', error)
+    throw new Error(`Impossible de convertir le fichier HEIC: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
+  }
+}
+
+/**
  * Upload spécialisé pour les photos d'exercices
  * Utilise le bucket 'exercise-images' existant dans Supabase Storage
+ * GÈRE LA CONVERSION HEIC → JPEG automatiquement
  */
 export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
-  return uploadSecureFile(file, 'exercise-images')
+  try {
+    let processedFile = file
+    
+    // Si le fichier est HEIC/HEIF, le convertir en JPEG
+    if (file.type === 'image/heic' || file.type === 'image/heif' || 
+        file.name.toLowerCase().endsWith('.heic') || 
+        file.name.toLowerCase().endsWith('.heif')) {
+      
+      try {
+        console.log('[HEIC] Conversion HEIC vers JPEG démarrée:', file.name)
+        processedFile = await convertHeicToJpeg(file)
+        console.log('[HEIC] Conversion réussie:', processedFile.name, `${(processedFile.size / 1024 / 1024).toFixed(1)}MB`)
+      } catch (conversionError) {
+        console.error('[HEIC] Échec conversion:', conversionError)
+        // Fallback: essayer l'upload direct (si Supabase supporte finalement HEIC)
+        return uploadSecureFile(file, 'exercise-images')
+      }
+    }
+    
+    return uploadSecureFile(processedFile, 'exercise-images')
+  } catch (error) {
+    console.error('[HEIC] Erreur upload exercice photo:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur upload photo exercice'
+    }
+  }
 }
 
 /**

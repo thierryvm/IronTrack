@@ -4,52 +4,46 @@ import { useEffect } from 'react';
 
 export default function RegisterSW() {
   useEffect(() => {
-    // Supprimer les erreurs runtime.lastError causées par les extensions
+    // Supprimer les erreurs runtime.lastError causées par les extensions - SILENCIEUX
     const originalError = console.error;
     console.error = (...args) => {
       if (args[0]?.includes?.('runtime.lastError') || args[0]?.includes?.('message channel closed')) {
-        // Ignorer silencieusement les erreurs d'extensions
-        return;
+        return; // Ignorer silencieusement
       }
       originalError.apply(console, args);
     };
     
-    // 🚫 DÉSACTIVATION COMPLÈTE SERVICE WORKERS - MODE DÉVELOPPEMENT
-    console.log('🚫 Service Worker: DÉSACTIVATION COMPLÈTE pour résolution erreurs');
+    const isDevelopment = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     
     if ('serviceWorker' in navigator) {
-      // Désactiver TOUS les Service Workers existants
+      // Nettoyer d'abord tous les anciens SW
       navigator.serviceWorker.getRegistrations()
         .then(registrations => {
-          console.log(`🧹 Désactivation complète de ${registrations.length} Service Workers`);
-          
-          const promises = registrations.map(registration => {
-            console.log('🗑️ Suppression complète SW:', registration.scope);
-            return registration.unregister();
-          });
+          const promises = registrations.map(registration => registration.unregister());
           return Promise.all(promises);
         })
         .then(() => {
-          console.log('✅ TOUS les Service Workers supprimés - Mode développement pur');
-          // NE PAS ENREGISTRER DE NOUVEAU SW
+          // En développement : NE PAS enregistrer de SW
+          if (isDevelopment) {
+            return;
+          }
           
-          // Nettoyer les caches résiduels
-          if ('caches' in window) {
-            return caches.keys().then(cacheNames => {
-              return Promise.all(
-                cacheNames.map(cacheName => {
-                  console.log('🧹 Suppression cache:', cacheName);
-                  return caches.delete(cacheName);
-                })
-              );
-            });
+          // En production : Enregistrer SW minimal PWA
+          return navigator.serviceWorker.register('/sw-minimal.js', {
+            scope: '/',
+            updateViaCache: 'none'
+          });
+        })
+        .then(registration => {
+          if (registration && !isDevelopment) {
+            // PWA uniquement en production
+            if (registration.waiting) {
+              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
           }
         })
-        .then(() => {
-          console.log('✅ Tous les caches supprimés - Environnement propre');
-        })
-        .catch(error => {
-          console.warn('Nettoyage SW: Erreur (non-critique):', error);
+        .catch(() => {
+          // Erreurs ignorées - pas de logs
         });
     }
   }, []);

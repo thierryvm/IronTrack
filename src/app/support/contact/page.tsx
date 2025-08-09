@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ArrowLeft, MessageSquare, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { SupportTicketForm } from '@/components/support/SupportTicketForm'
+import { SupportTicketForm2025 } from '@/components/support/SupportTicketForm2025'
 import { useSupport } from '@/hooks/useSupport'
 import { SupportTicket } from '@/types/support'
 
@@ -38,7 +38,7 @@ function ContactSupportPageContent() {
       case 'open':
         return <Clock className="h-4 w-4 text-blue-500" />
       case 'in_progress':
-        return <AlertCircle className="h-4 w-4 text-orange-500" />
+        return <AlertCircle className="h-4 w-4 text-orange-800" />
       case 'resolved':
       case 'closed':
         return <CheckCircle className="h-4 w-4 text-green-500" />
@@ -85,7 +85,7 @@ function ContactSupportPageContent() {
               </Link>
               <div className="flex items-center space-x-3">
                 <div className="p-3 bg-orange-100 rounded-xl">
-                  <MessageSquare className="h-8 w-8 text-orange-500" />
+                  <MessageSquare className="h-8 w-8 text-orange-800" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">Contact Support</h1>
@@ -99,7 +99,7 @@ function ContactSupportPageContent() {
             {!showForm && (
               <button
                 onClick={() => setShowForm(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Nouvelle demande
               </button>
@@ -111,7 +111,7 @@ function ContactSupportPageContent() {
           {/* Formulaire principal */}
           <div className="lg:col-span-2">
             {showForm ? (
-              <SupportTicketForm 
+              <SupportTicketForm2025 
                 onSuccess={handleFormSuccess} 
                 initialCategory={initialCategory}
               />
@@ -170,7 +170,7 @@ function ContactSupportPageContent() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">👤 Problèmes de compte</span>
-                  <span className="text-sm font-medium text-orange-600">&lt; 4h</span>
+                  <span className="text-sm font-medium text-orange-800">&lt; 4h</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">❓ Aide générale</span>

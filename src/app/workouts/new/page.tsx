@@ -130,7 +130,7 @@ export default function NewWorkoutPage() {
         className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
         <div className="flex items-center space-x-3 mb-6">
-          <Calendar className="h-8 w-8 text-orange-500" />
+          <Calendar className="h-8 w-8 text-orange-800" />
           <h1 className="text-2xl font-bold text-gray-900">Nouvelle séance</h1>
         </div>
         <div>
@@ -194,7 +194,7 @@ export default function NewWorkoutPage() {
           <label className="block text-gray-700 font-medium mb-2">Notes</label>
           <textarea value={notes} onChange={e => setNotes(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" rows={3} />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+        <button type="submit" disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors" aria-label="Enregistrer la nouvelle séance d'entraînement">
           <Save className="h-5 w-5 mr-2" />
           <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
         </button>

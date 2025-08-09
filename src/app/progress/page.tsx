@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import type { TrainingGoal } from '@/types/training-goal';
-import { MotionWrapper, fadeInUp } from '@/components/ui/MotionWrapper'
+import { MotionWrapper } from '@/components/ui/MotionWrapper'
 
 // Lazy loading des graphiques lourds
 const ProgressCharts = dynamic(() => import('@/components/progress/ProgressCharts'), {
@@ -1212,7 +1212,7 @@ export default function ProgressPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Skeleton header */}
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8 rounded-xl mb-8 animate-pulse min-h-[80px]" />
+          <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8 rounded-xl mb-8 animate-pulse min-h-[80px]" />
           {/* Skeleton stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -1239,11 +1239,11 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-3xl font-bold">Progression</h1>
-            <p className="text-orange-100">Suis tes performances et tes objectifs</p>
+            <p className="text-white/90">Suis tes performances et tes objectifs</p>
           </div>
         </div>
       </div>
@@ -1272,7 +1272,7 @@ export default function ProgressPage() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total soulevé</p>
                 <p className="text-2xl font-bold text-gray-900">{totalWeightDisplay}</p>
-                {ironBuddyMsg && <p className="text-xs text-orange-500 mt-1 italic">{ironBuddyMsg}</p>}
+                {ironBuddyMsg && <p className="text-xs text-orange-800 mt-1 italic">{ironBuddyMsg}</p>}
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <Dumbbell className="h-6 w-6 text-green-500" />
@@ -1287,7 +1287,7 @@ export default function ProgressPage() {
                 <p className="text-2xl font-bold text-gray-900">{totalSessions}</p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
-                <Calendar className="h-6 w-6 text-orange-500" />
+                <Calendar className="h-6 w-6 text-orange-800" />
               </div>
             </div>
           </div>
@@ -1413,11 +1413,11 @@ export default function ProgressPage() {
           <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
-                <Target className="h-6 w-6 text-orange-500" />
+                <Target className="h-6 w-6 text-orange-800" />
                 <span>Objectifs</span>
               </h2>
               <button
-                className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 font-semibold shadow-sm"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg flex items-center gap-2 font-semibold shadow-sm"
                 onClick={() => setShowGoalModal(true)}
               >
                 <Plus className="h-4 w-4" /> Ajouter
@@ -1488,7 +1488,7 @@ export default function ProgressPage() {
                 const percent = typeof target === 'number' && target ? Math.min((current! / target) * 100, 100) : 0;
                 const bgClass = goal.status !== 'Atteint' ? 'bg-gray-100' : (unit === 'kg' ? 'bg-orange-50' : 'bg-green-50');
                 const barClass = goal.status !== 'Atteint' ? 'bg-gray-300' : (unit === 'kg' ? 'bg-orange-500' : 'bg-green-500');
-                const textClass = goal.status !== 'Atteint' ? 'text-gray-500' : (unit === 'kg' ? 'text-orange-600' : 'text-green-600');
+                const textClass = goal.status !== 'Atteint' ? 'text-gray-500' : (unit === 'kg' ? 'text-orange-800' : 'text-green-600');
                 return (
                   <div key={goal.id} className={`p-4 rounded-lg ${bgClass}`}>
                     <div className="flex items-center justify-between mb-2">
@@ -1558,7 +1558,7 @@ export default function ProgressPage() {
                 <Close className="h-6 w-6" />
               </button>
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Target className="h-5 w-5 text-orange-500" /> Nouvel objectif
+                <Target className="h-5 w-5 text-orange-800" /> Nouvel objectif
               </h3>
               <div className="mb-4">
                 <label className="block text-gray-700 font-medium mb-2">Exercice</label>
@@ -1579,7 +1579,7 @@ export default function ProgressPage() {
               <button
                 type="submit"
                 disabled={goalLoading}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
               >
                 {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l'objectif</>}
               </button>
@@ -1606,7 +1606,7 @@ export default function ProgressPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(8px)' }}>
             <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
               <span className="text-5xl mb-4">🏅</span>
-              <h2 className="text-2xl font-bold text-orange-600 mb-2">Félicitations !</h2>
+              <h2 className="text-2xl font-bold text-orange-800 mb-2">Félicitations !</h2>
               <p className="text-lg text-gray-800">{congratsMsg}</p>
             </div>
           </div>

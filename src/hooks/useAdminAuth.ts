@@ -47,16 +47,12 @@ export const useAdminAuth = () => {
         .maybeSingle()
 
       if (roleError) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('[ADMIN_AUTH] Role query error:', roleError)
-        }
+        // Erreur de vérification des rôles admin
         throw new Error('Erreur lors de la vérification des permissions')
       }
 
       if (!roleData) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[ADMIN_AUTH] No admin role found for user:', userId)
-        }
+        // Aucun rôle admin trouvé pour cet utilisateur
         throw new Error('Permissions administrateur insuffisantes')
       }
 
@@ -86,9 +82,7 @@ export const useAdminAuth = () => {
             }
           })
       } catch (logError) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('[ADMIN_AUTH] Logging failed (non-critical):', logError)
-        }
+        // Erreur de logging non critique
       }
 
       return {
@@ -99,9 +93,7 @@ export const useAdminAuth = () => {
         is_active: roleData.is_active
       }
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[ADMIN_AUTH] Permission check failed:', error)
-      }
+      // Vérification des permissions échouée
       return null
     }
   }, [supabase])
@@ -131,9 +123,7 @@ export const useAdminAuth = () => {
 
         setUser(adminUser)
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('[ADMIN_AUTH] Initialization failed:', error)
-        }
+        // Erreur d'initialisation de l'authentification admin
         setError('Erreur d\'authentification admin')
         router.push('/')
       } finally {
@@ -179,9 +169,7 @@ export const useAdminAuth = () => {
       
       return null
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[ADMIN_AUTH] Stats fetch failed:', error)
-      }
+      // Erreur de récupération des statistiques admin
       return null
     }
   }
@@ -210,9 +198,7 @@ export const useAdminAuth = () => {
           }
         })
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[ADMIN_AUTH] Logging failed:', error)
-      }
+      // Erreur lors du logging de l'action admin
     }
   }, [user, supabase])
 

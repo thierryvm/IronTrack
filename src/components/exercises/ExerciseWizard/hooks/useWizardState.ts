@@ -113,6 +113,7 @@ export const useWizardState = (initialData?: CustomExercise, isEditMode = false)
           muscle_group: suggestion.muscle_group,
           equipment_id: equipmentId,
           difficulty: suggestion.difficulty,
+          image_url: suggestion.image_url, // CORRECTION : Inclure l'URL de l'image si présente
           created_at: new Date().toISOString()
         }
       } else {
@@ -145,6 +146,7 @@ export const useWizardState = (initialData?: CustomExercise, isEditMode = false)
           difficulty: custom.difficulty,
           description: custom.description,
           instructions: custom.instructions,
+          image_url: custom.image_url, // CORRECTION : Inclure l'URL de l'image uploadée
           sets: custom.exercise_type === 'Musculation' ? custom.sets : null,
           duration_minutes: custom.duration_minutes,
           duration_seconds: custom.duration_seconds,

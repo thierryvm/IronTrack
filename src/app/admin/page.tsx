@@ -17,7 +17,7 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
-import { AdminStats } from '@/hooks/useAdminAuthFixed'
+import { AdminStats } from '@/hooks/useAdminAuth'
 import { createClient } from '@/utils/supabase/client'
 
 interface QuickAction {
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <Clock className="h-4 w-4 text-orange-500" />
+        return <Clock className="h-4 w-4 text-orange-800" />
       case 'in_progress':
         return <Activity className="h-4 w-4 text-blue-500" />
       case 'resolved':
@@ -385,7 +385,7 @@ export default function AdminDashboard() {
           },
           {
             title: 'Feedback',
-            value: stats?.feedback_tickets || 0,
+            value: stats?.open_tickets || 0,
             change: 'Retours utilisateurs',
             icon: MessageSquare,
             color: 'green',
@@ -416,7 +416,7 @@ export default function AdminDashboard() {
                       'bg-purple-100'
                     }`}>
                       <Icon className={`h-4 w-4 sm:h-6 sm:w-6 ${
-                        stat.color === 'orange' ? 'text-orange-600' :
+                        stat.color === 'orange' ? 'text-orange-800' :
                         stat.color === 'blue' ? 'text-blue-600' :
                         stat.color === 'green' ? 'text-green-600' :
                         'text-purple-600'
@@ -482,7 +482,7 @@ export default function AdminDashboard() {
             </h2>
             <Link 
               href="/admin/tickets"
-              className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+              className="text-sm text-orange-800 hover:text-orange-700 font-medium"
             >
               Voir tous
             </Link>
@@ -531,7 +531,7 @@ export default function AdminDashboard() {
             </h2>
             <Link 
               href="/admin/logs"
-              className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center space-x-1"
+              className="text-sm text-orange-800 hover:text-orange-700 font-medium flex items-center space-x-1"
             >
               <Eye className="h-3 w-3" />
               <span>Logs complets</span>
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                   <div className="text-center pt-2">
                     <Link 
                       href="/admin/logs"
-                      className="text-xs text-orange-600 hover:text-orange-700 font-medium"
+                      className="text-xs text-orange-800 hover:text-orange-700 font-medium"
                     >
                       +{recentActivity.length - 3} activités supplémentaires → Voir tous les logs
                     </Link>

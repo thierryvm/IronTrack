@@ -218,6 +218,31 @@ const faqData: FAQItem[] = [
     question: 'Comment sont calculés mes records personnels ?',
     answer: 'Vos records personnels sont calculés automatiquement à partir de toutes vos performances d\'entraînement. Le système trouve le poids maximal et le nombre de répétitions maximal pour chaque exercice.',
     category: 'progression'
+  },
+  // Documentation et Aide Technique
+  {
+    id: 'tech-1',
+    question: 'Où trouver la documentation technique complète ?',
+    answer: 'La documentation complète est disponible dans le dossier docs/ du projet. Consultez docs/INDEX.md pour un guide complet de tous les documents disponibles, incluant guides développeur, audits de qualité, et solutions techniques.',
+    category: 'technical'
+  },
+  {
+    id: 'tech-2',
+    question: 'Problème avec Node.js v24 - Erreur Jest Worker ?',
+    answer: 'Cette erreur est résolue ! Consultez docs/SOLUTION_JEST_WORKER.md pour la solution complète. Le patch est automatiquement appliqué et l\'application est 100% compatible Node.js v24.',
+    category: 'technical'
+  },
+  {
+    id: 'tech-3',
+    question: 'Comment accéder aux audits de qualité 2025 ?',
+    answer: 'Tous les audits sont dans docs/ : AUDIT_CONTRASTE_2025_COMPLET.md (accessibilité), AUDIT_RESPONSIVE_2025_COMPLET.md (mobile), AUDIT_SECURITE_2025_COMPLET.md (sécurité). Résumé exécutif dans AUDITS_COMPLETS_2025_RESUME_EXECUTIF.md.',
+    category: 'technical'
+  },
+  {
+    id: 'tech-4',
+    question: 'L\'application est-elle sécurisée ?',
+    answer: 'Oui ! Consultez docs/SECURITE_IRONTRACK.md pour le guide complet. L\'application respecte les standards OWASP, utilise RLS Supabase, et a passé un audit sécurité complet en 2025.',
+    category: 'technical'
   }
 ]
 
@@ -380,22 +405,22 @@ export default function FAQPage() {
         </div>
 
         {/* Help Section */}
-        <div className="mt-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-md p-6 text-white">
+        <div className="mt-8 bg-gradient-to-r from-orange-600 to-red-500 rounded-xl shadow-md p-6 text-white">
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Vous ne trouvez pas votre réponse ?</h3>
-            <p className="text-orange-100 mb-4">
+            <p className="text-white/90 mb-4">
               Consultez notre guide complet ou contactez directement notre équipe de support
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
               >
                 Guide Complet
               </Link>
               <Link 
                 href="/support/contact"
-                className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors border border-orange-400"
+                className="bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-800 transition-colors border border-orange-400"
               >
                 ✉️ Contacter le Support
               </Link>

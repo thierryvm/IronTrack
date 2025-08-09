@@ -5,7 +5,7 @@ import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpe
 import Link from 'next/link'
 
 export default function SupportPage() {
-  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding'>('partners')
+  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding' | 'technical'>('partners')
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -34,13 +34,14 @@ export default function SupportPage() {
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
                   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, desc: 'Suivi des performances' },
                   { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' },
-                  { id: 'onboarding', label: 'Onboarding & Configuration', icon: Target, desc: 'Première configuration' }
+                  { id: 'onboarding', label: 'Onboarding & Configuration', icon: Target, desc: 'Première configuration' },
+                  { id: 'technical', label: 'Documentation Technique', icon: BookOpen, desc: 'Guides développeur & audits' }
                 ].map((section) => {
                   const Icon = section.icon
                   return (
                     <button
                       key={section.id}
-                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression' | 'onboarding')}
+                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression' | 'onboarding' | 'technical')}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
                         activeSection === section.id
                           ? 'bg-orange-50 text-orange-700 border border-orange-200'
@@ -67,7 +68,7 @@ export default function SupportPage() {
               {activeSection === 'partners' && (
                 <div>
                   <div className="flex items-center space-x-3 mb-6">
-                    <Users className="h-6 w-6 text-orange-500" />
+                    <Users className="h-6 w-6 text-orange-800" />
                     <h2 className="text-xl font-bold text-gray-900">Training Partners - Guide Complet</h2>
                   </div>
 
@@ -332,7 +333,7 @@ export default function SupportPage() {
               {activeSection === 'progression' && (
                 <div>
                   <div className="flex items-center space-x-3 mb-6">
-                    <TrendingUp className="h-6 w-6 text-orange-500" />
+                    <TrendingUp className="h-6 w-6 text-orange-800" />
                     <h2 className="text-xl font-bold text-gray-900">Progression & Badges - Guide Complet</h2>
                   </div>
 
@@ -627,7 +628,7 @@ export default function SupportPage() {
                       <div className="space-y-3">
                         <div className="flex items-start space-x-3">
                           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold text-orange-600">1</span>
+                            <span className="text-sm font-bold text-orange-800">1</span>
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-900">Objectif d'entraînement</h4>
@@ -636,7 +637,7 @@ export default function SupportPage() {
                         </div>
                         <div className="flex items-start space-x-3">
                           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold text-orange-600">2</span>
+                            <span className="text-sm font-bold text-orange-800">2</span>
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-900">Niveau d'expérience</h4>
@@ -645,7 +646,7 @@ export default function SupportPage() {
                         </div>
                         <div className="flex items-start space-x-3">
                           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold text-orange-600">3</span>
+                            <span className="text-sm font-bold text-orange-800">3</span>
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-900">Fréquence d'entraînement</h4>
@@ -654,7 +655,7 @@ export default function SupportPage() {
                         </div>
                         <div className="flex items-start space-x-3">
                           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold text-orange-600">4</span>
+                            <span className="text-sm font-bold text-orange-800">4</span>
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-900">Informations physiques</h4>
@@ -707,6 +708,79 @@ export default function SupportPage() {
                   </div>
                 </div>
               )}
+
+              {/* Documentation Technique */}
+              {activeSection === 'technical' && (
+                <div>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <BookOpen className="h-6 w-6 text-orange-800" />
+                    <h2 className="text-xl font-bold text-gray-900">Documentation Technique</h2>
+                  </div>
+
+                  <div className="space-y-8">
+                    {/* Solutions Récentes */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🛠️ Solutions Techniques 2025</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-green-800 mb-2">Jest Worker - Node.js v24</h4>
+                          <p className="text-sm text-green-700 mb-2">
+                            Solution complète pour erreur "Jest worker encountered 2 child process exceptions"
+                          </p>
+                          <code className="text-xs bg-green-100 px-2 py-1 rounded">docs/SOLUTION_JEST_WORKER.md</code>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-blue-800 mb-2">Tests Unitaires - 293/293</h4>
+                          <p className="text-sm text-blue-700 mb-2">
+                            Système de tests complet avec Jest et React Testing Library
+                          </p>
+                          <code className="text-xs bg-blue-100 px-2 py-1 rounded">docs/TESTS_UNITAIRES_RESUME.md</code>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Audits Qualité */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📊 Audits Qualité 2025</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <div>
+                            <span className="font-medium">Contraste WCAG</span> - 
+                            <code className="ml-2 text-sm">docs/AUDIT_CONTRASTE_2025_COMPLET.md</code>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <div>
+                            <span className="font-medium">Responsive Mobile</span> - 
+                            <code className="ml-2 text-sm">docs/AUDIT_RESPONSIVE_2025_COMPLET.md</code>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <div>
+                            <span className="font-medium">Sécurité OWASP</span> - 
+                            <code className="ml-2 text-sm">docs/AUDIT_SECURITE_2025_COMPLET.md</code>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Documentation Complète */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📚 Guides Complets</h3>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-orange-800 mb-2">Index Complet Documentation</h4>
+                        <p className="text-sm text-orange-700 mb-3">
+                          Index complet de toute la documentation technique, guides développeur, audits, et solutions.
+                        </p>
+                        <code className="text-sm bg-orange-100 px-3 py-1 rounded font-mono">docs/INDEX.md</code>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -721,23 +795,23 @@ export default function SupportPage() {
               href="/support/contact" 
               className="flex items-center space-x-3 p-4 border-2 border-orange-200 bg-orange-50 rounded-lg hover:bg-orange-100 hover:border-orange-300 transition-colors group"
             >
-              <MessageSquare className="h-6 w-6 text-orange-600" />
+              <MessageSquare className="h-6 w-6 text-orange-800" />
               <div className="flex-1">
                 <p className="font-medium text-orange-900">✉️ Contacter le Support</p>
                 <p className="text-sm text-orange-700">Signaler un problème</p>
               </div>
-              <ArrowRight className="h-4 w-4 text-orange-500 group-hover:text-orange-600" />
+              <ArrowRight className="h-4 w-4 text-orange-800 group-hover:text-orange-800" />
             </Link>
             <Link 
               href="/training-partners" 
               className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-colors group"
             >
-              <Users className="h-6 w-6 text-orange-500" />
+              <Users className="h-6 w-6 text-orange-800" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900">Training Partners</p>
                 <p className="text-sm text-gray-600">Gérer vos partenaires</p>
               </div>
-              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500" />
+              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-orange-800" />
             </Link>
             
             <Link 
@@ -780,12 +854,12 @@ export default function SupportPage() {
               href="/onboarding" 
               className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-colors group"
             >
-              <Target className="h-6 w-6 text-orange-500" />
+              <Target className="h-6 w-6 text-orange-800" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900">Onboarding</p>
                 <p className="text-sm text-gray-600">Refaire la configuration</p>
               </div>
-              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500" />
+              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-orange-800" />
             </Link>
           </div>
         </div>

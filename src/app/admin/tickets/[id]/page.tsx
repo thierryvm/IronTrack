@@ -200,7 +200,7 @@ export default function AdminTicketDetailPage() {
   const getStatusIcon = (status: SupportTicketStatus) => {
     const icons = {
       'open': <Clock className="h-4 w-4 text-blue-500" />,
-      'in_progress': <AlertTriangle className="h-4 w-4 text-orange-500" />,
+      'in_progress': <AlertTriangle className="h-4 w-4 text-orange-800" />,
       'waiting_user': <MessageSquare className="h-4 w-4 text-purple-500" />,
       'resolved': <CheckCircle className="h-4 w-4 text-green-500" />,
       'closed': <XCircle className="h-4 w-4 text-gray-500" />
@@ -265,7 +265,7 @@ export default function AdminTicketDetailPage() {
         <p className="text-gray-500 mb-4">Ce ticket n'existe pas ou a été supprimé.</p>
         <button
           onClick={() => router.push('/admin/tickets')}
-          className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
         >
           Retour aux tickets
         </button>
@@ -440,7 +440,7 @@ export default function AdminTicketDetailPage() {
                         : 'bg-green-100'
                   }`}>
                     {response.is_internal ? (
-                      <UserCheck className="h-5 w-5 text-orange-600" />
+                      <UserCheck className="h-5 w-5 text-orange-800" />
                     ) : response.user_id === ticket.user_id ? (
                       <User className="h-5 w-5 text-blue-600" />
                     ) : (
@@ -491,7 +491,7 @@ export default function AdminTicketDetailPage() {
                       type="checkbox"
                       checked={isInternalNote}
                       onChange={(e) => setIsInternalNote(e.target.checked)}
-                      className="w-4 h-4 text-orange-600 focus:ring-orange-500 rounded"
+                      className="w-4 h-4 text-orange-800 focus:ring-orange-500 rounded"
                     />
                     <span className="text-sm text-gray-700">Note interne (non visible par l'utilisateur)</span>
                   </label>

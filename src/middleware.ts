@@ -93,24 +93,32 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth', request.url))
     }
 
-    // Vérifier les permissions admin dans user_roles
-    const { data: userRole, error: roleError } = await supabase
-      .from('user_roles')
-      .select('role, is_active, expires_at')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-      .is('expires_at', null)
+    // Vérifier les permissions admin via profiles.role (alignement avec les routes API)
+    const { data: adminProfile, error: roleError } = await supabase
+      .from('profiles')
+      .select('role, is_banned, banned_until')
+      .eq('id', user.id)
       .single()
 
-    if (roleError || !userRole) {
-      console.error('[MIDDLEWARE] Admin role check failed:', roleError)
+    if (roleError || !adminProfile) {
+      console.error('[MIDDLEWARE] Admin profile check failed:', roleError)
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Vérifier si l'admin est banni (temps réel)
+    const now = new Date()
+    const bannedUntil = adminProfile.banned_until ? new Date(adminProfile.banned_until) : null
+    const isReallyBanned = bannedUntil ? bannedUntil > now : adminProfile.is_banned
+    
+    if (isReallyBanned) {
+      console.error('[MIDDLEWARE] Admin account is banned')
       return NextResponse.redirect(new URL('/', request.url))
     }
 
     // Vérifier si le rôle est admin/super_admin/moderator
-    const adminRoles = ['admin', 'super_admin', 'moderator']
-    if (!adminRoles.includes(userRole.role)) {
-      console.error('[MIDDLEWARE] Insufficient permissions for admin access')
+    const adminRoles = ['moderator', 'admin', 'super_admin']
+    if (!adminProfile.role || !adminRoles.includes(adminProfile.role)) {
+      console.error('[MIDDLEWARE] Insufficient permissions for admin access:', adminProfile.role)
       return NextResponse.redirect(new URL('/', request.url))
     }
   }

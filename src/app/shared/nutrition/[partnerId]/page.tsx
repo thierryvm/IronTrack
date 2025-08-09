@@ -140,7 +140,7 @@ export default function SharedNutritionPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
       </div>
     )
   }
@@ -187,7 +187,7 @@ export default function SharedNutritionPage() {
   if (!nutritionData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
       </div>
     )
   }
@@ -206,6 +206,7 @@ export default function SharedNutritionPage() {
               <button
                 onClick={() => router.back()}
                 className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                aria-label="Retour à la page précédente"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
@@ -283,9 +284,9 @@ export default function SharedNutritionPage() {
               </h3>
               
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-4">
+                <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white rounded-lg p-4">
                   <div className="text-2xl font-bold">{selectedDayStats.totalCalories}</div>
-                  <div className="text-orange-100">Calories totales</div>
+                  <div className="text-white/90">Calories totales</div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">

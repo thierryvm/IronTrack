@@ -84,7 +84,7 @@ export default function UnifiedMealModal({
                 onClick={() => setAddMode('smart')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
-                    ? 'bg-white text-orange-600 shadow-sm' 
+                    ? 'bg-white text-orange-800 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -95,7 +95,7 @@ export default function UnifiedMealModal({
                 onClick={() => setAddMode('manual')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
-                    ? 'bg-white text-orange-600 shadow-sm' 
+                    ? 'bg-white text-orange-800 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -106,7 +106,7 @@ export default function UnifiedMealModal({
                 onClick={() => setAddMode('builder')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
-                    ? 'bg-white text-orange-600 shadow-sm' 
+                    ? 'bg-white text-orange-800 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -427,7 +427,7 @@ function ManualMealForm({
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+          className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
         >
           {saving ? (
             <>
@@ -657,7 +657,7 @@ function MultiIngredientMealBuilder({
           <button
             type="submit"
             disabled={saving || !mealName.trim() || ingredients.length === 0}
-            className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
           >
             {saving ? (
               <>

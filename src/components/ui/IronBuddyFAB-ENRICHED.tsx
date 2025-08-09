@@ -19,7 +19,7 @@ const mascotConfig = {
     icon: Dumbbell,
     name: 'IronBuddy',
     bgColor: 'bg-gradient-to-br from-orange-400 to-orange-600',
-    hoverColor: 'hover:from-orange-500 hover:to-orange-700',
+    hoverColor: 'hover:from-orange-600 hover:to-orange-700',
     emoji: '💪'
   },
   cat: {
@@ -589,6 +589,10 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
           md:bottom-8 md:right-8 
           lg:bottom-10 lg:right-10
           xl:bottom-12 xl:right-12
+          
+          landscape:bottom-2 landscape:right-3
+          landscape:sm:bottom-3 landscape:sm:right-4
+          landscape:md:bottom-4 landscape:md:right-5
         "
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
@@ -698,6 +702,10 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                 md:bottom-32 md:right-8
                 lg:bottom-36 lg:right-10
                 xl:bottom-40 xl:right-12
+                
+                landscape:bottom-12 landscape:right-3 landscape:max-h-[70vh]
+                landscape:sm:bottom-14 landscape:sm:right-4
+                landscape:md:bottom-16 landscape:md:right-5
               "
               style={{
                 // Positionnement adaptatif avec safe areas pour formats 2025
@@ -937,7 +945,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                           <Link
                             href="/pwa-guide"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center justify-center px-3 py-2 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors font-medium"
+                            className="flex items-center justify-center px-3 py-2 text-xs text-orange-800 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors font-medium"
                           >
                             📱 Installer App
                           </Link>

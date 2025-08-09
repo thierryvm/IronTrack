@@ -4,7 +4,7 @@
 export interface WizardState {
   currentStep: number
   totalSteps: number
-  exerciseType?: 'Musculation' | 'Cardio'
+  exerciseType?: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
   selectedSuggestion?: ExerciseSuggestion
   customExercise?: Partial<CustomExercise>
   performance?: ExercisePerformance
@@ -15,12 +15,16 @@ export interface ExerciseSuggestion {
   id: string
   name: string
   label: string
-  type: 'Musculation' | 'Cardio'
+  type: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
   muscle_group: string
   equipment: string
-  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
+  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé' | 'Expert' | 'Élite'
+  description?: string
+  image_url?: string // URL de l'image du template ou exercice
   values: ExerciseValues
   relevanceScore?: number
+  isTemplate?: boolean // True si c'est un template global
+  templateId?: number // ID du template si applicable
 }
 
 export interface ExerciseValues {
@@ -44,11 +48,11 @@ export interface ExerciseValues {
 
 export interface CustomExercise {
   name: string
-  exercise_type: 'Musculation' | 'Cardio'
+  exercise_type: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
   muscle_group: string
   equipment_id: number
   equipment_name?: string // Nom de l'équipement pour affichage
-  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
+  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé' | 'Expert' | 'Élite'
   description?: string
   instructions?: string
   image_url?: string
@@ -111,7 +115,7 @@ export interface WizardStepProps {
 // Types pour les suggestions intelligentes
 export interface UserPreferences {
   goal?: 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance'
-  experience?: 'Débutant' | 'Intermédiaire' | 'Avancé'
+  experience?: 'Débutant' | 'Intermédiaire' | 'Avancé' | 'Expert' | 'Élite'
   frequency?: 'Faible' | 'Modérée' | 'Élevée'
   availability?: number // minutes
   weight?: number
@@ -135,7 +139,6 @@ export interface MuscleGroup {
 
 // Types pour les composants
 export interface TypeCardProps {
-  type: 'Musculation' | 'Cardio'
   title: string
   description: string
   icon: React.ComponentType<{ className?: string }>

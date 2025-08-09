@@ -1,19 +1,21 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode } from 'react'
-import { useAdminAuthFixed, AdminUser, AdminStats } from '@/hooks/useAdminAuthFixed'
+import { useAdminAuth as useAdminAuthHook, AdminUser, AdminStats } from '@/hooks/useAdminAuth'
 
 interface AdminAuthContextType {
   user: AdminUser | null
   loading: boolean
   error: string | null
   isAuthenticated: boolean
-  isInitialized: boolean
   hasPermission: (requiredRole: 'moderator' | 'admin' | 'super_admin') => boolean
   getAdminStats: () => Promise<AdminStats | null>
-  logAdminAction: (action: string, targetType: string, targetId?: string, details?: Record<string, unknown>) => Promise<boolean>
-  reload: () => Promise<void>
+  logAdminAction: (action: string, targetType: string, targetId?: string, details?: Record<string, unknown>) => Promise<void>
+  recheckPermissions: () => Promise<void>
   refreshUserRoles: () => Promise<void>
+  isAdmin: boolean
+  isSuperAdmin: boolean
+  isModerator: boolean
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | null>(null)
@@ -27,22 +29,16 @@ interface AdminAuthProviderProps {
  * Résout le problème de double instanciation des hooks d'auth
  */
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[AdminAuthProvider] 🏗️ Provider initialisé - auth centralisée')
-  }
+  // Provider initialisé - auth centralisée
   
   // UNE SEULE instance du hook d'auth pour toute l'app admin
-  const authState = useAdminAuthFixed()
+  const authState = useAdminAuthHook()
   
   // 🚀 SOLUTION CRITIQUE: Ajouter refreshUserRoles pour rafraîchissement après modification
   const refreshUserRoles = async () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[AdminAuthProvider] 🔄 Rafraîchissement user_roles demandé')
-    }
-    await authState.reload()
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[AdminAuthProvider] ✅ Rafraîchissement user_roles terminé')
-    }
+    // Rafraîchissement user_roles demandé
+    await authState.recheckPermissions()
+    // Rafraîchissement user_roles terminé
   }
   
   // Enrichir authState avec la fonction de rafraîchissement
@@ -51,13 +47,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     refreshUserRoles
   }
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[AdminAuthProvider] 📤 État partagé:', {
-      user: authState.user?.email || 'null',
-      loading: authState.loading,
-      isAuthenticated: authState.isAuthenticated
-    })
-  }
+  // État partagé admin géré par le provider
 
   return (
     <AdminAuthContext.Provider value={contextValue}>
@@ -77,12 +67,7 @@ export function useAdminAuth(): AdminAuthContextType {
     throw new Error('useAdminAuth doit être utilisé dans un AdminAuthProvider')
   }
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[useAdminAuth] 📋 Context consommé:', {
-      user: context.user?.email || 'null',
-      hasAuth: context.isAuthenticated
-    })
-  }
+  // Context admin consommé
   
   return context
 }

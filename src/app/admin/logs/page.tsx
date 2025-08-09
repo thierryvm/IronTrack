@@ -247,7 +247,7 @@ export default function AdminLogsPage() {
               <span>
                 <strong>{totalLogs.toLocaleString('fr-FR')}</strong> logs trouvés
                 {totalLogs >= MAX_LOGS_TOTAL && (
-                  <span className="text-orange-600 ml-2">
+                  <span className="text-orange-800 ml-2">
                     (limité à {MAX_LOGS_TOTAL.toLocaleString('fr-FR')} pour les performances)
                   </span>
                 )}

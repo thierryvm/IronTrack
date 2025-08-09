@@ -280,12 +280,12 @@ export default function NutritionPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
             <div>
               <h1 className="text-3xl font-bold max-sm:text-2xl">Nutrition</h1>
-              <p className="text-orange-100 max-sm:text-sm">Suis ton alimentation et tes objectifs</p>
+              <p className="text-white/90 max-sm:text-sm">Suis ton alimentation et tes objectifs</p>
             </div>
             <div className="flex items-center space-x-3">
               <button 
@@ -297,7 +297,7 @@ export default function NutritionPage() {
               </button>
               <button 
                 onClick={() => openMealModal('Repas rapide')}
-                className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
+                className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
               >
                 <Plus className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
                 <span>Ajouter un repas</span>
@@ -319,7 +319,7 @@ export default function NutritionPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Calories</h3>
-                <p className="text-3xl font-bold text-orange-500">{Math.round(todayNutrition.calories)}</p>
+                <p className="text-3xl font-bold text-orange-800">{Math.round(todayNutrition.calories)}</p>
                 <p className="text-sm text-gray-600">/ {goals.calories} kcal</p>
               </div>
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
@@ -481,7 +481,7 @@ export default function NutritionPage() {
                     </div>
                     <button 
                       onClick={() => openMealModal(mealType.name)}
-                      className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2 text-sm font-medium"
+                      className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2 text-sm font-medium"
                     >
                       <Plus className="h-4 w-4" />
                       <span>Ajouter</span>
@@ -501,7 +501,7 @@ export default function NutritionPage() {
                           </div>
                           <div className="flex items-center space-x-3">
                             <div className="text-right">
-                              <div className="font-medium text-orange-600">{Math.round(meal.calories)} kcal</div>
+                              <div className="font-medium text-orange-800">{Math.round(meal.calories)} kcal</div>
                               <div className="text-xs text-gray-500">
                                 P: {Math.round(meal.protein * 10) / 10}g • 
                                 G: {Math.round(meal.carbs * 10) / 10}g • 

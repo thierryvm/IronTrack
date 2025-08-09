@@ -223,7 +223,7 @@ export default function AdminUsersPage() {
     const icons = {
       'super_admin': <Crown className="h-4 w-4 text-purple-500" />,
       'admin': <Shield className="h-4 w-4 text-red-500" />,
-      'moderator': <UserCheck className="h-4 w-4 text-orange-500" />,
+      'moderator': <UserCheck className="h-4 w-4 text-orange-800" />,
       'user': <User className="h-4 w-4 text-gray-500" />
     }
     return icons[role as keyof typeof icons] || icons.user
@@ -254,7 +254,7 @@ export default function AdminUsersPage() {
       return <UserX className="h-4 w-4 text-red-500" />
     }
     if (!user.is_onboarding_complete) {
-      return <Clock className="h-4 w-4 text-orange-500" />
+      return <Clock className="h-4 w-4 text-orange-800" />
     }
     return <CheckCircle className="h-4 w-4 text-green-500" />
   }
@@ -319,7 +319,7 @@ export default function AdminUsersPage() {
           <div>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-orange-100 rounded-lg">
-                <Users className="h-6 w-6 text-orange-500" />
+                <Users className="h-6 w-6 text-orange-800" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
@@ -365,7 +365,7 @@ export default function AdminUsersPage() {
             <div className="text-sm text-purple-700">Administrateurs</div>
           </div>
           <div className="bg-orange-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-orange-600">{getUsersByRole('moderator').length}</div>
+            <div className="text-2xl font-bold text-orange-800">{getUsersByRole('moderator').length}</div>
             <div className="text-sm text-orange-700">Modérateurs</div>
           </div>
         </div>
@@ -514,7 +514,7 @@ export default function AdminUsersPage() {
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (
-                            <span className="text-sm font-medium text-orange-600">
+                            <span className="text-sm font-medium text-orange-800">
                               {formatUserName(user).charAt(0).toUpperCase()}
                             </span>
                           )}
@@ -608,7 +608,7 @@ export default function AdminUsersPage() {
                                   setNewRole(user.role)
                                   setShowRoleModal(true)
                                 }}
-                                className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-400 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
                                 title="Changer le rôle"
                               >
                                 <Key className="h-4 w-4" />
@@ -688,7 +688,7 @@ export default function AdminUsersPage() {
                         className="w-12 h-12 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="text-lg font-medium text-orange-600">
+                      <span className="text-lg font-medium text-orange-800">
                         {formatUserName(selectedUser).charAt(0).toUpperCase()}
                       </span>
                     )}
@@ -799,7 +799,7 @@ export default function AdminUsersPage() {
                       value={role}
                       checked={newRole === role}
                       onChange={(e) => setNewRole(e.target.value as typeof newRole)}
-                      className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                      className="w-4 h-4 text-orange-800 focus:ring-orange-500"
                     />
                     <div className="flex items-center space-x-2">
                       {getRoleIcon(role)}

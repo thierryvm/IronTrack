@@ -117,7 +117,7 @@ export default function PWAInstallPrompt() {
           <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 backdrop-blur-sm">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center">
-                <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg mr-3">
+                <div className="p-2 bg-gradient-to-r from-orange-600 to-red-500 rounded-lg mr-3">
                   {deviceType === 'mobile' ? (
                     <Smartphone className="h-5 w-5 text-white" />
                   ) : (
@@ -147,7 +147,7 @@ export default function PWAInstallPrompt() {
             <div className="flex gap-2">
               <button
                 onClick={handleInstallClick}
-                className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-red-600 transition-all flex items-center justify-center"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-red-600 transition-all flex items-center justify-center"
               >
                 <Download className="h-4 w-4 mr-2" />
                 {deferredPrompt ? 'Installer' : 'Guide'}
@@ -155,7 +155,7 @@ export default function PWAInstallPrompt() {
               
               <Link
                 href="/pwa-guide"
-                className="px-3 py-2 text-orange-600 hover:text-orange-700 text-sm font-medium transition-colors"
+                className="px-3 py-2 text-orange-800 hover:text-orange-700 text-sm font-medium transition-colors"
               >
                 Aide
               </Link>

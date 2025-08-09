@@ -149,7 +149,7 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
         <div className="flex gap-2">
           <button
             onClick={handleUploadClick}
-            className="flex items-center gap-2 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="flex items-center gap-2 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
             disabled={uploading}
           >
             <Plus className="h-4 w-4" /> {uploading ? 'Upload...' : 'Ajouter un son'}
@@ -227,10 +227,10 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
               )}
             </div>
             <div className="flex flex-row flex-wrap gap-2 mt-4 w-full justify-center items-center min-h-[48px]">
-              <button onClick={() => handlePlay(sound)} className="text-blue-500 hover:text-blue-700 bg-blue-50 rounded-full p-3 shadow flex-shrink-0" title="Écouter" style={{minWidth:40, minHeight:40}}>
+              <button onClick={() => handlePlay(sound)} className="text-blue-500 hover:text-blue-700 bg-blue-50 rounded-full p-3 shadow flex-shrink-0" title="Écouter" aria-label="Écouter le son" style={{minWidth:40, minHeight:40}}>
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
               </button>
-              <button onClick={() => { setRenamingId(sound.id); setNewName(sound.name); }} className="text-yellow-500 hover:text-yellow-600 bg-white border border-yellow-200 rounded-full p-3 shadow flex-shrink-0" title="Renommer" style={{minWidth:40, minHeight:40}}>
+              <button onClick={() => { setRenamingId(sound.id); setNewName(sound.name); }} className="text-yellow-500 hover:text-yellow-600 bg-white border border-yellow-200 rounded-full p-3 shadow flex-shrink-0" title="Renommer" aria-label="Renommer le son" style={{minWidth:40, minHeight:40}}>
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
               </button>
               <button onClick={() => handleDelete(sound)} className="text-red-500 hover:text-red-700 bg-white border border-red-200 rounded-full p-3 shadow flex-shrink-0" title="Supprimer" style={{minWidth:40, minHeight:40}}>
