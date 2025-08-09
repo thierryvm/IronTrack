@@ -196,6 +196,13 @@ async function handleApiRequest(request) {
 async function handleStaticAsset(request) {
   const cache = await caches.open(STATIC_CACHE);
   
+  // SÉCURITÉ: Vérifier schéma HTTP avant cache.put
+  const url = new URL(request.url);
+  if (!url.protocol.startsWith('http')) {
+    console.warn('SW: Schéma non-HTTP ignoré pour cache:', request.url);
+    return fetch(request); // Passer au navigateur sans cache
+  }
+  
   // CacheFirst - cache en priorité
   let cachedResponse = await cache.match(request);
   
@@ -207,7 +214,12 @@ async function handleStaticAsset(request) {
     const networkResponse = await fetch(request);
     
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+      // Protection supplémentaire avant put()
+      try {
+        cache.put(request, networkResponse.clone());
+      } catch (putError) {
+        console.warn('SW: Impossible de mettre en cache:', request.url, putError.message);
+      }
     }
     
     return networkResponse;

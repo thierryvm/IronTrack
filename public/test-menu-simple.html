@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Menu Mobile Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .menu-button {
+            padding: 8px;
+            border: none;
+            background: #ff6b35;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .menu-button:hover {
+            background: #e55a2b;
+        }
+        
+        /* OVERLAY FLOU */
+        .overlay {
+            position: fixed !important;
+            top: 0px !important;
+            left: 0px !important;
+            right: 0px !important;
+            bottom: 0px !important;
+            z-index: 8888888 !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 300ms ease-out;
+        }
+        
+        .overlay.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* MENU MOBILE */
+        .mobile-menu {
+            position: fixed !important;
+            top: 0px !important;
+            left: 0px !important;
+            bottom: 0px !important;
+            width: 320px !important;
+            max-width: 90vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            background-color: #ffffff !important;
+            z-index: 9999999 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            border-right: 1px solid #e5e7eb !important;
+            transform: translateX(-100%);
+            transition: transform 300ms ease-out;
+        }
+        
+        .mobile-menu.show {
+            transform: translateX(0) !important;
+        }
+        
+        .menu-header {
+            background: linear-gradient(to right, #ea580c, #dc2626);
+            color: white;
+            padding: 1rem;
+        }
+        
+        .menu-content {
+            flex: 1;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        
+        .menu-item {
+            display: block;
+            padding: 12px;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background-color 200ms;
+        }
+        
+        .menu-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            float: right;
+        }
+        
+        .page-content {
+            padding: 2rem;
+            color: white;
+        }
+        
+        .test-card {
+            background: rgba(255,255,255,0.9);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            color: #333;
+        }
+        
+        /* INDICATEURS VISUELS */
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+            z-index: 999999;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info" id="debugInfo">Menu fermé</div>
+    
+    <div class="header">
+        <button class="menu-button" onclick="toggleMenu()">☰ Ouvrir Menu</button>
+        <span style="margin-left: 1rem;">Test Menu Mobile - HTML Pur</span>
+    </div>
+    
+    <!-- OVERLAY FLOU -->
+    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+    
+    <!-- MENU MOBILE -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <button class="close-btn" onclick="closeMenu()">✕</button>
+            <h2>IronTrack</h2>
+            <p>Test Menu Mobile</p>
+        </div>
+        
+        <div class="menu-content">
+            <h3 style="color: #6b7280; font-size: 12px; margin-bottom: 1rem;">NAVIGATION</h3>
+            
+            <a href="#" class="menu-item">📅 Calendrier</a>
+            <a href="#" class="menu-item">💪 Exercices</a>
+            <a href="#" class="menu-item">🏃 Séances</a>
+            <a href="#" class="menu-item">👥 Partenaires</a>
+            <a href="#" class="menu-item">🥗 Nutrition</a>
+            <a href="#" class="menu-item">📊 Progression</a>
+            
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
+            
+            <h3 style="color: #6b7280; font-size: 12px; margin-bottom: 1rem;">COMPTE</h3>
+            <a href="#" class="menu-item">👤 Profil</a>
+            <a href="#" class="menu-item">⚙️ Paramètres</a>
+        </div>
+        
+        <div style="padding: 1rem; border-top: 1px solid #e5e7eb;">
+            <button onclick="closeMenu()" style="width: 100%; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                🚪 Se déconnecter
+            </button>
+        </div>
+    </div>
+    
+    <!-- CONTENU PAGE -->
+    <div class="page-content">
+        <h1>Test Menu Mobile</h1>
+        <p>Cliquez sur le bouton "☰ Ouvrir Menu" pour tester le menu mobile.</p>
+        
+        <div class="test-card">
+            <h3>🎯 Test 1: Menu pleine hauteur</h3>
+            <p>Le menu doit occuper toute la hauteur de l'écran (100vh)</p>
+        </div>
+        
+        <div class="test-card">
+            <h3>🌫️ Test 2: Flou d'arrière-plan</h3>
+            <p>Cette carte devrait être floutée quand le menu est ouvert</p>
+        </div>
+        
+        <div class="test-card">
+            <h3>📱 Test 3: Animation fluide</h3>
+            <p>Le menu doit s'ouvrir avec une animation slide depuis la gauche</p>
+        </div>
+        
+        <div class="test-card" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white;">
+            <h3>🎨 Test 4: Contenu coloré</h3>
+            <p>Ce contenu coloré doit rester visible et flouté derrière le menu</p>
+        </div>
+    </div>
+    
+    <script>
+        let isMenuOpen = false;
+        
+        function toggleMenu() {
+            if (isMenuOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        }
+        
+        function openMenu() {
+            console.log('🚨 OUVERTURE MENU');
+            isMenuOpen = true;
+            
+            const overlay = document.getElementById('overlay');
+            const menu = document.getElementById('mobileMenu');
+            const debug = document.getElementById('debugInfo');
+            
+            overlay.classList.add('show');
+            menu.classList.add('show');
+            debug.textContent = 'Menu ouvert - Hauteur: ' + menu.offsetHeight + 'px';
+            
+            console.log('📐 Menu dimensions:', {
+                height: menu.offsetHeight,
+                width: menu.offsetWidth,
+                position: window.getComputedStyle(menu).position,
+                zIndex: window.getComputedStyle(menu).zIndex,
+                transform: window.getComputedStyle(menu).transform
+            });
+            
+            console.log('🌫️ Overlay styles:', {
+                backdropFilter: window.getComputedStyle(overlay).backdropFilter,
+                backgroundColor: window.getComputedStyle(overlay).backgroundColor,
+                opacity: window.getComputedStyle(overlay).opacity
+            });
+        }
+        
+        function closeMenu() {
+            console.log('🚪 FERMETURE MENU');
+            isMenuOpen = false;
+            
+            const overlay = document.getElementById('overlay');
+            const menu = document.getElementById('mobileMenu');
+            const debug = document.getElementById('debugInfo');
+            
+            overlay.classList.remove('show');
+            menu.classList.remove('show');
+            debug.textContent = 'Menu fermé';
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            console.log('🎯 PAGE CHARGÉE - Test automatique dans 2 secondes');
+            setTimeout(() => {
+                console.log('🤖 OUVERTURE AUTOMATIQUE POUR TEST');
+                openMenu();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
