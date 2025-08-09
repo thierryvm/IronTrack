@@ -23,6 +23,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false, // Empêche zoom mobile
+  viewportFit: "cover", // Support iPhone safe areas
   themeColor: "#f97316",
 };
 
@@ -37,6 +39,7 @@ export default function RootLayout({
         {/* ULTRAHARDCORE: CSS critique désactivé, CriticalCSS composant supprimé */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         {/* Préconnexions pour optimiser la latence réseau */}
         <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" />
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
@@ -75,12 +78,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased min-h-screen bg-surface-lightAlt text-gray-900 dark:bg-surface-dark dark:text-gray-100">
+      <body className="antialiased min-h-screen bg-surface-lightAlt text-gray-900 dark:bg-surface-dark dark:text-gray-100 overflow-x-hidden">
         <RegisterSW />
         <ThemeProvider>
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
             <ConditionalHeader />
-            <main id="main-content" className="flex-1">
+            <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden">
               {children}
             </main>
           </div>

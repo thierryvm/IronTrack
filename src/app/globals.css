@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+/* CORRECTIONS RESPONSIVE MOBILE */
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Empêcher débordement sur tous éléments */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Container responsive */
+.container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Safe areas iPhone */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
 :root {
   /* ===== SYSTÈME DE THÈME IRONTRACK ===== */
   

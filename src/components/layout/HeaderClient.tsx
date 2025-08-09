@@ -370,56 +370,22 @@ export default function HeaderClient() {
     setTimeout(() => {
       setIsMenuOpen(false)
       setIsClosing(false)
-    }, 200)
+    }, 300) // Correspond à la durée de transition CSS
   }
 
-  // Force styles via DOM pour compatibilité navigateurs
+  // Empêcher le scroll du body quand le menu est ouvert
   useEffect(() => {
-    if (isMenuOpen && !isClosing) {
-      // Forcer styles sur menu mobile via DOM
-      setTimeout(() => {
-        const menuElement = document.querySelector('[data-testid="menu-mobile-debug"]') as HTMLElement
-        const overlayElement = document.querySelector('[data-testid="overlay-debug"]') as HTMLElement
-        
-        if (menuElement) {
-          menuElement.style.cssText = `
-            position: fixed !important;
-            top: 0px !important;
-            left: 0px !important;
-            bottom: 0px !important;
-            width: 320px !important;
-            max-width: 90vw !important;
-            height: 100vh !important;
-            min-height: 100vh !important;
-            max-height: 100vh !important;
-            background-color: #ffffff !important;
-            z-index: 9999999 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-            border-right: 1px solid #e5e7eb !important;
-            transform: translateX(0) !important;
-            transition: transform 300ms ease-out !important;
-          `
-        }
-        
-        if (overlayElement) {
-          overlayElement.style.cssText = `
-            position: fixed !important;
-            top: 0px !important;
-            left: 0px !important;
-            right: 0px !important;
-            bottom: 0px !important;
-            z-index: 8888888 !important;
-            background-color: rgba(0, 0, 0, 0.6) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            opacity: 1 !important;
-          `
-        }
-      }, 50)
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
     }
-  }, [isMenuOpen, isClosing])
+    
+    // Cleanup au démontage
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen])
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -727,33 +693,29 @@ export default function HeaderClient() {
         {/* MENU MOBILE OPTIMISÉ 2025 */}
         {isMenuOpen && (
           <>
-            {/* Overlay SOUS le header */}
+            {/* Overlay MOBILE optimisé */}
             <div
-              className={`fixed z-[8888888] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out ${
+              className={`fixed inset-0 z-[8888888] bg-black/50 transition-opacity duration-300 ease-out ${
                 isClosing ? 'opacity-0' : 'opacity-100'
               }`}
               style={{
-                top: '4rem', /* Commence après le header (h-16 = 4rem) */
-                left: '0px',
-                right: '0px',
-                bottom: '0px',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)'
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
               }}
               onClick={closeMenu}
               aria-label="Fermer le menu"
               data-testid="overlay-debug"
             />
             
-            {/* Menu mobile SOLUTION CSS */}
+            {/* Menu mobile FULL SCREEN iPhone */}
             <div 
-              className={`fixed top-0 left-0 bottom-0 w-80 max-w-[90vw] h-screen min-h-screen max-h-screen bg-white z-[9999999] flex flex-col shadow-2xl border-r border-gray-200 transition-transform duration-300 ease-out ${
+              className={`fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] bg-white z-[9999999] flex flex-col shadow-2xl border-r border-gray-200 transition-transform duration-300 ease-out ${
                 isClosing ? '-translate-x-full' : 'translate-x-0'
               }`}
               style={{
-                height: '100vh !important',
-                minHeight: '100vh !important',
-                maxHeight: '100vh !important'
+                height: '100vh',
+                minHeight: '100vh',
+                maxHeight: '100vh'
               }}
               data-testid="menu-mobile-debug"
             >
@@ -927,4 +889,4 @@ export default function HeaderClient() {
     </header>
     </>
   )
-} 
+}
