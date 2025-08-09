@@ -19,7 +19,9 @@ import {
   HelpCircle,
   Search,
   Bell,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  HeadphonesIcon
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { createClient } from '@/utils/supabase/client'
@@ -31,6 +33,9 @@ export default function HeaderClient() {
   const pathname = usePathname()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [userInitials, setUserInitials] = useState('')
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
   const { isAdmin, isModerator } = useAdminRole()
 
   // MENU PRINCIPAL - Navigation fluide selon design system
@@ -56,54 +61,270 @@ export default function HeaderClient() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<Array<{id: string, type: 'exercise' | 'workout', name: string, href: string}>>([])
-  const [notificationCount] = useState(3) // TODO: Connecter aux vraies données
+  const [searchResults, setSearchResults] = useState<Array<{id: string, type: 'exercise' | 'workout' | 'page', name: string, href: string, description?: string}>>([])
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [notifications, setNotifications] = useState<Array<{id: string, type: string, message: string, created_at: string, href?: string}>>([])
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
 
-  // Vérifier l'état de connexion
+  // Vérifier l'état de connexion et récupérer infos utilisateur
   useEffect(() => {
     const supabase = createClient()
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      setIsLoggedIn(!!user)
+      if (user) {
+        setIsLoggedIn(true)
+        setUserEmail(user.email || '')
+        
+        // Récupérer l'avatar depuis la table profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single()
+        
+        setUserAvatar(profile?.avatar_url || null)
+        
+        // Générer initiales à partir de l'email
+        const email = user.email || ''
+        const initials = email.split('@')[0]
+          .split('.')
+          .map(part => part.charAt(0).toUpperCase())
+          .join('')
+          .substring(0, 2)
+        setUserInitials(initials)
+      } else {
+        setIsLoggedIn(false)
+        setUserEmail('')
+        setUserInitials('')
+        setUserAvatar(null)
+      }
     }
     checkUser()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') setIsLoggedIn(true)
-      if (event === 'SIGNED_OUT') setIsLoggedIn(false)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        setIsLoggedIn(true)
+        setUserEmail(session.user.email || '')
+        
+        // Récupérer l'avatar depuis la table profiles
+        supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            setUserAvatar(profile?.avatar_url || null)
+          })
+        
+        const email = session.user.email || ''
+        const initials = email.split('@')[0]
+          .split('.')
+          .map(part => part.charAt(0).toUpperCase())
+          .join('')
+          .substring(0, 2)
+        setUserInitials(initials)
+      }
+      if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false)
+        setUserEmail('')
+        setUserInitials('')
+        setUserAvatar(null)
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
 
-  // Fermer dropdown si clic à l'extérieur
+  // Charger les notifications réelles
+  useEffect(() => {
+    if (!isLoggedIn) return
+
+    const loadNotifications = async () => {
+      try {
+        const supabase = createClient()
+        
+        // Vérifier d'abord que l'utilisateur est bien authentifié
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) {
+          console.debug('Utilisateur non authentifié, pas de chargement notifications')
+          return
+        }
+        
+        // Charger les tickets support
+        const { data: tickets, error } = await supabase
+          .from('support_tickets')
+          .select('*')
+          .limit(3)
+          
+        // Charger les invitations partenaires en attente
+        const { data: partnerRequests, error: partnerError } = await supabase
+          .from('training_partners')
+          .select('*')
+          .eq('status', 'pending')
+          .limit(3)
+        
+        if (error && error.code !== 'PGRST116') console.warn('Erreur chargement tickets:', error)
+        if (partnerError && partnerError.code !== 'PGRST116') console.warn('Erreur chargement invitations:', partnerError)
+        
+        const notificationData: Array<{id: string, type: string, message: string, created_at: string, href?: string}> = []
+        
+        // Ajouter tickets support avec liens directs
+        if (tickets) {
+          tickets.forEach(ticket => {
+            notificationData.push({
+              id: `ticket-${ticket.id}`,
+              type: 'support',
+              message: `Ticket: ${ticket.title || ticket.description || 'Support ticket'}`,
+              created_at: ticket.created_at || new Date().toISOString(),
+              href: `/admin/tickets/${ticket.id}` // Lien direct vers le ticket admin
+            })
+          })
+        }
+        
+        // Ajouter invitations partenaires avec liens directs
+        if (partnerRequests) {
+          partnerRequests.forEach(request => {
+            notificationData.push({
+              id: `partner-${request.id}`,
+              type: 'partner',
+              message: `Invitation partenaire: ${request.partner_name || request.partner_email || 'Nouveau partenaire'}`,
+              created_at: request.created_at || new Date().toISOString(),
+              href: `/training-partners` // Lien vers gestion partenaires
+            })
+          })
+        }
+        
+        // Trier par date (plus récent d'abord)
+        notificationData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        
+        setNotifications(notificationData)
+        setNotificationCount(notificationData.length)
+        
+      } catch (error) {
+        console.warn('Erreur notifications:', error)
+      }
+    }
+
+    loadNotifications()
+  }, [isLoggedIn])
+
+  // Fermer dropdowns si clic à l'extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isProfileDropdownOpen && !(event.target as Element).closest('[data-profile-dropdown]')) {
         setIsProfileDropdownOpen(false)
       }
+      if (isNotificationOpen && !(event.target as Element).closest('[data-notification-dropdown]')) {
+        setIsNotificationOpen(false)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isProfileDropdownOpen])
+  }, [isProfileDropdownOpen, isNotificationOpen])
 
-  // Recherche intelligente en temps réel
+  // Recherche intelligente en temps réel avec vraies données Supabase
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setSearchResults([])
       return
     }
 
-    // Simulation de recherche intelligente - à remplacer par API Supabase
-    const mockResults = [
-      { id: '1', type: 'exercise' as const, name: 'Développé couché', href: '/exercises/1' },
-      { id: '2', type: 'exercise' as const, name: 'Développé incliné', href: '/exercises/2' },
-      { id: '3', type: 'workout' as const, name: 'Séance Pectoraux A', href: '/workouts/1' },
-      { id: '4', type: 'workout' as const, name: 'Séance Push Pull', href: '/workouts/2' },
-    ].filter(item => 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const searchSupabase = async () => {
+      try {
+        const supabase = createClient()
+        const query = searchQuery.toLowerCase()
+        const results: Array<{id: string, type: 'exercise' | 'workout' | 'page', name: string, href: string, description?: string}> = []
+        
+        // Vérifier d'abord l'authentification
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        
+        if (!authError && user) {
+          // Utilisateur connecté - rechercher dans les données Supabase
+          try {
+            // Rechercher dans les exercices
+            const { data: exercises, error: exerciseError } = await supabase
+              .from('exercises')
+              .select('id, name')
+              .ilike('name', `%${query}%`)
+              .limit(3)
+            
+            // Rechercher dans les séances
+            const { data: workouts, error: workoutError } = await supabase
+              .from('workouts')
+              .select('id, name')
+              .ilike('name', `%${query}%`)
+              .limit(3)
+            
+            if (exerciseError && exerciseError.code !== 'PGRST116') {
+              console.debug('Info recherche exercices:', exerciseError.message)
+            }
+            if (workoutError && workoutError.code !== 'PGRST116') {
+              console.debug('Info recherche séances:', workoutError.message)
+            }
+            
+            // Ajouter exercices trouvés
+            if (exercises) {
+              exercises.forEach(exercise => {
+                results.push({
+                  id: exercise.id,
+                  type: 'exercise',
+                  name: exercise.name,
+                  href: `/exercises/${exercise.id}`
+                })
+              })
+            }
+            
+            // Ajouter séances trouvées
+            if (workouts) {
+              workouts.forEach(workout => {
+                results.push({
+                  id: workout.id,
+                  type: 'workout', 
+                  name: workout.name,
+                  href: `/workouts/${workout.id}`
+                })
+              })
+            }
+          } catch (dbError) {
+            console.debug('Recherche base données indisponible:', dbError)
+          }
+        } else {
+          console.debug('Utilisateur non authentifié, recherche limitée aux pages')
+        }
+        
+        // Ajouter pages du site (FAQ, Support, etc.)
+        const sitePages = [
+          { id: 'faq', type: 'page' as const, name: 'FAQ - Questions fréquentes', href: '/faq', description: 'Réponses aux questions courantes' },
+          { id: 'support', type: 'page' as const, name: 'Support - Aide', href: '/support', description: 'Centre d\'aide et support' },
+          { id: 'contact', type: 'page' as const, name: 'Contact - Support', href: '/support/contact', description: 'Contacter le support' },
+          { id: 'privacy', type: 'page' as const, name: 'Confidentialité', href: '/legal/privacy', description: 'Politique de confidentialité' },
+          { id: 'terms', type: 'page' as const, name: 'Conditions d\'utilisation', href: '/legal/terms', description: 'Conditions générales' },
+          { id: 'profile', type: 'page' as const, name: 'Profil utilisateur', href: '/profile', description: 'Gérer votre profil' },
+          { id: 'progress', type: 'page' as const, name: 'Progression', href: '/progress', description: 'Suivre vos progrès' },
+          { id: 'nutrition', type: 'page' as const, name: 'Nutrition', href: '/nutrition', description: 'Suivi nutritionnel' },
+          { id: 'calendar', type: 'page' as const, name: 'Calendrier', href: '/calendar', description: 'Planning entraînements' },
+          { id: 'partners', type: 'page' as const, name: 'Partenaires d\'entraînement', href: '/training-partners', description: 'Gérer vos partenaires' }
+        ].filter(page => 
+          page.name.toLowerCase().includes(query) || 
+          page.description.toLowerCase().includes(query)
+        )
+        
+        // Ajouter les pages trouvées (limiter à 2)
+        results.push(...sitePages.slice(0, 2))
+        
+        setSearchResults(results)
+        
+      } catch (error) {
+        console.warn('Erreur recherche Supabase:', error)
+        setSearchResults([])
+      }
+    }
 
-    setSearchResults(mockResults.slice(0, 5)) // Limiter à 5 résultats
+    // Debounce la recherche
+    const timeoutId = setTimeout(() => {
+      searchSupabase()
+    }, 300)
+    
+    return () => clearTimeout(timeoutId)
   }, [searchQuery])
 
   const closeMenu = () => {
@@ -140,9 +361,11 @@ export default function HeaderClient() {
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
           <Link href="/" className="flex items-center space-x-3 group focus:outline-none">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform">
-              IT
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="IronTrack Logo" 
+              className="h-8 w-8 rounded-lg object-cover group-hover:scale-110 transition-transform"
+            />
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">IronTrack</h1>
               <p className="text-xs text-gray-600 dark:text-gray-300">Ton coach muscu personnel</p>
@@ -154,17 +377,15 @@ export default function HeaderClient() {
             {/* Menu principal */}
             <nav className="flex items-center gap-1">
               {primaryNavigation.map((item) => {
-                const Icon = item.icon
                 const isActive = pathname === item.href
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                      isActive
-                        ? 'bg-brand-500 text-white shadow-sm'
-                        : 'text-gray-700 dark:text-gray-300'
-                    }`}
+                    className={isActive 
+                      ? 'px-3 py-2 rounded-lg text-sm font-medium bg-orange-600 text-white shadow-md transition-all duration-200'
+                      : 'px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-orange-100 dark:hover:bg-orange-900/20 hover:text-orange-700 dark:hover:text-orange-300 transition-all duration-200'
+                    }
                   >
                     {item.name}
                   </Link>
@@ -205,12 +426,17 @@ export default function HeaderClient() {
                         >
                           {result.type === 'exercise' ? (
                             <Dumbbell className="w-4 h-4 text-brand-500" />
-                          ) : (
+                          ) : result.type === 'workout' ? (
                             <Calendar className="w-4 h-4 text-blue-500" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-purple-500" />
                           )}
                           <div className="flex-1">
                             <p className="text-sm font-medium text-gray-900 dark:text-white">{result.name}</p>
-                            <p className="text-xs text-gray-500 capitalize">{result.type === 'exercise' ? 'Exercice' : 'Séance'}</p>
+                            <p className="text-xs text-gray-500 capitalize">
+                              {result.type === 'exercise' ? 'Exercice' : result.type === 'workout' ? 'Séance' : 'Page'}
+                              {result.description && ` • ${result.description}`}
+                            </p>
                           </div>
                         </Link>
                       ))}
@@ -231,18 +457,80 @@ export default function HeaderClient() {
 
             {/* Notifications */}
             {isLoggedIn && (
-              <button
-                className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Notifications"
-                title="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                {notificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                    {notificationCount > 9 ? '9+' : notificationCount}
-                  </span>
+              <div className="relative" data-notification-dropdown>
+                <button
+                  onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                  className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                  aria-label="Notifications"
+                  title="Notifications"
+                  aria-haspopup="true"
+                  aria-expanded={isNotificationOpen}
+                >
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                </button>
+                
+                {/* Dropdown notifications */}
+                {isNotificationOpen && (
+                  <div className="absolute right-0 mt-2 w-80 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <Link 
+                            key={notification.id} 
+                            href={notification.href || '/notifications'}
+                            className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800 last:border-b-0 transition-colors"
+                            onClick={() => setIsNotificationOpen(false)}
+                          >
+                            <div className="flex items-start gap-3">
+                              {notification.type === 'support' ? (
+                                <HeadphonesIcon className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                              ) : (
+                                <Users className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {new Date(notification.created_at).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="px-4 py-8 text-center text-gray-500 text-sm">
+                          Aucune notification
+                        </div>
+                      )}
+                    </div>
+                    {notifications.length > 0 && (
+                      <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800">
+                        <Link 
+                          href="/notifications" 
+                          className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+                          onClick={() => setIsNotificationOpen(false)}
+                        >
+                          Voir toutes les notifications
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 )}
-              </button>
+              </div>
             )}
 
             {/* Theme Toggle */}
@@ -257,11 +545,17 @@ export default function HeaderClient() {
                   aria-haspopup="true"
                   aria-expanded={isProfileDropdownOpen}
                 >
-                  <img 
-                    src="https://avatars.githubusercontent.com/u/1?v=4" 
-                    alt="avatar" 
-                    className="h-7 w-7 rounded-full"
-                  />
+                  {userAvatar ? (
+                    <img 
+                      src={userAvatar} 
+                      alt="Avatar utilisateur" 
+                      className="h-7 w-7 rounded-full object-cover ring-2 ring-white/20"
+                    />
+                  ) : (
+                    <div className="h-7 w-7 rounded-full bg-gradient-to-br from-brand-600 to-brand-800 text-white flex items-center justify-center font-bold text-sm shadow-lg ring-2 ring-white/30">
+                      {userInitials || 'U'}
+                    </div>
+                  )}
                   <ChevronDown className="w-4 h-4 text-gray-500" />
                 </button>
                 
@@ -270,7 +564,7 @@ export default function HeaderClient() {
                   <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                       <p className="text-sm text-gray-500">Connecté en tant que</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">***REDACTED_EMAIL***</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{userEmail}</p>
                     </div>
                     <div className="py-1">
                       {secondaryNavigation.map((item) => {
@@ -343,9 +637,11 @@ export default function HeaderClient() {
               {/* Header du menu */}
               <div className="flex items-center justify-between p-6 bg-gradient-to-r from-brand-600 to-brand-700">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                    <Dumbbell className="h-6 w-6 text-white" />
-                  </div>
+                  <img 
+                    src="/logo.png" 
+                    alt="IronTrack Logo" 
+                    className="h-8 w-8 rounded-lg object-cover bg-white/20 p-1"
+                  />
                   <div>
                     <Link 
                       href="/" 
@@ -405,21 +701,6 @@ export default function HeaderClient() {
                   })}
                 </div>
 
-                {/* Barre de recherche mobile */}
-                {isLoggedIn && (
-                  <div className="px-4 mb-6">
-                    <div className="relative">
-                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 dark:bg-surface-dark dark:border-gray-700 dark:text-white placeholder-gray-500"
-                      />
-                    </div>
-                  </div>
-                )}
 
                 {/* Menu secondaire */}
                 <div className="space-y-1">
@@ -450,34 +731,11 @@ export default function HeaderClient() {
                 </div>
               </nav>
               
-              {/* Footer avec actions */}
+              {/* Footer simple */}
               <div className="p-4 bg-surface-lightAlt dark:bg-surface-darkAlt border-t border-gray-200 dark:border-gray-700">
-                <div className="mb-3">
-                  <ThemeToggle />
+                <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                  IronTrack v2025 - Coach muscu personnel
                 </div>
-                {isLoggedIn ? (
-                  <button
-                    onClick={() => {
-                      handleLogout()
-                      closeMenu()
-                    }}
-                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors active:scale-[0.98]"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    <span>Se déconnecter</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleLogin()
-                      closeMenu()
-                    }}
-                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-medium transition-colors active:scale-[0.98]"
-                  >
-                    <LogIn className="h-5 w-5" />
-                    <span>Se connecter</span>
-                  </button>
-                )}
               </div>
             </aside>
           </>
