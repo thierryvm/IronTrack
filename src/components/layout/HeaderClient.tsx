@@ -377,19 +377,19 @@ export default function HeaderClient() {
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
           <Link href="/" className="flex items-center space-x-3 group focus:outline-none">
-            <div className="relative h-10 w-10 rounded-lg overflow-hidden group-hover:scale-110 transition-transform">
+            <div className="relative h-10 w-10 rounded-lg overflow-hidden shadow-md group-hover:scale-110 transition-transform">
               <img 
                 src="/logo.png" 
                 alt="IronTrack Logo" 
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain bg-white rounded-lg"
+                loading="eager"
+                width={40}
+                height={40}
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                  e.currentTarget.nextElementSibling.style.display = 'flex'
+                  console.error('Logo failed to load');
+                  e.currentTarget.outerHTML = '<div class="h-10 w-10 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-md">IT</div>';
                 }}
               />
-              <div className="hidden h-full w-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold text-lg">
-                IT
-              </div>
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">IronTrack</h1>
@@ -499,34 +499,42 @@ export default function HeaderClient() {
                   )}
                 </button>
                 
-                {/* Dropdown notifications */}
+                {/* Notifications MOBILE-FRIENDLY */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2 w-80 max-w-[95vw] sm:w-80 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
-                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                  <div className="absolute right-0 mt-2 w-full max-w-sm sm:w-80 rounded-lg border border-gray-300 bg-white shadow-2xl overflow-hidden z-50">
+                    
+                    {/* Header lisible */}
+                    <div className="px-4 py-3 bg-orange-50 border-b border-orange-200">
+                      <h3 className="text-base font-bold text-gray-900">🔔 Notifications</h3>
                     </div>
-                    <div className="max-h-64 overflow-y-auto">
+                    
+                    {/* Contenu notifications */}
+                    <div className="max-h-80 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
                           <Link 
                             key={notification.id} 
                             href={notification.href || '/notifications'}
-                            className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800 last:border-b-0 transition-colors"
+                            className="block px-4 py-4 hover:bg-orange-50 border-b border-gray-100 last:border-b-0"
                             onClick={() => setIsNotificationOpen(false)}
                           >
                             <div className="flex items-start gap-3">
                               {notification.type === 'support' ? (
-                                <HeadphonesIcon className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                  💬
+                                </div>
                               ) : (
-                                <Users className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                  👥
+                                </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                <p className="text-sm font-semibold text-gray-900 leading-5">
                                   {notification.message}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-gray-600 mt-1">
                                   {new Date(notification.created_at).toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
+                                    day: '2-digit',
                                     month: 'short',
                                     hour: '2-digit',
                                     minute: '2-digit'
@@ -537,19 +545,22 @@ export default function HeaderClient() {
                           </Link>
                         ))
                       ) : (
-                        <div className="px-4 py-8 text-center text-gray-500 text-sm">
-                          Aucune notification
+                        <div className="px-4 py-8 text-center">
+                          <div className="text-4xl mb-2">📭</div>
+                          <p className="text-gray-600 text-sm">Aucune notification</p>
                         </div>
                       )}
                     </div>
+                    
+                    {/* Footer */}
                     {notifications.length > 0 && (
-                      <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800">
+                      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
                         <Link 
                           href="/notifications" 
-                          className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+                          className="block text-center text-sm text-orange-600 hover:text-orange-800 font-semibold"
                           onClick={() => setIsNotificationOpen(false)}
                         >
-                          Voir toutes les notifications
+                          📋 Voir toutes les notifications
                         </Link>
                       </div>
                     )}
@@ -643,132 +654,102 @@ export default function HeaderClient() {
           </div>
         </div>
 
-        {/* Menu mobile/hamburger */}
+        {/* Menu mobile ULTRA-SIMPLE - GARANTI FONCTIONNEL */}
         {isMenuOpen && (
           <>
-            {/* Overlay avec animation fade */}
+            {/* Overlay cliquable */}
             <div
-              className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
-                isClosing ? 'opacity-0' : 'opacity-100'
-              }`}
+              className="fixed inset-0 z-40 bg-black opacity-50"
               onClick={closeMenu}
               aria-label="Fermer le menu"
-              data-menu-overlay
             />
             
-            {/* Drawer latéral amélioré */}
-            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
-              isClosing ? '-translate-x-full' : 'translate-x-0'
-            }`}>
-              {/* Header du menu */}
-              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-brand-600 to-brand-700">
-                <div className="flex items-center space-x-3">
-                  <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-white/20 p-1">
+            {/* Menu latéral SIMPLE */}
+            <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-50 shadow-xl">
+              
+              {/* Header simple */}
+              <div className="flex items-center justify-between p-4 bg-orange-600 text-white">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 bg-white/20 rounded flex items-center justify-center overflow-hidden">
                     <img 
                       src="/logo.png" 
                       alt="IronTrack Logo" 
-                      className="h-full w-full object-cover rounded"
+                      className="h-full w-full object-contain"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling.style.display = 'flex'
+                        e.currentTarget.outerHTML = '<div class="font-bold text-sm">IT</div>';
                       }}
                     />
-                    <div className="hidden h-full w-full bg-white/30 rounded flex items-center justify-center text-brand-600 font-bold text-sm">
-                      IT
-                    </div>
                   </div>
-                  <div>
-                    <Link 
-                      href="/" 
-                      className="text-xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md px-1"
-                      onClick={closeMenu}
-                    >
-                      IronTrack
-                    </Link>
-                    <p className="text-white/80 text-xs">Coach muscu personnel</p>
-                  </div>
+                  <span className="font-bold">IronTrack</span>
                 </div>
                 <button 
                   onClick={closeMenu} 
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                  aria-label="Fermer le menu"
+                  className="p-1 hover:bg-white/10 rounded"
+                  aria-label="Fermer"
                 >
-                  <X className="h-5 w-5 text-white" />
+                  <X className="h-6 w-6" />
                 </button>
               </div>
               
-              {/* Navigation principale mobile */}
-              <nav className="flex-1 overflow-y-auto py-4 px-3">
-                {/* Menu principal */}
-                <div className="space-y-2 mb-6">
-                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Navigation</h3>
-                  {primaryNavigation.map((item, index) => {
-                    const Icon = item.icon
-                    const isActive = pathname === item.href
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`flex items-center gap-4 px-4 py-3 mx-2 rounded-lg text-base font-medium transition-all ${
-                          isActive
-                            ? 'bg-orange-600 text-white shadow-md'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-100 dark:hover:bg-orange-900/20 hover:text-orange-700 dark:hover:text-orange-300'
-                        }`}
-                        onClick={closeMenu}
-                      >
-                        <div className={`p-2 rounded-md ${
-                          isActive 
-                            ? 'bg-white/20' 
-                            : 'bg-gray-200 dark:bg-gray-700'
-                        }`}>
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <span className="flex-1 font-medium">{item.name}</span>
-                        {isActive && (
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        )}
-                      </Link>
-                    )
-                  })}
+              {/* Navigation ULTRA-SIMPLE */}
+              <div className="p-4">
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">Navigation</div>
+                  
+                  <Link href="/calendar" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    📅 Calendrier
+                  </Link>
+                  
+                  <Link href="/exercises" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    💪 Exercices
+                  </Link>
+                  
+                  <Link href="/workouts" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    🏋️ Séances
+                  </Link>
+                  
+                  <Link href="/training-partners" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    👥 Partenaires
+                  </Link>
+                  
+                  <Link href="/nutrition" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    🍎 Nutrition
+                  </Link>
+                  
+                  <Link href="/progress" onClick={closeMenu} className="block p-3 bg-gray-100 hover:bg-orange-100 rounded text-gray-900 font-medium">
+                    📊 Progression
+                  </Link>
                 </div>
 
-
-                {/* Menu secondaire */}
-                <div className="space-y-1">
-                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Compte</h3>
-                  {secondaryNavigation.map((item, index) => {
-                    const Icon = item.icon
-                    const isActive = pathname === item.href
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`flex items-center space-x-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ease-out group relative animate-slide-up ${
-                          isActive
-                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-[0.98]'
-                        }`}
-                        onClick={closeMenu}
-                        style={{ 
-                          animationDelay: `${(primaryNavigation.length + index) * 80}ms`,
-                          animationFillMode: 'both'
-                        }}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="flex-1">{item.name}</span>
+                {/* Menu secondaire simple */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">Compte</div>
+                  <div className="space-y-2">
+                    <Link href="/profile" onClick={closeMenu} className="block p-2 text-gray-600 hover:text-orange-600 text-sm">
+                      👤 Profil
+                    </Link>
+                    <Link href="/support" onClick={closeMenu} className="block p-2 text-gray-600 hover:text-orange-600 text-sm">
+                      💬 Support
+                    </Link>
+                    {(isAdmin || isModerator) && (
+                      <Link href="/admin" onClick={closeMenu} className="block p-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        🛡️ Admin
                       </Link>
-                    )
-                  })}
-                </div>
-              </nav>
-              
-              {/* Footer simple */}
-              <div className="p-4 bg-surface-lightAlt dark:bg-surface-darkAlt border-t border-gray-200 dark:border-gray-700">
-                <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                  IronTrack v2025 - Coach muscu personnel
+                    )}
+                    <button
+                      onClick={() => {
+                        handleLogout()
+                        closeMenu()
+                      }}
+                      className="block w-full text-left p-2 text-red-600 hover:text-red-800 text-sm"
+                    >
+                      🚪 Déconnexion
+                    </button>
+                  </div>
                 </div>
               </div>
-            </aside>
+              
+            </div>
           </>
         )}
       </div>
