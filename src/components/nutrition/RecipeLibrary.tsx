@@ -234,7 +234,7 @@ export default function RecipeLibrary({
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <ChefHat className="h-8 w-8 text-orange-500" />
+              <ChefHat className="h-8 w-8 text-orange-800" />
               <h2 className="text-2xl font-bold text-gray-900">Mes Recettes</h2>
             </div>
             <div className="flex items-center space-x-3">
@@ -321,7 +321,7 @@ export default function RecipeLibrary({
         <div className="p-6 overflow-y-auto flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+              <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
               <span className="ml-3 text-gray-600">Chargement des recettes...</span>
             </div>
           ) : error ? (
@@ -390,7 +390,7 @@ export default function RecipeLibrary({
                       {/* Nutrition par portion */}
                       <div className="grid grid-cols-4 gap-1 text-xs">
                         <div className="text-center">
-                          <div className="font-medium text-orange-600">{nutrition.calories}</div>
+                          <div className="font-medium text-orange-800">{nutrition.calories}</div>
                           <div className="text-gray-500">cal</div>
                         </div>
                         <div className="text-center">
@@ -455,7 +455,7 @@ export default function RecipeLibrary({
                         </div>
                         <button
                           onClick={() => onRecipeSelect?.(recipe)}
-                          className="flex items-center space-x-1 px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
+                          className="flex items-center space-x-1 px-3 py-1.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
                         >
                           <Plus className="h-4 w-4" />
                           <span>Ajouter au repas</span>
@@ -521,7 +521,7 @@ export default function RecipeLibrary({
                     <h4 className="font-medium text-gray-900 mb-3">Valeurs nutritionnelles totales</h4>
                     <div className="grid grid-cols-4 gap-4 text-center">
                       <div>
-                        <div className="text-lg font-bold text-orange-600">{selectedRecipe.total_calories}</div>
+                        <div className="text-lg font-bold text-orange-800">{selectedRecipe.total_calories}</div>
                         <div className="text-sm text-gray-600">calories</div>
                       </div>
                       <div>
@@ -583,7 +583,7 @@ export default function RecipeLibrary({
                         onRecipeSelect?.(selectedRecipe)
                         setSelectedRecipe(null)
                       }}
-                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2"
                     >
                       <Plus className="h-4 w-4" />
                       <span>Ajouter au repas</span>

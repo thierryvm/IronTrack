@@ -455,18 +455,18 @@ export default function CalendarPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold">Calendrier</h1>
-              <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
+              <p className="text-white/90 text-sm sm:text-base">Planifie et organise tes séances</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Bouton vue mobile */}
               <button
                 onClick={() => setViewMode(viewMode === 'calendar' ? 'list' : 'calendar')}
-                className="lg:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
+                className="lg:hidden bg-white/10 text-white/90 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
                 title={viewMode === 'calendar' ? 'Passer en vue liste' : 'Passer en vue calendrier'}
               >
                 {viewMode === 'calendar' ? (
@@ -482,7 +482,7 @@ export default function CalendarPage() {
               {/* Bouton sidebar mobile/tablette */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
-                className="xl:hidden bg-white/10 text-orange-100 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
+                className="xl:hidden bg-white/10 text-white/90 hover:bg-white/20 px-3 py-3 rounded-lg transition-colors flex items-center space-x-2 min-h-[44px] touch-manipulation"
                 title="Afficher les statistiques"
               >
                 <Menu className="h-4 w-4" />
@@ -500,7 +500,7 @@ export default function CalendarPage() {
                 className={`px-3 sm:px-4 py-3 rounded-lg transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation ${
                   showPartnersWorkouts 
                     ? 'bg-white/20 text-white border border-white/30' 
-                    : 'bg-white/10 text-orange-100 hover:bg-white/20'
+                    : 'bg-white/10 text-white/90 hover:bg-white/20'
                 }`}
                 title={
                   partnersWorkouts.length === 0 
@@ -523,7 +523,7 @@ export default function CalendarPage() {
               </button>
               <button
                 onClick={() => router.push('/workouts/new')}
-                className="bg-white text-orange-600 px-3 sm:px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
+                className="bg-white text-orange-800 px-3 sm:px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
               >
                 <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
                 <span className="hidden sm:inline">Nouvelle séance</span>
@@ -569,7 +569,7 @@ export default function CalendarPage() {
                     <div className="flex items-center gap-2">
                       <motion.button
                         onClick={() => setCurrentDate(new Date())}
-                        className="px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all touch-manipulation"
+                        className="px-3 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all touch-manipulation"
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.02 }}
                       >
@@ -767,7 +767,7 @@ export default function CalendarPage() {
                           <div key={workout.id} className="bg-gray-50 rounded-lg p-4 border-l-4 border-orange-500">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-3">
-                                {Icon && <Icon className="h-5 w-5 text-orange-600" />}
+                                {Icon && <Icon className="h-5 w-5 text-orange-800" />}
                                 <div>
                                   <h3 className="font-semibold text-gray-900">{workout.name}</h3>
                                   <p className="text-sm text-gray-600">
@@ -925,7 +925,7 @@ export default function CalendarPage() {
                 </div>
                 <button
                   onClick={() => router.push('/workouts/new')}
-                  className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
+                  className="w-full mt-4 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Ajouter une séance</span>
@@ -936,7 +936,7 @@ export default function CalendarPage() {
             {/* Statistiques du mois */}
             <div className="bg-white rounded-xl shadow-md p-4 lg:p-6">
               <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
+                <CalendarIcon className="h-5 w-5 text-orange-800" /> Ce mois
                 <div className="group relative">
                   <Info className="h-4 w-4 text-gray-400 cursor-help" />
                   <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -972,7 +972,7 @@ export default function CalendarPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-orange-500" />
+                  <Clock className="h-6 w-6 text-orange-800" />
                   <span className="text-gray-700">Temps total</span>
                   <div className="group relative">
                     <Info className="h-3 w-3 text-gray-400 cursor-help" />
@@ -1213,7 +1213,7 @@ export default function CalendarPage() {
                       setShowMobileSidebar(false);
                       router.push('/workouts/new');
                     }}
-                    className="w-full mt-4 bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
+                    className="w-full mt-4 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                   >
                     <Plus className="h-5 w-5" />
                     <span>Ajouter une séance</span>
@@ -1224,7 +1224,7 @@ export default function CalendarPage() {
               {/* Statistiques du mois */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 text-orange-500" /> Ce mois
+                  <CalendarIcon className="h-5 w-5 text-orange-800" /> Ce mois
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -1247,7 +1247,7 @@ export default function CalendarPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-orange-500" />
+                      <Clock className="h-5 w-5 text-orange-800" />
                       <span className="text-gray-700">Temps total</span>
                     </div>
                     <span className="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full">
@@ -1296,7 +1296,7 @@ export default function CalendarPage() {
                         <div key={type.name} className="flex items-center gap-2 p-2 bg-white rounded border">
                           {Icon && <Icon className="h-4 w-4 text-gray-600" />}
                           <span className="text-sm">{type.name}</span>
-                          <span className="ml-auto font-bold text-orange-600">{type.count}</span>
+                          <span className="ml-auto font-bold text-orange-800">{type.count}</span>
                         </div>
                       )
                     })}

@@ -19,9 +19,17 @@ const cookieMethods = {
     const cookieStore = await cookies();
     cookieStore.set(name, value, {
       ...options,
-      httpOnly: false, // Important pour l'auth Supabase
+      // SÉCURITÉ: httpOnly: false requis pour Supabase PKCE flow côté client
+      // Les tokens sont chiffrés par Supabase et auto-refresh côté client
+      httpOnly: false,
+      // Cookies sécurisés en production uniquement
       secure: process.env.NODE_ENV === 'production',
+      // Protection CSRF - Lax permet les redirections auth
       sameSite: 'lax',
+      // Chemin par défaut
+      path: '/',
+      // Durée maximale cohérente avec Supabase (7 jours par défaut)
+      maxAge: 7 * 24 * 60 * 60 // 7 jours en secondes
     });
   },
   remove: async (name: string, options: Record<string, unknown>) => {

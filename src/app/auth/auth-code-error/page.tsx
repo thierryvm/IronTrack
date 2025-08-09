@@ -13,7 +13,7 @@ export default function AuthCodeErrorPage() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-500 via-red-500 to-purple-600 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-600 via-red-500 to-purple-600 p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
         <div className="flex justify-center mb-4">
           <div className="bg-red-100 p-3 rounded-full">
@@ -28,7 +28,7 @@ export default function AuthCodeErrorPage() {
         <p className="text-gray-500 text-sm mb-4">Tu vas être redirigé automatiquement vers la page de connexion...</p>
         <button
           onClick={() => router.push('/auth')}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold mt-2"
+          className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold mt-2"
         >
           Retour à la connexion
         </button>

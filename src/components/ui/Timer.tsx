@@ -88,7 +88,7 @@ export default function Timer({
   return (
     <div className="relative">
       {/* Timer principal */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-2xl p-6 text-white shadow-lg">
         {/* Barre de progression */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-orange-600 rounded-t-2xl overflow-hidden">
           <motion.div
@@ -109,7 +109,7 @@ export default function Timer({
           >
             {formatTime(timeLeft)}
           </motion.div>
-          <p className="text-orange-100 text-sm">Temps de repos</p>
+          <p className="text-white/90 text-sm">Temps de repos</p>
         </div>
 
         {/* Contrôles */}
@@ -215,7 +215,7 @@ export function QuickTimer() {
               setSelectedTime(time)
               setShowTimer(true)
             }}
-            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
+            className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
             style={{minWidth: 0}}
           >
             {time}s

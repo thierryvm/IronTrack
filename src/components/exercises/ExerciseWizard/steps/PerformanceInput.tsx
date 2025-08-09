@@ -426,7 +426,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-            <Trophy className="h-8 w-8 text-orange-600" />
+            <Trophy className="h-8 w-8 text-orange-800" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900">
             Ta première performance
@@ -440,9 +440,9 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
             {getExerciseType() === 'Cardio' ? (
-              <Target className="h-5 w-5 text-orange-500" />
+              <Target className="h-5 w-5 text-orange-800" />
             ) : (
-              <Dumbbell className="h-5 w-5 text-orange-500" />
+              <Dumbbell className="h-5 w-5 text-orange-800" />
             )}
             <h3 className="font-semibold text-gray-900">
               Performance {getExerciseType() === 'Cardio' ? 'Cardio' : 'Musculation'}
@@ -484,7 +484,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
           <button
             onClick={() => setShowModal(true)}
             disabled={!isFormValid() || loading}
-            className="flex-1 bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="h-4 w-4" />
             Terminer

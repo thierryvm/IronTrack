@@ -257,7 +257,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
         {/* Icône et texte */}
         <div className="space-y-3">
           <div className="flex items-center justify-center">
-            <Upload className={`h-12 w-12 ${isDragging ? 'text-orange-500' : 'text-gray-400'}`} />
+            <Upload className={`h-12 w-12 ${isDragging ? 'text-orange-800' : 'text-gray-400'}`} />
           </div>
           
           <div>
@@ -265,7 +265,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
               {isDragging ? 'Relâchez pour uploader' : 'Glissez vos images ici'}
             </p>
             <p className="text-sm text-gray-600 mb-2">
-              ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span>
+              ou <span className="text-orange-800 font-medium">cliquez pour sélectionner</span>
             </p>
             <p className="text-xs text-gray-500">
               PNG, JPEG, GIF • Max {maxFiles} fichiers • 5MB chacun

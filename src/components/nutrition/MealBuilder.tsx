@@ -409,7 +409,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <ChefHat className="h-12 w-12 mx-auto text-orange-500 mb-2" />
+              <ChefHat className="h-12 w-12 mx-auto text-orange-800 mb-2" />
               <h3 className="text-xl font-bold text-gray-900">Sélectionnez vos ingrédients</h3>
               <p className="text-gray-600">Recherchez et ajoutez les ingrédients de votre repas</p>
             </div>
@@ -427,7 +427,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   <div key={ingredient.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                        <span className="text-orange-600 font-bold text-sm">
+                        <span className="text-orange-800 font-bold text-sm">
                           {ingredient.food.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
@@ -462,7 +462,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <Scale className="h-12 w-12 mx-auto text-orange-500 mb-2" />
+              <Scale className="h-12 w-12 mx-auto text-orange-800 mb-2" />
               <h3 className="text-xl font-bold text-gray-900">Définissez les quantités</h3>
               <p className="text-gray-600">Ajustez les quantités pour chaque ingrédient</p>
             </div>
@@ -519,7 +519,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="grid grid-cols-4 gap-2 text-sm">
                         <div className="text-center">
-                          <span className="font-medium text-orange-600">
+                          <span className="font-medium text-orange-800">
                             {ingredient.calculatedNutrition.calories}
                           </span>
                           <p className="text-gray-600">cal</p>
@@ -562,7 +562,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Calculator className="h-12 w-12 mx-auto text-orange-500 mb-2" />
+              <Calculator className="h-12 w-12 mx-auto text-orange-800 mb-2" />
               <h3 className="text-xl font-bold text-gray-900">Résumé et sauvegarde</h3>
               <p className="text-gray-600">Nommez votre repas et vérifiez les valeurs nutritionnelles</p>
             </div>
@@ -645,7 +645,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     />
                     <button
                       onClick={addTag}
-                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -676,7 +676,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
               
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">
+                  <div className="text-2xl font-bold text-orange-800">
                     {totalNutrition.calories}
                   </div>
                   <div className="text-sm text-gray-600">calories</div>
@@ -827,7 +827,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
           {currentStep < 3 ? (
             <button
               onClick={nextStep}
-              className="flex items-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
             >
               <span>Suivant</span>
               <ArrowRight className="h-4 w-4" />

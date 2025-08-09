@@ -164,7 +164,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
         {/* Bouton pour voir toutes les séances si plus de 2 */}
         {sessions.length > 2 && (
           <button
-            className="mt-1 py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium min-h-[44px] touch-manipulation"
+            className="mt-1 py-1 text-xs text-orange-800 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium min-h-[44px] touch-manipulation"
             onClick={() => setShowPopover(true)}
             aria-label={`Voir toutes les ${sessions.length} séances du ${date}`}
           >

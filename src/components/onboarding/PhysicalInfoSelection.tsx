@@ -153,7 +153,7 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
         <Card className="p-4">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+              <div className="p-2 rounded-lg bg-orange-50 text-orange-800">
                 <User className="h-5 w-5" />
               </div>
               <CardTitle className="text-lg">Poids initial</CardTitle>

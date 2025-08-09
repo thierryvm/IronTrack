@@ -101,7 +101,7 @@ export default function SharedDashboardPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
       </div>
     )
   }
@@ -225,7 +225,7 @@ export default function SharedDashboardPage() {
                         </div>
                         <span className="font-medium text-gray-900">Entraînements de {partnerName}</span>
                       </div>
-                      <span className="text-orange-600 text-sm">Voir dans calendrier</span>
+                      <span className="text-orange-800 text-sm">Voir dans calendrier</span>
                     </button>
 
                     {/* Nutrition */}
@@ -267,8 +267,8 @@ export default function SharedDashboardPage() {
                     
                     <div className="grid grid-cols-3 gap-2 text-xs mb-3">
                       <div className="bg-orange-50 p-2 rounded text-center">
-                        <div className="text-orange-600 font-medium">Entraînements</div>
-                        <div className="text-orange-500">Activé</div>
+                        <div className="text-orange-800 font-medium">Entraînements</div>
+                        <div className="text-orange-800">Activé</div>
                       </div>
                       <div className="bg-green-50 p-2 rounded text-center">
                         <div className="text-green-600 font-medium">Nutrition</div>

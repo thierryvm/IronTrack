@@ -203,10 +203,10 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
         >
           {/* Info exercice */}
           <div className="flex items-center gap-3 mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
-            <Trophy className="w-6 h-6 text-orange-600" />
+            <Trophy className="w-6 h-6 text-orange-800" />
             <div>
               <h2 className="font-semibold text-orange-800">{exercise.name}</h2>
-              <p className="text-sm text-orange-600">
+              <p className="text-sm text-orange-800">
                 Performance du {new Date(performance.performed_at).toLocaleDateString()}
               </p>
             </div>
@@ -513,18 +513,18 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
             </div>
           </div>
 
-          {/* Boutons */}
-          <div className="flex gap-4 mt-8">
+          {/* Boutons - CORRIGÉ: bouton Sauvegarder aligné à droite */}
+          <div className="flex items-center justify-between mt-8">
             <button
               onClick={handleCancel}
-              className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+              className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
             >
               Annuler
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {saving ? 'Sauvegarde...' : 'Sauvegarder'}
               <Save className="w-5 h-5" />

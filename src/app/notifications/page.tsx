@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { HeadphonesIcon, Users, Calendar, Bell, ArrowLeft, ExternalLink } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
+import { useAdminRole } from '@/hooks/useAdminRole'
 
 interface Notification {
   id: string
@@ -17,17 +18,24 @@ interface Notification {
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
+  const { isAdmin, isModerator } = useAdminRole()
 
   useEffect(() => {
     const loadAllNotifications = async () => {
       try {
         const supabase = createClient()
         
-        // Charger tous les tickets support
-        const { data: tickets, error } = await supabase
-          .from('support_tickets')
-          .select('*')
-          .order('created_at', { ascending: false })
+        // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs
+        let tickets = null
+        let error = null
+        if (isAdmin || isModerator) {
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .order('created_at', { ascending: false })
+          tickets = result.data
+          error = result.error
+        }
           
         // Charger toutes les invitations partenaires
         const { data: partnerRequests, error: partnerError } = await supabase

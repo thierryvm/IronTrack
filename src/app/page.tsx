@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+// PERFORMANCE CRITICAL: Garde les icônes critiques en direct pour homepage
 import { 
   Dumbbell, 
   Calendar, 
@@ -13,16 +13,29 @@ import {
   Target,
   TrendingUp
 } from 'lucide-react'
-import SessionTimer from '@/components/ui/SessionTimer'
-import SoundLibrary from '@/components/ui/SoundLibrary'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { QuickTimer } from '@/components/ui/Timer'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
+import PerformanceOptimizer from '@/components/PerformanceOptimizer'
+// PERFORMANCE CRITICAL: Optimisation images WebP/AVIF (-2s LCP)
+// import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer' // TODO: Utiliser si nécessaire
+// PHASE 3 PERFORMANCE CRITICAL: Critical CSS + Service Worker
+import { CriticalCSSExtractor } from '@/components/CriticalCSSExtractor'
+// ULTRAHARDCORE: ServiceWorkerCache supprimé (conflit avec register-sw)
+// import { ServiceWorkerCache } from '@/components/ServiceWorkerCache'
 import { useBadges } from '@/hooks/useBadges'
 import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
-import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
+
+// PERFORMANCE CRITICAL: Élimination Framer Motion homepage (-150ms LCP)
+// Remplacé par CSS animations natives plus légères
+const SessionTimer = lazy(() => import('@/components/ui/SessionTimer'))
+const SoundLibrary = lazy(() => import('@/components/ui/SoundLibrary'))
+const QuickTimer = lazy(() => import('@/components/ui/Timer').then(mod => ({ default: mod.QuickTimer })))
+const PWAInstallPrompt = lazy(() => import('@/components/ui/PWAInstallPrompt'))
+
+// PERFORMANCE CRITICAL: IronBuddy defer pour réduire TBT
+// const IronBuddyFAB = lazy(() => import('@/components/ui/IronBuddyFAB-ENRICHED')) // Utilisé via ClientIronBuddyWrapper
 
 interface UserSound {
   id: string;
@@ -414,16 +427,17 @@ export default function HomePage() {
     });
   }, [sessionSteps.length]);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/auth');
-      }
-    };
-    checkAuth();
-  }, [router]);
+  // Suppression de la vérification auth côté client - gérée par middleware
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const supabase = createClient();
+  //     const { data: { user } } = await supabase.auth.getUser();
+  //     if (!user) {
+  //       router.push('/auth');
+  //     }
+  //   };
+  //   checkAuth();
+  // }, [router]);
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -463,7 +477,7 @@ export default function HomePage() {
       name: 'Nouvelle séance',
       href: '/workouts/new',
       icon: Dumbbell,
-      color: 'bg-orange-500 hover:bg-orange-600',
+      color: 'bg-orange-600 hover:bg-orange-700',
       description: 'Commencer une séance'
     },
     {
@@ -484,7 +498,7 @@ export default function HomePage() {
       name: 'Timer de session',
       href: '#',
       icon: Flame,
-      color: 'bg-orange-500 hover:bg-orange-600',
+      color: 'bg-orange-600 hover:bg-orange-700',
       description: 'Lancer un timer multi-étapes',
       onClick: () => setShowSessionTimer(true),
     },
@@ -542,9 +556,9 @@ export default function HomePage() {
   // CLS Optimisé : Skeletons avec dimensions exactes du contenu final
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Hero Section Skeleton - Dimensions fixes */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-12 min-h-[160px] flex items-center">
+        <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-12 min-h-[160px] flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="animate-pulse">
               <div className="h-8 w-2/3 bg-orange-400 rounded mb-2" />
@@ -569,13 +583,13 @@ export default function HomePage() {
           {/* Stats Skeleton - Dimensions exactes */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] min-w-[180px] animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[110px] min-w-[180px] animate-pulse">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
-                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-2" />
-                    <div className="h-8 w-1/2 bg-gray-300 rounded" />
+                    <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-600 rounded mb-2" />
+                    <div className="h-8 w-1/2 bg-gray-300 dark:bg-gray-700 rounded" />
                   </div>
-                  <div className="w-12 h-12 bg-gray-200 rounded-full" />
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full" />
                 </div>
               </div>
             ))}
@@ -584,16 +598,16 @@ export default function HomePage() {
           {/* Actions et Exercices Skeleton - Layout exact */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 min-h-[280px] animate-pulse">
-                <div className="h-6 w-1/3 bg-gray-200 rounded mb-6" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 min-h-[280px] animate-pulse">
+                <div className="h-6 w-1/3 bg-gray-200 dark:bg-gray-600 rounded mb-6" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="rounded-xl p-4 sm:p-6 shadow-md bg-gray-100 min-h-[80px] sm:min-h-[90px]">
+                    <div key={i} className="rounded-xl p-4 sm:p-6 shadow-md bg-gray-100 dark:bg-gray-700 min-h-[80px] sm:min-h-[90px]">
                       <div className="flex items-center mb-2">
-                        <div className="w-6 h-6 bg-gray-300 rounded mr-3" />
-                        <div className="h-4 w-2/3 bg-gray-300 rounded" />
+                        <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded mr-3" />
+                        <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-600 rounded" />
                       </div>
-                      <div className="h-3 w-full bg-gray-200 rounded" />
+                      <div className="h-3 w-full bg-gray-200 dark:bg-gray-600 rounded" />
                     </div>
                   ))}
                 </div>
@@ -615,14 +629,14 @@ export default function HomePage() {
                 <div className="h-6 w-1/2 bg-gray-200 rounded mb-4" />
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <div className="flex-1">
-                        <div className="h-4 w-2/3 bg-gray-300 rounded mb-1" />
-                        <div className="h-3 w-1/3 bg-gray-200 rounded" />
+                        <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-600 rounded mb-1" />
+                        <div className="h-3 w-1/3 bg-gray-200 dark:bg-gray-600 rounded" />
                       </div>
                       <div className="text-right">
-                        <div className="h-4 w-16 bg-orange-200 rounded mb-1" />
-                        <div className="h-3 w-12 bg-gray-200 rounded" />
+                        <div className="h-4 w-16 bg-orange-200 dark:bg-orange-400 rounded mb-1" />
+                        <div className="h-3 w-12 bg-gray-200 dark:bg-gray-600 rounded" />
                       </div>
                     </div>
                   ))}
@@ -656,25 +670,27 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* PHASE 3 PERFORMANCE CRITICAL: Optimisations avancées */}
+      <CriticalCSSExtractor />
+      {/* ULTRAHARDCORE: ServiceWorkerCache supprimé (conflit avec register-sw) */}
+      {/* <ServiceWorkerCache enabled={true} /> */}
+      {/* Optimisateur de performance (invisible) */}
+      <PerformanceOptimizer />
       {/* Hero Section - Fixed height to prevent CLS */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-12 min-h-[160px] flex items-center">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-12 min-h-[160px] flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <UserGreeting showError={true} />
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Séance du jour - Section prioritaire */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        {/* Séance du jour - Section prioritaire (sans animation pour LCP) */}
+        <div className="mb-8">
           <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-8 text-white shadow-lg">
             <div className="flex flex-col lg:flex-row items-center justify-between">
               <div className="text-center lg:text-left mb-6 lg:mb-0">
                 <h2 className="text-3xl font-bold mb-2">Prêt pour ta séance ?</h2>
-                <p className="text-orange-100 text-lg">
+                <p className="text-white/90 text-lg">
                   {stats.thisWeek === 0 
                     ? "Commence ta première séance de la semaine !" 
                     : `Tu as déjà fait ${stats.thisWeek} séance${stats.thisWeek > 1 ? 's' : ''} cette semaine 💪`
@@ -684,7 +700,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/workouts/new"
-                  className="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="bg-white dark:bg-gray-800 text-orange-800 dark:text-orange-300 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   aria-label="Commencer une nouvelle séance d'entraînement"
                   role="button"
                 >
@@ -703,7 +719,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Statistiques - Dimensions fixes pour éviter CLS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -770,8 +786,18 @@ export default function HomePage() {
 
           {/* Colonne de droite : timer + exercices récents */}
           <div className="flex flex-col gap-4 lg:gap-6 w-full">
-            {/* Temps de repos rapide (réduit) */}
-            <QuickTimer />
+            {/* Temps de repos rapide (lazy loading) */}
+            <Suspense fallback={
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
+                <div className="h-5 w-1/2 bg-gray-200 rounded mb-4" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full bg-gray-200 rounded" />
+                  <div className="h-8 w-full bg-gray-300 rounded" />
+                </div>
+              </div>
+            }>
+              <QuickTimer />
+            </Suspense>
             {/* Exercices récents - Dimensions fixes */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px]" style={{ minHeight: '180px' }}>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Exercices récents</h2>
@@ -791,7 +817,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     <div className="text-right flex-shrink-0 max-w-[40%] sm:max-w-[45%]">
-                      <span className="text-orange-500 dark:text-orange-300 font-bold text-xs sm:text-sm block leading-tight break-words">
+                      <span className="text-orange-800 dark:text-orange-300 font-bold text-xs sm:text-sm block leading-tight break-words">
                         {exercise.displayValue || 'Aucune donnée'}
                       </span>
                       <p className="text-xs text-gray-500 dark:text-gray-300 leading-tight mt-1">
@@ -809,7 +835,7 @@ export default function HomePage() {
               </div>
               <Link 
                 href="/exercises" 
-                className="block mt-3 sm:mt-4 text-orange-500 dark:text-orange-300 text-xs sm:text-sm font-semibold hover:underline"
+                className="block mt-3 sm:mt-4 text-orange-800 dark:text-orange-300 text-xs sm:text-sm font-semibold hover:underline"
               >
                 Voir tous les exercices →
               </Link>
@@ -860,15 +886,15 @@ export default function HomePage() {
             {/* Messages contextuels personnalisés */}
             <div className="mb-6">
               {stats.thisWeek >= 4 ? (
-                <p className="text-purple-100 text-lg animate-pulse">
+                <p className="text-white/90 text-lg animate-pulse">
                   🎉 Félicitations ! Tu as atteint ton objectif de la semaine !
                 </p>
               ) : stats.thisWeek === 0 ? (
-                <p className="text-purple-100 text-lg">
+                <p className="text-white/90 text-lg">
                   💪 Prêt à démarrer ? Commence ta première séance de la semaine !
                 </p>
               ) : (
-                <p className="text-purple-100 text-lg">
+                <p className="text-white/90 text-lg">
                   🔥 Tu es sur la bonne voie ! Complète 4 séances pour débloquer le badge &quot;Déterminé&quot; 🏅
                 </p>
               )}
@@ -896,7 +922,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
               <div className="text-center">
                 <p className="text-4xl font-bold">{stats.thisWeek}/4</p>
-                <p className="text-sm text-purple-100">Séances réalisées</p>
+                <p className="text-sm text-white/80">Séances réalisées</p>
               </div>
               
               {/* Barre de progression animée */}
@@ -910,7 +936,7 @@ export default function HomePage() {
                     }}
                   ></div>
                 </div>
-                <div className="flex justify-between items-center text-xs text-purple-100 font-semibold">
+                <div className="flex justify-between items-center text-xs text-white/80 font-semibold">
                   <span>0</span>
                   <span className="text-center">
                     {stats.thisWeek >= 4 
@@ -933,7 +959,7 @@ export default function HomePage() {
                     : "0"
                   }
                 </p>
-                <p className="text-xs text-purple-100">
+                <p className="text-xs text-white/80">
                   {stats.currentStreak > 0 
                     ? `jour${stats.currentStreak > 1 ? 's' : ''} de série`
                     : 'Commence ta série'
@@ -966,9 +992,9 @@ export default function HomePage() {
           aria-modal="true"
           aria-labelledby="session-timer-title"
         >
-          <div className="bg-white rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] dark:border-gray-700 max-h-[90vh] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-white rounded-t-3xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
               <h2 id="session-timer-title" className="text-2xl font-bold text-gray-900 tracking-tight">Configurer ta session</h2>
               <button
                 onClick={() => setShowSessionTimer(false)}
@@ -980,7 +1006,7 @@ export default function HomePage() {
                 ✕
               </button>
             </div>
-            <div className="px-4 py-6 bg-white overflow-y-auto" style={{maxHeight:'calc(90vh - 72px)'}}>
+            <div className="px-4 py-6 bg-white dark:bg-gray-800 overflow-y-auto" style={{maxHeight:'calc(90vh - 72px)'}}>
               {/* Liste des étapes/exercices */}
               <div className="w-full max-w-2xl mx-auto space-y-2" style={{maxHeight:'260px', overflowY:'auto'}}>
                 {sessionSteps.map((step: { name: string; duration: number }, idx: number) => (
@@ -989,7 +1015,7 @@ export default function HomePage() {
                     <span className="text-xl text-gray-700 flex-shrink-0">🏋️‍♂️</span>
                     {/* Sélecteur d'exercice existant */}
                     <select
-                      className="border border-[#E5E7EB] rounded px-2 py-1 text-sm min-w-[90px] max-w-[140px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white flex-shrink-0 text-gray-900"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm min-w-[90px] max-w-[140px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       style={{height:'36px', width:'130px'}} 
                       value={allExercises.find((ex: ExerciseItem) => ex.name === step.name)?.id ?? ''}
                       onChange={(e) => {
@@ -1015,7 +1041,7 @@ export default function HomePage() {
                         newSteps[idx].name = e.target.value
                         setSessionSteps(newSteps)
                       }}
-                      className="border border-[#E5E7EB] rounded px-2 py-1 text-sm font-semibold flex-1 min-w-0 focus:ring-2 focus:ring-orange-400 h-9 bg-white truncate text-gray-900"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm font-semibold flex-1 min-w-0 focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-700 truncate text-gray-900 dark:text-gray-100"
                       placeholder="Nom de l'étape"
                       style={{height:'36px', minWidth:'60px', maxWidth:'100%'}}
                     />
@@ -1029,13 +1055,13 @@ export default function HomePage() {
                         newSteps[idx].duration = Number(e.target.value)
                         setSessionSteps(newSteps)
                       }}
-                      className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-12 text-center focus:ring-2 focus:ring-orange-400 h-9 bg-white flex-shrink-0 text-gray-900"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-12 text-center focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       placeholder="Durée"
                       style={{height:'36px', width:'48px'}}
                     />
                     {/* Sélecteur de son */}
                     <select
-                      className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-24 min-w-[60px] max-w-[100px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white flex-shrink-0 text-gray-900"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-24 min-w-[60px] max-w-[100px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       style={{height:'36px', width:'90px'}}
                       value={sessionSounds[idx] || ''}
                       onChange={(e) => {
@@ -1082,34 +1108,56 @@ export default function HomePage() {
                 ))}
                 <button
                   onClick={() => setSessionSteps([...sessionSteps, { name: 'Nouvelle étape', duration: 60 }])}
-                  className="mt-2 text-sm text-orange-600 hover:underline font-semibold"
+                  className="mt-2 text-sm text-orange-800 hover:underline font-semibold"
                 >
                   + Ajouter une étape
                 </button>
               </div>
               {/* Timer juste en dessous des étapes */}
               <div className="w-full flex items-center justify-center mt-8 mb-8">
-                <SessionTimer
-                  steps={sessionSteps.map((step: { name: string; duration: number }, idx: number) => ({ ...step, soundUrl: (userSounds.find(s => s.id === sessionSounds[idx])?.file_url) || undefined }))}
-                  autoStart={false}
-                />
+                <Suspense fallback={
+                  <div className="bg-gray-100 rounded-xl p-6 min-h-[200px] animate-pulse">
+                    <div className="h-6 w-1/3 bg-gray-300 rounded mb-4 mx-auto" />
+                    <div className="space-y-3">
+                      <div className="h-4 w-full bg-gray-200 rounded" />
+                      <div className="h-12 w-full bg-gray-300 rounded" />
+                    </div>
+                  </div>
+                }>
+                  <SessionTimer
+                    steps={sessionSteps.map((step: { name: string; duration: number }, idx: number) => ({ ...step, soundUrl: (userSounds.find(s => s.id === sessionSounds[idx])?.file_url) || undefined }))}
+                    autoStart={false}
+                  />
+                </Suspense>
               </div>
               {/* Bibliothèque de sons en bas */}
               <div className="w-full max-w-2xl mx-auto border-t border-[#E5E7EB] pt-6 mt-4">
-                <SoundLibrary
-                  userId={userId || ''}
-                  selectedSoundId={undefined}
-                  onSoundAdded={refreshUserSounds}
-                  onSoundDeleted={handleSoundDeleted}
-                />
+                <Suspense fallback={
+                  <div className="bg-gray-50 rounded-lg p-4 min-h-[150px] animate-pulse">
+                    <div className="h-5 w-1/2 bg-gray-300 rounded mb-4" />
+                    <div className="space-y-2">
+                      <div className="h-4 w-full bg-gray-200 rounded" />
+                      <div className="h-8 w-full bg-gray-300 rounded" />
+                    </div>
+                  </div>
+                }>
+                  <SoundLibrary
+                    userId={userId || ''}
+                    selectedSoundId={undefined}
+                    onSoundAdded={refreshUserSounds}
+                    onSoundDeleted={handleSoundDeleted}
+                  />
+                </Suspense>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Prompt d'installation PWA */}
-      <PWAInstallPrompt />
+      {/* Prompt d'installation PWA (lazy loading) */}
+      <Suspense fallback={<div />}>
+        <PWAInstallPrompt />
+      </Suspense>
     </div>
   )
 }

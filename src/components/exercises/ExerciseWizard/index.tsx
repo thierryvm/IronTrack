@@ -80,7 +80,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [state.currentStep, state.isComplete, trackWizardAbandon, getStepName])
 
-  const handleTypeSelection = (type: 'Musculation' | 'Cardio') => {
+  const handleTypeSelection = (type: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement') => {
     nextStep({ exerciseType: type })
   }
 

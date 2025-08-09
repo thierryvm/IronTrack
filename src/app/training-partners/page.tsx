@@ -8,6 +8,8 @@ import { createClient } from '@/utils/supabase/client'
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
 import { useRealtimePartnerships } from '@/hooks/useRealtimePartnerships'
 import { RealtimeNotificationToast } from '@/components/ui/RealtimeNotificationToast'
+// PERFORMANCE CRITICAL: Images optimisées WebP/AVIF pour avatars
+import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer'
 
 interface Profile {
   id: string
@@ -354,7 +356,7 @@ export default function TrainingPartnersPage() {
             </p>
             <button
               onClick={() => router.push('/auth')}
-              className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+              className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
             >
               Se connecter
             </button>
@@ -415,7 +417,7 @@ export default function TrainingPartnersPage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-xl font-bold mb-2">🎉 Bienvenue dans Training Partners !</h2>
-                  <p className="text-blue-100 mb-4">
+                  <p className="text-white/90 mb-4">
                     Nouveauté ! Connectez-vous avec vos amis pour partager vos séances d'entraînement 
                     et vous motiver mutuellement. Plus besoin de partage public, tout est privé et sécurisé.
                   </p>
@@ -464,7 +466,7 @@ export default function TrainingPartnersPage() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="p-2 sm:p-3 bg-orange-100 rounded-xl flex-shrink-0">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800" />
               </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Training Partners</h1>
@@ -499,13 +501,13 @@ export default function TrainingPartnersPage() {
                   onClick={() => setActiveTab(tab.id as 'partners' | 'invitations' | 'search')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-orange-500 text-orange-600'
+                      ? 'border-orange-500 text-orange-800'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   {tab.label}
                   {tab.count !== undefined && tab.count > 0 && (
-                    <span className="ml-2 bg-orange-100 text-orange-600 py-0.5 px-2 rounded-full text-xs">
+                    <span className="ml-2 bg-orange-100 text-orange-800 py-0.5 px-2 rounded-full text-xs">
                       {tab.count}
                     </span>
                   )}
@@ -527,7 +529,7 @@ export default function TrainingPartnersPage() {
                     <p className="text-gray-500 mb-4">Aucun partenaire pour le moment</p>
                     <button
                       onClick={() => setActiveTab('search')}
-                      className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                      className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
                     >
                       Rechercher des partenaires
                     </button>
@@ -541,11 +543,13 @@ export default function TrainingPartnersPage() {
                       return (
                         <div key={partnership.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                           <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                              <span className="text-orange-600 font-semibold">
-                                {getDisplayName(partner).charAt(0).toUpperCase()}
-                              </span>
-                            </div>
+                            <OptimizedAvatar
+                              src={partner.avatar_url}
+                              alt={`Avatar de ${getDisplayName(partner)}`}
+                              size="md"
+                              className="border-2 border-orange-200"
+                              priority={false}
+                            />
                             <div>
                               <p className="font-medium text-gray-900">{getDisplayName(partner)}</p>
                               <p className="text-sm text-gray-500">
@@ -593,11 +597,13 @@ export default function TrainingPartnersPage() {
                         <div key={invitation.id} className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span className="text-blue-600 font-semibold">
-                                  {getDisplayName(invitation.requester).charAt(0).toUpperCase()}
-                                </span>
-                              </div>
+                              <OptimizedAvatar
+                                src={invitation.requester.avatar_url}
+                                alt={`Avatar de ${getDisplayName(invitation.requester)}`}
+                                size="md"
+                                className="border-2 border-blue-200"
+                                priority={false}
+                              />
                               <div>
                                 <p className="font-medium text-gray-900">
                                   {getDisplayName(invitation.requester)}
@@ -648,11 +654,13 @@ export default function TrainingPartnersPage() {
                         <div key={invitation.id} className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                                <span className="text-yellow-600 font-semibold">
-                                  {getDisplayName(invitation.partner).charAt(0).toUpperCase()}
-                                </span>
-                              </div>
+                              <OptimizedAvatar
+                                src={invitation.partner.avatar_url}
+                                alt={`Avatar de ${getDisplayName(invitation.partner)}`}
+                                size="md"
+                                className="border-2 border-yellow-200"
+                                priority={false}
+                              />
                               <div>
                                 <p className="font-medium text-gray-900">
                                   {getDisplayName(invitation.partner)}
@@ -735,11 +743,13 @@ export default function TrainingPartnersPage() {
                     {searchResults.map((user) => (
                       <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-gray-600 font-semibold">
-                              {user.displayName.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
+                          <OptimizedAvatar
+                            src={user.avatar_url}
+                            alt={`Avatar de ${user.displayName}`}
+                            size="md"
+                            className="border-2 border-gray-300"
+                            priority={false}
+                          />
                           <div>
                             <p className="font-medium text-gray-900">{user.displayName}</p>
                             <p className="text-sm text-gray-500">{user.email}</p>
@@ -770,7 +780,7 @@ export default function TrainingPartnersPage() {
                           {!user.partnershipStatus && (
                             <button
                               onClick={() => sendInvitation(user.id)}
-                              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2"
                             >
                               <UserPlus className="h-4 w-4" />
                               <span>Inviter</span>

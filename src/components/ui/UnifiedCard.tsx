@@ -152,7 +152,7 @@ export function CardHeader({ title, subtitle, badge, icon, className = '' }: Car
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-orange-600 transition-colors">
+          <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-orange-800 transition-colors">
             {title}
           </h3>
           {subtitle && (
@@ -184,7 +184,7 @@ interface CardActionsProps {
 
 export function CardActions({ actions, className = '' }: CardActionsProps) {
   const variantClasses = {
-    primary: 'bg-orange-500 text-white hover:bg-orange-600',
+    primary: 'bg-orange-600 text-white hover:bg-orange-700',
     secondary: 'bg-gray-500 text-white hover:bg-gray-600',
     success: 'bg-green-500 text-white hover:bg-green-600',
     danger: 'bg-red-500 text-white hover:bg-red-600'

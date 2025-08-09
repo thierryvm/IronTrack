@@ -705,12 +705,12 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">Profil</h1>
-              <p className="text-orange-100">Gère tes informations et paramètres</p>
+              <p className="text-white/90">Gère tes informations et paramètres</p>
             </div>
           </div>
         </div>
@@ -801,11 +801,11 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
-                      <div className="text-sm text-orange-600 font-medium mb-1">Objectif</div>
+                      <div className="text-sm text-orange-800 font-medium mb-1">Objectif</div>
                       <div className="text-lg font-bold text-orange-700">
                         {profile.goal || 'Non défini'}
                       </div>
-                      <div className="text-xs text-orange-600 mt-1">
+                      <div className="text-xs text-orange-800 mt-1">
                         {profile.experience || 'Niveau inconnu'}
                       </div>
                     </div>
@@ -863,7 +863,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2 text-red-600"><span className="w-2 h-2 rounded-full bg-red-500 inline-block"></span> Annulées : {stats?.totalWorkoutsCancelled ?? 0}</div>
                 </div>
                 <div className="space-y-1 text-sm md:text-base">
-                  <div className="flex justify-between"><span>Séries en cours</span><span className="text-orange-600 font-bold">{stats?.currentStreak || 0} jours</span></div>
+                  <div className="flex justify-between"><span>Séries en cours</span><span className="text-orange-800 font-bold">{stats?.currentStreak || 0} jours</span></div>
                   <div className="flex justify-between"><span>Séances/semaine</span><span>{stats?.averageWorkoutsPerWeek || 0}</span></div>
                   <div className="flex justify-between"><span>Temps total</span><span>{stats?.totalTime ? `${Math.floor(stats.totalTime / 60)}h${stats.totalTime % 60 ? ' ' + (stats.totalTime % 60) + 'min' : ''}` : '0h'}</span></div>
                 </div>
@@ -895,7 +895,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-orange-50 rounded-lg group relative">
-                    <Icons.Trophy className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+                    <Icons.Trophy className="h-8 w-8 text-orange-800 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900">{stats?.totalWorkouts || 0}</p>
                     <p className="text-sm text-gray-600">Séances totales</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -934,7 +934,7 @@ export default function ProfilePage() {
                 <div className="border-t pt-6">
                   <h4 className="font-semibold text-gray-900 mb-3">Exercice préféré</h4>
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Icons.Dumbbell className="h-6 w-6 text-orange-500" />
+                    <Icons.Dumbbell className="h-6 w-6 text-orange-800" />
                     <span className="font-medium text-gray-900">{stats?.favoriteExercise || 'Aucun exercice préféré'}</span>
                   </div>
                 </div>
@@ -959,7 +959,7 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Actuel</span>
-                          <span className="font-medium text-orange-600">
+                          <span className="font-medium text-orange-800">
                             {progressionStats.current_weight ? `${progressionStats.current_weight} kg` : 'Non renseigné'}
                           </span>
                         </div>
@@ -1106,7 +1106,7 @@ export default function ProfilePage() {
             {/* Paramètres de notification */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Icons.Bell className="h-6 w-6 text-orange-500" />
+                <Icons.Bell className="h-6 w-6 text-orange-800" />
                 <span>Notifications</span>
               </h3>
               
@@ -1131,7 +1131,7 @@ export default function ProfilePage() {
             {/* Actions améliorées */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Icons.Settings className="h-6 w-6 text-orange-500" />
+                <Icons.Settings className="h-6 w-6 text-orange-800" />
                 <span>Actions & Paramètres</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1142,7 +1142,11 @@ export default function ProfilePage() {
                       <Icons.Shield className="h-5 w-5 text-blue-500" />
                       <span>Compte</span>
                     </h4>
-                    <button onClick={handleChangePassword} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3 mb-2">
+                    <button 
+              onClick={handleChangePassword} 
+              className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3 mb-2"
+              aria-label="Modifier le mot de passe"
+            >
                       <Icons.Settings className="h-5 w-5 text-gray-400" />
                       <div>
                         <p className="font-medium text-gray-900">Changer le mot de passe</p>
@@ -1167,12 +1171,12 @@ export default function ProfilePage() {
                       <Icons.Target className="h-5 w-5 text-green-500" />
                       <span>Données</span>
                     </h4>
-                    <button onClick={handleExportData} disabled={exporting} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3">
+                    <button onClick={handleExportData} disabled={exporting} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3" aria-label="Exporter mes données personnelles">
                       <Icons.Download className="h-5 w-5 text-green-500" />
                       <div>
                         <p className="font-medium text-gray-900">Exporter mes données</p>
                         <p className="text-sm text-gray-600">Télécharge ton historique (IronBuddy adore les stats&nbsp;!)</p>
-                        {exporting && <span className="text-xs text-orange-500">Export en cours...</span>}
+                        {exporting && <span className="text-xs text-orange-800">Export en cours...</span>}
                         {exportError && <span className="text-xs text-red-500">{exportError}</span>}
                       </div>
                     </button>
@@ -1185,14 +1189,14 @@ export default function ProfilePage() {
                       <Icons.Camera className="h-5 w-5 text-purple-500" />
                       <span>Personnalisation</span>
                     </h4>
-                    <button onClick={handleChangeAvatar} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 mb-2">
+                    <button onClick={handleChangeAvatar} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Modifier ma photo de profil">
                       <Icons.Camera className="h-5 w-5 text-purple-400" />
                       <div>
                         <p className="font-medium text-gray-900">Changer mon avatar</p>
                         <p className="text-sm text-gray-600">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
                       </div>
                     </button>
-                    <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2">
+                    <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Accéder aux paramètres de la mascotte">
                       <Icons.Dumbbell className="h-5 w-5 text-orange-400" />
                       <div>
                         <p className="font-medium text-gray-900">Choisir ma mascotte</p>
@@ -1223,14 +1227,14 @@ export default function ProfilePage() {
                       <Icons.HelpCircle className="h-5 w-5 text-gray-400" />
                       <span>Support</span>
                     </h4>
-                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2">
+                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
                       <Icons.HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">Aide & support</p>
                         <p className="text-sm text-gray-600">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
-                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3">
+                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
                       <Icons.HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-gray-900">FAQ</p>
@@ -1245,14 +1249,14 @@ export default function ProfilePage() {
             {/* Mascotte IronBuddy */}
             <div ref={mascotSectionRef} className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Icons.Dumbbell className="h-6 w-6 text-orange-500" />
+                <Icons.Dumbbell className="h-6 w-6 text-orange-800" />
                 <span>Mascotte IronBuddy</span>
               </h3>
               <div className="space-y-4">
                 {/* Option pour réactiver la mascotte */}
                 {typeof window !== 'undefined' && localStorage.getItem('hideMascot') === '1' ? (
                   <button
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
                     onClick={() => { localStorage.removeItem('hideMascot'); window.location.reload(); }}
                   >
                     Réactiver IronBuddy
@@ -1262,13 +1266,13 @@ export default function ProfilePage() {
                 )}
                 {/* Sélection de mascotte */}
                 <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                  <span className="font-bold text-orange-600">Choisir ma mascotte</span>
+                  <span className="font-bold text-orange-800">Choisir ma mascotte</span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
                     <button
                       className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
                       onClick={() => setSelectedMascot('ironbuddy')}
                     >
-                      <Icons.Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 animate-bounce" />
+                      <Icons.Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 animate-bounce" />
                       <span className="mt-1 text-xs font-bold text-center">IronBuddy</span>
                     </button>
                     <button
@@ -1421,7 +1425,7 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black opacity-30" />
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-orange-600 mb-2 flex items-center"><Icons.Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-orange-800 mb-2 flex items-center"><Icons.Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
             <DialogDescription className="mb-4 text-gray-700">Fonctionnalité à venir&nbsp;! IronBuddy révise son plus beau sourire…</DialogDescription>
             <div className="flex justify-end">
               <button onClick={() => setShowMascotModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Fermer</button>

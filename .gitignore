@@ -109,6 +109,28 @@ public/sw.js.map
 public/sw-dev.js
 public/workbox-*
 
+# SOLUTION JEST WORKER - Fichiers temporaires
+.jest-worker-patched
+restart-dev.bat
+test-jest-worker-*.js
+node_modules/.cache
+
+# Fichiers de build et optimisation temporaires  
+lighthouse-*.json
+next.config.backup-*.ts
+next.config.complex.ts
+coverage/
+test-results/
+playwright-report/
+
+# Scripts et outils temporaires
+scripts/fix-*.js
+analyze-*.js
+analyze-*.mjs
+cleanup-*.js
+kill-dev.bat
+*.backup
+
 # Fichiers de debug et analyse temporaires
 RAPPORT-*.md
 RAPPORT_*.md

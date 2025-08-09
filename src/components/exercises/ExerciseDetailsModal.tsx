@@ -194,7 +194,31 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                 )}
                 {/* Info exercice */}
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{exercise.name}</h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-xl font-bold text-gray-900">{exercise.name}</h3>
+                    {(() => {
+                      // Calcul du score de complétion
+                      let score = 60 // Base pour champs requis
+                      if (exercise.description) score += 20
+                      if (exercise.instructions) score += 15
+                      if (exercise.image_url) score += 5
+                      
+                      const getScoreColor = (s: number) => {
+                        if (s >= 95) return 'text-green-600 bg-green-50 border-green-200'
+                        if (s >= 80) return 'text-blue-600 bg-blue-50 border-blue-200'
+                        if (s >= 60) return 'text-orange-800 bg-orange-50 border-orange-200'
+                        return 'text-red-600 bg-red-50 border-red-200'
+                      }
+                      
+                      return (
+                        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium ${getScoreColor(score)}`}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
+                          Profil {score}%
+                          {score >= 95 && <span>✨</span>}
+                        </div>
+                      )
+                    })()}
+                  </div>
                   <div className="flex flex-wrap gap-2 text-sm">
                     <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">
                       {exercise.muscle_group}
@@ -206,9 +230,34 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       {exercise.difficulty}
                     </span>
                   </div>
-                  {exercise.description && (
-                    <p className="mt-3 text-gray-600">{exercise.description}</p>
-                  )}
+                  {/* Description et instructions */}
+                  <div className="mt-4 space-y-3">
+                    {exercise.description ? (
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-700 mb-1">Description</h5>
+                        <p className="text-gray-600">{exercise.description}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <p className="text-sm text-blue-700">
+                          💡 <strong>Améliore ton exercice :</strong> Ajoute une description pour le rendre plus facile à identifier
+                        </p>
+                      </div>
+                    )}
+                    
+                    {exercise.instructions ? (
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-700 mb-1">Instructions</h5>
+                        <p className="text-gray-600 text-sm whitespace-pre-line">{exercise.instructions}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <p className="text-sm text-yellow-700">
+                          📝 <strong>Complète ton exercice :</strong> Ajoute des instructions détaillées d'exécution
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Dernière performance */}
@@ -243,7 +292,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       onClose()
                       router.push(`/exercises/${exerciseId}/add-performance`)
                     }}
-                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Nouvelle performance
@@ -289,7 +338,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                   onClose()
                                   router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
                                 }}
-                                className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-400 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
                                 title="Modifier cette performance"
                               >
                                 <Edit3 className="h-4 w-4" />

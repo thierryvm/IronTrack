@@ -126,7 +126,7 @@ const PortionCalculator: React.FC<PortionCalculatorProps> = ({
       {/* Calculateur de portion */}
       <div className="p-4 bg-white rounded-lg border border-gray-200">
         <div className="flex items-center space-x-2 mb-3">
-          <Calculator className="h-5 w-5 text-orange-600" />
+          <Calculator className="h-5 w-5 text-orange-800" />
           <h4 className="font-medium text-gray-900">Calculer la portion</h4>
         </div>
 
@@ -177,7 +177,7 @@ const PortionCalculator: React.FC<PortionCalculatorProps> = ({
           </h5>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">
+              <div className="text-lg font-bold text-orange-800">
                 {calculatedNutrition.calories}
               </div>
               <div className="text-xs text-orange-700">Calories</div>

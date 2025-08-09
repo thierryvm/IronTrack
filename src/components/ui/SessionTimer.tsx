@@ -158,7 +158,7 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
 
   return (
     <div className="relative">
-      <div className="bg-gradient-to-br from-orange-500 via-red-500 to-yellow-400 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden animate-timer-bg">
+      <div className="bg-gradient-to-br from-orange-600 via-red-500 to-yellow-400 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden animate-timer-bg">
         {/* Progress bar améliorée */}
         <div className="absolute top-0 left-0 right-0 h-3 bg-orange-600/60 rounded-t-2xl overflow-hidden z-10">
           <motion.div
@@ -185,12 +185,12 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="text-orange-100 text-lg font-semibold mt-2 animate-timer-step"
+            className="text-white/90 text-lg font-semibold mt-2 animate-timer-step"
           >
             {steps[currentStep]?.name || 'Étape'}
           </motion.p>
           {steps.length > 0 && (
-            <p className="text-orange-200 text-xs mt-1">Étape {displayStep} / {steps.length}</p>
+            <p className="text-white/80 text-xs mt-1">Étape {displayStep} / {steps.length}</p>
           )}
         </div>
         <div className="flex justify-center space-x-4">

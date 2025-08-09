@@ -3,19 +3,19 @@ import { ExerciseSuggestion } from '@/types/exercise-wizard'
 interface CacheEntry {
   data: ExerciseSuggestion[]
   timestamp: number
-  exerciseType: 'Musculation' | 'Cardio'
+  exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
 }
 
 class SuggestionCache {
   private cache: Map<string, CacheEntry> = new Map()
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
-  private getCacheKey(exerciseType: 'Musculation' | 'Cardio', userId?: string): string {
+  private getCacheKey(exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement', userId?: string): string {
     return `${exerciseType}-${userId || 'anonymous'}`
   }
 
   set(
-    exerciseType: 'Musculation' | 'Cardio', 
+    exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement', 
     suggestions: ExerciseSuggestion[], 
     userId?: string
   ): void {
@@ -30,7 +30,7 @@ class SuggestionCache {
     this.cleanup()
   }
 
-  get(exerciseType: 'Musculation' | 'Cardio', userId?: string): ExerciseSuggestion[] | null {
+  get(exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement', userId?: string): ExerciseSuggestion[] | null {
     const key = this.getCacheKey(exerciseType, userId)
     const entry = this.cache.get(key)
     
@@ -47,7 +47,7 @@ class SuggestionCache {
     return entry.data
   }
 
-  invalidate(exerciseType?: 'Musculation' | 'Cardio', userId?: string): void {
+  invalidate(exerciseType?: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement', userId?: string): void {
     if (exerciseType && userId) {
       const key = this.getCacheKey(exerciseType, userId)
       this.cache.delete(key)

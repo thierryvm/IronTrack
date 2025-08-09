@@ -164,7 +164,7 @@ export default function AdminTicketsPage() {
   const getStatusIcon = (status: SupportTicketStatus) => {
     const icons = {
       'open': <Clock className="h-4 w-4 text-blue-500" />,
-      'in_progress': <AlertTriangle className="h-4 w-4 text-orange-500" />,
+      'in_progress': <AlertTriangle className="h-4 w-4 text-orange-800" />,
       'waiting_user': <MessageCircle className="h-4 w-4 text-purple-500" />,
       'resolved': <CheckCircle className="h-4 w-4 text-green-500" />,
       'closed': <XCircle className="h-4 w-4 text-gray-500" />
@@ -224,7 +224,7 @@ export default function AdminTicketsPage() {
           <div>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-orange-100 rounded-lg">
-                <MessageSquare className="h-6 w-6 text-orange-500" />
+                <MessageSquare className="h-6 w-6 text-orange-800" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Gestion des Tickets</h1>
@@ -263,7 +263,7 @@ export default function AdminTicketsPage() {
             </button>
             <button
               onClick={loadTickets}
-              className="flex items-center px-3 py-2 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              className="flex items-center px-3 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               Actualiser
             </button>
@@ -493,7 +493,7 @@ export default function AdminTicketsPage() {
                               e.stopPropagation()
                               handleStatusChange(ticket.id, 'in_progress')
                             }}
-                            className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
                             title="Prendre en charge"
                           >
                             <AlertTriangle className="h-4 w-4" />

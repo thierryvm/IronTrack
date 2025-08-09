@@ -115,13 +115,13 @@ export default function EditWorkoutPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center space-x-2 text-orange-600 hover:text-orange-800 font-semibold mb-4"
+          className="flex items-center space-x-2 text-orange-800 hover:text-orange-800 font-semibold mb-4"
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Retour</span>
         </button>
         <div className="flex items-center space-x-3 mb-6">
-          <Calendar className="h-8 w-8 text-orange-500" />
+          <Calendar className="h-8 w-8 text-orange-800" />
           <h1 className="text-2xl font-bold text-gray-900">Modifier la séance</h1>
         </div>
         {errorMsg && (
@@ -209,7 +209,7 @@ export default function EditWorkoutPage() {
           <label className="block text-gray-700 font-medium mb-2">Notes</label>
           <textarea value={notes} onChange={e => setNotes(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" rows={3} />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+        <button type="submit" disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors" aria-label="Enregistrer les modifications de la séance">
           <Save className="h-5 w-5 mr-2" />
           <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
         </button>

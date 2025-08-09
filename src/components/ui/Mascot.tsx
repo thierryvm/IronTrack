@@ -223,7 +223,7 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-2xl p-4 max-w-sm max-sm:p-2 max-sm:text-sm max-sm:rounded-xl"
+            className="bg-gradient-to-r from-orange-600 to-red-500 text-white rounded-2xl shadow-2xl p-4 max-w-sm max-sm:p-2 max-sm:text-sm max-sm:rounded-xl"
           >
             {/* Mascotte */}
             <div className="flex items-center space-x-2 mb-2 max-sm:space-x-1">
@@ -239,11 +239,11 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
                 }}
                 className={`${mascotBgColor} rounded-full p-2 max-sm:p-1`}
               >
-                <MascotIcon className="h-6 w-6 text-orange-600 max-sm:h-5 max-sm:w-5" />
+                <MascotIcon className="h-6 w-6 text-orange-800 max-sm:h-5 max-sm:w-5" />
               </motion.div>
               <div>
                 <h3 className="font-bold text-lg max-sm:text-base">{mascotName}</h3>
-                <p className="text-xs text-orange-100 max-sm:text-[10px]">Ton coach personnel</p>
+                <p className="text-xs text-white/90 max-sm:text-[10px]">Ton coach personnel</p>
               </div>
               <Icon className="h-5 w-5 text-yellow-300 max-sm:h-4 max-sm:w-4" />
             </div>
@@ -261,21 +261,21 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
 
             {/* Boutons interactifs */}
             <div className="flex gap-2 mb-2 max-sm:gap-1">
-              <button onClick={handleJoke} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
-              <button onClick={handleAdvice} className="bg-white text-orange-600 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
+              <button onClick={handleJoke} className="bg-white text-orange-800 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
+              <button onClick={handleAdvice} className="bg-white text-orange-800 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
             </div>
 
             {/* Boutons fermer/masquer */}
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="text-orange-100 hover:text-white text-xs transition-colors"
+                className="text-white/90 hover:text-white text-xs transition-colors"
               >
                 Fermer
               </button>
               <button
                 onClick={handleNeverShow}
-                className="text-orange-200 hover:text-white text-xs ml-4 underline"
+                className="text-white/80 hover:text-white text-xs ml-4 underline"
               >
                 Ne plus afficher
               </button>
@@ -355,7 +355,7 @@ export function MascotGlobal() {
       {minimized ? (
         <div className="fixed bottom-20 right-4 z-[60] cursor-pointer md:bottom-4" onClick={handleRestore} title="Afficher la mascotte">
           <div className="bg-white rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
-            <Dumbbell className="h-6 w-6 text-orange-600" />
+            <Dumbbell className="h-6 w-6 text-orange-800" />
           </div>
         </div>
       ) : (

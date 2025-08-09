@@ -12,7 +12,7 @@ import {
   Clock,
   Database
 } from 'lucide-react'
-import { useAdminAuthComplete as useAdminAuth } from '@/hooks/useAdminAuthComplete'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useSupport } from '@/hooks/useSupport'
 import { createClient } from '@/utils/supabase/client'
 import { SupportTicket } from '@/types/support'
@@ -120,7 +120,7 @@ export default function AdminExportsPage() {
         }
       }
 
-      await logAdminAction()
+      await logAdminAction('export_data', exportData.type, `${exportData.type}_${exportData.format}`, { format: exportData.format, recordCount: data.length })
 
       // Ajouter à l'historique
       setExportHistory(prev => [{
@@ -299,9 +299,9 @@ export default function AdminExportsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div className="bg-orange-50 rounded-lg p-4">
               <div className="flex items-center space-x-3">
-                <MessageSquare className="h-8 w-8 text-orange-500" />
+                <MessageSquare className="h-8 w-8 text-orange-800" />
                 <div>
-                  <div className="text-2xl font-bold text-orange-600">{stats.tickets}</div>
+                  <div className="text-2xl font-bold text-orange-800">{stats.tickets}</div>
                   <div className="text-sm text-orange-700">Tickets de support</div>
                 </div>
               </div>

@@ -109,7 +109,7 @@ export default function InlineMealForm({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-orange-400 hover:text-orange-600 transition-colors flex items-center justify-center space-x-2"
+        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-orange-400 hover:text-orange-800 transition-colors flex items-center justify-center space-x-2"
       >
         <Plus className="h-5 w-5" />
         <span>Ajouter un aliment</span>
@@ -182,7 +182,7 @@ export default function InlineMealForm({
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <span className="text-gray-600">Calories:</span>
-                  <span className="ml-2 font-medium text-orange-600">
+                  <span className="ml-2 font-medium text-orange-800">
                     {Math.round(selectedFood.calories * quantity / 100)} kcal
                   </span>
                 </div>
@@ -221,7 +221,7 @@ export default function InlineMealForm({
           <button
             onClick={handleSave}
             disabled={!selectedFood || saving}
-            className="px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center"
+            className="px-3 py-1.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center"
           >
             {saving ? (
               <>

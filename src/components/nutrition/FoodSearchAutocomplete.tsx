@@ -270,7 +270,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
                       </p>
                     )}
                     
-                    <p className="text-xs text-orange-600 mt-1">
+                    <p className="text-xs text-orange-800 mt-1">
                       {formatNutrientInfo(food)} (pour 100g)
                     </p>
 
@@ -292,7 +292,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
                   href="https://world.openfoodfacts.org" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-orange-600 hover:underline"
+                  className="text-orange-800 hover:underline"
                 >
                   Open Food Facts
                 </a>

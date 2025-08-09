@@ -216,6 +216,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               src={currentPhoto}
               alt="Photo de l'exercice"
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover"
             />
             
@@ -226,7 +227,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                   <>
                     <button
                       onClick={openCameraDialog}
-                      className="bg-orange-500 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-orange-600 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-orange-600 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-orange-700 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
                       <Camera className="h-4 w-4 mr-1" />
@@ -301,7 +302,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     e.stopPropagation()
                     openCameraDialog()
                   }}
-                  className="bg-orange-500 text-white px-6 py-4 rounded-xl font-medium hover:bg-orange-600 flex items-center min-h-[56px] touch-manipulation shadow-lg"
+                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-medium hover:bg-orange-700 flex items-center min-h-[56px] touch-manipulation shadow-lg"
                   disabled={disabled || uploadState.isUploading}
                 >
                   <Camera className="h-6 w-6 mr-3" />
@@ -329,7 +330,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               {uploadState.isUploading ? (
                 <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
               ) : (
-                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-500' : 'text-gray-400'}`} />
+                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800' : 'text-gray-400'}`} />
               )}
             </div>
             
@@ -352,8 +353,8 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                   </p>
                   <p className="text-sm sm:text-base text-gray-600 mb-3">
                     {isMobile 
-                      ? <><span className="text-orange-600 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
-                      : <>Glissez votre photo ici ou <span className="text-orange-600 font-medium">cliquez pour sélectionner</span></>
+                      ? <><span className="text-orange-800 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
+                      : <>Glissez votre photo ici ou <span className="text-orange-800 font-medium">cliquez pour sélectionner</span></>
                     }
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
@@ -420,11 +421,11 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           <Smartphone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
           <div>
             <h5 className="text-sm font-medium text-blue-900 mb-1">
-              📱 Compatible iPhone/iPad
+              📱 Compatible iPhone/iPad - HEIC vers JPEG
             </h5>
             <p className="text-xs text-blue-800">
-              Les photos HEIC d&apos;Apple sont automatiquement prises en charge. 
-              Prenez vos photos directement avec votre iPhone pour la meilleure qualité.
+              Les photos HEIC d&apos;Apple sont automatiquement converties en JPEG pour compatibilité. 
+              La conversion préserve la qualité tout en optimisant la taille.
             </p>
           </div>
         </div>

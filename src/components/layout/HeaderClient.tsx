@@ -148,11 +148,17 @@ export default function HeaderClient() {
           return
         }
         
-        // Charger les tickets support
-        const { data: tickets, error } = await supabase
-          .from('support_tickets')
-          .select('*')
-          .limit(3)
+        // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
+        let tickets = null
+        let error = null
+        if (isAdmin || isModerator) {
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .limit(3)
+          tickets = result.data
+          error = result.error
+        }
           
         // Charger les invitations partenaires en attente
         const { data: partnerRequests, error: partnerError } = await supabase
@@ -206,20 +212,30 @@ export default function HeaderClient() {
     loadNotifications()
   }, [isLoggedIn])
 
-  // Fermer dropdowns si clic à l'extérieur
+  // Fermer dropdowns et menu mobile si clic à l'extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isProfileDropdownOpen && !(event.target as Element).closest('[data-profile-dropdown]')) {
+      const target = event.target as Element
+      
+      // Fermer menu mobile si clic sur overlay
+      if (isMenuOpen && target.closest('[data-menu-overlay]')) {
+        closeMenu()
+      }
+      
+      // Fermer dropdown profil
+      if (isProfileDropdownOpen && !target.closest('[data-profile-dropdown]')) {
         setIsProfileDropdownOpen(false)
       }
-      if (isNotificationOpen && !(event.target as Element).closest('[data-notification-dropdown]')) {
+      
+      // Fermer dropdown notifications
+      if (isNotificationOpen && !target.closest('[data-notification-dropdown]')) {
         setIsNotificationOpen(false)
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isProfileDropdownOpen, isNotificationOpen])
+  }, [isProfileDropdownOpen, isNotificationOpen, isMenuOpen])
 
   // Recherche intelligente en temps réel avec vraies données Supabase
   useEffect(() => {
@@ -361,11 +377,20 @@ export default function HeaderClient() {
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
           <Link href="/" className="flex items-center space-x-3 group focus:outline-none">
-            <img 
-              src="/logo.png" 
-              alt="IronTrack Logo" 
-              className="h-8 w-8 rounded-lg object-cover group-hover:scale-110 transition-transform"
-            />
+            <div className="relative h-10 w-10 rounded-lg overflow-hidden group-hover:scale-110 transition-transform">
+              <img 
+                src="/logo.png" 
+                alt="IronTrack Logo" 
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.nextElementSibling.style.display = 'flex'
+                }}
+              />
+              <div className="hidden h-full w-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold text-lg">
+                IT
+              </div>
+            </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">IronTrack</h1>
               <p className="text-xs text-gray-600 dark:text-gray-300">Ton coach muscu personnel</p>
@@ -476,7 +501,7 @@ export default function HeaderClient() {
                 
                 {/* Dropdown notifications */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
+                  <div className="absolute right-0 mt-2 w-80 max-w-[95vw] sm:w-80 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-darkAlt shadow-lg overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h3>
                     </div>
@@ -628,20 +653,30 @@ export default function HeaderClient() {
               }`}
               onClick={closeMenu}
               aria-label="Fermer le menu"
+              data-menu-overlay
             />
             
             {/* Drawer latéral amélioré */}
-            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-surface-light dark:bg-surface-dark z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
+            <aside className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
               isClosing ? '-translate-x-full' : 'translate-x-0'
             }`}>
               {/* Header du menu */}
               <div className="flex items-center justify-between p-6 bg-gradient-to-r from-brand-600 to-brand-700">
                 <div className="flex items-center space-x-3">
-                  <img 
-                    src="/logo.png" 
-                    alt="IronTrack Logo" 
-                    className="h-8 w-8 rounded-lg object-cover bg-white/20 p-1"
-                  />
+                  <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-white/20 p-1">
+                    <img 
+                      src="/logo.png" 
+                      alt="IronTrack Logo" 
+                      className="h-full w-full object-cover rounded"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.nextElementSibling.style.display = 'flex'
+                      }}
+                    />
+                    <div className="hidden h-full w-full bg-white/30 rounded flex items-center justify-center text-brand-600 font-bold text-sm">
+                      IT
+                    </div>
+                  </div>
                   <div>
                     <Link 
                       href="/" 
@@ -665,8 +700,8 @@ export default function HeaderClient() {
               {/* Navigation principale mobile */}
               <nav className="flex-1 overflow-y-auto py-4 px-3">
                 {/* Menu principal */}
-                <div className="space-y-1 mb-6">
-                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Navigation</h3>
+                <div className="space-y-2 mb-6">
+                  <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Navigation</h3>
                   {primaryNavigation.map((item, index) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
@@ -674,27 +709,23 @@ export default function HeaderClient() {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex items-center space-x-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 ease-out group relative animate-slide-up ${
+                        className={`flex items-center gap-4 px-4 py-3 mx-2 rounded-lg text-base font-medium transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-lg'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-surface-darkAlt active:scale-[0.98]'
+                            ? 'bg-orange-600 text-white shadow-md'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-100 dark:hover:bg-orange-900/20 hover:text-orange-700 dark:hover:text-orange-300'
                         }`}
                         onClick={closeMenu}
-                        style={{ 
-                          animationDelay: `${index * 80}ms`,
-                          animationFillMode: 'both'
-                        }}
                       >
-                        <div className={`p-2 rounded-lg transition-colors ${
+                        <div className={`p-2 rounded-md ${
                           isActive 
                             ? 'bg-white/20' 
-                            : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-brand-100 dark:group-hover:bg-gray-600'
+                            : 'bg-gray-200 dark:bg-gray-700'
                         }`}>
                           <Icon className="h-5 w-5" />
                         </div>
-                        <span className="flex-1">{item.name}</span>
+                        <span className="flex-1 font-medium">{item.name}</span>
                         {isActive && (
-                          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                          <div className="w-2 h-2 bg-white rounded-full" />
                         )}
                       </Link>
                     )

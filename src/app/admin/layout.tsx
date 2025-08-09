@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+// PERFORMANCE CRITICAL: Garder les animations admin pour UX, optimisées ailleurs
 import { motion, AnimatePresence } from 'framer-motion'
+
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -189,7 +191,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           <div className="flex gap-4 justify-center">
             <Link
               href="/"
-              className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               Retour à l'accueil
             </Link>
@@ -218,14 +220,14 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             <Menu className="h-6 w-6" />
           </button>
           <div className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-orange-500" />
+            <Shield className="h-6 w-6 text-orange-800" />
             <span className="font-bold text-gray-900">IronTrack Admin</span>
           </div>
         </div>
         
         <div className="flex items-center space-x-2">
           {/* Notifications badge */}
-          <button className="p-2 rounded-lg hover:bg-gray-100 relative">
+          <button className="p-2 rounded-lg hover:bg-gray-100 relative" aria-label="Notifications administrateur">
             <Bell className="h-5 w-5 text-gray-600" />
             {stats?.open_tickets && stats.open_tickets > 0 && (
               <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -241,7 +243,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
               className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-600">
+                <span className="text-sm font-medium text-orange-800">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -281,7 +283,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
         {/* Sidebar Desktop */}
         <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200">
           <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200">
-            <Shield className="h-8 w-8 text-orange-500 mr-3" />
+            <Shield className="h-8 w-8 text-orange-800 mr-3" />
             <span className="text-xl font-bold text-gray-900">IronTrack Admin</span>
           </div>
           
@@ -315,7 +317,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           <div className="flex-shrink-0 border-t border-gray-200 p-4">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-600">
+                <span className="text-sm font-medium text-orange-800">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -356,7 +358,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
               >
                 <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
                   <div className="flex items-center space-x-2">
-                    <Shield className="h-6 w-6 text-orange-500" />
+                    <Shield className="h-6 w-6 text-orange-800" />
                     <span className="font-bold text-gray-900">IronTrack Admin</span>
                   </div>
                   <button

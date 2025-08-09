@@ -312,7 +312,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         <button
           type="submit"
           disabled={loading || !title.trim() || !description.trim()}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
+          className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
         >
           {loading ? (
             <>

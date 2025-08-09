@@ -56,7 +56,7 @@ export const useAdminUserManagement = () => {
     try {
       // Protection avec useRef contre les appels multiples
       if (isLoadingRef.current) {
-        console.log('[DEBUG] getAllUsers déjà en cours, ignoré')
+        // getAllUsers déjà en cours, ignoré
         return []
       }
       
@@ -64,7 +64,7 @@ export const useAdminUserManagement = () => {
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] Récupération de tous les utilisateurs via API route...')
+      // Récupération utilisateurs via API route
       
       // Utiliser la nouvelle API route sécurisée
       const response = await fetch('/api/admin/users', {
@@ -83,11 +83,11 @@ export const useAdminUserManagement = () => {
       const { users } = await response.json()
       
       if (!users || users.length === 0) {
-        console.log('[DEBUG] Aucun utilisateur trouvé')
+        // Aucun utilisateur trouvé
         return []
       }
 
-      console.log(`[DEBUG] ${users.length} utilisateurs récupérés avec succès via API`)
+      // Log admin sécurisé supprimé
       
       // Transformer les données au format AdminUser
       const transformedUsers: AdminUser[] = users.map((user: Record<string, unknown>) => ({
@@ -118,7 +118,7 @@ export const useAdminUserManagement = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des utilisateurs'
-      console.error('[ERROR] getAllUsers:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return []
     } finally {
@@ -141,7 +141,7 @@ export const useAdminUserManagement = () => {
       setLoading(true)
       setError(null)
 
-      console.log(`[DEBUG] Mise à jour du rôle pour ${userId}: ${newRole}`)
+      // Log admin sécurisé supprimé
 
       // Utiliser la nouvelle fonction RPC corrigée
       const { data, error } = await supabase
@@ -151,7 +151,7 @@ export const useAdminUserManagement = () => {
         })
 
       if (error) {
-        console.error('[ERROR] admin_change_user_role failed:', error)
+        // Log admin sécurisé supprimé
         throw error
       }
 
@@ -173,15 +173,15 @@ export const useAdminUserManagement = () => {
             : user
         )
       )
-      console.log('[DEBUG] Utilisateur mis à jour localement')
+      // Log admin sécurisé supprimé
       
       // 🚀 SOLUTION CRITIQUE: Rafraîchir user_roles dans AdminAuthContext
-      console.log('[DEBUG] 🔄 Rafraîchissement AdminAuthContext après modification rôle...')
+      // Log admin sécurisé supprimé
       try {
         await refreshUserRoles()
-        console.log('[DEBUG] ✅ AdminAuthContext rafraîchi avec succès')
+        // Log admin sécurisé supprimé
       } catch (refreshError) {
-        console.warn('[DEBUG] ⚠️ Erreur rafraîchissement AdminAuthContext:', refreshError)
+        // Log admin sécurisé supprimé
         // Ne pas faire échouer toute l'opération pour ça
       }
       
@@ -189,7 +189,7 @@ export const useAdminUserManagement = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la mise à jour du rôle'
-      console.error('[ERROR] updateUserRole:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return false
     } finally {
@@ -213,7 +213,7 @@ export const useAdminUserManagement = () => {
 
       const { banned_until, ban_reason } = options
       
-      console.log(`[DEBUG] ${banned_until ? 'Bannissement' : 'Débannissement'} utilisateur ${userId}`)
+      // Log admin sécurisé supprimé
 
       const { error } = await supabase
         .rpc('ban_user_admin', {
@@ -223,11 +223,11 @@ export const useAdminUserManagement = () => {
         })
 
       if (error) {
-        console.error('[ERROR] ban_user_admin failed:', error)
+        // Log admin sécurisé supprimé
         throw error
       }
 
-      console.log('[DEBUG] Action de bannissement réussie')
+      // Log admin sécurisé supprimé
 
       // Logger l'action admin
       try {
@@ -250,7 +250,7 @@ export const useAdminUserManagement = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du bannissement'
-      console.error('[ERROR] banUser:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return false
     } finally {
@@ -269,7 +269,7 @@ export const useAdminUserManagement = () => {
       setLoading(true)
       setError(null)
 
-      console.log(`[DEBUG] Suppression de l'utilisateur ${userId}`)
+      // Log admin sécurisé supprimé
 
       const { error } = await supabase
         .rpc('delete_user_admin', {
@@ -277,11 +277,11 @@ export const useAdminUserManagement = () => {
         })
 
       if (error) {
-        console.error('[ERROR] delete_user_admin failed:', error)
+        // Log admin sécurisé supprimé
         throw error
       }
 
-      console.log('[DEBUG] Utilisateur supprimé avec succès')
+      // Log admin sécurisé supprimé
 
       // Logger l'action admin
       try {
@@ -297,7 +297,7 @@ export const useAdminUserManagement = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la suppression'
-      console.error('[ERROR] deleteUser:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return false
     } finally {
@@ -316,7 +316,7 @@ export const useAdminUserManagement = () => {
       setLoading(true)
       setError(null)
 
-      console.log(`[DEBUG] Récupération des statistiques pour l'utilisateur ${userId}`)
+      // Log admin sécurisé supprimé
 
       const { data, error } = await supabase
         .rpc('get_user_stats_admin', {
@@ -324,7 +324,7 @@ export const useAdminUserManagement = () => {
         })
 
       if (error) {
-        console.error('[ERROR] get_user_stats_admin failed:', error)
+        // Log admin sécurisé supprimé
         throw error
       }
 
@@ -334,7 +334,7 @@ export const useAdminUserManagement = () => {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des statistiques'
-      console.error('[ERROR] getUserStats:', errorMessage)
+      // Log admin sécurisé supprimé
       setError(errorMessage)
       return null
     } finally {

@@ -15,7 +15,7 @@ const muscleGroups = [
   'Avant-bras', 'Mollets', 'Trapèzes', 'Obliques', 'Ischio-jambiers', 'Cardio', 'Full-body'
 ]
 
-const difficulties = ['Débutant', 'Intermédiaire', 'Avancé']
+import { difficulties, DifficultyString } from '@/utils/difficultyMapping'
 
 const FormField: React.FC<FormFieldProps> = ({ 
   label, 
@@ -58,7 +58,7 @@ const FormField: React.FC<FormFieldProps> = ({
 )
 
 interface CustomFormProps {
-  exerciseType: 'Musculation' | 'Cardio'
+  exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'
   onComplete: (exercise: CustomExercise) => void
   onBack: () => void
   onCancel?: () => void
@@ -82,7 +82,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       exercise_type: exerciseType,
       muscle_group: muscleGroups[0],
       equipment_id: 0,
-      difficulty: difficulties[0] as 'Débutant' | 'Intermédiaire' | 'Avancé',
+      difficulty: difficulties[0] as DifficultyString,
       description: '',
       sets: 3
     }
@@ -143,36 +143,61 @@ export const CustomForm: React.FC<CustomFormProps> = ({
     setLoading(true)
     setErrors([])
 
-    // Validation côté client
-    const validationResult = validateForm({
-      name: formData.name,
-      exercise_type: formData.exercise_type,
-      muscle_group: formData.muscle_group,
-      difficulty: formData.difficulty
-    }, {
-      name: { type: 'text', required: true, minLength: 1, maxLength: 100 },
-      exercise_type: { type: 'text', required: true },
-      muscle_group: { type: 'text', required: true },
-      difficulty: { type: 'text', required: true }
-    })
+    // Validation minimale - champs requis seulement
+    const validateMinimalFields = () => {
+      const errors: string[] = []
+      
+      if (!formData.name || formData.name.trim().length < 2) {
+        errors.push('Le nom doit contenir au moins 2 caractères')
+      }
+      
+      if (!formData.exercise_type) {
+        errors.push('Le type d\'exercice est requis')
+      }
+      
+      if (!formData.muscle_group) {
+        errors.push('Le groupe musculaire est requis')
+      }
+      
+      if (!formData.difficulty) {
+        errors.push('La difficulté est requise')
+      }
+      
+      if (formData.equipment_id === 0) {
+        errors.push('Veuillez sélectionner un équipement')
+      }
+      
+      return errors
+    }
 
-    if (!validationResult.isValid) {
-      setErrors(validationResult.errors.map(err => err.message))
+    // Validation optionnelle - qualité des champs remplis
+    const validateOptionalFields = () => {
+      const warnings: string[] = []
+      
+      if (formData.description && formData.description.length > 200) {
+        warnings.push('La description est recommandée à moins de 200 caractères')
+      }
+      
+      if (formData.instructions && formData.instructions.length > 500) {
+        warnings.push('Les instructions dépassent 500 caractères (limite recommandée)')
+      }
+      
+      return warnings
+    }
+
+    const validationErrors = validateMinimalFields()
+    const validationWarnings = validateOptionalFields()
+
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors)
       setLoading(false)
       return
     }
 
-    // Validation spécifique
-    if (formData.name.length < 2) {
-      setErrors(['Le nom doit contenir au moins 2 caractères'])
-      setLoading(false)
-      return
-    }
-
-    if (formData.equipment_id === 0) {
-      setErrors(['Veuillez sélectionner un équipement'])
-      setLoading(false)
-      return
+    // Afficher les avertissements mais ne pas bloquer
+    if (validationWarnings.length > 0) {
+      console.warn('⚠️ Avertissements de validation:', validationWarnings)
+      // On continue malgré les avertissements
     }
 
     try {
@@ -232,8 +257,27 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       case 'Débutant': return 'bg-green-100 text-green-800 border-green-300'
       case 'Intermédiaire': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
       case 'Avancé': return 'bg-red-100 text-red-800 border-red-300'
+      case 'Expert': return 'bg-purple-100 text-purple-800 border-purple-300'
+      case 'Élite': return 'bg-black text-white border-black'
       default: return 'bg-gray-100 text-gray-800 border-gray-300'
     }
+  }
+
+  // Calcul du score de complétion du profil d'exercice
+  const getCompletionScore = () => {
+    let score = 60 // Base pour champs requis
+    if (formData.description && formData.description.length > 0) score += 20
+    if (formData.instructions && formData.instructions.length > 0) score += 15
+    if (formData.image_url) score += 5
+    return Math.min(score, 100)
+  }
+
+  const completionScore = getCompletionScore()
+  const getCompletionColor = (score: number) => {
+    if (score >= 95) return 'text-green-600'
+    if (score >= 80) return 'text-blue-600'
+    if (score >= 60) return 'text-orange-800'
+    return 'text-red-600'
   }
 
   return (
@@ -245,15 +289,24 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Settings className="w-8 h-8 text-orange-500" />
+            <Settings className="w-8 h-8 text-orange-800" />
           </div>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Personnalise ton exercice
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 text-lg mb-3">
           Crée un exercice {exerciseType.toLowerCase()} adapté à tes besoins
         </p>
+        
+        {/* Indicateur de complétion */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-full border">
+          <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+          <span className={`text-sm font-medium ${getCompletionColor(completionScore)}`}>
+            Profil exercice: {completionScore}% complet
+          </span>
+          {completionScore >= 95 && <span className="text-green-500">✨</span>}
+        </div>
       </motion.div>
 
       {/* Affichage des erreurs */}
@@ -329,12 +382,12 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-3">
             Difficulté <span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {difficulties.map(difficulty => (
               <button
                 key={difficulty}
                 type="button"
-                onClick={() => setFormData({...formData, difficulty: difficulty as 'Débutant' | 'Intermédiaire' | 'Avancé'})}
+                onClick={() => setFormData({...formData, difficulty: difficulty as DifficultyString})}
                 className={`p-3 rounded-lg border-2 font-medium transition-all duration-200 ${
                   formData.difficulty === difficulty
                     ? getDifficultyColor(difficulty)
@@ -414,6 +467,33 @@ export const CustomForm: React.FC<CustomFormProps> = ({
             onChange={(value) => setFormData({...formData, description: value as string})}
             placeholder="Décris brièvement l'exercice..."
           />
+          <div className="text-xs text-gray-500 mt-1">
+            Une courte description aidera à identifier rapidement l'exercice
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65 }}
+        >
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Instructions détaillées (optionnel)
+            </label>
+            <textarea
+              value={formData.instructions || ''}
+              onChange={(e) => setFormData({...formData, instructions: e.target.value})}
+              placeholder="Décris la technique d'exécution, les points clés, les muscles sollicités..."
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+              maxLength={500}
+            />
+            <div className="flex justify-between text-xs text-gray-500">
+              <span>Ces instructions aideront les utilisateurs à bien exécuter l'exercice</span>
+              <span>{(formData.instructions || '').length}/500</span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
@@ -469,7 +549,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-1 bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? 'Validation...' : 'Continuer'}
                 <ArrowRight className="w-5 h-5" />
@@ -479,7 +559,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? 'Validation...' : 'Continuer'}
               <ArrowRight className="w-5 h-5" />
@@ -488,7 +568,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
         </motion.div>
       </form>
 
-      {/* Conseils */}
+      {/* Conseils adaptatifs */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -499,11 +579,31 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           <Target className="w-5 h-5 text-blue-600" />
           <h4 className="font-semibold text-blue-800">💡 Conseil</h4>
         </div>
-        <p className="text-sm text-blue-700">
-          Choisis un nom descriptif pour ton exercice. La difficulté et le groupe musculaire 
-          nous aideront à te proposer des suggestions personnalisées plus tard. 
-          Une photo claire de l&apos;exercice aidera les utilisateurs à mieux comprendre le mouvement.
-        </p>
+        
+        {completionScore < 80 ? (
+          <div className="space-y-2 text-sm text-blue-700">
+            <p className="font-medium">🚀 Pour créer un exercice plus complet :</p>
+            <ul className="space-y-1 ml-4">
+              {!formData.description && (
+                <li>• Ajoute une <strong>description</strong> pour faciliter l'identification</li>
+              )}
+              {!formData.instructions && (
+                <li>• Décris la <strong>technique d'exécution</strong> pour aider les utilisateurs</li>
+              )}
+              {!formData.image_url && (
+                <li>• Une <strong>photo</strong> claire améliore la compréhension du mouvement</li>
+              )}
+            </ul>
+            <p className="text-xs italic mt-2">
+              Tu pourras aussi compléter ces informations plus tard en modifiant l'exercice !
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-blue-700">
+            ✨ Excellent ! Ton exercice est bien détaillé. Les utilisateurs auront toutes les informations 
+            nécessaires pour bien l'exécuter.
+          </p>
+        )}
       </motion.div>
 
       {/* Modal de détection des doublons */}
