@@ -152,7 +152,13 @@ export default function HeaderClient() {
           isAdmin, 
           isModerator, 
           userEmail: user.email,
-          userId: user.id 
+          userId: user.id,
+          isLoggedIn,
+          hookValues: { isAdmin, isModerator }
+        });
+        console.log('🔍 ÉTAT COMPLET:', {
+          isAdmin, isModerator, isAdminEmail: user.email === '***REDACTED_EMAIL***',
+          shouldLoadTickets: isAdmin || isModerator || user.email === '***REDACTED_EMAIL***'
         });
         
         // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
@@ -161,6 +167,7 @@ export default function HeaderClient() {
         
         // Vérification email admin en plus des hooks (fallback de sécurité)
         const isAdminEmail = user.email === '***REDACTED_EMAIL***';
+        console.log('🎯 EMAIL CHECK:', { userEmail: user.email, isAdminEmail });
         
         if (isAdmin || isModerator || isAdminEmail) {
           console.debug('🎯 Chargement tickets pour admin...');
@@ -366,6 +373,54 @@ export default function HeaderClient() {
     }, 200)
   }
 
+  // Force styles via DOM pour compatibilité navigateurs
+  useEffect(() => {
+    if (isMenuOpen && !isClosing) {
+      // Forcer styles sur menu mobile via DOM
+      setTimeout(() => {
+        const menuElement = document.querySelector('[data-testid="menu-mobile-debug"]') as HTMLElement
+        const overlayElement = document.querySelector('[data-testid="overlay-debug"]') as HTMLElement
+        
+        if (menuElement) {
+          menuElement.style.cssText = `
+            position: fixed !important;
+            top: 0px !important;
+            left: 0px !important;
+            bottom: 0px !important;
+            width: 320px !important;
+            max-width: 90vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            background-color: #ffffff !important;
+            z-index: 9999999 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            border-right: 1px solid #e5e7eb !important;
+            transform: translateX(0) !important;
+            transition: transform 300ms ease-out !important;
+          `
+        }
+        
+        if (overlayElement) {
+          overlayElement.style.cssText = `
+            position: fixed !important;
+            top: 0px !important;
+            left: 0px !important;
+            right: 0px !important;
+            bottom: 0px !important;
+            z-index: 8888888 !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            opacity: 1 !important;
+          `
+        }
+      }, 50)
+    }
+  }, [isMenuOpen, isClosing])
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -387,7 +442,7 @@ export default function HeaderClient() {
         Aller au contenu principal
       </a>
       
-      <header className="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/80 backdrop-blur text-gray-900 dark:text-white shadow-lg border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-[9999998] bg-white/90 dark:bg-surface-dark/80 backdrop-blur text-gray-900 dark:text-white shadow-lg border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo et nom */}
@@ -669,34 +724,51 @@ export default function HeaderClient() {
           </div>
         </div>
 
-        {/* MENU MOBILE MODERNE 2025 - Design inspiré des meilleurs sites web */}
+        {/* MENU MOBILE OPTIMISÉ 2025 */}
         {isMenuOpen && (
           <>
-            {/* Overlay avec animation fade */}
+            {/* Overlay SOUS le header */}
             <div
-              className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+              className={`fixed z-[8888888] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out ${
                 isClosing ? 'opacity-0' : 'opacity-100'
               }`}
+              style={{
+                top: '4rem', /* Commence après le header (h-16 = 4rem) */
+                left: '0px',
+                right: '0px',
+                bottom: '0px',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)'
+              }}
               onClick={closeMenu}
               aria-label="Fermer le menu"
+              data-testid="overlay-debug"
             />
             
-            {/* Menu latéral avec animation slide */}
-            <div className={`fixed top-0 left-0 h-full w-80 max-w-[90vw] bg-white dark:bg-surface-dark z-50 shadow-2xl transform transition-transform duration-300 ease-out ${
-              isClosing ? '-translate-x-full' : 'translate-x-0'
-            }`}>
+            {/* Menu mobile SOLUTION CSS */}
+            <div 
+              className={`fixed top-0 left-0 bottom-0 w-80 max-w-[90vw] h-screen min-h-screen max-h-screen bg-white z-[9999999] flex flex-col shadow-2xl border-r border-gray-200 transition-transform duration-300 ease-out ${
+                isClosing ? '-translate-x-full' : 'translate-x-0'
+              }`}
+              style={{
+                height: '100vh !important',
+                minHeight: '100vh !important',
+                maxHeight: '100vh !important'
+              }}
+              data-testid="menu-mobile-debug"
+            >
               
-              {/* Header moderne avec dégradé */}
-              <div className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-orange-400 text-white">
+              {/* Header moderne avec dégradé HARMONISÉ */}
+              <div className="relative bg-gradient-to-r from-orange-600 to-red-500 text-white">
                 <div className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+                    <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center overflow-hidden">
                       <img 
                         src="/logo.png" 
                         alt="IronTrack Logo" 
                         className="h-full w-full object-contain"
                         onError={(e) => {
-                          e.currentTarget.outerHTML = '<div class="h-8 w-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-sm text-white">IT</div>';
+                          e.currentTarget.outerHTML = '<div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center font-bold text-sm text-orange-600">IT</div>';
                         }}
                       />
                     </div>
@@ -714,82 +786,53 @@ export default function HeaderClient() {
                   </button>
                 </div>
                 
-                {/* Indicateur utilisateur */}
-                <div className="px-4 pb-4 border-t border-white/10 pt-3 mt-3">
-                  <div className="flex items-center gap-3">
+                {/* Avatar utilisateur centré avec texte en dessous */}
+                <div className="px-4 pb-4 pt-3 text-center">
+                  <div className="flex flex-col items-center gap-2">
                     {userAvatar ? (
                       <img 
                         src={userAvatar} 
                         alt="Avatar" 
-                        className="h-8 w-8 rounded-full object-cover ring-2 ring-white/20"
+                        className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20 shadow-lg"
                       />
                     ) : (
-                      <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center font-bold text-sm">
+                      <div className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center font-bold text-lg shadow-lg">
                         {userInitials || 'U'}
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-white drop-shadow-lg">
                         {userEmail.split('@')[0] || 'Utilisateur'}
                       </p>
-                      <p className="text-xs text-white/70">Membre IronTrack</p>
+                      <p className="text-xs text-white/90 drop-shadow-md font-medium">
+                        {isAdmin ? 'Super Admin' : isModerator ? 'Modérateur' : 'Membre IronTrack'}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
               
-              {/* Contenu principal avec scroll */}
-              <div className="flex-1 overflow-y-auto">
+              {/* Contenu principal STYLES INLINE */}
+              <div style={{
+                flex: '1 1 auto',
+                backgroundColor: '#ffffff',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                minHeight: '0px',
+                overflow: 'hidden'
+              }}>
                 
-                {/* NAVIGATION PRIMAIRE - Cards modernes */}
-                <div className="p-4">
-                  <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-                    🏠 Navigation principale
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    
-                    {primaryNavigation.map((item) => {
-                      const Icon = item.icon
-                      const isActive = pathname === item.href
-                      return (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          onClick={closeMenu}
-                          className={`group p-4 rounded-xl border transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${
-                            isActive 
-                              ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white border-orange-400 shadow-lg' 
-                              : 'bg-gray-50 dark:bg-surface-darkAlt hover:bg-orange-50 dark:hover:bg-orange-900/10 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
-                          }`}
-                        >
-                          <div className="flex flex-col items-center text-center gap-2">
-                            <div className={`p-2 rounded-lg transition-colors ${
-                              isActive 
-                                ? 'bg-white/20' 
-                                : 'bg-white dark:bg-surface-dark group-hover:bg-orange-100 dark:group-hover:bg-orange-900/20'
-                            }`}>
-                              <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-orange-600'}`} />
-                            </div>
-                            <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                              {item.name}
-                            </span>
-                          </div>
-                        </Link>
-                      )
-                    })}
-                    
-                  </div>
-                </div>
-                
-                {/* NAVIGATION SECONDAIRE - Liste compacte */}
-                <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-surface-darkAlt/50">
-                  <div className="p-4">
+                {/* NAVIGATION UNIFIÉE - Occupe espace disponible */}
+                <div className="p-4 flex-1">
+                  
+                  {/* Navigation principale */}
+                  <div className="mb-6">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                      👤 Mon compte
+                      Navigation
                     </h3>
-                    <div className="space-y-1">
-                      
-                      {secondaryNavigation.map((item) => {
+                    <nav className="space-y-1">
+                      {primaryNavigation.map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href
                         return (
@@ -797,58 +840,85 @@ export default function HeaderClient() {
                             key={item.name}
                             href={item.href}
                             onClick={closeMenu}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                               isActive 
-                                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' 
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                                ? 'bg-orange-600 text-white shadow-md' 
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
                             }`}
                           >
-                            <Icon className={`h-4 w-4 ${isActive ? 'text-orange-600' : 'text-gray-400'}`} />
-                            {item.name}
-                            {item.name === 'Admin' && (
-                              <span className="ml-auto bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
-                                Admin
-                              </span>
-                            )}
+                            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                            <span>{item.name}</span>
                           </Link>
                         )
                       })}
-                      
-                      {/* Séparateur */}
-                      <div className="border-t border-gray-200 dark:border-gray-600 my-3"></div>
-                      
-                      {/* Déconnexion */}
-                      <button
-                        onClick={() => {
-                          handleLogout()
-                          closeMenu()
-                        }}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left"
+                    </nav>
+                  </div>
+                  
+                  {/* Séparateur */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+                  
+                  {/* Liens essentiels uniquement */}
+                  <div className="mb-6">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                      Compte
+                    </h3>
+                    <nav className="space-y-1">
+                      {/* Profil uniquement */}
+                      <Link
+                        href="/profile"
+                        onClick={closeMenu}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          pathname === '/profile'
+                            ? 'bg-orange-600 text-white shadow-md' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
+                        }`}
                       >
-                        <LogOut className="h-4 w-4" />
-                        Déconnexion
-                      </button>
-                    </div>
+                        <User className={`h-5 w-5 ${pathname === '/profile' ? 'text-white' : 'text-gray-500'}`} />
+                        <span>Profil</span>
+                      </Link>
+                      
+                      {/* Admin si applicable */}
+                      {(isAdmin || isModerator) && (
+                        <Link
+                          href="/admin"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            pathname === '/admin'
+                              ? 'bg-orange-600 text-white shadow-md' 
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
+                          }`}
+                        >
+                          <Shield className={`h-5 w-5 ${pathname === '/admin' ? 'text-white' : 'text-gray-500'}`} />
+                          <span>Administration</span>
+                          <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${
+                            pathname === '/admin'
+                              ? 'bg-white/20 text-white' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            Admin
+                          </span>
+                        </Link>
+                      )}
+                    </nav>
                   </div>
+                  
                 </div>
                 
-                {/* Footer avec infos */}
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                      <span className="font-semibold">IronTrack</span> v2025.1
-                    </p>
-                    <Link 
-                      href="/support"
-                      onClick={closeMenu}
-                      className="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 font-medium"
-                    >
-                      <HelpCircle className="h-3 w-3" />
-                      Besoin d'aide ?
-                    </Link>
-                  </div>
-                </div>
-                
+              </div>
+              
+              {/* Déconnexion VRAIMENT en bas - Sans espace */}
+              <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-900">
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    closeMenu()
+                  }}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-200 rounded-lg"
+                  aria-label="Se déconnecter de l'application"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Se déconnecter</span>
+                </button>
               </div>
             </div>
           </>
