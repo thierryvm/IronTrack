@@ -15,9 +15,7 @@ interface NutritionLog {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    console.log(`[API LOG] /api/nutrition/shared/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
-    const supabase = createServerSupabaseClient()
+  try {const supabase = createServerSupabaseClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
     if (userError || !user) {
@@ -34,7 +32,6 @@ export async function GET(request: NextRequest) {
 
     // Vérifier que c'est un partenaire accepté avec permission de partage nutrition
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 Vérification partenariat pour:', { userId: user.id, partnerId })
     }
     const { data: partnershipData, error: partnershipError } = await supabase
       .from('training_partners')
@@ -58,7 +55,6 @@ export async function GET(request: NextRequest) {
 
     // Vérifier les permissions de partage nutrition
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔒 Vérification permissions partage pour:', { partnerId, userId: user.id })
     }
     const { data: sharingSettings, error: sharingError } = await supabase
       .from('partner_sharing_settings')

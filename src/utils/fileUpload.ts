@@ -626,7 +626,6 @@ export async function uploadSecureFile(
     }
     
     // 7. Log de sécurité
-    console.log(`[SECURITY] File uploaded: ${sanitizedOriginalName} (${file.size} bytes) by user ${user.id}`)
     
     return {
       success: true,

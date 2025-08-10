@@ -68,7 +68,6 @@ export default function SharedNutritionPage() {
 
     try {
       setError(null)
-      console.log('🔍 Chargement nutrition partagée pour:', { partnerId, date, user: user.id })
 
       const url = new URL('/api/nutrition/shared', window.location.origin)
       url.searchParams.set('partnerId', partnerId)

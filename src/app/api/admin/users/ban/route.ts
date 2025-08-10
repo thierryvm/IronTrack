@@ -9,9 +9,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/users/ban/route.ts - POST appelé à`, new Date().toISOString());
-  }
+  if (process.env.NODE_ENV === 'development') {}
   
   try {
     const { userId, ban } = await request.json()

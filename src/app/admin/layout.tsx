@@ -59,10 +59,6 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   // Log auth state réduit - seulement erreurs ou succès initial
   useEffect(() => {
     if (error || (!loading && isAuthenticated && user)) {
-      console.log('[ADMIN_LAYOUT] Auth:', {
-        user: user ? `${user.email} (${user.role})` : 'none',
-        status: error ? 'error' : 'authenticated'
-      })
     }
   }, [user, loading, error, isAuthenticated])
   const supabase = createClient()
@@ -135,7 +131,6 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           const data = await response.json()
           if (data.stats) {
             setStats(data.stats)
-            console.log('[ADMIN_STATS] Statistiques chargées:', data.stats)
           }
         } catch (error) {
           console.error('Erreur appel API stats:', error)
@@ -154,7 +149,6 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
     try {
       await logAdminAction('logout', 'session')
     } catch (error) {
-      console.warn('Erreur lors du logging de déconnexion:', error)
     }
     await supabase.auth.signOut()
     router.push('/')

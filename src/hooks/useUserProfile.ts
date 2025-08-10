@@ -105,9 +105,7 @@ export function useUserProfile(): UseUserProfileReturn {
       const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
       
       // Si c'est une erreur d'authentification, ne pas la traiter comme erreur fatale
-      if (errorMessage.includes('Auth session missing') || errorMessage.includes('Invalid Refresh Token')) {
-        console.debug('Session expirée ou manquante:', errorMessage)
-        setProfile(null)
+      if (errorMessage.includes('Auth session missing') || errorMessage.includes('Invalid Refresh Token')) {setProfile(null)
         setError(null)
         return
       }
@@ -129,9 +127,7 @@ export function useUserProfile(): UseUserProfileReturn {
             avatar_url: user.user_metadata?.avatar_url || null
           })
         }
-      } catch (fallbackError) {
-        console.debug('Fallback auth check failed:', fallbackError)
-        setProfile(null)
+      } catch (fallbackError) {setProfile(null)
       }
     } finally {
       setIsLoading(false)

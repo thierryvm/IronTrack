@@ -147,41 +147,19 @@ export default function HeaderClient() {
         if (authError || !user) {
           console.debug('Utilisateur non authentifié, pas de chargement notifications')
           return
-        }
-
-        console.debug('🔍 NOTIFICATIONS DEBUG:', { 
-          isAdmin, 
-          isModerator, 
-          userEmail: user.email,
-          userId: user.id,
-          isLoggedIn,
-          hookValues: { isAdmin, isModerator }
-        });
-        console.log('🔍 ÉTAT COMPLET:', {
-          isAdmin, isModerator, isAdminEmail: user.email === 'thierryvm@hotmail.com',
-          shouldLoadTickets: isAdmin || isModerator || user.email === 'thierryvm@hotmail.com'
-        });
-        
-        // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
+        }// SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
         let tickets = null
         let error = null
         
         // Vérification email admin en plus des hooks (fallback de sécurité)
-        const isAdminEmail = user.email === 'thierryvm@hotmail.com';
-        console.log('🎯 EMAIL CHECK:', { userEmail: user.email, isAdminEmail });
-        
-        if (isAdmin || isModerator || isAdminEmail) {
-          console.debug('🎯 Chargement tickets pour admin...');
-          const result = await supabase
+        const isAdminEmail = user.email === 'thierryvm@hotmail.com';if (isAdmin || isModerator || isAdminEmail) {const result = await supabase
             .from('support_tickets')
             .select('*')
             .limit(3)
           tickets = result.data
           error = result.error
           console.debug('📊 Tickets trouvés:', tickets?.length || 0, tickets);
-        } else {
-          console.debug('❌ Pas admin, pas de tickets chargés');
-        }
+        } else {}
           
         // Charger les invitations partenaires en attente
         const { data: partnerRequests, error: partnerError } = await supabase

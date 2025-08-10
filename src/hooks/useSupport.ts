@@ -217,7 +217,6 @@ export const useSupport = () => {
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] getAllTickets - Utilisation de l\'API route admin')
       
       // Utiliser la nouvelle API route sécurisée
       const response = await fetch('/api/admin/tickets', {
