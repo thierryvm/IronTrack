@@ -376,6 +376,18 @@ input[type="submit"] {
   .avoid-notch {
     padding-top: max(1rem, env(safe-area-inset-top));
   }
+  
+  /* Header mobile iOS - éviter status bar */
+  .header-mobile-ios {
+    padding-top: max(12px, env(safe-area-inset-top)) !important;
+  }
+  
+  /* iPhone 14+ avec Dynamic Island */
+  @media screen and (min-device-width: 390px) and (max-device-width: 430px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+    .header-mobile-ios {
+      padding-top: max(18px, env(safe-area-inset-top)) !important;
+    }
+  }
 }
 
 /* Optimisation pour appareils avec bouton home virtuel */

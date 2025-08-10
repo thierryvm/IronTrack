@@ -420,9 +420,9 @@ export default function HeaderClient() {
         </div>
       </header>
       
-      {/* HEADER MOBILE - En haut simplifié */}
+      {/* HEADER MOBILE - En haut simplifié avec support safe areas iPhone */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between items-center px-4 py-3">
+        <div className="flex justify-between items-center px-4 py-3 header-mobile-ios">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-white rounded-lg p-1 shadow-sm">
