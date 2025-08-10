@@ -12,20 +12,35 @@ body {
   width: 100%;
   max-width: 100%;
   position: relative;
+  /* Padding en bas pour compenser la navigation mobile fixe */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Empêcher débordement sur tous éléments */
+/* 🔧 CORRECTION: Espace pour navigation mobile en bas - uniquement sur mobile */
+@media (max-width: 768px) {
+  body {
+    /* Navigation mobile : 60px hauteur réelle + safe area iPhone */
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* Classe utilitaire pour les pages avec navigation mobile */
+.pb-mobile-nav {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px));
+}
+
+/* Empêcher débordement - SAUF containers Tailwind */
 * {
-  max-width: 100%;
   box-sizing: border-box;
 }
 
-/* Container responsive */
-.container {
-  width: 100%;
+/* Empêcher débordement seulement sur images et médias */
+img, video, svg, canvas {
   max-width: 100%;
-  overflow-x: hidden;
+  height: auto;
 }
+
+/* Container responsive - Supprimé, on utilise les classes Tailwind */
 
 /* Safe areas iPhone */
 @supports (padding: max(0px)) {
