@@ -851,9 +851,11 @@ export default function ProfilePage() {
                   onProgressionReload={reloadProgressionStats}
                 />
               )}
+
             </div>
-            {/* Statistiques rapides */}
-            <div className="w-full lg:w-auto">
+            {/* Colonne de droite - Statistiques rapides et tickets de support */}
+            <div className="w-full lg:w-auto space-y-6">
+              {/* Statistiques rapides */}
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-2">
                 <h3 className="text-lg font-bold mb-2">Statistiques rapides</h3>
                 <div className="flex flex-col gap-1">
@@ -868,17 +870,17 @@ export default function ProfilePage() {
                   <div className="flex justify-between"><span>Temps total</span><span>{stats?.totalTime ? `${Math.floor(stats.totalTime / 60)}h${stats.totalTime % 60 ? ' ' + (stats.totalTime % 60) + 'min' : ''}` : '0h'}</span></div>
                 </div>
               </div>
+
+              {/* Mes tickets de support */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <UserTicketsSection />
+              </motion.div>
             </div>
 
-            {/* Section tickets de support */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-8"
-            >
-              <UserTicketsSection />
-            </motion.div>
           </motion.div>
         )}
 
