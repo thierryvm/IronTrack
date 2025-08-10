@@ -53,7 +53,7 @@ export function FormField2025({
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-red-600 flex items-center gap-1"
         >
-          <AlertCircle className="h-3 w-3 flex-shrink-0" />
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
           {error}
         </motion.p>
       )}
@@ -64,13 +64,13 @@ export function FormField2025({
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-green-600 flex items-center gap-1"
         >
-          <CheckCircle className="h-3 w-3 flex-shrink-0" />
+          <CheckCircle className="h-4 w-4 flex-shrink-0" />
           {success}
         </motion.p>
       )}
 
       {helpText && !error && !success && (
-        <p className="text-xs text-gray-500">{helpText}</p>
+        <p className="text-sm text-gray-500">{helpText}</p>
       )}
     </div>
   )

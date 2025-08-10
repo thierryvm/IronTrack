@@ -228,7 +228,7 @@ function ResetPasswordForm() {
                         <motion.div 
                           className={`p-4 rounded-xl text-sm backdrop-blur-md ${
                             message.includes('erreur') || message.includes('Erreur') || message.includes('invalide')
-                              ? 'bg-red-500/20 text-red-200 border border-red-400/30' 
+                              ? 'bg-red-500/20 text-white/80 border border-red-400/30' 
                               : 'bg-green-500/20 text-green-200 border border-green-400/30'
                           }`}
                           initial={{ opacity: 0, y: -10 }}
@@ -282,7 +282,7 @@ function ResetPasswordForm() {
               >
                 <Link 
                   href="/auth" 
-                  className="text-orange-300 hover:text-orange-200 font-medium transition-colors inline-flex items-center space-x-1"
+                  className="text-orange-300 hover:text-white/80 font-medium transition-colors inline-flex items-center space-x-1"
                 >
                   <span>⬅️</span>
                   <span>Retour à la connexion</span>

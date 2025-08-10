@@ -69,10 +69,10 @@ export default function ThemeTestPage() {
             </div>
 
             <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-6 rounded-xl shadow-md">
-              <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-2">
+              <h3 className="text-lg font-semibold text-orange-900 dark:text-white/90 mb-2">
                 Carte Colorée
               </h3>
-              <p className="text-orange-800 dark:text-orange-200">
+              <p className="text-orange-800 dark:text-white/80">
                 Contraste testé : fond coloré avec texte à contraste suffisant (≥4.5:1).
               </p>
               <div className="mt-4">
@@ -132,7 +132,7 @@ export default function ThemeTestPage() {
               
               <div className="p-4 bg-orange-600 text-white rounded-lg">
                 <h3 className="font-semibold">✅ Fond Coloré</h3>
-                <p className="text-orange-100 text-sm mt-2">
+                <p className="text-white/90 text-sm mt-2">
                   Texte blanc sur orange avec contraste suffisant
                 </p>
               </div>

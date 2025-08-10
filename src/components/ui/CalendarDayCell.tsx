@@ -50,7 +50,7 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
     >
       {children}
       {show && (
-        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap" style={{ minWidth: '80px' }}>
+        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap" style={{ minWidth: '120px' }}>
           {text}
         </div>
       )}
@@ -96,7 +96,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
               {sessions.slice(1, 5).map((session, idx) => (
                 <button
                   key={idx}
-                  className="w-4 h-4 rounded-full shadow-sm cursor-pointer hover:scale-125 transition-transform touch-manipulation"
+                  className="w-6 h-6 min-w-[24px] min-h-[24px] rounded-full shadow-sm cursor-pointer hover:scale-110 transition-transform touch-manipulation flex items-center justify-center"
                   style={{
                     background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   }}
@@ -108,7 +108,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 />
               ))}
               {sessions.length > 5 && (
-                <span className="text-xs text-gray-500 ml-1">+{sessions.length - 5}</span>
+                <span className="text-sm text-gray-500 ml-1 min-w-[20px] text-center">+{sessions.length - 5}</span>
               )}
             </div>
           </div>
@@ -117,7 +117,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           sessions.slice(0, 2).map((session) => (
             <div key={session.id} className="flex items-center group">
               <button
-                className="flex-1 min-h-8 flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation"
+                className="flex-1 min-h-[32px] flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation"
                 style={{
                   background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   minWidth: 0,
@@ -143,7 +143,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                     <Avatar
                       src={session.participants[0].avatarUrl}
                       name={session.participants[0].name}
-                      size={16}
+                      size={20}
                       className="mr-1 border border-white shadow-sm bg-white"
                     />
                   </Tooltip>
