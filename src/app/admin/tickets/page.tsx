@@ -59,15 +59,12 @@ export default function AdminTicketsPage() {
   // Charger les tickets - Version finale sans dépendances problématiques  
   const loadTickets = async () => {
     setLoading(true)
-    console.log('[ADMIN_TICKETS] Début chargement des tickets...')
     try {
       const allTickets = await getAllTickets()
-      console.log('[ADMIN_TICKETS] Tickets récupérés:', allTickets?.length || 0)
       setTickets(allTickets)
       await logAdminAction('tickets_viewed', 'tickets')
-      console.log('[ADMIN_TICKETS] Chargement terminé avec succès')
     } catch (error) {
-      console.error('[ERROR] Erreur chargement tickets:', error)
+      console.error('[ERROR] Erreur chargement tickets:', (error as Error).message)
       setTickets([]) // S'assurer qu'on a au moins un tableau vide
     } finally {
       setLoading(false)
@@ -115,38 +112,32 @@ export default function AdminTicketsPage() {
   // Gérer le changement de statut
   const handleStatusChange = async (ticketId: string, newStatus: SupportTicketStatus) => {
     try {
-      console.log('[ADMIN_TICKETS] Changement statut:', ticketId, 'vers', newStatus)
       await updateTicketStatus(ticketId, newStatus)
       await logAdminAction('tickets_viewed', 'tickets')
-      console.log('[ADMIN_TICKETS] Rechargement après changement statut...')
       await loadTickets() // Recharger immédiatement
       
       // Mettre à jour selectedTicket si c'est le ticket modifié
       if (selectedTicket && selectedTicket.id === ticketId) {
         setSelectedTicket({ ...selectedTicket, status: newStatus })
-        console.log('[ADMIN_TICKETS] selectedTicket mis à jour avec nouveau statut:', newStatus)
       }
     } catch (error) {
-      console.error('Erreur mise à jour statut:', error)
+      console.error('Erreur mise à jour statut:', (error as Error).message)
     }
   }
 
   // Gérer le changement de priorité
   const handlePriorityChange = async (ticketId: string, newPriority: SupportTicketPriority) => {
     try {
-      console.log('[ADMIN_TICKETS] Changement priorité:', ticketId, 'vers', newPriority)
       await updateTicketPriority(ticketId, newPriority)
       await logAdminAction('tickets_viewed', 'tickets')
-      console.log('[ADMIN_TICKETS] Rechargement après changement priorité...')
       await loadTickets() // Recharger immédiatement
       
       // Mettre à jour selectedTicket si c'est le ticket modifié
       if (selectedTicket && selectedTicket.id === ticketId) {
         setSelectedTicket({ ...selectedTicket, priority: newPriority })
-        console.log('[ADMIN_TICKETS] selectedTicket mis à jour avec nouvelle priorité:', newPriority)
       }
     } catch (error) {
-      console.error('Erreur mise à jour priorité:', error)
+      console.error('Erreur mise à jour priorité:', (error as Error).message)
     }
   }
 

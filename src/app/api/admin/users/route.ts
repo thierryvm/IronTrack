@@ -130,11 +130,13 @@ export async function GET() {
           
           workoutCount = workoutResult.count || 0
           
-          if (workoutResult.error) {
-            console.warn(`[API ADMIN USERS] Erreur comptage workouts pour ${profile.id}:`, workoutResult.error)
+          if (workoutResult.error && process.env.NODE_ENV === 'development') {
+            console.warn(`[API ADMIN USERS] Erreur comptage workouts:`, workoutResult.error.message)
           }
         } catch (error) {
-          console.warn(`[API ADMIN USERS] Erreur workouts pour ${profile.id}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`[API ADMIN USERS] Erreur workouts:`, (error as Error).message)
+          }
         }
 
         try {
@@ -146,11 +148,13 @@ export async function GET() {
           
           badgeCount = badgeResult.count || 0
           
-          if (badgeResult.error) {
-            console.warn(`[API ADMIN USERS] Erreur comptage badges pour ${profile.id}:`, badgeResult.error)
+          if (badgeResult.error && process.env.NODE_ENV === 'development') {
+            console.warn(`[API ADMIN USERS] Erreur comptage badges:`, badgeResult.error.message)
           }
         } catch (error) {
-          console.warn(`[API ADMIN USERS] Erreur badges pour ${profile.id}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`[API ADMIN USERS] Erreur badges:`, (error as Error).message)
+          }
         }
 
         // Calculer is_banned en fonction de banned_until ET is_banned

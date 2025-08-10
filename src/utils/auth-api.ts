@@ -17,7 +17,6 @@ export async function authenticateRequest(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
     if (authError || !user) {
-      console.log('Auth failed for token:', token.substring(0, 20) + '...')
       return { user: null, error: 'Token invalide ou expiré' }
     }
 
