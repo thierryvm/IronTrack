@@ -301,7 +301,12 @@ export function useRealtimeNotifications() {
           setRealtimeConnected(true)
           setFallbackEnabled(false) // Désactiver fallback
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
-          console.warn('⚠️ Erreur canal realtime, activation du fallback')
+          // En développement, les déconnexions sont normales (Hot Reload)
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('📡 Canal realtime fermé (normal en dev), fallback activé')
+          } else {
+            console.warn('⚠️ Erreur canal realtime, activation du fallback')
+          }
           setRealtimeConnected(false)
           setFallbackEnabled(true) // Activer fallback
         } else if (status === 'TIMED_OUT') {

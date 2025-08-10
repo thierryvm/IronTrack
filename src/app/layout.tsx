@@ -48,6 +48,8 @@ export default function RootLayout({
         {/* Meta pour performance */}
         <meta name="format-detection" content="telephone=no" />
         {/* PRELOAD - Font supprimé (fichier inexistant causait 404) */}
+        {/* Preload logo principal pour éviter warning */}
+        <link rel="preload" href="/logo.png" as="image" />
         {/* Init dark theme early to avoid flash of light theme */}
         <script
           id="theme-init"
