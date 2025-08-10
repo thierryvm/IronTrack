@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-// PERFORMANCE CRITICAL: Garder les animations admin pour UX, optimisées ailleurs
-import { motion, AnimatePresence } from 'framer-motion'
 
 import { 
   LayoutDashboard, 
@@ -209,8 +207,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Mobile */}
-      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      {/* Header Mobile avec support safe areas iPhone */}
+      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between header-mobile-ios">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -250,14 +248,9 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
               <ChevronDown className="h-4 w-4 text-gray-500" />
             </button>
             
-            <AnimatePresence>
-              {userMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-                >
+            {userMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+              >
                   <div className="px-4 py-3 border-b border-gray-100">
                     <p className="text-sm font-medium text-gray-900">{user?.email}</p>
                     <p className="text-xs text-gray-500 capitalize">
@@ -272,9 +265,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                     <LogOut className="h-4 w-4 mr-2" />
                     Se déconnecter
                   </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -339,23 +331,16 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
         </div>
 
         {/* Sidebar Mobile */}
-        <AnimatePresence>
-          {sidebarOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="lg:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-                onClick={() => setSidebarOpen(false)}
-              />
-              
-              <motion.div
-                initial={{ x: '-100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '-100%' }}
-                className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col"
-              >
+        {sidebarOpen && (
+          <>
+            <div
+              className="lg:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+              onClick={() => setSidebarOpen(false)}
+            />
+            
+            <div
+              className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col"
+            >
                 <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
                   <div className="flex items-center space-x-2">
                     <Shield className="h-6 w-6 text-orange-800" />
@@ -396,10 +381,9 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                     )
                   })}
                 </nav>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+            </div>
+          </>
+        )}
 
         {/* Main Content */}
         <div className="flex-1 lg:pl-64">
