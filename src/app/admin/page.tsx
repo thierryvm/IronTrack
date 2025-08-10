@@ -39,24 +39,17 @@ interface RecentActivity {
 }
 
 export default function AdminDashboard() {
-  console.log('[ADMIN_DASHBOARD] 🏁 Composant AdminDashboard rendu')
-  
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
   const [recentTickets, setRecentTickets] = useState<Array<Record<string, unknown>>>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   
-  console.log('[ADMIN_DASHBOARD] 📞 Appel du hook useAdminAuth...')
   const { user, hasPermission, getAdminStats, logAdminAction, loading: authLoading } = useAdminAuth()
-  console.log('[ADMIN_DASHBOARD] ✅ Hook useAdminAuth terminé')
   const router = useRouter()
   const supabase = createClient()
 
-  // Debug du hook admin corrigé
-  console.log('[ADMIN_DASHBOARD] Hook corrigé - User:', user?.email || 'null')
-  console.log('[ADMIN_DASHBOARD] Hook corrigé - hasPermission super_admin:', hasPermission('super_admin'))
-  console.log('[ADMIN_DASHBOARD] Hook corrigé - Role:', user?.role || 'null')
+  // Configuration du hook admin
 
   const quickActions: QuickAction[] = [
     {
@@ -99,25 +92,20 @@ export default function AdminDashboard() {
 
   // Charger les données du dashboard avec protection simple
   const loadDashboardData = useCallback(async () => {
-    console.log('[ADMIN_DASHBOARD] Début chargement dashboard...')
-    
     // Protection simple contre appels simultanés uniquement
     if (refreshing) {
-      console.log('[ADMIN_DASHBOARD] Chargement ignoré (déjà en cours)')
       return
     }
     
     // Throttling léger seulement pour éviter spam
     const now = Date.now()
     if ((now - lastRefreshTime) < REFRESH_COOLDOWN) {
-      console.log('[ADMIN_DASHBOARD] Chargement ignoré (throttling léger)')
       return
     }
     
     setLastRefreshTime(now)
     try {
       setRefreshing(true)
-      console.log('[ADMIN_DASHBOARD] Début récupération stats...')
       
       // Statistiques via API sécurisée (remplacement d'appels admin côté client)
       try {
@@ -176,7 +164,6 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
     } finally {
-      console.log('[ADMIN_DASHBOARD] Fin chargement dashboard')
       setLoading(false)
       setRefreshing(false)
     }
@@ -186,23 +173,13 @@ export default function AdminDashboard() {
   const handleManualRefresh = useCallback(async () => {
     if (refreshing) return
     
-    console.log('[ADMIN_DASHBOARD] Refresh manuel déclenché')
     setStats(null) // Reset stats pour forcer le rechargement
     await loadDashboardData()
   }, [refreshing, loadDashboardData])
 
   useEffect(() => {
-    // Debug des conditions de chargement
-    console.log('[ADMIN_DASHBOARD] useEffect conditions:', {
-      hasModeratorPermission: hasPermission('moderator'),
-      hasStats: !!stats,
-      authLoading: authLoading,
-      shouldLoad: hasPermission('moderator') && !stats && !authLoading
-    })
-    
     // Chargement initial seulement si pas déjà chargé ET auth terminée
     if (hasPermission('moderator') && !stats && !authLoading) {
-      console.log('[ADMIN_DASHBOARD] Chargement initial...')
       setLoading(false) // Met à jour le loading local
       loadDashboardData()
     }
