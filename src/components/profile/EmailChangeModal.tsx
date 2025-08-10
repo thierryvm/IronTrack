@@ -120,10 +120,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
   // Fonction pour envoyer l'email de vérification
   const sendVerificationEmail = async (email: string, token: string) => {
     // Pour le moment, on simule l'envoi d'email
-    // Dans une vraie implémentation, vous utiliseriez un service comme Resend, SendGrid, etc.
-    console.log(`Email de vérification envoyé à ${email} avec token: ${token}`)
-    
-    // Simulation d'un délai d'envoi
+    // Dans une vraie implémentation, vous utiliseriez un service comme Resend, SendGrid, etc.// Simulation d'un délai d'envoi
     await new Promise(resolve => setTimeout(resolve, 1000))
   }
 

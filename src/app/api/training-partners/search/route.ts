@@ -14,11 +14,7 @@ export async function GET(request: NextRequest) {
     
     // Si ça échoue, essayer l'auth par cookies
     if (authResult.error) {
-      if (process.env.NODE_ENV === 'development') {
-
-        console.log('Bearer auth failed, trying cookies...')
-
-      }
+      if (process.env.NODE_ENV === 'development') {}
       authResult = await authenticateRequestCookies()
     }
     
@@ -70,7 +66,6 @@ export async function GET(request: NextRequest) {
     global.searchLimiter.set(userId, [...recentSearches, now])
 
     // SÉCURITÉ : Recherche exacte uniquement (insensible à la casse pour plus de facilité)
-    console.log('Recherche pour:', sanitizedQuery, 'par utilisateur:', user.id.substring(0, 8))
     
     const { data: users, error } = await supabase
       .from('profiles')
@@ -81,10 +76,8 @@ export async function GET(request: NextRequest) {
     
     if (process.env.NODE_ENV === 'development') {
 
-    
       console.log('Résultats trouvés:', users?.length || 0, 'utilisateurs')
 
-    
     }
     if (error) console.log('Erreur SQL:', error)
 

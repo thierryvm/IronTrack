@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/auth-api'
 
-export async function GET(request: NextRequest) {
-  console.log(`[API LOG] /api/training-partners/sharing/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
-  try {
+export async function GET(request: NextRequest) {try {
     const { user, error: authError, supabase } = await authenticateRequest(request)
     
     if (authError || !user || !supabase) {
@@ -35,9 +33,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PATCH(request: NextRequest) {
-  console.log(`[API LOG] /api/training-partners/sharing/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
-  try {
+export async function PATCH(request: NextRequest) {try {
     const { user, error: authError, supabase } = await authenticateRequest(request)
     
     if (authError || !user || !supabase) {

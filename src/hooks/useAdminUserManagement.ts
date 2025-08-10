@@ -161,7 +161,6 @@ export const useAdminUserManagement = () => {
       try {
         await logAdminAction('update_user_role', 'user_account', userId, { new_role: newRole })
       } catch (logError) {
-        console.warn('Erreur lors du logging admin action:', logError)
       }
 
       // Mettre à jour localement l'utilisateur au lieu de recharger toute la liste
@@ -233,7 +232,6 @@ export const useAdminUserManagement = () => {
       try {
         await logAdminAction('ban_user', 'user_account', userId, { banned_until, ban_reason })
       } catch (logError) {
-        console.warn('Erreur lors du logging admin action:', logError)
       }
 
       // Mettre à jour localement l'utilisateur banni
@@ -287,7 +285,6 @@ export const useAdminUserManagement = () => {
       try {
         await logAdminAction('delete_user', 'user_account', userId)
       } catch (logError) {
-        console.warn('Erreur lors du logging admin action:', logError)
       }
 
       // Retirer l'utilisateur de la liste locale

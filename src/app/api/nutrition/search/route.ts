@@ -334,9 +334,7 @@ function transformProduct(product: OpenFoodFactsProduct): NutritionSearchResult 
   }
 }
 
-export async function GET(request: NextRequest) {
-  console.log(`[API LOG] /api/nutrition/search/route.ts - ${request?.method || 'UNKNOWN'} appelé à`, new Date().toISOString());
-  try {
+export async function GET(request: NextRequest) {try {
     // Récupérer l'IP du client
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     
@@ -368,7 +366,6 @@ export async function GET(request: NextRequest) {
 
     // Construire l'URL OpenFoodFacts avec paramètres sécurisés et optimisés
     const searchUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(sanitizedQuery)}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,brands,nutriments,quantity,image_front_url,categories&sort_by=unique_scans_n`
-
 
     // Effectuer la requête avec timeout
     const controller = new AbortController()

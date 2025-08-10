@@ -87,14 +87,8 @@ export default function AdminLogsPage() {
       
       setLogs(apiLogs || [])
       setTotalLogs(Math.min(meta?.total || 0, MAX_LOGS_TOTAL))
-      setCurrentPage(page)
-      
-      console.log(`[ADMIN_LOGS] Chargé ${apiLogs?.length || 0} logs via API`)
-
-      // Log de consultation (déjà fait par l'API)
-      if (page === 1 && apiLogs?.length) {
-        console.log('[ADMIN_LOGS] Consultation logs enregistrée via API')
-      }
+      setCurrentPage(page)// Log de consultation (déjà fait par l'API)
+      if (page === 1 && apiLogs?.length) {}
 
     } catch (error) {
       console.error('Erreur chargement logs admin:', error)

@@ -8,9 +8,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 export async function GET() {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/activity/route.ts - GET appelé à`, new Date().toISOString());
-  }
+  if (process.env.NODE_ENV === 'development') {}
   
   try {
     const cookieStore = await cookies()

@@ -32,9 +32,6 @@ export default function AdminSettingsPage() {
   }
 
   // Debug des permissions
-  console.log('[ADMIN_SETTINGS] User:', user)
-  console.log('[ADMIN_SETTINGS] hasPermission super_admin:', hasPermission('super_admin'))
-  console.log('[ADMIN_SETTINGS] User role:', user?.role)
 
   if (!hasPermission('super_admin')) {
     return (

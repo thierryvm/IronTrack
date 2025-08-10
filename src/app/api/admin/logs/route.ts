@@ -22,9 +22,7 @@ interface AdminLog {
 }
 
 export async function GET(request: Request) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/logs - appelé à`, new Date().toISOString());
-  }
+  if (process.env.NODE_ENV === 'development') {}
   
   try {
     const { searchParams } = new URL(request.url)

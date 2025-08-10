@@ -23,9 +23,7 @@ interface AdminStats {
 }
 
 export async function GET() {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/stats/route.ts - appelé à`, new Date().toISOString());
-  }
+  if (process.env.NODE_ENV === 'development') {}
   try {
     const cookieStore = await cookies()
     

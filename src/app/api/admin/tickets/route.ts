@@ -27,9 +27,7 @@ interface AdminTicket {
 }
 
 export async function GET() {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/tickets - appelé à`, new Date().toISOString());
-  }
+  if (process.env.NODE_ENV === 'development') {}
   
   try {
     const cookieStore = await cookies()
@@ -85,10 +83,7 @@ export async function GET() {
       const { data: rpcTickets, error: rpcError } = await supabase
         .rpc('get_admin_tickets_with_users')
 
-      if (!rpcError && rpcTickets && Array.isArray(rpcTickets)) {
-        console.log(`[API ADMIN TICKETS] RPC réussie: ${rpcTickets.length} tickets`)
-        
-        // Log de l'accès
+      if (!rpcError && rpcTickets && Array.isArray(rpcTickets)) {// Log de l'accès
         await supabase.from('admin_logs').insert({
           admin_id: session.user.id,
           action: 'view_tickets_admin',
@@ -102,13 +97,7 @@ export async function GET() {
         })
 
         return NextResponse.json({ tickets: rpcTickets })
-      }
-      
-      console.log(`[API ADMIN TICKETS] RPC échec, fallback manuel:`, rpcError?.message)
-      
-    } catch (rpcError) {
-      console.log(`[API ADMIN TICKETS] Erreur RPC, fallback manuel:`, rpcError)
-    }
+      }} catch (rpcError) {}
 
     // Fallback : récupération manuelle avec jointures
     const { data: ticketsData, error: ticketsError } = await supabase

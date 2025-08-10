@@ -43,9 +43,7 @@ export function useAuth(): UseAuthReturn {
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.debug('Auth state change:', event)
-        }
+        if (process.env.NODE_ENV === 'development') {}
         setUser(session?.user ?? null)
         setIsLoading(false)
       }

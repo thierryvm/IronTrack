@@ -7,10 +7,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-export async function GET() {
-  console.log(`[API LOG] /api/admin/test-auth - appelé à`, new Date().toISOString());
-  
-  try {
+export async function GET() {try {
     const cookieStore = await cookies()
     
     const supabase = createServerClient(
