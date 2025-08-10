@@ -426,6 +426,7 @@ export default function HeaderClient() {
                 <button
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                   className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+                  aria-label={`Notifications${notificationCount > 0 ? ` (${notificationCount} non lues)` : ''}`}
                 >
                   <Bell className="w-5 h-5" />
                   {notificationCount > 0 && (
@@ -440,6 +441,8 @@ export default function HeaderClient() {
                   <button
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="flex items-center p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    aria-label="Ouvrir menu profil"
+                    aria-expanded={isProfileDropdownOpen}
                   >
                     {userAvatar ? (
                       <img src={userAvatar} alt="Avatar" className="w-8 h-8 rounded-full" />

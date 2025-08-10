@@ -199,7 +199,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                   <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
                 )}
                 <p className={`text-sm ${
-                  isSuccess ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+                  isSuccess ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-white/80'
                 }`}>
                   {message}
                 </p>
