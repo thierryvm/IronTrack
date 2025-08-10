@@ -15,19 +15,23 @@ export const useAdminRole = () => {
   useEffect(() => {
     const checkAdminRole = async () => {
       try {
+        console.log('[ADMIN_ROLE DEBUG] Starting checkAdminRole...')
         setLoading(true)
         const supabase = createClient()
         
         // Vérifier l'authentification
         const { data: { user }, error: userError } = await supabase.auth.getUser()
+        console.log('[ADMIN_ROLE DEBUG] User check:', { email: user?.email, userId: user?.id, userError })
         
         if (userError || !user) {
+          console.log('[ADMIN_ROLE DEBUG] No user or user error, setting roles to false')
           setIsAdmin(false)
           setIsModerator(false)
           return
         }
 
         // Vérifier le rôle admin (sans redirection)
+        console.log('[ADMIN_ROLE DEBUG] Checking roles for user:', user.id)
         const { data: roleData, error: roleError } = await supabase
           .from('user_roles')
           .select('role, is_active, expires_at')
@@ -36,7 +40,10 @@ export const useAdminRole = () => {
           .eq('is_active', true)
           .maybeSingle()
 
+        console.log('[ADMIN_ROLE DEBUG] Role query result:', { roleData, roleError })
+
         if (roleError || !roleData) {
+          console.log('[ADMIN_ROLE DEBUG] No role found or role error, setting roles to false')
           setIsAdmin(false)
           setIsModerator(false)
           return
@@ -44,6 +51,7 @@ export const useAdminRole = () => {
 
         // Vérifier expiration
         if (roleData.expires_at && new Date(roleData.expires_at) < new Date()) {
+          console.log('[ADMIN_ROLE DEBUG] Role expired, setting roles to false')
           setIsAdmin(false)
           setIsModerator(false)
           return
@@ -53,6 +61,7 @@ export const useAdminRole = () => {
         const hasAdminRole = roleData.role === 'admin' || roleData.role === 'super_admin'
         const hasModeratorRole = ['moderator', 'admin', 'super_admin'].includes(roleData.role)
 
+        console.log('[ADMIN_ROLE DEBUG] Setting roles:', { hasAdminRole, hasModeratorRole, role: roleData.role })
         setIsAdmin(hasAdminRole)
         setIsModerator(hasModeratorRole)
 
@@ -61,6 +70,7 @@ export const useAdminRole = () => {
         setIsAdmin(false)
         setIsModerator(false)
       } finally {
+        console.log('[ADMIN_ROLE DEBUG] Setting loading to false')
         setLoading(false)
       }
     }
