@@ -129,7 +129,7 @@ self.addEventListener('fetch', (event) => {
   }
   
   if (isNextDevResource(event.request.url)) {
-    console.log('🚫 SW: Ressource Next.js dev ignorée');
+    // Mode dev - ignorer silencieusement
     return; // Laisser passer sans cache
   }
   
@@ -199,7 +199,7 @@ async function handleStaticAsset(request) {
   // SÉCURITÉ: Vérifier schéma HTTP avant cache.put
   const url = new URL(request.url);
   if (!url.protocol.startsWith('http')) {
-    console.warn('SW: Schéma non-HTTP ignoré pour cache:', request.url);
+    // Extension Chrome - ignorer silencieusement
     return fetch(request); // Passer au navigateur sans cache
   }
   

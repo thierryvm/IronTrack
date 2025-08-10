@@ -36,8 +36,12 @@ export const useAdminAuth = () => {
 
   // Vérifier les permissions admin
   const checkAdminPermissions = useCallback(async (userId: string): Promise<AdminUser | null> => {
+    // Timeout pour éviter loading infini sur admin
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8000) // 8s max
+    
     try {
-      // 1. Vérifier le rôle dans la table user_roles
+      // 1. Vérifier le rôle dans la table user_roles avec timeout
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role, granted_at, is_active, expires_at')
@@ -85,15 +89,19 @@ export const useAdminAuth = () => {
         // Erreur de logging non critique
       }
 
-      return {
+      const adminUser = {
         id: userId,
         email: authUser.email,
         role: roleData.role as 'admin' | 'super_admin' | 'moderator',
         granted_at: roleData.granted_at,
         is_active: roleData.is_active
       }
+      
+      clearTimeout(timeoutId)
+      return adminUser
     } catch (error) {
-      // Vérification des permissions échouée
+      clearTimeout(timeoutId)
+      // Vérification des permissions échouée ou timeout
       return null
     }
   }, [supabase])

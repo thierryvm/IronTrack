@@ -56,14 +56,14 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   const router = useRouter()
   const { user, loading, error, isAuthenticated, hasPermission, logAdminAction } = useAdminAuth()
   
-  // DEBUGGING: Log l'état d'authentification
+  // Log auth state réduit - seulement erreurs ou succès initial
   useEffect(() => {
-    console.log('[ADMIN_LAYOUT] État auth:', {
-      user: user ? `${user.email} (${user.role})` : null,
-      loading,
-      error,
-      isAuthenticated
-    })
+    if (error || (!loading && isAuthenticated && user)) {
+      console.log('[ADMIN_LAYOUT] Auth:', {
+        user: user ? `${user.email} (${user.role})` : 'none',
+        status: error ? 'error' : 'authenticated'
+      })
+    }
   }, [user, loading, error, isAuthenticated])
   const supabase = createClient()
 
