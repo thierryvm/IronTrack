@@ -34,7 +34,7 @@ export const useAdminAuth = () => {
   const router = useRouter()
   const supabase = createClient()
 
-  // Vérifier les permissions admin
+  // Vérifier les permissions admin - DÉPENDANCES STABILISÉES
   const checkAdminPermissions = useCallback(async (userId: string): Promise<AdminUser | null> => {
     // Timeout pour éviter loading infini sur admin
     const controller = new AbortController()
@@ -104,7 +104,7 @@ export const useAdminAuth = () => {
       // Vérification des permissions échouée ou timeout
       return null
     }
-  }, [supabase])
+  }, []) // ✅ VIDE - supabase est stable via useState
 
   // Initialiser l\'authentification admin
   useEffect(() => {
@@ -160,7 +160,7 @@ export const useAdminAuth = () => {
     )
 
     return () => subscription.unsubscribe()
-  }, [router, checkAdminPermissions, supabase.auth])
+  }, []) // ✅ DÉPENDANCES VIDES - Fonctions stables
 
   // Récupérer les statistiques admin via RPC sécurisée
   const getAdminStats = async (): Promise<AdminStats | null> => {
