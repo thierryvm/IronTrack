@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, ReactNode } from 'react'
+import React, { createContext, useContext, ReactNode, useMemo, useCallback } from 'react'
 import { useAdminAuth as useAdminAuthHook, AdminUser, AdminStats } from '@/hooks/useAdminAuth'
 
 interface AdminAuthContextType {
@@ -34,18 +34,18 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   // UNE SEULE instance du hook d'auth pour toute l'app admin
   const authState = useAdminAuthHook()
   
-  // 🚀 SOLUTION CRITIQUE: Ajouter refreshUserRoles pour rafraîchissement après modification
-  const refreshUserRoles = async () => {
+  // ✅ CORRECTION CRITIQUE: Mémoriser refreshUserRoles pour éviter re-création
+  const refreshUserRoles = useCallback(async () => {
     // Rafraîchissement user_roles demandé
     await authState.recheckPermissions()
     // Rafraîchissement user_roles terminé
-  }
+  }, [authState.recheckPermissions])
   
-  // Enrichir authState avec la fonction de rafraîchissement
-  const contextValue = {
+  // ✅ CORRECTION CRITIQUE: Mémoriser contextValue pour éviter re-renders infinis
+  const contextValue = useMemo(() => ({
     ...authState,
     refreshUserRoles
-  }
+  }), [authState, refreshUserRoles])
   
   // État partagé admin géré par le provider
 

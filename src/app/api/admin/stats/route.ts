@@ -46,9 +46,9 @@ export async function GET() {
     )
     
     // 🔒 1. Vérification authentification
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
     
-    if (sessionError || !session?.user) {
+    if (sessionError || !user) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
@@ -56,7 +56,7 @@ export async function GET() {
     const { data: adminRole, error: roleError } = await supabase
       .from('user_roles')
       .select('role, is_active, expires_at')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .eq('is_active', true)
       .in('role', ['moderator', 'admin', 'super_admin'])
       .single()
@@ -75,7 +75,7 @@ export async function GET() {
 
     // 📊 4. Log de l'accès
     await supabase.from('admin_logs').insert({
-      admin_id: session.user.id,
+      admin_id: user.id,
       action: 'view_admin_stats',
       target_type: 'admin_api',
       details: {

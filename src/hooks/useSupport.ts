@@ -369,7 +369,7 @@ export const useSupport = () => {
   }, [supabase])
 
   // Ajouter une réponse admin à un ticket
-  const addTicketResponse = async (ticketId: string, message: string, isFromAdmin: boolean = false): Promise<boolean> => {
+  const addTicketResponse = async (ticketId: string, message: string, isFromAdmin: boolean = false, isInternal: boolean = false): Promise<boolean> => {
     try {
       setLoading(true)
       setError(null)
@@ -379,25 +379,40 @@ export const useSupport = () => {
         throw new Error('Utilisateur non authentifié')
       }
 
+      console.log('[DEBUG] addTicketResponse - Insertion tentative:', {
+        ticket_id: ticketId,
+        user_id: user.id,
+        message: message.slice(0, 50) + '...',
+        is_internal: isInternal,
+        is_from_admin: isFromAdmin
+      })
+
       const { error } = await supabase
         .from('ticket_responses')
         .insert({
           ticket_id: ticketId,
           user_id: user.id,
           message,
-          is_internal: isFromAdmin, // Correction: is_internal au lieu de is_from_admin
+          is_internal: isInternal, // ✅ CORRECTION CRITIQUE: Séparer admin et interne !
           is_solution: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('[DEBUG] addTicketResponse - Erreur insertion:', error)
+        throw error
+      }
+      
+      console.log('[DEBUG] addTicketResponse - Insertion réussie!')
 
-      // Mettre à jour le statut du ticket
+      // Mettre à jour le statut du ticket - SEULEMENT POUR LES ADMINS
       if (isFromAdmin) {
         await updateTicketStatus(ticketId, 'waiting_user')
+        console.log('[DEBUG] addTicketResponse - Statut mis à jour vers waiting_user')
       } else {
-        await updateTicketStatus(ticketId, 'in_progress')
+        // Les utilisateurs normaux ne changent pas le statut - c'est aux admins de le faire
+        console.log('[DEBUG] addTicketResponse - Utilisateur normal, pas de changement de statut')
       }
 
       return true
@@ -421,17 +436,10 @@ export const useSupport = () => {
 
       console.log('[DEBUG] getTicketWithResponses - Récupération directe pour ticket:', ticketId)
       
-      // Récupérer le ticket avec le profil utilisateur
+      // Récupérer le ticket avec le profil utilisateur (méthode simplifiée)
       const { data: ticketData, error: ticketError } = await supabase
         .from('support_tickets')
-        .select(`
-          *,
-          profiles!support_tickets_user_id_fkey (
-            full_name,
-            email,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('id', ticketId)
         .single()
 
@@ -445,11 +453,51 @@ export const useSupport = () => {
         return { ticket: null, responses: [] }
       }
 
-      // Récupérer les réponses du ticket sans jointure 
-      const { data: responsesData, error: responsesError } = await supabase
+      // Enrichir avec le profil utilisateur séparément
+      let enrichedTicket = ticketData
+      if (ticketData.user_id) {
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, avatar_url')
+          .eq('id', ticketData.user_id)
+          .single()
+
+        if (userProfile) {
+          enrichedTicket = {
+            ...ticketData,
+            profiles: userProfile,
+            user_email: userProfile.email || ticketData.user_email
+          }
+        }
+      }
+
+      // ✅ CORRECTION CRITIQUE: Filtrer les notes internes pour utilisateurs normaux
+      const { data: { user } } = await supabase.auth.getUser()
+      let responseQuery = supabase
         .from('ticket_responses')
         .select('*')
         .eq('ticket_id', ticketId)
+      
+      // Vérifier si l'utilisateur est admin
+      let isAdmin = false
+      if (user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .in('role', ['admin', 'super_admin', 'moderator'])
+          .eq('is_active', true)
+          .maybeSingle()
+        
+        isAdmin = !!roleData
+      }
+      
+      // Si utilisateur normal, filtrer les notes internes
+      if (!isAdmin) {
+        responseQuery = responseQuery.eq('is_internal', false)
+      }
+      
+      const { data: responsesData, error: responsesError } = await responseQuery
         .order('created_at', { ascending: true })
 
       if (responsesError) {
@@ -482,13 +530,13 @@ export const useSupport = () => {
       }
 
       console.log('[DEBUG] Ticket récupéré avec succès:', {
-        ticketId: ticketData.id,
-        title: ticketData.title,
+        ticketId: enrichedTicket.id,
+        title: enrichedTicket.title,
         responsesCount: enrichedResponses.length
       })
 
       return {
-        ticket: ticketData as SupportTicket,
+        ticket: enrichedTicket as SupportTicket,
         responses: enrichedResponses as TicketResponse[]
       }
 

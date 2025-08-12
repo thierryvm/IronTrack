@@ -104,7 +104,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
       setLoading(false)
 
     } catch (err) {
-      console.error('Erreur lors du changement d\'email:', err)
+      console.error('[SECURITY] Erreur lors du changement d\'email:', (err as Error)?.message || 'Erreur inconnue')
       setError('Une erreur inattendue s\'est produite')
       setLoading(false)
     }

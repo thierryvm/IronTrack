@@ -51,9 +51,9 @@ export async function GET() {
     )
     
     // 🔒 1. Vérification authentification
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
     
-    if (sessionError || !session?.user) {
+    if (sessionError || !user) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
@@ -61,7 +61,7 @@ export async function GET() {
     const { data: adminProfile, error: profileError } = await supabase
       .from('profiles')
       .select('role, is_banned')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
     
     if (profileError || !adminProfile) {
@@ -85,7 +85,7 @@ export async function GET() {
 
       if (!rpcError && rpcTickets && Array.isArray(rpcTickets)) {// Log de l'accès
         await supabase.from('admin_logs').insert({
-          admin_id: session.user.id,
+          admin_id: user.id,
           action: 'view_tickets_admin',
           target_type: 'admin_api',
           details: {
@@ -182,7 +182,7 @@ export async function GET() {
 
     // 📊 4. Log de l'accès
     await supabase.from('admin_logs').insert({
-      admin_id: session.user.id,
+      admin_id: user.id,
       action: 'view_tickets_admin_fallback',
       target_type: 'admin_api',
       details: {

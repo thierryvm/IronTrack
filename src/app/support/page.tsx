@@ -778,6 +778,33 @@ export default function SupportPage() {
                         <code className="text-sm bg-orange-100 px-3 py-1 rounded font-mono">docs/INDEX.md</code>
                       </div>
                     </section>
+
+                    {/* Outils de Test */}
+                    <section>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🧪 Outils de Test</h3>
+                      <Link
+                        href="/support/test-bidirectional"
+                        className="block bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 hover:border-blue-300 transition-colors group"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
+                              <MessageSquare className="h-4 w-4 mr-2" />
+                              Test Communication Bidirectionnelle
+                            </h4>
+                            <p className="text-sm text-blue-700 mb-2">
+                              Interface de test pour valider la communication entre utilisateurs et admins dans le système de support.
+                            </p>
+                            <div className="flex items-center space-x-4 text-xs text-blue-600">
+                              <span>• Création tickets automatique</span>
+                              <span>• Test réponses utilisateur/admin</span>
+                              <span>• Validation complète</span>
+                            </div>
+                          </div>
+                          <ArrowRight className="h-5 w-5 text-blue-600 group-hover:text-blue-700" />
+                        </div>
+                      </Link>
+                    </section>
                   </div>
                 </div>
               )}

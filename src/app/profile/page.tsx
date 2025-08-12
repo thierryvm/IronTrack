@@ -16,7 +16,7 @@ const Cropper = dynamic(() => import('react-easy-crop'), {
 import { useBadges } from '@/hooks/useBadges'
 import { useProgressionStats } from '@/hooks/useProgressionStats'
 import { ProfileInfoSection } from '@/components/profile/ProfileInfoSection'
-import { UserTicketsSection } from '@/components/profile/UserTicketsSection'
+// import { UserTicketsSection } from '@/components/profile/UserTicketsSection' // Déplacé vers /notifications
 // import type { TrainingGoal } from '@/types/training-goal.d'; // Non utilisé actuellement
 import type { UserProfile } from '@/types/user-profile';
 import type { UserStats } from '@/types/user-stats';
@@ -872,13 +872,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Mes tickets de support */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <UserTicketsSection />
-              </motion.div>
+              {/* Section tickets déplacée vers /notifications pour centralisation */}
             </div>
 
           </motion.div>

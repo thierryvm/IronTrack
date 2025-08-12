@@ -13,6 +13,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "forceConsistentCasingInFileNames": true,
+    "noResolve": false,
     "plugins": [
       {
         "name": "next"
@@ -20,8 +22,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["node", "react", "react-dom", "jest", "@types/react", "@types/node"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["node_modules", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx", "dist", ".next"]
 }

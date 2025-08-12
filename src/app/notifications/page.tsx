@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { HeadphonesIcon, Users, Calendar, Bell, ArrowLeft, ExternalLink } from 'lucide-react'
+import { HeadphonesIcon, Users, Calendar, Bell, ArrowLeft, ExternalLink, MessageSquare } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useAdminRole } from '@/hooks/useAdminRole'
+import { UserTicketsSection } from '@/components/profile/UserTicketsSection'
 
 interface Notification {
   id: string
@@ -21,75 +22,75 @@ export default function NotificationsPage() {
   const { isAdmin, isModerator, loading: roleLoading } = useAdminRole()
 
   useEffect(() => {
-    console.log('[NOTIFICATIONS DEBUG] useEffect triggered - roleLoading:', roleLoading, 'isAdmin:', isAdmin, 'isModerator:', isModerator)
     
     // Attendre que les rôles soient chargés avant de récupérer les notifications
     if (roleLoading) {
-      console.log('[NOTIFICATIONS DEBUG] Role still loading, waiting...')
       return
     }
 
     const loadAllNotifications = async () => {
       try {
-        console.log('[NOTIFICATIONS DEBUG] Starting loadAllNotifications...')
         const supabase = createClient()
         
-        // Vérifier l'authentification d'abord
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
-        console.log('[NOTIFICATIONS DEBUG] Current user:', user?.email, 'userError:', userError)
+        // Récupérer l'utilisateur connecté pour les tickets personnels
+        const { data: { user } } = await supabase.auth.getUser()
         
-        console.log('[NOTIFICATIONS DEBUG] Loading notifications - isAdmin:', isAdmin, 'isModerator:', isModerator)
-        
-        // SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs
+        // SÉCURITÉ: Charger tickets selon le rôle
         let tickets = null
         let error = null
+        
         if (isAdmin || isModerator) {
-          console.log('[NOTIFICATIONS DEBUG] User has admin/moderator role, fetching support tickets...')
+          // Admin/Modérateurs: TOUS les tickets
           const result = await supabase
             .from('support_tickets')
             .select('*')
+            .in('status', ['open', 'in_progress', 'waiting_user']) // Pas de 'pending' car ENUM DB ne l'a pas
             .order('created_at', { ascending: false })
           tickets = result.data
           error = result.error
-          console.log('[NOTIFICATIONS DEBUG] Support tickets result:', { ticketsCount: tickets?.length || 0, tickets, error })
-        } else {
-          console.log('[NOTIFICATIONS DEBUG] User does NOT have admin/moderator role, skipping support tickets')
+        } else if (user) {
+          // Utilisateurs normaux: UNIQUEMENT leurs propres tickets
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .eq('user_id', user.id)
+            .in('status', ['open', 'in_progress', 'waiting_user'])
+            .order('created_at', { ascending: false })
+          tickets = result.data
+          error = result.error
         }
           
         // Charger toutes les invitations partenaires
-        console.log('[NOTIFICATIONS DEBUG] Fetching partner requests...')
         const { data: partnerRequests, error: partnerError } = await supabase
           .from('training_partners')
           .select('*')
           .eq('status', 'pending')
           .order('created_at', { ascending: false })
-        console.log('[NOTIFICATIONS DEBUG] Partner requests result:', { partnerRequestsCount: partnerRequests?.length || 0, partnerError })
         
-        if (error) console.warn('[NOTIFICATIONS DEBUG] Erreur chargement tickets:', error)
-        if (partnerError) console.warn('[NOTIFICATIONS DEBUG] Erreur chargement invitations:', partnerError)
+        if (error) console.warn('Erreur chargement tickets:', error)
+        if (partnerError) console.warn('Erreur chargement invitations:', partnerError)
         
         const allNotifications: Notification[] = []
         
-        // Ajouter tickets support
+        // Ajouter tickets support avec liens appropriés selon le rôle
         if (tickets) {
-          console.log('[NOTIFICATIONS DEBUG] Processing', tickets.length, 'support tickets')
           tickets.forEach(ticket => {
             allNotifications.push({
               id: `ticket-${ticket.id}`,
               type: 'support',
               message: `Ticket Support: ${ticket.title || ticket.description || 'Nouveau ticket'}`,
               created_at: ticket.created_at || new Date().toISOString(),
-              href: `/admin/tickets/${ticket.id}`,
+              // SÉCURITÉ: Liens différents selon le rôle
+              href: (isAdmin || isModerator) 
+                ? `/admin/tickets/${ticket.id}` 
+                : `/support/tickets/${ticket.id}`,
               description: `Status: ${ticket.status || 'En cours'} • Priorité: ${ticket.priority || 'Normale'}`
             })
           })
-        } else {
-          console.log('[NOTIFICATIONS DEBUG] No support tickets found or user not authorized')
         }
         
         // Ajouter invitations partenaires
         if (partnerRequests) {
-          console.log('[NOTIFICATIONS DEBUG] Processing', partnerRequests.length, 'partner requests')
           partnerRequests.forEach(request => {
             allNotifications.push({
               id: `partner-${request.id}`,
@@ -105,18 +106,11 @@ export default function NotificationsPage() {
         // Trier par date (plus récent d'abord)
         allNotifications.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         
-        console.log('[NOTIFICATIONS DEBUG] Final notifications:', {
-          total: allNotifications.length,
-          supportCount: allNotifications.filter(n => n.type === 'support').length,
-          partnerCount: allNotifications.filter(n => n.type === 'partner').length,
-          notifications: allNotifications
-        })
         setNotifications(allNotifications)
         
       } catch (error) {
-        console.error('[NOTIFICATIONS DEBUG] Error in loadAllNotifications:', error)
+        console.error('Error in loadAllNotifications:', error)
       } finally {
-        console.log('[NOTIFICATIONS DEBUG] Setting loading to false')
         setLoading(false)
       }
     }
@@ -304,13 +298,16 @@ export default function NotificationsPage() {
         <div className="mt-8 p-4 bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800">
           <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Actions rapides</h3>
           <div className="flex flex-wrap gap-3">
-            <Link 
-              href="/admin/tickets" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <HeadphonesIcon className="w-4 h-4" />
-              Gérer tickets support
-            </Link>
+            {/* SÉCURITÉ: Lien admin tickets UNIQUEMENT pour admin/modérateurs */}
+            {(isAdmin || isModerator) && (
+              <Link 
+                href="/admin/tickets" 
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <HeadphonesIcon className="w-4 h-4" />
+                Gérer tickets support
+              </Link>
+            )}
             
             <Link 
               href="/training-partners" 
@@ -328,6 +325,28 @@ export default function NotificationsPage() {
               Contacter le support
             </Link>
           </div>
+        </div>
+
+        {/* 🎫 Section Tickets Support - Sécurisée et Mobile-Optimisée */}
+        <div className="mt-8">
+          <div className="mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                <MessageSquare className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Mes Tickets Support
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Gérez vos demandes de support et suivez leurs réponses
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* 🔒 SÉCURITÉ: Composant avec RLS intégré */}
+          <UserTicketsSection />
         </div>
       </div>
     </div>
