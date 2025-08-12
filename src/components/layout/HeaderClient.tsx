@@ -147,19 +147,34 @@ export default function HeaderClient() {
         if (authError || !user) {
           console.debug('Utilisateur non authentifié, pas de chargement notifications')
           return
-        }// SÉCURITÉ: Charger tickets support UNIQUEMENT pour admins/modérateurs  
+        }
+        
+        // SÉCURITÉ: Charger tickets selon le rôle  
         let tickets = null
         let error = null
         
-        // Vérification email admin en plus des hooks (fallback de sécurité)
-        const isAdminEmail = user.email === '***REDACTED_EMAIL***';if (isAdmin || isModerator || isAdminEmail) {const result = await supabase
+        if (isAdmin || isModerator) {
+          // Admin/Modérateurs: TOUS les tickets
+          const result = await supabase
             .from('support_tickets')
             .select('*')
+            .in('status', ['open', 'in_progress', 'waiting_user'])
             .limit(3)
+            .order('created_at', { ascending: false })
           tickets = result.data
           error = result.error
-          console.debug('📊 Tickets trouvés:', tickets?.length || 0, tickets);
-        } else {}
+        } else if (user) {
+          // Utilisateurs normaux: UNIQUEMENT leurs propres tickets
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .eq('user_id', user.id)
+            .in('status', ['open', 'in_progress', 'waiting_user'])
+            .limit(3)
+            .order('created_at', { ascending: false })
+          tickets = result.data
+          error = result.error
+        }
           
         // Charger les invitations partenaires en attente
         const { data: partnerRequests, error: partnerError } = await supabase
@@ -181,7 +196,10 @@ export default function HeaderClient() {
               type: 'support',
               message: `Ticket: ${ticket.title || ticket.description || 'Support ticket'}`,
               created_at: ticket.created_at || new Date().toISOString(),
-              href: `/admin/tickets/${ticket.id}` // Lien direct vers le ticket admin
+              // SÉCURITÉ: Liens différents selon le rôle
+              href: (isAdmin || isModerator) 
+                ? `/admin/tickets/${ticket.id}` 
+                : `/support/tickets/${ticket.id}`
             })
           })
         }
@@ -320,9 +338,22 @@ export default function HeaderClient() {
                         <div className="max-h-64 overflow-y-auto">
                           {notifications.length > 0 ? (
                             notifications.map((notification) => (
-                              <div key={notification.id} className="p-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                                <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                                <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                              <div key={notification.id} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                {notification.href ? (
+                                  <Link
+                                    href={notification.href}
+                                    className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    onClick={() => setIsNotificationOpen(false)}
+                                  >
+                                    <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                  </Link>
+                                ) : (
+                                  <div className="p-4">
+                                    <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                  </div>
+                                )}
                               </div>
                             ))
                           ) : (
@@ -331,6 +362,17 @@ export default function HeaderClient() {
                             </div>
                           )}
                         </div>
+                        {notifications.length > 0 && (
+                          <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                            <Link
+                              href="/notifications"
+                              className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
+                              onClick={() => setIsNotificationOpen(false)}
+                            >
+                              Voir toutes les notifications
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -529,9 +571,22 @@ export default function HeaderClient() {
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
                   notifications.map((notification) => (
-                    <div key={notification.id} className="p-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                      <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                      <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                    <div key={notification.id} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                      {notification.href ? (
+                        <Link
+                          href={notification.href}
+                          className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                          onClick={() => setIsNotificationOpen(false)}
+                        >
+                          <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
+                          <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                        </Link>
+                      ) : (
+                        <div className="p-4">
+                          <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
+                          <p className="text-xs text-gray-500 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
@@ -540,6 +595,17 @@ export default function HeaderClient() {
                   </div>
                 )}
               </div>
+              {notifications.length > 0 && (
+                <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                  <Link
+                    href="/notifications"
+                    className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
+                    onClick={() => setIsNotificationOpen(false)}
+                  >
+                    Voir toutes les notifications
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}

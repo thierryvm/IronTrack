@@ -29,7 +29,8 @@ export async function GET() {try {
     )
     
     // 🔒 1. Test authentification de base
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
     
     const authResult = {
       hasSession: !!session,
@@ -39,7 +40,7 @@ export async function GET() {try {
       sessionExpires: session?.expires_at || null
     }
     
-    if (sessionError || !session?.user) {
+    if (sessionError || !user) {
       return NextResponse.json({
         success: false,
         message: 'Aucune session utilisateur active',
@@ -53,7 +54,7 @@ export async function GET() {try {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
     
     const profileResult = {
@@ -164,7 +165,7 @@ export async function GET() {try {
 
     // 📊 5. Log du test d'auth
     await supabase.from('admin_logs').insert({
-      admin_id: session.user.id,
+      admin_id: user.id,
       action: 'test_admin_auth',
       target_type: 'admin_api',
       details: {

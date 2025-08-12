@@ -55,9 +55,9 @@ export async function GET(request: Request) {
     )
     
     // 🔒 1. Vérification authentification
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
     
-    if (sessionError ||!session?.user) {
+    if (sessionError ||!user) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
@@ -65,7 +65,7 @@ export async function GET(request: Request) {
     const { data: adminProfile, error: profileError } = await supabase
       .from('profiles')
       .select('role, is_banned')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
     
     if (profileError || !adminProfile) {
@@ -160,7 +160,7 @@ export async function GET(request: Request) {
 
     // 📊 6. Log de l'accès aux logs
     await supabase.from('admin_logs').insert({
-      admin_id: session.user.id,
+      admin_id: user.id,
       action: 'view_admin_logs',
       target_type: 'admin_api',
       details: {

@@ -288,12 +288,15 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                   </div>
                 </div>
 
-                {/* Action pour voir les détails - Futur lien vers une page dédiée */}
+                {/* Action pour voir les détails */}
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <button className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start">
+                  <Link 
+                    href={`/support/tickets/${ticket.id}`}
+                    className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start hover:bg-orange-50 rounded transition-colors"
+                  >
                     <ExternalLink className="h-4 w-4" />
                     Voir les détails et réponses
-                  </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

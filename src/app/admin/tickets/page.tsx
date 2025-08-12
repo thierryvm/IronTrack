@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import DOMPurify from 'dompurify'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useSupport } from '@/hooks/useSupport'
+// import AntiSpamDashboard from '@/components/admin/AntiSpamDashboard'
 import { SupportTicket, SupportTicketPriority, SupportTicketStatus, SupportTicketCategory } from '@/types/support'
 
 // Types pour les filtres
@@ -36,11 +37,27 @@ interface TicketFilters {
 type SortField = 'created_at' | 'priority' | 'status' | 'category'
 type SortDirection = 'asc' | 'desc'
 
+// ✅ Fonction throttle pour éviter appels API excessifs
+const throttle = (func: (...args: any[]) => void, wait: number) => {
+  let lastCall = 0
+  return (...args: any[]) => {
+    const now = Date.now()
+    if (now - lastCall >= wait) {
+      lastCall = now
+      func(...args)
+    }
+  }
+}
+
 export default function AdminTicketsPage() {
+  // Référence pour éviter les doubles appels
+  const initialized = useRef(false)
+  
   const [tickets, setTickets] = useState<SupportTicket[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
   const [showDetails, setShowDetails] = useState(false)
+  // const [activeTab, setActiveTab] = useState<'tickets' | 'antispam'>('tickets')
   
   // États pour les filtres et tri
   const [filters, setFilters] = useState<TicketFilters>({
@@ -56,13 +73,28 @@ export default function AdminTicketsPage() {
   const { logAdminAction, hasPermission } = useAdminAuth()
   const { getAllTickets, updateTicketStatus, updateTicketPriority, refreshSchemaCache } = useSupport()
 
+  // ✅ CORRECTION CRITIQUE: Throttler les logs admin pour éviter appels excessifs
+  const throttledLogAdminAction = useCallback(
+    throttle((action: string, targetType: string) => {
+      logAdminAction(action, targetType)
+    }, 2000), // 2 secondes minimum entre les logs
+    [logAdminAction]
+  )
+
   // Charger les tickets - Version finale sans dépendances problématiques  
-  const loadTickets = async () => {
+  const loadTickets = async (skipLogging = false) => {
     setLoading(true)
     try {
+      console.log('🚨 [ADMIN_LIST_ULTRA] Chargement tickets...')
       const allTickets = await getAllTickets()
+      console.log('🚨 [ADMIN_LIST_ULTRA] Tickets chargés:', allTickets.length)
       setTickets(allTickets)
-      await logAdminAction('tickets_viewed', 'tickets')
+      
+      // ✅ CORRECTION CRITIQUE: Utiliser throttled logging pour éviter boucles
+      if (!skipLogging) {
+        console.log('🚨 [ADMIN_LIST_ULTRA] Throttled logging action...')
+        throttledLogAdminAction('tickets_viewed', 'tickets')
+      }
     } catch (error) {
       console.error('[ERROR] Erreur chargement tickets:', (error as Error).message)
       setTickets([]) // S'assurer qu'on a au moins un tableau vide
@@ -71,10 +103,19 @@ export default function AdminTicketsPage() {
     }
   }
 
-  // Chargement initial au mount - une seule fois
+  // Chargement initial au mount - une seule fois avec protection useRef
   useEffect(() => {
+    // Éviter les doubles appels avec useRef
+    if (initialized.current) return
+    initialized.current = true
+
+    console.log('🚨 [ADMIN_LIST_ULTRA] Initialisation UNIQUE')
     loadTickets()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+    // Cleanup function pour reset lors des changements de route
+    return () => {
+      initialized.current = false
+    }
   }, []) // Volontairement vide pour un seul appel au mount
 
   // Filtrer et trier les tickets
@@ -113,8 +154,7 @@ export default function AdminTicketsPage() {
   const handleStatusChange = async (ticketId: string, newStatus: SupportTicketStatus) => {
     try {
       await updateTicketStatus(ticketId, newStatus)
-      await logAdminAction('tickets_viewed', 'tickets')
-      await loadTickets() // Recharger immédiatement
+      await loadTickets(true) // PATCH: Skip logging pour éviter boucle
       
       // Mettre à jour selectedTicket si c'est le ticket modifié
       if (selectedTicket && selectedTicket.id === ticketId) {
@@ -129,8 +169,7 @@ export default function AdminTicketsPage() {
   const handlePriorityChange = async (ticketId: string, newPriority: SupportTicketPriority) => {
     try {
       await updateTicketPriority(ticketId, newPriority)
-      await logAdminAction('tickets_viewed', 'tickets')
-      await loadTickets() // Recharger immédiatement
+      await loadTickets(true) // PATCH: Skip logging pour éviter boucle
       
       // Mettre à jour selectedTicket si c'est le ticket modifié
       if (selectedTicket && selectedTicket.id === ticketId) {
@@ -154,6 +193,7 @@ export default function AdminTicketsPage() {
   // Fonctions d'affichage
   const getStatusIcon = (status: SupportTicketStatus) => {
     const icons = {
+      'pending': <Clock className="h-4 w-4 text-yellow-500" />,
       'open': <Clock className="h-4 w-4 text-blue-500" />,
       'in_progress': <AlertTriangle className="h-4 w-4 text-orange-800" />,
       'waiting_user': <MessageCircle className="h-4 w-4 text-purple-500" />,
@@ -165,6 +205,7 @@ export default function AdminTicketsPage() {
 
   const getStatusLabel = (status: SupportTicketStatus) => {
     const labels = {
+      'pending': 'En attente',
       'open': 'Ouvert',
       'in_progress': 'En cours',
       'waiting_user': 'Attente utilisateur',
@@ -244,7 +285,7 @@ export default function AdminTicketsPage() {
             <button
               onClick={async () => {
                 await refreshSchemaCache()
-                await loadTickets()
+                await loadTickets(true) // PATCH: Skip logging
               }}
               className="flex items-center px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               title="Forcer le refresh du cache schema et recharger"
@@ -253,7 +294,7 @@ export default function AdminTicketsPage() {
               Fix Cache
             </button>
             <button
-              onClick={loadTickets}
+              onClick={() => loadTickets(true)} // PATCH: Skip logging
               className="flex items-center px-3 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               Actualiser
@@ -293,6 +334,7 @@ export default function AdminTicketsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   >
                     <option value="all">Tous les statuts</option>
+                    <option value="pending">En attente</option>
                     <option value="open">Ouvert</option>
                     <option value="in_progress">En cours</option>
                     <option value="waiting_user">Attente utilisateur</option>
@@ -325,7 +367,7 @@ export default function AdminTicketsPage() {
 
       {/* Liste des tickets */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        {filteredAndSortedTickets.length === 0 ? (
+          {filteredAndSortedTickets.length === 0 ? (
           <div className="text-center py-12">
             <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun ticket trouvé</h3>
@@ -387,8 +429,8 @@ export default function AdminTicketsPage() {
                     key={ticket.id} 
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => {
-                      setSelectedTicket(ticket)
-                      setShowDetails(true)
+                      // 🔄 REDIRECTION vers page dédiée au lieu du modal
+                      window.location.href = `/admin/tickets/${ticket.id}`
                     }}
                   >
                     {/* Date */}
@@ -511,7 +553,7 @@ export default function AdminTicketsPage() {
             </table>
           </div>
         )}
-      </div>
+        </div>
 
       {/* Modal de détails du ticket */}
       <AnimatePresence>
@@ -653,6 +695,7 @@ export default function AdminTicketsPage() {
                               onChange={(e) => handleStatusChange(selectedTicket.id, e.target.value as SupportTicketStatus)}
                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             >
+                              <option value="pending">En attente</option>
                               <option value="open">Ouvert</option>
                               <option value="in_progress">En cours</option>
                               <option value="waiting_user">Attente utilisateur</option>

@@ -39,9 +39,9 @@ export async function POST(request: Request) {
     )
     
     // 🔒 1. Vérification authentification
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
     
-    if (sessionError || !session?.user) {
+    if (sessionError || !user) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     const { data: adminRole, error: roleError } = await supabase
       .from('user_roles')
       .select('role')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .eq('is_active', true)
       .in('role', ['super_admin']) // Seuls les super admins peuvent bannir
       .single()
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     // 📊 6. Log de l'action critique
     await supabase.from('admin_logs').insert({
-      admin_id: session.user.id,
+      admin_id: user.id,
       action: ban ? 'ban_user' : 'unban_user',
       target_type: 'user_account',
       target_id: userId,

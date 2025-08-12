@@ -427,12 +427,12 @@ function checkRateLimit(userId: string): boolean {
   
   // Vérifier limites
   if (counter.minuteCount >= SECURITY_CONFIG.MAX_UPLOADS_PER_MINUTE) {
-    console.warn('[SECURITY] Rate limit exceeded (minute):', userId)
+    console.warn('[SECURITY] Rate limit exceeded (minute):', userId.slice(-8))
     return false
   }
   
   if (counter.dailyCount >= SECURITY_CONFIG.MAX_DAILY_UPLOADS) {
-    console.warn('[SECURITY] Rate limit exceeded (daily):', userId)
+    console.warn('[SECURITY] Rate limit exceeded (daily):', userId.slice(-8))
     return false
   }
   
@@ -625,7 +625,7 @@ export async function uploadSecureFile(
       uploadedAt: new Date().toISOString()
     }
     
-    // 7. Log de sécurité
+    // 7. Log de sécurité (aucune donnée sensible logged)
     
     return {
       success: true,
@@ -633,7 +633,7 @@ export async function uploadSecureFile(
     }
     
   } catch (error) {
-    console.error('[SECURITY] File upload failed:', error)
+    console.error('[SECURITY] File upload failed:', error instanceof FileUploadError ? error.message : 'Erreur inconnue')
     
     return {
       success: false,

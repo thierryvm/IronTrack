@@ -33,8 +33,9 @@ export async function PATCH(
     }
 
     // Vérifier que le statut est valide
-    const validStatuses = ['open', 'in_progress', 'pending', 'resolved', 'closed', 'archived']
+    const validStatuses = ['open', 'in_progress', 'waiting_user', 'pending', 'resolved', 'closed', 'archived']
     if (!validStatuses.includes(status)) {
+      console.error('Statut reçu:', status, 'Statuts valides:', validStatuses)
       return NextResponse.json({ error: 'Statut invalide' }, { status: 400 })
     }
 

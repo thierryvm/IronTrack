@@ -14,8 +14,7 @@ import {
   Activity,
   AlertTriangle,
   LogOut,
-  ChevronDown,
-  Bell
+  ChevronDown
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -218,16 +217,6 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
         </div>
         
         <div className="flex items-center space-x-2">
-          {/* Notifications badge */}
-          <button className="p-2 rounded-lg hover:bg-gray-100 relative" aria-label="Notifications administrateur">
-            <Bell className="h-5 w-5 text-gray-600" />
-            {stats?.open_tickets && stats.open_tickets > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                {stats.open_tickets > 9 ? '9+' : stats.open_tickets}
-              </span>
-            )}
-          </button>
-          
           {/* User menu mobile */}
           <div className="relative">
             <button
