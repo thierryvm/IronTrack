@@ -198,7 +198,6 @@ export function useRealtimeNotifications() {
   useEffect(() => {
     if (!fallbackEnabled || !user) return
     
-    console.log('🔄 Système de polling activé (fallback)')
     const interval = setInterval(checkForNewNotifications, 30000) // 30 secondes
     
     return () => clearInterval(interval)
@@ -208,7 +207,6 @@ export function useRealtimeNotifications() {
   useEffect(() => {
     if (!user) return
 
-    console.log('📡 Initialisation canal realtime pour les notifications')
     
     const channel = supabase.channel('training-partners-realtime')
       .on(
@@ -220,7 +218,6 @@ export function useRealtimeNotifications() {
           filter: `partner_id=eq.${user.id}`
         },
         async (payload) => {
-          console.log('✅ Nouvelle demande de partenariat reçue (realtime):', payload)
           setRealtimeConnected(true)
           
           // Récupérer les informations du requester
@@ -251,7 +248,6 @@ export function useRealtimeNotifications() {
           filter: `requester_id=eq.${user.id}`
         },
         async (payload) => {
-          console.log('✅ Mise à jour du partenariat (realtime):', payload)
           setRealtimeConnected(true)
           
           if (payload.new.status === 'accepted' && payload.old.status === 'pending') {
@@ -294,16 +290,14 @@ export function useRealtimeNotifications() {
         }
       )
       .subscribe((status) => {
-        console.log('📡 Statut canal realtime:', status)
         
         if (status === 'SUBSCRIBED') {
-          console.log('✅ Canal realtime connecté avec succès')
           setRealtimeConnected(true)
           setFallbackEnabled(false) // Désactiver fallback
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
           // En développement, les déconnexions sont normales (Hot Reload)
           if (process.env.NODE_ENV === 'development') {
-            console.debug('📡 Canal realtime fermé (normal en dev), fallback activé')
+            // Log supprimé pour réduire le bruit console
           } else {
             console.warn('⚠️ Erreur canal realtime, activation du fallback')
           }

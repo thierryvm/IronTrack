@@ -90,7 +90,7 @@ class CacheManager {
     this.syncQueue.push(item);
     this.saveSyncQueue();
     
-    console.log(`Ajouté à la queue sync: ${type}`, item.id);
+    // Log supprimé pour réduire bruit console
     
     // Tenter sync immédiat si en ligne
     if (this.isOnline) {
@@ -103,7 +103,7 @@ class CacheManager {
       return;
     }
     
-    console.log(`Traitement queue sync: ${this.syncQueue.length} éléments`);
+    // Log supprimé pour réduire bruit console
     
     const itemsToSync = [...this.syncQueue];
     this.syncQueue = [];
@@ -111,7 +111,7 @@ class CacheManager {
     for (const item of itemsToSync) {
       try {
         await this.syncItem(item);
-        console.log(`Sync réussi: ${item.type} ${item.id}`);
+        // Log supprimé pour réduire bruit console
         
       } catch (error) {
         console.warn(`Sync échoué: ${item.type} ${item.id}`, error);
@@ -250,7 +250,7 @@ class CacheManager {
           
           if (now - cached.timestamp > oneWeek) {
             localStorage.removeItem(key);
-            console.log('🧹 Image expirée supprimée:', key);
+            // Log supprimé pour réduire bruit console
           }
         } catch (error) {
           localStorage.removeItem(key!); // Supprimer entrée corrompue
@@ -258,7 +258,7 @@ class CacheManager {
       }
     }
     
-    console.log('✅ Nettoyage cache terminé');
+    // Log supprimé pour réduire bruit console
   }
 
   // 📊 MÉTRIQUES ET MONITORING
@@ -293,13 +293,13 @@ class CacheManager {
   private initializeEventListeners(): void {
     window.addEventListener('online', () => {
       this.isOnline = true;
-      console.log('🌐 Connexion rétablie - Processing sync queue');
+      // Log supprimé pour réduire bruit console
       this.processSyncQueue();
     });
 
     window.addEventListener('offline', () => {
       this.isOnline = false;
-      console.log('📡 Connexion perdue - Mode offline actif');
+      // Log supprimé pour réduire bruit console
     });
   }
 
