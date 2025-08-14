@@ -2,14 +2,15 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useInAppBrowserAuth } from '@/hooks/useInAppBrowserAuth';
 
 interface EmailAuthFormProps {
   showGoogleOption?: boolean;
 }
 
-export default function EmailAuthForm({ showGoogleOption = true }: EmailAuthFormProps) {
+export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) {
+  // showGoogleOption utilisé dans les conditions d'affichage des éléments
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,10 +63,7 @@ export default function EmailAuthForm({ showGoogleOption = true }: EmailAuthForm
     setShowForgotPassword(mode === 'forgot');
   };
 
-  const getTitle = () => {
-    if (showForgotPassword) return 'Réinitialiser le mot de passe';
-    return isSignUp ? 'Créer un compte' : 'Se connecter';
-  };
+  // getTitle supprimé - titre maintenant géré par la page parente
 
   const getButtonText = () => {
     if (isLoading) return showForgotPassword ? 'Envoi...' : isSignUp ? 'Inscription...' : 'Connexion...';
@@ -79,20 +77,7 @@ export default function EmailAuthForm({ showGoogleOption = true }: EmailAuthForm
       className="w-full"
     >
       <div className="bg-transparent p-0">
-        {/* Titre adapté */}
-        <div className="text-center mb-6">
-          <motion.p 
-            className="text-white/90 text-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Sparkles className="inline w-4 h-4 mr-1" />
-            {showForgotPassword ? 'Récupère ton accès' : 
-             isSignUp ? 'Rejoins la communauté IronTrack' : 
-             'Content de te revoir !'}
-          </motion.p>
-        </div>
+        {/* Titre supprimé - déjà en haut de la page */}
 
         {/* Messages d'état glassmorphism */}
         {error && (

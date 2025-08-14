@@ -6,6 +6,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+// ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
+export const runtime = "nodejs"
 
 export async function GET() {try {
     const cookieStore = await cookies()

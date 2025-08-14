@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Dumbbell, Heart, Zap, Flower2, Flame } from 'lucide-react'
+import { Dumbbell, Heart, Zap } from 'lucide-react'
 import { ExerciseType } from '@/types/exercise'
 
 interface TypeOption {

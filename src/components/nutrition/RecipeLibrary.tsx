@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { safeJSONStringify } from '@/utils/json'
 import { 
   ChefHat, 
   Search, 
@@ -169,7 +170,7 @@ export default function RecipeLibrary({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+        body: safeJSONStringify({
           is_favorite: !recipe.is_favorite
         })
       })

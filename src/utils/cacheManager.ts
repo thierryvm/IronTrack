@@ -1,11 +1,13 @@
 /**
- * 📦 CACHE MANAGER - Gestion intelligente du cache IronTrack
+ * CACHE MANAGER - Gestion intelligente du cache IronTrack
  * 
  * Implémente les stratégies avancées de la roadmap PWA :
  * - Cache images dynamiques avec compression WebP
  * - Background sync pour données offline
  * - Nettoyage automatique intelligent
  */
+
+import { safeJSONStringify } from '@/utils/json'
 
 export interface CacheOptions {
   maxAge?: number;
@@ -40,7 +42,7 @@ class CacheManager {
     return CacheManager.instance;
   }
 
-  // 🖼️ CACHE IMAGES DYNAMIQUES AVEC COMPRESSION
+  // CACHE IMAGES DYNAMIQUES AVEC COMPRESSION
   async cacheImageWithCompression(url: string, options: CacheOptions = {}): Promise<string> {
     const { maxAge = 7 * 24 * 60 * 60 * 1000, compressionEnabled = true } = options;
     
@@ -75,7 +77,7 @@ class CacheManager {
     }
   }
 
-  // 🔄 BACKGROUND SYNC POUR DONNÉES OFFLINE
+  // BACKGROUND SYNC POUR DONNÉES OFFLINE
   async addToSyncQueue(type: SyncQueueItem['type'], data: any): Promise<void> {
     const item: SyncQueueItem = {
       id: `${type}-${Date.now()}-${Math.random()}`,
@@ -88,7 +90,7 @@ class CacheManager {
     this.syncQueue.push(item);
     this.saveSyncQueue();
     
-    console.log(`📤 Ajouté à la queue sync: ${type}`, item.id);
+    console.log(`Ajouté à la queue sync: ${type}`, item.id);
     
     // Tenter sync immédiat si en ligne
     if (this.isOnline) {
@@ -101,7 +103,7 @@ class CacheManager {
       return;
     }
     
-    console.log(`🔄 Traitement queue sync: ${this.syncQueue.length} éléments`);
+    console.log(`Traitement queue sync: ${this.syncQueue.length} éléments`);
     
     const itemsToSync = [...this.syncQueue];
     this.syncQueue = [];
@@ -109,10 +111,10 @@ class CacheManager {
     for (const item of itemsToSync) {
       try {
         await this.syncItem(item);
-        console.log(`✅ Sync réussi: ${item.type} ${item.id}`);
+        console.log(`Sync réussi: ${item.type} ${item.id}`);
         
       } catch (error) {
-        console.warn(`❌ Sync échoué: ${item.type} ${item.id}`, error);
+        console.warn(`Sync échoué: ${item.type} ${item.id}`, error);
         
         // Retry logic avec exponential backoff
         if (item.retryCount < 3) {
@@ -120,7 +122,7 @@ class CacheManager {
           item.timestamp = Date.now() + (Math.pow(2, item.retryCount) * 1000);
           this.syncQueue.push(item);
         } else {
-          console.error(`💀 Abandon sync après 3 tentatives: ${item.id}`);
+          console.error(`Abandon sync après 3 tentatives: ${item.id}`);
         }
       }
     }
@@ -128,7 +130,7 @@ class CacheManager {
     this.saveSyncQueue();
   }
 
-  // 🎯 SYNC SPÉCIALISÉ PAR TYPE DE DONNÉES
+  // SYNC SPÉCIALISÉ PAR TYPE DE DONNÉES
   private async syncItem(item: SyncQueueItem): Promise<void> {
     switch (item.type) {
       case 'performance':
@@ -147,7 +149,7 @@ class CacheManager {
     const response = await fetch('/api/performances', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: safeJSONStringify(data)
     });
     
     if (!response.ok) {
@@ -160,7 +162,7 @@ class CacheManager {
     const response = await fetch('/api/exercises', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: safeJSONStringify(data)
     });
     
     if (!response.ok) {
@@ -173,7 +175,7 @@ class CacheManager {
     const response = await fetch('/api/workouts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: safeJSONStringify(data)
     });
     
     if (!response.ok) {
@@ -181,7 +183,7 @@ class CacheManager {
     }
   }
 
-  // 🖼️ COMPRESSION D'IMAGES INTELLIGENTE
+  // COMPRESSION D'IMAGES INTELLIGENTE
   private async downloadAndCompressImage(url: string, compress: boolean): Promise<string> {
     if (!compress) {
       return url;

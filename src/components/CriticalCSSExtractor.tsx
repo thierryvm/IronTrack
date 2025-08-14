@@ -137,7 +137,7 @@ export function useDeferredStyles() {
     tailwindLink.href = '/_next/static/css/app.css'
     tailwindLink.media = 'print'
     tailwindLink.onload = function() {
-      // @ts-ignore
+      // @ts-expect-error - this.media not typed in event handler context
       this.media = 'all'
     }
     

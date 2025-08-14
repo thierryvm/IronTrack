@@ -1,8 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+import { createClient } from '@/utils/supabase/client'
+
+// Import des icônes critiques uniquement
 import { 
   Dumbbell, 
   Calendar, 
@@ -21,11 +25,16 @@ import {
   Bell,
   ChevronDown,
   FileText,
-  HeadphonesIcon,
   Activity
 } from 'lucide-react'
-import ThemeToggle from '@/components/ui/ThemeToggle'
-import { createClient } from '@/utils/supabase/client'
+
+// Lazy load du ThemeToggle (non-critique)
+const ThemeToggle = dynamic(() => import('@/components/ui/ThemeToggle'), { 
+  ssr: false,
+  loading: () => <div className="w-8 h-8 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+})
+
+// Import direct du hook (correction erreur hooks React)
 import { useAdminRole } from '@/hooks/useAdminRole'
 
 export default function HeaderClient() {
@@ -66,6 +75,9 @@ export default function HeaderClient() {
   const [notificationCount, setNotificationCount] = useState(0)
   const [notifications, setNotifications] = useState<Array<{id: string, type: string, message: string, created_at: string, href?: string}>>([])
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+
+  // Protection contre les re-chargements multiples
+  const lastAdminState = useRef<boolean | null>(null)
 
   // Vérifier l'état de connexion et récupérer infos utilisateur
   useEffect(() => {
@@ -138,6 +150,13 @@ export default function HeaderClient() {
   useEffect(() => {
     if (!isLoggedIn) return
 
+    // ✅ PROTECTION: Éviter re-chargement si admin state régresse (optimisée)
+    const currentAdminState = isAdmin || isModerator
+    if (lastAdminState.current === true && currentAdminState === false) {
+      return
+    }
+    lastAdminState.current = currentAdminState
+
     const loadNotifications = async () => {
       try {
         const supabase = createClient()
@@ -163,6 +182,8 @@ export default function HeaderClient() {
             .order('created_at', { ascending: false })
           tickets = result.data
           error = result.error
+          if (error) console.error('🔔 [NOTIFICATIONS] Erreur requête tickets:', error)
+          
         } else if (user) {
           // Utilisateurs normaux: UNIQUEMENT leurs propres tickets
           const result = await supabase
@@ -230,6 +251,7 @@ export default function HeaderClient() {
 
     loadNotifications()
   }, [isLoggedIn, isAdmin, isModerator])
+
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -362,17 +384,16 @@ export default function HeaderClient() {
                             </div>
                           )}
                         </div>
-                        {notifications.length > 0 && (
-                          <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-                            <Link
-                              href="/notifications"
-                              className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
-                              onClick={() => setIsNotificationOpen(false)}
+                        {/* Lien permanent vers support/tickets */}
+                        <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                          <Link
+                            href="/notifications"
+                            className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
+                            onClick={() => setIsNotificationOpen(false)}
                             >
-                              Voir toutes les notifications
+                              Voir mes notifications
                             </Link>
                           </div>
-                        )}
                       </div>
                     )}
                   </div>
@@ -395,7 +416,22 @@ export default function HeaderClient() {
                     
                     {/* Dropdown profil desktop */}
                     {isProfileDropdownOpen && (
-                      <div className="absolute top-12 right-0 w-48 bg-white dark:bg-surface-dark rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                      <div className="absolute top-12 right-0 w-64 bg-white dark:bg-surface-dark rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                        {/* Header utilisateur comme sur mobile */}
+                        <div className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center space-x-3">
+                            {userAvatar ? (
+                              <img src={userAvatar} alt="Avatar" className="w-10 h-10 rounded-full" />
+                            ) : (
+                              <div className="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                {userInitials}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{userEmail}</h3>
+                            </div>
+                          </div>
+                        </div>
                         <div className="p-2">
                           {secondaryNav.map((item) => (
                             <Link
@@ -595,17 +631,16 @@ export default function HeaderClient() {
                   </div>
                 )}
               </div>
-              {notifications.length > 0 && (
-                <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-                  <Link
-                    href="/notifications"
-                    className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
-                    onClick={() => setIsNotificationOpen(false)}
-                  >
-                    Voir toutes les notifications
-                  </Link>
-                </div>
-              )}
+              {/* Lien permanent vers support/tickets - Mobile */}
+              <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                <Link
+                  href="/notifications"
+                  className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20 rounded-md transition-colors"
+                  onClick={() => setIsNotificationOpen(false)}
+                >
+                  Voir mes notifications
+                </Link>
+              </div>
             </div>
           </div>
         )}

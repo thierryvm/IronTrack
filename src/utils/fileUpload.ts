@@ -119,22 +119,15 @@ export class FileUploadError extends Error {
  * Valide le type MIME d'un fichier avec fallback pour mobiles/iCloud
  */
 function validateMimeType(file: File): boolean {
-  console.log('[DEBUG] Validating file:', {
-    name: file.name,
-    type: file.type,
-    size: file.size
-  })
   
   // Si le type MIME est défini et reconnu (incluant types vides)
   if ((SECURITY_CONFIG.ALLOWED_MIME_TYPES as readonly string[]).includes(file.type as string)) {
-    console.log('[DEBUG] MIME type accepted:', file.type)
     return true
   }
   
   // Fallback spécial pour iCloud et mobiles
   const ext = file.name.split('.').pop()?.toLowerCase()
   if (ext && (SECURITY_CONFIG.ALLOWED_EXTENSIONS as readonly string[]).includes(ext)) {
-    console.log('[DEBUG] Extension accepted as fallback:', ext)
     return true
   }
   
@@ -145,12 +138,10 @@ function validateMimeType(file: File): boolean {
       'bmp', 'tiff', 'tif', 'svg', 'jfif', 'pjpeg', 'dib', 'ico', 'cur'
     ]
     if (imageExtensions.includes(ext)) {
-      console.log('[DEBUG] Image type with valid extension accepted:', file.type, ext)
       return true
     }
   }
   
-  console.log('[DEBUG] File rejected:', { type: file.type, extension: ext })
   return false
 }
 

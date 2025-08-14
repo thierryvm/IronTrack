@@ -15,16 +15,40 @@ export default function AdminTicketPage() {
   const [responseMessage, setResponseMessage] = useState('')
   const [sendingResponse, setSendingResponse] = useState(false)
   const [isInternalNote, setIsInternalNote] = useState(false)
+  const [adminUsers, setAdminUsers] = useState<Set<string>>(new Set())
+  const [pendingChanges, setPendingChanges] = useState<{status?: string, priority?: string}>({})
+  const [savingChanges, setSavingChanges] = useState(false)
 
   // Protection double chargement simple
   const mountedRef = useRef(false)
+
+  // Fonctions utilitaires pour l'affichage français
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'open': return '🆕 OUVERT'
+      case 'in_progress': return '🔄 EN COURS'
+      case 'waiting_user': return '⏳ EN ATTENTE'
+      case 'resolved': return '✅ RÉSOLU'
+      case 'closed': return '🔒 FERMÉ'
+      default: return status?.toUpperCase() || 'INCONNU'
+    }
+  }
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'low': return '📝 FAIBLE'
+      case 'medium': return '📋 NORMALE'
+      case 'high': return '🔥 ÉLEVÉE'
+      case 'critical': return '🚨 CRITIQUE'
+      default: return priority?.toUpperCase() || 'NORMALE'
+    }
+  }
 
   // Charger les données du ticket une seule fois
   useEffect(() => {
     if (!ticketId || mountedRef.current) return
     mountedRef.current = true
     
-    console.log('🔄 [ADMIN] Chargement ticket:', ticketId.slice(-8))
 
     const loadTicketData = async () => {
       try {
@@ -49,6 +73,18 @@ export default function AdminTicketPage() {
           .maybeSingle()
 
         if (!roleData) throw new Error('Permissions admin insuffisantes')
+        
+        // Charger liste des utilisateurs admin pour affichage
+        const { data: adminUsersList } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .in('role', ['admin', 'super_admin', 'moderator'])
+          .eq('is_active', true)
+        
+        if (adminUsersList) {
+          const adminUserIds = new Set(adminUsersList.map(u => u.user_id))
+          setAdminUsers(adminUserIds)
+        }
         
         // Load ticket
         const { data: ticketData, error: ticketError } = await supabase
@@ -85,7 +121,6 @@ export default function AdminTicketPage() {
         }
         
         setResponses(enrichedResponses)
-        console.log('✅ [ADMIN] Chargement terminé -', enrichedResponses.length, 'réponses')
         
       } catch (err) {
         console.error('❌ [ADMIN] Erreur:', err)
@@ -107,7 +142,6 @@ export default function AdminTicketPage() {
     setSendingResponse(true)
     
     try {
-      console.log('📤 [ADMIN] Envoi réponse...')
       
       const { createClient } = await import('@/utils/supabase/client')
       const supabase = createClient()
@@ -124,28 +158,40 @@ export default function AdminTicketPage() {
           is_internal: isInternalNote,
           is_solution: false
         })
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ [ADMIN] Erreur insert réponse:', error)
+        throw error
+      }
       
-      console.log('✅ [ADMIN] Réponse envoyée')
       setResponseMessage('')
       setIsInternalNote(false)
       
       // Mettre à jour le statut du ticket automatiquement
       const newStatus = isInternalNote ? ticket.status : 'in_progress'
-      await supabase
+      
+      const { error: statusError } = await supabase
         .from('support_tickets')
         .update({ status: newStatus })
         .eq('id', ticketId)
       
-      setTicket((prev: any) => ({ ...prev, status: newStatus }))
+      if (statusError) {
+        console.error('❌ [ADMIN] Erreur update statut:', statusError)
+      } else {
+        setTicket((prev: any) => ({ ...prev, status: newStatus }))
+      }
       
       // Recharger les réponses (sans jointure problématique)
-      const { data: newResponses } = await supabase
+      const { data: newResponses, error: responsesError } = await supabase
         .from('ticket_responses')
         .select('*')
         .eq('ticket_id', ticketId)
         .order('created_at', { ascending: true })
+      
+      if (responsesError) {
+        console.error('❌ [ADMIN] Erreur rechargement réponses:', responsesError)
+      }
 
       // Enrichir avec données utilisateur
       const enrichedNewResponses = []
@@ -171,6 +217,38 @@ export default function AdminTicketPage() {
       setError('Erreur lors de l\'envoi de la réponse')
     } finally {
       setSendingResponse(false)
+    }
+  }
+
+  // Fonction pour sauvegarder les modifications de statut/priorité
+  const handleSaveTicketChanges = async () => {
+    if (Object.keys(pendingChanges).length === 0) return
+
+    setSavingChanges(true)
+    try {
+      const { createClient } = await import('@/utils/supabase/client')
+      const supabase = createClient()
+
+
+      const { error } = await supabase
+        .from('support_tickets')
+        .update(pendingChanges)
+        .eq('id', ticketId)
+        .select()
+      
+      if (error) {
+        console.error('❌ Erreur sauvegarde:', error)
+        setError('Erreur lors de la sauvegarde des modifications')
+      } else {
+        setTicket((prev: any) => ({ ...prev, ...pendingChanges }))
+        setPendingChanges({})
+        setError('')
+      }
+    } catch (err) {
+      console.error('💥 Erreur sauvegarde:', err)
+      setError('Erreur lors de la sauvegarde')
+    } finally {
+      setSavingChanges(false)
     }
   }
 
@@ -244,21 +322,17 @@ export default function AdminTicketPage() {
               ticket.priority === 'medium' ? 'bg-blue-100 text-blue-700' :
               'bg-gray-100 text-gray-700'
             }`}>
-              {ticket.priority === 'critical' ? '🚨 CRITIQUE' :
-               ticket.priority === 'high' ? '🔥 ÉLEVÉE' :
-               ticket.priority === 'medium' ? '📋 NORMALE' : '📝 FAIBLE'}
+              {getPriorityLabel(ticket.priority)}
             </span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               ticket.status === 'resolved' ? 'bg-green-100 text-green-700' :
               ticket.status === 'in_progress' ? 'bg-orange-100 text-orange-700' :
               ticket.status === 'open' ? 'bg-blue-100 text-blue-700' :
               ticket.status === 'closed' ? 'bg-gray-100 text-gray-700' :
+              ticket.status === 'waiting_user' ? 'bg-yellow-100 text-yellow-700' :
               'bg-gray-100 text-gray-700'
             }`}>
-              {ticket.status === 'resolved' ? '✅ RÉSOLU' :
-               ticket.status === 'in_progress' ? '🔄 EN COURS' :
-               ticket.status === 'open' ? '🆕 OUVERT' :
-               ticket.status === 'closed' ? '🔒 FERMÉ' : ticket.status}
+              {getStatusLabel(ticket.status)}
             </span>
           </div>
         </div>
@@ -290,11 +364,12 @@ export default function AdminTicketPage() {
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="text-sm font-medium text-gray-900">
                       {(() => {
-                        // Si c'est une réponse admin (différent du user_id du ticket)
-                        if (response.user_id !== ticket.user_id) {
+                        // Si c'est une note interne ou un admin qui répond
+                        if (response.is_internal || adminUsers.has(response.user_id)) {
                           return 'Équipe Support'
                         }
-                        // Si c'est l'utilisateur du ticket, afficher pseudo ou nom
+                        
+                        // Si c'est l'utilisateur original du ticket
                         const profile = response.profiles
                         return profile?.pseudo || profile?.full_name || profile?.email || 'Utilisateur'
                       })()}
@@ -331,31 +406,18 @@ export default function AdminTicketPage() {
               Statut
             </label>
             <select
-              value={ticket?.status || 'open'}
-              onChange={async (e) => {
-                const newStatus = e.target.value
-                try {
-                  const { createClient } = await import('@/utils/supabase/client')
-                  const supabase = createClient()
-                  
-                  const { error } = await supabase
-                    .from('support_tickets')
-                    .update({ status: newStatus })
-                    .eq('id', ticketId)
-                  
-                  if (!error) {
-                    setTicket((prev: any) => ({ ...prev, status: newStatus }))
-                  }
-                } catch (err) {
-                  console.error('Erreur mise à jour statut:', err)
-                }
+              value={pendingChanges.status ?? ticket?.status ?? 'open'}
+              onChange={(e) => {
+                const selectedStatus = e.target.value
+                setPendingChanges(prev => ({ ...prev, status: selectedStatus }))
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
-              <option value="open">Ouvert</option>
-              <option value="in_progress">En cours</option>
-              <option value="resolved">Résolu</option>
-              <option value="closed">Fermé</option>
+              <option value="open">🆕 Ouvert</option>
+              <option value="in_progress">🔄 En cours</option>
+              <option value="waiting_user">⏳ En attente utilisateur</option>
+              <option value="resolved">✅ Résolu</option>
+              <option value="closed">🔒 Fermé</option>
             </select>
           </div>
           
@@ -365,34 +427,65 @@ export default function AdminTicketPage() {
               Priorité
             </label>
             <select
-              value={ticket?.priority || 'medium'}
-              onChange={async (e) => {
+              value={pendingChanges.priority ?? ticket?.priority ?? 'medium'}
+              onChange={(e) => {
                 const newPriority = e.target.value
-                try {
-                  const { createClient } = await import('@/utils/supabase/client')
-                  const supabase = createClient()
-                  
-                  const { error } = await supabase
-                    .from('support_tickets')
-                    .update({ priority: newPriority })
-                    .eq('id', ticketId)
-                  
-                  if (!error) {
-                    setTicket((prev: any) => ({ ...prev, priority: newPriority }))
-                  }
-                } catch (err) {
-                  console.error('Erreur mise à jour priorité:', err)
-                }
+                setPendingChanges(prev => ({ ...prev, priority: newPriority }))
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
-              <option value="low">Faible</option>
-              <option value="medium">Normale</option>
-              <option value="high">Élevée</option>
-              <option value="critical">Critique</option>
+              <option value="low">📝 Faible</option>
+              <option value="medium">📋 Normale</option>
+              <option value="high">🔥 Élevée</option>
+              <option value="critical">🚨 Critique</option>
             </select>
           </div>
         </div>
+        
+        {/* Bouton de sauvegarde et indicateurs */}
+        {Object.keys(pendingChanges).length > 0 && (
+          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-yellow-700 dark:text-yellow-300">
+                  Modifications non sauvegardées
+                  {pendingChanges.status && ` • Statut: ${pendingChanges.status}`}
+                  {pendingChanges.priority && ` • Priorité: ${pendingChanges.priority}`}
+                </span>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setPendingChanges({})}
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSaveTicketChanges}
+                  disabled={savingChanges}
+                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    savingChanges
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {savingChanges ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Sauvegarde...
+                    </>
+                  ) : (
+                    <>
+                      💾 Enregistrer les modifications
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Formulaire de réponse */}

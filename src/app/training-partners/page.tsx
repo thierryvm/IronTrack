@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Users, UserPlus, Search, Check, X, Clock, Trash2, Settings, MessageCircle, Info } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { safeJSONStringify } from '@/utils/json'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
@@ -215,7 +216,7 @@ export default function TrainingPartnersPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({
+        body: safeJSONStringify({
           action: 'invite',
           partnerId,
           message
@@ -252,7 +253,7 @@ export default function TrainingPartnersPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ action })
+        body: safeJSONStringify({ action })
       })
 
       if (response.ok) {

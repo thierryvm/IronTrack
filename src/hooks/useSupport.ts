@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react'
+import { safeJSONStringify } from '@/utils/json'
+
 import { createClient } from '@/utils/supabase/client'
 import { 
   SupportTicket, 
@@ -231,7 +233,6 @@ export const useSupport = () => {
         const { tickets } = await response.json()
         
         if (tickets && tickets.length > 0) {
-          console.log('[DEBUG] API tickets successful:', tickets.length, 'tickets')
           
           // Transformer les données API au format SupportTicket  
           const transformedTickets: SupportTicket[] = tickets.map((ticket: Record<string, unknown>) => ({
@@ -266,7 +267,6 @@ export const useSupport = () => {
         return []
       }
 
-      console.log('[DEBUG] Fallback - Récupération de', ticketsData.length, 'tickets')
 
       // Récupérer les profils utilisateur séparément
       const userIds = [...new Set(ticketsData.map(ticket => ticket.user_id).filter(Boolean))]
@@ -278,7 +278,6 @@ export const useSupport = () => {
           .in('id', userIds)
 
         if (!profilesError && profilesData) {
-          console.log('[DEBUG] Fallback - Récupération de', profilesData.length, 'profils')
           
           // Créer un index des profils par user_id
           const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]))
@@ -321,7 +320,7 @@ export const useSupport = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: safeJSONStringify({ 
           status: newStatus,
           admin_note: adminNote 
         }),
@@ -379,13 +378,6 @@ export const useSupport = () => {
         throw new Error('Utilisateur non authentifié')
       }
 
-      console.log('[DEBUG] addTicketResponse - Insertion tentative:', {
-        ticket_id: ticketId,
-        user_id: user.id,
-        message: message.slice(0, 50) + '...',
-        is_internal: isInternal,
-        is_from_admin: isFromAdmin
-      })
 
       const { error } = await supabase
         .from('ticket_responses')
@@ -404,15 +396,12 @@ export const useSupport = () => {
         throw error
       }
       
-      console.log('[DEBUG] addTicketResponse - Insertion réussie!')
 
       // Mettre à jour le statut du ticket - SEULEMENT POUR LES ADMINS
       if (isFromAdmin) {
         await updateTicketStatus(ticketId, 'waiting_user')
-        console.log('[DEBUG] addTicketResponse - Statut mis à jour vers waiting_user')
       } else {
         // Les utilisateurs normaux ne changent pas le statut - c'est aux admins de le faire
-        console.log('[DEBUG] addTicketResponse - Utilisateur normal, pas de changement de statut')
       }
 
       return true
@@ -434,7 +423,6 @@ export const useSupport = () => {
       setLoading(true)
       setError(null)
 
-      console.log('[DEBUG] getTicketWithResponses - Récupération directe pour ticket:', ticketId)
       
       // Récupérer le ticket avec le profil utilisateur (méthode simplifiée)
       const { data: ticketData, error: ticketError } = await supabase
@@ -449,7 +437,6 @@ export const useSupport = () => {
       }
 
       if (!ticketData) {
-        console.log('[DEBUG] Aucun ticket trouvé avec ID:', ticketId)
         return { ticket: null, responses: [] }
       }
 
@@ -529,11 +516,6 @@ export const useSupport = () => {
         }))
       }
 
-      console.log('[DEBUG] Ticket récupéré avec succès:', {
-        ticketId: enrichedTicket.id,
-        title: enrichedTicket.title,
-        responsesCount: enrichedResponses.length
-      })
 
       return {
         ticket: enrichedTicket as SupportTicket,
@@ -550,26 +532,6 @@ export const useSupport = () => {
     }
   }, [supabase])
 
-  // Forcer le refresh du cache schema PostgREST (admin uniquement)
-  const refreshSchemaCache = useCallback(async (): Promise<boolean> => {
-    try {
-      // Log admin sécurisé supprimé
-      
-      const { data, error } = await supabase
-        .rpc('refresh_postgrest_schema_cache')
-
-      if (error) {
-        // Log admin sécurisé supprimé
-        return false
-      }
-
-      console.log('[DEBUG] Schema cache refresh result:', data)
-      return true
-    } catch (err) {
-      // Log admin sécurisé supprimé
-      return false
-    }
-  }, [supabase])
 
   return {
     createTicket,
@@ -582,7 +544,6 @@ export const useSupport = () => {
     updateTicketPriority,
     addTicketResponse,
     voteTicket,
-    refreshSchemaCache,
     loading,
     error
   }

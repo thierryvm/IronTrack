@@ -8,6 +8,8 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+// ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
+export const runtime = "nodejs"
 
 interface AdminStats {
   open_tickets: number

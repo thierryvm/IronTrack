@@ -7,6 +7,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+// ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
+export const runtime = "nodejs"
 
 interface AdminTicket {
   id: string
@@ -97,7 +99,9 @@ export async function GET() {
         })
 
         return NextResponse.json({ tickets: rpcTickets })
-      }} catch (rpcError) {}
+      }} catch {
+        // Fallback silencieux vers méthode manuelle
+      }
 
     // Fallback : récupération manuelle avec jointures
     const { data: ticketsData, error: ticketsError } = await supabase

@@ -68,12 +68,12 @@ export default function EmailAuthFormGlassmorphism({
 
   const getTitle = () => {
     if (showForgotPassword) return 'Récupère ton accès';
-    return isSignUp ? 'Rejoins la communauté IronTrack' : 'Content de te revoir !';
+    return isSignUp ? 'Rejoins la communauté IronTrack' : 'Connexion';
   };
 
   const getButtonText = () => {
-    if (isLoading) return showForgotPassword ? '📧 Envoi...' : isSignUp ? '✨ Inscription...' : '🚀 Connexion...';
-    return showForgotPassword ? '🔄 Envoyer le lien de réinitialisation' : isSignUp ? '✨ Créer mon compte' : '🚀 C\'est parti !';
+    if (isLoading) return showForgotPassword ? 'Envoi...' : isSignUp ? 'Inscription...' : 'Connexion...';
+    return showForgotPassword ? 'Envoyer le lien de réinitialisation' : isSignUp ? 'Créer mon compte' : 'Se connecter';
   };
 
   return (
@@ -270,7 +270,7 @@ export default function EmailAuthFormGlassmorphism({
               exit={{ opacity: 0 }}
               whileHover={{ scale: 1.05 }}
             >
-              ⬅️ Retour à la connexion
+              ← Retour à la connexion
             </motion.button>
           ) : (
             <motion.div
@@ -288,7 +288,7 @@ export default function EmailAuthFormGlassmorphism({
                 className="text-orange-300 hover:text-orange-200 font-medium transition-colors block w-full"
                 whileHover={{ scale: 1.05 }}
               >
-                {isSignUp ? '💡 Déjà un compte ? Se connecter' : '🆕 Pas encore de compte ? Créer un compte'}
+                {isSignUp ? 'Déjà un compte ? Se connecter' : 'Pas encore de compte ? Créer un compte'}
               </motion.button>
               
               <AnimatePresence>
@@ -301,7 +301,7 @@ export default function EmailAuthFormGlassmorphism({
                     exit={{ opacity: 0, height: 0 }}
                     whileHover={{ scale: 1.05 }}
                   >
-                    🔑 Mot de passe oublié ?
+                    Mot de passe oublié ?
                   </motion.button>
                 )}
               </AnimatePresence>

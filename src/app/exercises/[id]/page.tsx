@@ -28,7 +28,7 @@ interface PerformanceLog {
 
 export default function ExerciseDetailPage() {
   const params = useParams()
-  const router = useRouter()
+  // const router = useRouter() // Non utilisé actuellement
   const exerciseId = params.id as string
   
   const [exercise, setExercise] = useState<Exercise | null>(null)
