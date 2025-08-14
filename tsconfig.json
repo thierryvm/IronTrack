@@ -26,5 +26,5 @@
     "types": ["node", "react", "react-dom", "jest", "@types/react", "@types/node"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx", "dist", ".next"]
+  "exclude": ["node_modules", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx", "tests/**/*", "**/*.spec.ts", "dist", ".next"]
 }

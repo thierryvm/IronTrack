@@ -25,13 +25,13 @@ export function sanitizeForJSON<T = unknown>(value: T): T {
 
   if (typeof value === 'object') {
     // Avoid Date/Blob/File special objects by shallow copying only plain objects
-    const out: unknown = {}
+    const out: Record<string, unknown> = {}
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
       // Keys are inherently safe in JS, but sanitize anyway
       const safeKey = sanitizeStringUnicode(k)
       out[safeKey] = sanitizeForJSON(v)
     }
-    return out
+    return out as T
   }
 
   return value

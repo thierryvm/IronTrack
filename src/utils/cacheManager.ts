@@ -71,7 +71,7 @@ class CacheManager {
       
       return compressedImage;
       
-    } catch {
+    } catch (error) {
       console.warn('Cache image échoué:', error);
       return url; // Fallback vers URL originale
     }
@@ -113,7 +113,7 @@ class CacheManager {
         await this.syncItem(item);
         // Log supprimé pour réduire bruit console
         
-      } catch {
+      } catch (error) {
         console.warn(`Sync échoué: ${item.type} ${item.id}`, error);
         
         // Retry logic avec exponential backoff
@@ -229,7 +229,7 @@ class CacheManager {
         img.src = URL.createObjectURL(blob);
       });
       
-    } catch {
+    } catch (error) {
       console.warn('Compression image échouée:', error);
       return url; // Fallback
     }
@@ -309,7 +309,7 @@ class CacheManager {
       if (saved) {
         this.syncQueue = JSON.parse(saved);
       }
-    } catch {
+    } catch (error) {
       console.warn('Erreur chargement sync queue:', error);
       this.syncQueue = [];
     }
@@ -318,7 +318,7 @@ class CacheManager {
   private saveSyncQueue(): void {
     try {
       localStorage.setItem(this.SYNC_QUEUE_KEY, JSON.stringify(this.syncQueue));
-    } catch {
+    } catch (error) {
       console.warn('Erreur sauvegarde sync queue:', error);
     }
   }

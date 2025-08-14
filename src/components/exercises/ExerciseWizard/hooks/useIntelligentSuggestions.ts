@@ -32,6 +32,8 @@ const getTemplateBasedSuggestions = async (
     equipment_name?: string
     difficulty: number
     description: string
+    popularity_score?: number
+    is_user_created?: boolean
   }) => ({
     id: `${result.source_type}-${result.id}`,
     name: result.name,
@@ -42,7 +44,7 @@ const getTemplateBasedSuggestions = async (
     difficulty: mapDifficultyFromNumber(result.difficulty),
     description: result.description,
     values: generateDefaultValues(result.exercise_type, result.name),
-    relevanceScore: result.popularity_score + (result.is_user_created ? 100 : 0), // Prioriser exercices persos
+    relevanceScore: (result.popularity_score || 0) + (result.is_user_created ? 100 : 0), // Prioriser exercices persos
     isTemplate: result.source_type === 'template',
     templateId: result.source_type === 'template' ? result.id : undefined
   }))
@@ -278,9 +280,7 @@ export const useIntelligentSuggestions = (exerciseType: 'Musculation' | 'Cardio'
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       
-      if (user) {
-        setUserId(user.id)
-      }
+      // User ID géré par cache directement
       
       // Vérifier le cache d'abord
       const cached = cache.get(exerciseType, user?.id)

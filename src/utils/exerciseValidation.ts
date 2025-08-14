@@ -274,7 +274,7 @@ export function validateImageUrl(imageUrl: unknown): string | null {
 /**
  * Détecte les propriétés dangereuses (prototype pollution, etc.)
  */
-function checkForDangerousProperties(obj: unknown): void {
+function checkForDangerousProperties(obj: Record<string, unknown>): void {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dangerousKeys = [
     '__proto__', 
@@ -283,14 +283,15 @@ function checkForDangerousProperties(obj: unknown): void {
   ]
 
   // Vérification prototype pollution spécifique
-  if ('__proto__' in obj && obj.__proto__ !== Object.prototype) {
+  if ('__proto__' in obj && (obj as Record<string, unknown>).__proto__ !== Object.prototype) {
     throw new Error('Propriétés dangereuses détectées')
   }
 
   // Vérifier si constructor a été modifié
-  if ('constructor' in obj && obj.constructor !== Object) {
+  if ('constructor' in obj && (obj as Record<string, unknown>).constructor !== Object) {
     // Vérifier si c'est une modification malveillante ou juste un objet normal
-    if (obj.constructor && typeof obj.constructor.constructor === 'function') {
+    const constructor = (obj as Record<string, unknown>).constructor
+    if (constructor && typeof (constructor as unknown as Record<string, unknown>).constructor === 'function') {
       throw new Error('Propriétés dangereuses détectées')
     }
   }
@@ -315,7 +316,7 @@ export function validateExerciseUpdateData(data: unknown): ValidationResult<Exer
 
   // Vérification sécurité contre prototype pollution
   try {
-    checkForDangerousProperties(data)
+    checkForDangerousProperties(data as Record<string, unknown>)
   } catch (error) {
     return { isValid: false, errors: [(error as Error).message] }
   }

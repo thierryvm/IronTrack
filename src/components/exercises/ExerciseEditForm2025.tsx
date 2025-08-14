@@ -15,6 +15,7 @@ import { Button2025 } from '@/components/ui/Button2025'
 import { Textarea2025 } from '@/components/ui/Textarea2025'
 import { AdaptiveMetricsForm } from '@/components/exercises/AdaptiveMetricsForm'
 import { validateExerciseClientSide, validateExerciseUpdateData, type ExerciseUpdateData } from '@/utils/exerciseValidation'
+import { CardioMetrics, StrengthMetrics } from '@/types/performance'
 
 interface ExerciseEditForm2025Props {
   exerciseId: string
@@ -55,20 +56,14 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   const [errors, setErrors] = useState<Record<string, string>>({})
   
   // États pour métriques adaptatives (structure simplifiée pour l'UI)
-  const [cardioData, setCardioData] = useState({
-    distance: 0,
+  const [cardioData, setCardioData] = useState<CardioMetrics>({
     duration_seconds: 0,
-    heart_rate: 0,
-    distance_unit: 'km' as const,
-    // Métriques spécialisées
-    stroke_rate: 0,  // rameur
-    watts: 0,        // rameur
-    incline: 0,      // tapis
-    cadence: 0,      // vélo
-    resistance: 1    // vélo
+    distance: 0,
+    distance_unit: 'km',
+    heart_rate: 0
   })
   
-  const [strengthData, setStrengthData] = useState({
+  const [strengthData, setStrengthData] = useState<StrengthMetrics>({
     weight: 0,
     reps: 0,
     sets: 1,
