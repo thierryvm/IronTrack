@@ -58,22 +58,39 @@ export default function ExtensionErrorShield() {
       }
     }
 
-    // Intercepter les runtime.lastError spécifiquement
+    // Intercepter TOUTES les méthodes console pour extensions
     const originalConsoleError = console.error
-    console.error = (...args) => {
+    const originalConsoleWarn = console.warn
+    const originalConsoleLog = console.log
+    
+    const filterExtensionMessages = (...args: any[]) => {
       const message = args.join(' ')
-      if (
+      return (
         message.includes('runtime.lastError') ||
         message.includes('message port closed') ||
         message.includes('Could not establish connection') ||
         message.includes('Receiving end does not exist') ||
-        message.includes('Unchecked runtime.lastError')
-      ) {
-        // Ignorer silencieusement les erreurs d'extensions
-        return
-      }
-      // Appeler console.error original pour autres erreurs
+        message.includes('Unchecked runtime.lastError') ||
+        message.includes('chrome-extension://') ||
+        message.includes('moz-extension://') ||
+        message.includes('Extension context invalidated') ||
+        message.includes('The message port closed before a response was received')
+      )
+    }
+
+    console.error = (...args) => {
+      if (filterExtensionMessages(...args)) return
       originalConsoleError.apply(console, args)
+    }
+
+    console.warn = (...args) => {
+      if (filterExtensionMessages(...args)) return
+      originalConsoleWarn.apply(console, args)
+    }
+
+    console.log = (...args) => {
+      if (filterExtensionMessages(...args)) return
+      originalConsoleLog.apply(console, args)
     }
 
     // Écouter les erreurs d'extensions
@@ -83,6 +100,8 @@ export default function ExtensionErrorShield() {
     // Cleanup
     return () => {
       console.error = originalConsoleError
+      console.warn = originalConsoleWarn
+      console.log = originalConsoleLog
       window.removeEventListener('error', handleExtensionErrors, true)
       window.removeEventListener('unhandledrejection', handleExtensionErrors, true)
     }

@@ -124,7 +124,7 @@ self.addEventListener('fetch', (event) => {
   
   // BLOQUEURS ABSOLUS - Empêcher conflits ULTRAHARDCORE (Production seulement)
   if (isGoogleFonts(event.request.url)) {
-    console.log('🚫 SW: Google Fonts bloqué (ULTRAHARDCORE)');
+    // Google Fonts bloqué silencieusement
     return; // Laisser passer sans cache
   }
   
@@ -295,4 +295,4 @@ setInterval(async () => {
   }
 }, 30 * 60 * 1000); // Toutes les 30 minutes
 
-console.log('🛡️ SW Minimal chargé - Version anti-conflit ULTRAHARDCORE');
+// SW Minimal chargé silencieusement

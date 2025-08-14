@@ -8,7 +8,6 @@ export default function RegisterSW() {
     const isDevelopment = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     
     if (isDevelopment) {
-      console.log('🔧 [DEV] Service Worker désactivé en développement');
       return;
     }
     
@@ -18,11 +17,11 @@ export default function RegisterSW() {
         scope: '/',
         updateViaCache: 'none'
       })
-      .then(registration => {
-        console.log('✅ SW enregistré:', registration.scope);
+      .then(() => {
+        // SW enregistré silencieusement pour éviter pollution console
       })
-      .catch(error => {
-        console.error('❌ SW échec:', error);
+      .catch(() => {
+        // SW échec silencieux - non critique
       });
     }
   }, []);
