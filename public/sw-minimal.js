@@ -38,7 +38,7 @@ const isDevelopment = () => {
 
 // 🔧 INSTALLATION
 self.addEventListener('install', (event) => {
-  console.log('SW Minimal: Installation démarrée');
+  // Installation silencieuse pour éviter pollution console
   
   event.waitUntil(
     Promise.all([
@@ -54,7 +54,7 @@ self.addEventListener('install', (event) => {
         
         return Promise.all(
           oldCaches.map(cacheName => {
-            console.log('🧹 SW Minimal: Suppression ancien cache conflictuel:', cacheName);
+            // Suppression silencieuse
             return caches.delete(cacheName);
           })
         );
@@ -68,24 +68,24 @@ self.addEventListener('install', (event) => {
           '/icon-192.png',
           '/manifest.json'
         ]).catch(error => {
-          console.warn('SW: Erreur cache initial (non-bloquante):', error);
+          // Erreur cache silencieuse
           return Promise.resolve(); // Continue malgré erreur
         });
       })
     ]).then(() => {
-      console.log('✅ SW Minimal: Installation réussie et conflits résolus');
+      // Installation réussie silencieuse
       if (!isDevelopment()) {
         self.skipWaiting(); // Seulement en production
       }
     }).catch(error => {
-      console.warn('SW: Erreur installation (non-fatale):', error);
+      // Erreur installation silencieuse
     })
   );
 });
 
 // 🎯 ACTIVATION
 self.addEventListener('activate', (event) => {
-  console.log('SW Minimal: Activation');
+  // Activation silencieuse
   
   event.waitUntil(
     Promise.all([
@@ -95,7 +95,7 @@ self.addEventListener('activate', (event) => {
           cacheNames
             .filter(cacheName => cacheName.startsWith('irontrack-') && !cacheName.includes(CACHE_VERSION))
             .map(cacheName => {
-              console.log('🧹 Suppression ancien cache:', cacheName);
+              // Suppression silencieuse
               return caches.delete(cacheName);
             })
         );
@@ -105,9 +105,9 @@ self.addEventListener('activate', (event) => {
       !isDevelopment() ? self.clients.claim() : Promise.resolve()
       
     ]).then(() => {
-      console.log('✅ SW Minimal: Activation réussie');
+      // Activation réussie silencieuse
     }).catch(error => {
-      console.warn('SW: Erreur activation (non-fatale):', error);
+      // Erreur activation silencieuse
     })
   );
 });
@@ -118,7 +118,7 @@ self.addEventListener('fetch', (event) => {
   
   // EN DÉVELOPPEMENT : NE RIEN INTERCEPTER DU TOUT
   if (isDevelopment()) {
-    console.log('🔧 SW: Mode dev - laissé passer sans interception:', event.request.url);
+    // Mode dev - laissé passer sans interception silencieuse
     return; // Laisser TOUT passer en développement
   }
   
@@ -181,7 +181,7 @@ async function handleApiRequest(request) {
     return networkResponse;
     
   } catch (error) {
-    console.log('SW: Réseau API échoué, tentative cache');
+    // Réseau API échoué, tentative cache silencieuse
     const cachedResponse = await cache.match(request);
     
     if (cachedResponse) {
@@ -218,14 +218,14 @@ async function handleStaticAsset(request) {
       try {
         cache.put(request, networkResponse.clone());
       } catch (putError) {
-        console.warn('SW: Impossible de mettre en cache:', request.url, putError.message);
+        // Cache put impossible - silencieux
       }
     }
     
     return networkResponse;
     
   } catch (error) {
-    console.warn('SW: Asset non trouvé:', request.url);
+    // Asset non trouvé - silencieux
     throw error;
   }
 }
@@ -237,7 +237,7 @@ async function handleNavigation(request) {
     return networkResponse;
     
   } catch (error) {
-    console.log('SW: Navigation offline, affichage page offline');
+    // Navigation offline - page offline silencieuse
     
     // Fallback vers page offline
     const cache = await caches.open(STATIC_CACHE);
@@ -262,7 +262,7 @@ async function handleDynamicImage(request) {
     }
     return response;
   }).catch(() => {
-    console.log('SW: Mise à jour image échouée (non-critique)');
+    // Mise à jour image échouée - silencieuse
   });
   
   // Retourner cache si disponible, sinon attendre réseau
@@ -288,10 +288,10 @@ setInterval(async () => {
       }
     }
     
-    console.log('🧹 SW: Nettoyage cache automatique effectué');
+    // Nettoyage cache automatique - silencieux
     
   } catch (error) {
-    console.warn('SW: Erreur nettoyage (non-critique):', error);
+    // Erreur nettoyage - silencieuse
   }
 }, 30 * 60 * 1000); // Toutes les 30 minutes
 
