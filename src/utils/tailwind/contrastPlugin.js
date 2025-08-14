@@ -5,7 +5,7 @@
  * garantissant le respect WCAG 2.1 AA dans toute l'application.
  */
 
-const plugin = require('tailwindcss/plugin')
+import plugin from 'tailwindcss/plugin'
 
 const contrastPlugin = plugin(function({ addUtilities, theme }) {
   
@@ -149,4 +149,4 @@ const contrastPlugin = plugin(function({ addUtilities, theme }) {
   }
 })
 
-module.exports = contrastPlugin
+export default contrastPlugin

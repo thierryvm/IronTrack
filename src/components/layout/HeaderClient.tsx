@@ -14,14 +14,11 @@ import {
   Apple, 
   User,
   Users,
-  Menu,
-  X,
   LogOut,
   LogIn,
   Shield,
   Settings,
   HelpCircle,
-  Search,
   Bell,
   ChevronDown,
   FileText,
@@ -38,8 +35,7 @@ const ThemeToggle = dynamic(() => import('@/components/ui/ThemeToggle'), {
 import { useAdminRole } from '@/hooks/useAdminRole'
 
 export default function HeaderClient() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isClosing, setIsClosing] = useState(false)
+  // États de menu désactivés - UI simplifiée mobile 2025
   const pathname = usePathname()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -67,11 +63,8 @@ export default function HeaderClient() {
     ...(isAdmin || isModerator ? [{ name: 'Admin', href: '/admin', icon: Shield }] : []),
   ]
 
-  // États pour les nouveaux features
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  // États pour les features actifs
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<Array<{id: string, type: 'exercise' | 'workout' | 'page', name: string, href: string, description?: string}>>([])
   const [notificationCount, setNotificationCount] = useState(0)
   const [notifications, setNotifications] = useState<Array<{id: string, type: string, message: string, created_at: string, href?: string}>>([])
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
@@ -257,10 +250,6 @@ export default function HeaderClient() {
     const supabase = createClient()
     await supabase.auth.signOut()
     setIsLoggedIn(false)
-    router.push('/auth')
-  }
-  
-  const handleLogin = () => {
     router.push('/auth')
   }
 

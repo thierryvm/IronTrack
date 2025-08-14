@@ -177,7 +177,7 @@ interface OptimizedGalleryProps {
     id: string
   }>
   className?: string
-  onImageClick?: (image: any) => void
+  onImageClick?: (image: { src: string, alt: string, id: string }) => void
 }
 
 export function OptimizedGallery({

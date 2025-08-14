@@ -42,14 +42,7 @@ export default function SharedDashboardPage() {
       setError(null)
       setLoading(true)
 
-      console.log('🔍 Chargement des partenariats...')
       const response = await fetch('/api/training-partners')
-      
-      console.log('📡 Réponse API training-partners:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: response.headers.get('content-type')
-      })
 
       if (!response.ok) {
         const errorText = await response.text()

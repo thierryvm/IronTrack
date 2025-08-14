@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ExerciseSuggestion, UserPreferences } from '@/types/exercise-wizard'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { createClient } from '@/utils/supabase/client'
@@ -23,11 +23,20 @@ const getTemplateBasedSuggestions = async (
   }
   
   // Convertir les résultats en ExerciseSuggestion
-  return (searchResults || []).map((result: any) => ({
+  return (searchResults || []).map((result: {
+    source_type: string
+    id: number
+    name: string
+    exercise_type: string
+    muscle_group: string
+    equipment_name?: string
+    difficulty: number
+    description: string
+  }) => ({
     id: `${result.source_type}-${result.id}`,
     name: result.name,
     label: result.name,
-    type: result.exercise_type as any,
+    type: result.exercise_type as 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement',
     muscle_group: result.muscle_group,
     equipment: result.equipment_name || 'Machine',
     difficulty: mapDifficultyFromNumber(result.difficulty),
@@ -260,7 +269,6 @@ export const useIntelligentSuggestions = (exerciseType: 'Musculation' | 'Cardio'
   const { profile } = useUserProfile()
   const [suggestions, setSuggestions] = useState<ExerciseSuggestion[]>([])
   const [loading, setLoading] = useState(true)
-  const [userId, setUserId] = useState<string | undefined>()
   const cache = useSuggestionCache()
   
   useEffect(() => {
@@ -325,7 +333,8 @@ export const useIntelligentSuggestions = (exerciseType: 'Musculation' | 'Cardio'
   return { suggestions, loading }
 }
 
-// Fonction pour créer des variations avancées
+// Fonction pour créer des variations avancées - Future utilisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createAdvancedVariation(exerciseName: string, exerciseType: 'Musculation' | 'Cardio' | 'Fitness' | 'Étirement' | 'Échauffement'): ExerciseSuggestion | null {
   const name = exerciseName.toLowerCase()
   

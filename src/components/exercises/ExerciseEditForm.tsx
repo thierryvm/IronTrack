@@ -65,7 +65,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
       setExercise(exerciseRes.data)
       setEquipment(equipmentRes.data || [])
       setMuscleGroups(muscleGroupsRes.data || [])
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur chargement:', error)
       setMessage('Erreur lors du chargement de l\'exercice')
     } finally {
@@ -101,7 +101,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
       setTimeout(() => {
         router.push('/exercises')
       }, 2000)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur sauvegarde:', error)
       setMessage('❌ Erreur lors de la sauvegarde')
       setIsSuccess(false)
@@ -110,7 +110,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
     }
   }
 
-  const handleInputChange = (field: keyof ExerciseData, value: any) => {
+  const handleInputChange = (field: keyof ExerciseData, value: string | number | boolean) => {
     if (!exercise) return
     setExercise({ ...exercise, [field]: value })
   }

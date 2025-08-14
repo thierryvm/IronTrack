@@ -127,7 +127,8 @@ export function useUserProfile(): UseUserProfileReturn {
             avatar_url: user.user_metadata?.avatar_url || null
           })
         }
-      } catch (fallbackError) {setProfile(null)
+      } catch {
+        setProfile(null)
       }
     } finally {
       setIsLoading(false)

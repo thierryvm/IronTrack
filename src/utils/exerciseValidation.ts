@@ -152,7 +152,7 @@ export function validateMuscleGroup(muscleGroup: unknown): string {
     throw new Error('Le groupe musculaire doit être une chaîne')
   }
 
-  if (!VALID_MUSCLE_GROUPS.includes(muscleGroup as any)) {
+  if (!VALID_MUSCLE_GROUPS.includes(muscleGroup as typeof VALID_MUSCLE_GROUPS[number])) {
     throw new Error(`Groupe musculaire invalide. Valeurs autorisées: ${VALID_MUSCLE_GROUPS.join(', ')}`)
   }
 
@@ -163,7 +163,7 @@ export function validateMuscleGroup(muscleGroup: unknown): string {
  * Valide le type d'exercice
  */
 export function validateExerciseType(exerciseType: unknown): 'Musculation' | 'Cardio' {
-  if (!VALID_EXERCISE_TYPES.includes(exerciseType as any)) {
+  if (!VALID_EXERCISE_TYPES.includes(exerciseType as typeof VALID_EXERCISE_TYPES[number])) {
     throw new Error(`Type d'exercice invalide. Valeurs autorisées: ${VALID_EXERCISE_TYPES.join(', ')}`)
   }
   
@@ -274,7 +274,8 @@ export function validateImageUrl(imageUrl: unknown): string | null {
 /**
  * Détecte les propriétés dangereuses (prototype pollution, etc.)
  */
-function checkForDangerousProperties(obj: any): void {
+function checkForDangerousProperties(obj: unknown): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dangerousKeys = [
     '__proto__', 
     'constructor', 
@@ -398,7 +399,7 @@ export function validateExerciseClientSide(data: Partial<ExerciseUpdateData>): {
   // Validation groupe musculaire
   if (!data.muscle_group?.trim()) {
     errors.muscle_group = 'Le groupe musculaire est requis'
-  } else if (!VALID_MUSCLE_GROUPS.includes(data.muscle_group as any)) {
+  } else if (!VALID_MUSCLE_GROUPS.includes(data.muscle_group as typeof VALID_MUSCLE_GROUPS[number])) {
     errors.muscle_group = 'Groupe musculaire invalide'
   }
 

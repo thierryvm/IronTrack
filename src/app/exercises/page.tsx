@@ -17,6 +17,16 @@ const ExerciseDetailsModal = dynamic(() =>
   }
 )
 
+// Type pour les données de performance
+interface PerformanceData {
+  exercise_id: number
+  weight?: number
+  reps?: number  
+  distance?: number
+  duration?: number
+  performed_at: string
+}
+
 
 interface Exercise {
   id: number
@@ -79,7 +89,7 @@ async function loadExercisesWithPerformances(page: number) {
     .order('performed_at', { ascending: false });
 
   // 4. Grouper les performances par exercise_id et prendre la plus récente
-  const performanceMap = new Map<number, any>();
+  const performanceMap = new Map<number, PerformanceData>();
   if (performancesData) {
     performancesData.forEach(perf => {
       if (!performanceMap.has(perf.exercise_id)) {

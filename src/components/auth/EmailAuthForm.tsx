@@ -9,8 +9,9 @@ interface EmailAuthFormProps {
   showGoogleOption?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) {
-  // showGoogleOption utilisé dans les conditions d'affichage des éléments
+  // TODO: Implémenter affichage conditionnel Google Auth avec showGoogleOption
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

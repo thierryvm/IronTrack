@@ -3,13 +3,38 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+// Types pour les tickets admin
+interface AdminTicket {
+  id: string
+  title: string
+  category: string
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  status: 'open' | 'in_progress' | 'resolved' | 'closed'
+  created_at: string
+  user_id: string
+  user_email?: string
+}
+
+interface TicketResponse {
+  id: string
+  ticket_id: string
+  user_id: string
+  message: string
+  is_internal: boolean
+  created_at: string
+  profiles?: {
+    email: string
+    full_name?: string
+  }
+}
+
 export default function AdminTicketPage() {
   const params = useParams()
   const router = useRouter()
   const ticketId = params.id as string
   
-  const [ticket, setTicket] = useState<any>(null)
-  const [responses, setResponses] = useState<any[]>([])
+  const [ticket, setTicket] = useState<AdminTicket | null>(null)
+  const [responses, setResponses] = useState<TicketResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [responseMessage, setResponseMessage] = useState('')
@@ -179,7 +204,7 @@ export default function AdminTicketPage() {
       if (statusError) {
         console.error('❌ [ADMIN] Erreur update statut:', statusError)
       } else {
-        setTicket((prev: any) => ({ ...prev, status: newStatus }))
+        setTicket((prev: AdminTicket | null) => prev ? { ...prev, status: newStatus } : null)
       }
       
       // Recharger les réponses (sans jointure problématique)
@@ -240,7 +265,7 @@ export default function AdminTicketPage() {
         console.error('❌ Erreur sauvegarde:', error)
         setError('Erreur lors de la sauvegarde des modifications')
       } else {
-        setTicket((prev: any) => ({ ...prev, ...pendingChanges }))
+        setTicket((prev: AdminTicket | null) => prev ? { ...prev, ...pendingChanges } : null)
         setPendingChanges({})
         setError('')
       }

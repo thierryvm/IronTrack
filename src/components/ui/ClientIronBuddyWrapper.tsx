@@ -1,9 +1,7 @@
 'use client';
 
-import { lazy, Suspense, useEffect, useState } from 'react';
-
-// PERFORMANCE CRITICAL: Defer IronBuddy pour améliorer TBT (-50ms)
-const IronBuddyFAB = lazy(() => import("@/components/ui/IronBuddyFAB-ENRICHED").then(mod => ({ default: mod.IronBuddyFAB })));
+import { useEffect, useState } from 'react';
+import { IronBuddyFAB } from "@/components/ui/IronBuddyFAB-ENRICHED";
 
 export function ClientIronBuddyWrapper() {
   const [showMascot, setShowMascot] = useState(false);
@@ -18,9 +16,5 @@ export function ClientIronBuddyWrapper() {
 
   if (!showMascot) return null;
 
-  return (
-    <Suspense fallback={null}>
-      <IronBuddyFAB />
-    </Suspense>
-  );
+  return <IronBuddyFAB />;
 }

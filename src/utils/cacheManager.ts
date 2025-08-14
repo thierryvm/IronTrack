@@ -18,7 +18,7 @@ export interface CacheOptions {
 export interface SyncQueueItem {
   id: string;
   type: 'performance' | 'exercise' | 'workout';
-  data: any;
+  data: unknown;
   timestamp: number;
   retryCount: number;
 }
@@ -71,14 +71,14 @@ class CacheManager {
       
       return compressedImage;
       
-    } catch (error) {
+    } catch {
       console.warn('Cache image échoué:', error);
       return url; // Fallback vers URL originale
     }
   }
 
   // BACKGROUND SYNC POUR DONNÉES OFFLINE
-  async addToSyncQueue(type: SyncQueueItem['type'], data: any): Promise<void> {
+  async addToSyncQueue(type: SyncQueueItem['type'], data: unknown): Promise<void> {
     const item: SyncQueueItem = {
       id: `${type}-${Date.now()}-${Math.random()}`,
       type,
@@ -113,7 +113,7 @@ class CacheManager {
         await this.syncItem(item);
         // Log supprimé pour réduire bruit console
         
-      } catch (error) {
+      } catch {
         console.warn(`Sync échoué: ${item.type} ${item.id}`, error);
         
         // Retry logic avec exponential backoff
@@ -144,7 +144,7 @@ class CacheManager {
     }
   }
 
-  private async syncPerformance(data: any): Promise<void> {
+  private async syncPerformance(data: unknown): Promise<void> {
     // Synchroniser performance vers Supabase
     const response = await fetch('/api/performances', {
       method: 'POST',
@@ -157,7 +157,7 @@ class CacheManager {
     }
   }
 
-  private async syncExercise(data: any): Promise<void> {
+  private async syncExercise(data: unknown): Promise<void> {
     // Synchroniser exercice vers Supabase
     const response = await fetch('/api/exercises', {
       method: 'POST',
@@ -170,7 +170,7 @@ class CacheManager {
     }
   }
 
-  private async syncWorkout(data: any): Promise<void> {
+  private async syncWorkout(data: unknown): Promise<void> {
     // Synchroniser workout vers Supabase
     const response = await fetch('/api/workouts', {
       method: 'POST',
@@ -229,7 +229,7 @@ class CacheManager {
         img.src = URL.createObjectURL(blob);
       });
       
-    } catch (error) {
+    } catch {
       console.warn('Compression image échouée:', error);
       return url; // Fallback
     }
@@ -252,7 +252,7 @@ class CacheManager {
             localStorage.removeItem(key);
             // Log supprimé pour réduire bruit console
           }
-        } catch (error) {
+        } catch {
           localStorage.removeItem(key!); // Supprimer entrée corrompue
         }
       }
@@ -309,7 +309,7 @@ class CacheManager {
       if (saved) {
         this.syncQueue = JSON.parse(saved);
       }
-    } catch (error) {
+    } catch {
       console.warn('Erreur chargement sync queue:', error);
       this.syncQueue = [];
     }
@@ -318,7 +318,7 @@ class CacheManager {
   private saveSyncQueue(): void {
     try {
       localStorage.setItem(this.SYNC_QUEUE_KEY, JSON.stringify(this.syncQueue));
-    } catch (error) {
+    } catch {
       console.warn('Erreur sauvegarde sync queue:', error);
     }
   }

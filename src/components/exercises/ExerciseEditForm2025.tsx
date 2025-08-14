@@ -461,10 +461,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                     exerciseType={exercise.exercise_type}
                     equipment={equipmentOptions.find(eq => eq.id === exercise.equipment_id)?.name || 'Machine'}
                     exerciseName={exercise.name}
-                    cardioData={cardioData as any}
-                    strengthData={strengthData as any}
-                    setCardioData={setCardioData as any}
-                    setStrengthData={setStrengthData as any}
+                    cardioData={cardioData}
+                    strengthData={strengthData}
+                    setCardioData={setCardioData}
+                    setStrengthData={setStrengthData}
                   />
                 </div>
               )}
