@@ -11,7 +11,9 @@ interface EmailAuthFormGlassmorphismProps {
 }
 
 export default function EmailAuthFormGlassmorphism({ 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSwitchToGoogle, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   showGoogleOption = true 
 }: EmailAuthFormGlassmorphismProps) {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -66,6 +68,7 @@ export default function EmailAuthFormGlassmorphism({
     setShowForgotPassword(mode === 'forgot');
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getTitle = () => {
     if (showForgotPassword) return 'Récupère ton accès';
     return isSignUp ? 'Rejoins la communauté IronTrack' : 'Connexion';

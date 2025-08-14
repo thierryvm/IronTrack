@@ -86,7 +86,7 @@ export const useAdminAuth = () => {
               user_agent: typeof window !== 'undefined' ? navigator.userAgent : 'server'
             }
           })
-      } catch (logError) {
+      } catch {
         // Erreur de logging non critique
       }
 
@@ -100,7 +100,7 @@ export const useAdminAuth = () => {
       
       clearTimeout(timeoutId)
       return adminUser
-    } catch (error) {
+    } catch {
       clearTimeout(timeoutId)
       // Vérification des permissions échouée ou timeout
       return null
@@ -141,7 +141,7 @@ export const useAdminAuth = () => {
         }
 
         setUser(adminUser)
-      } catch (error) {
+      } catch {
         console.error('💥 [ADMIN AUTH] Erreur:', error)
         setError('Erreur d\'authentification admin')
         // Éviter redirection en boucle sur erreur
@@ -190,7 +190,7 @@ export const useAdminAuth = () => {
       }
       
       return null
-    } catch (error) {
+    } catch {
       // Erreur de récupération des statistiques admin
       return null
     }
@@ -219,7 +219,7 @@ export const useAdminAuth = () => {
             user_agent: navigator.userAgent
           }
         })
-    } catch (error) {
+    } catch {
       // Erreur lors du logging de l'action admin
     }
   }, [user, supabase])

@@ -122,7 +122,7 @@ export function ExerciseCard2025({
   }
   
   // Fonction pour obtenir la difficulté normalisée
-  const getDifficultyDisplay = (difficulty: any) => {
+  const getDifficultyDisplay = (difficulty: 'beginner' | 'intermediate' | 'advanced' | null | undefined) => {
     if (!difficulty) {
       return { text: 'Non défini', class: 'bg-gray-100 text-gray-700' }
     }

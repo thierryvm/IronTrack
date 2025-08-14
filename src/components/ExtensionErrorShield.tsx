@@ -63,7 +63,7 @@ export default function ExtensionErrorShield() {
     const originalConsoleWarn = console.warn
     const originalConsoleLog = console.log
     
-    const filterExtensionMessages = (...args: any[]) => {
+    const filterExtensionMessages = (...args: unknown[]) => {
       const message = args.join(' ')
       return (
         message.includes('runtime.lastError') ||

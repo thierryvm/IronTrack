@@ -219,31 +219,6 @@ const faqData: FAQItem[] = [
     answer: 'Vos records personnels sont calculés automatiquement à partir de toutes vos performances d\'entraînement. Le système trouve le poids maximal et le nombre de répétitions maximal pour chaque exercice.',
     category: 'progression'
   },
-  // Documentation et Aide Technique
-  {
-    id: 'tech-1',
-    question: 'Où trouver la documentation technique complète ?',
-    answer: 'La documentation complète est disponible dans le dossier docs/ du projet. Consultez docs/INDEX.md pour un guide complet de tous les documents disponibles, incluant guides développeur, audits de qualité, et solutions techniques.',
-    category: 'technical'
-  },
-  {
-    id: 'tech-2',
-    question: 'Problème avec Node.js v24 - Erreur Jest Worker ?',
-    answer: 'Cette erreur est résolue ! Consultez docs/SOLUTION_JEST_WORKER.md pour la solution complète. Le patch est automatiquement appliqué et l\'application est 100% compatible Node.js v24.',
-    category: 'technical'
-  },
-  {
-    id: 'tech-3',
-    question: 'Comment accéder aux audits de qualité 2025 ?',
-    answer: 'Tous les audits sont dans docs/ : AUDIT_CONTRASTE_2025_COMPLET.md (accessibilité), AUDIT_RESPONSIVE_2025_COMPLET.md (mobile), AUDIT_SECURITE_2025_COMPLET.md (sécurité). Résumé exécutif dans AUDITS_COMPLETS_2025_RESUME_EXECUTIF.md.',
-    category: 'technical'
-  },
-  {
-    id: 'tech-4',
-    question: 'L\'application est-elle sécurisée ?',
-    answer: 'Oui ! Consultez docs/SECURITE_IRONTRACK.md pour le guide complet. L\'application respecte les standards OWASP, utilise RLS Supabase, et a passé un audit sécurité complet en 2025.',
-    category: 'technical'
-  }
 ]
 
 const categories = [
@@ -251,8 +226,7 @@ const categories = [
   { id: 'partners', label: 'Training Partners', icon: Users, count: faqData.filter(f => f.category === 'partners').length },
   { id: 'workouts', label: 'Séances & Exercices', icon: Dumbbell, count: faqData.filter(f => f.category === 'workouts').length },
   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, count: faqData.filter(f => f.category === 'progression').length },
-  { id: 'general', label: 'Général & Mascotte', icon: Calendar, count: faqData.filter(f => f.category === 'general').length },
-  { id: 'technical', label: 'Technique', icon: HelpCircle, count: faqData.filter(f => f.category === 'technical').length }
+  { id: 'general', label: 'Général & Mascotte', icon: Calendar, count: faqData.filter(f => f.category === 'general').length }
 ]
 
 export default function FAQPage() {
@@ -325,6 +299,9 @@ export default function FAQPage() {
                           ? 'bg-purple-50 text-purple-700 border border-purple-200'
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
+                      aria-label={`Filtrer par catégorie ${category.label}`}
+                      aria-pressed={isActive}
+                      type="button"
                     >
                       <div className="flex items-center space-x-3">
                         <Icon className="h-5 w-5" />
@@ -366,6 +343,8 @@ export default function FAQPage() {
                     <button
                       onClick={() => setSearchQuery('')}
                       className="text-purple-600 hover:text-purple-700 font-medium"
+                      aria-label="Effacer la recherche et afficher toutes les questions"
+                      type="button"
                     >
                       Effacer la recherche
                     </button>
@@ -380,16 +359,30 @@ export default function FAQPage() {
                         <button
                           onClick={() => toggleItem(item.id)}
                           className="w-full text-left p-4 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                          aria-expanded={isOpen}
+                          aria-controls={`faq-answer-${item.id}`}
+                          aria-label={`${isOpen ? 'Masquer' : 'Afficher'} la réponse pour: ${item.question}`}
+                          type="button"
                         >
-                          <span className="font-medium text-gray-900 pr-4">{item.question}</span>
+                          <span 
+                            className="font-medium text-gray-900 pr-4" 
+                            id={`faq-question-${item.id}`}
+                          >
+                            {item.question}
+                          </span>
                           {isOpen ? (
-                            <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                            <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" aria-hidden="true" />
                           ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                            <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" aria-hidden="true" />
                           )}
                         </button>
                         {isOpen && (
-                          <div className="px-4 pb-4 border-t border-gray-100">
+                          <div 
+                            className="px-4 pb-4 border-t border-gray-100"
+                            id={`faq-answer-${item.id}`}
+                            role="region"
+                            aria-labelledby={`faq-question-${item.id}`}
+                          >
                             <div className="pt-3 text-gray-700 leading-relaxed">
                               {item.answer}
                             </div>

@@ -14,7 +14,6 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
 import PerformanceOptimizer from '@/components/PerformanceOptimizer'

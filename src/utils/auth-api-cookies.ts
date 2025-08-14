@@ -12,7 +12,7 @@ export async function authenticateRequestCookies() {
     }
 
     return { user, error: null, supabase }
-  } catch (error) {
+  } catch {
     return { user: null, error: 'Erreur d\'authentification' }
   }
 }

@@ -136,7 +136,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
       const supabase = createClient()
 
       // Préparer les données pour la mise à jour
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         performed_at: performance.performed_at,
         notes: performance.notes?.trim() || null,
         updated_at: new Date().toISOString()

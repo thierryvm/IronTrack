@@ -6,6 +6,7 @@
  */
 
 import plugin from 'tailwindcss/plugin'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SAFE_COLORS, SAFE_COLOR_COMBINATIONS } from '../contrastUtils'
 
 const contrastPlugin = plugin(function({ addUtilities, theme }) {

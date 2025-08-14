@@ -38,9 +38,9 @@ type SortField = 'created_at' | 'priority' | 'status' | 'category'
 type SortDirection = 'asc' | 'desc'
 
 // ✅ Fonction throttle pour éviter appels API excessifs
-const throttle = (func: (...args: any[]) => void, wait: number) => {
+const throttle = <T extends unknown[]>(func: (...args: T) => void, wait: number) => {
   let lastCall = 0
-  return (...args: any[]) => {
+  return (...args: T) => {
     const now = Date.now()
     if (now - lastCall >= wait) {
       lastCall = now

@@ -12,7 +12,8 @@ import {
   Activity,
   Shield,
   BarChart3,
-  Eye
+  Eye,
+  FileText
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -82,6 +83,14 @@ export default function AdminDashboard() {
       href: '/admin/logs',
       icon: Activity,
       color: 'purple',
+      permission: 'admin'
+    },
+    {
+      title: 'Documentation Technique',
+      description: 'Guides développeur et audits',
+      href: '/admin/documentation',
+      icon: FileText,
+      color: 'indigo',
       permission: 'admin'
     }
   ]

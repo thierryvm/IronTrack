@@ -117,7 +117,8 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
   }
 
-  // Fonction pour envoyer l'email de vérification
+  // Fonction pour envoyer l'email de vérification  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendVerificationEmail = async (email: string, token: string) => {
     // Pour le moment, on simule l'envoi d'email
     // Dans une vraie implémentation, vous utiliseriez un service comme Resend, SendGrid, etc.// Simulation d'un délai d'envoi

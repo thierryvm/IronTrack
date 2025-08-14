@@ -12,7 +12,7 @@ export function sanitizeStringUnicode(input: string): string {
   return input.replace(LONE_SURROGATE_REGEX, '\uFFFD')
 }
 
-export function sanitizeForJSON<T = any>(value: T): T {
+export function sanitizeForJSON<T = unknown>(value: T): T {
   if (value == null) return value
 
   if (typeof value === 'string') {
@@ -25,11 +25,11 @@ export function sanitizeForJSON<T = any>(value: T): T {
 
   if (typeof value === 'object') {
     // Avoid Date/Blob/File special objects by shallow copying only plain objects
-    const out: any = {}
-    for (const [k, v] of Object.entries(value as any)) {
+    const out: unknown = {}
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
       // Keys are inherently safe in JS, but sanitize anyway
       const safeKey = sanitizeStringUnicode(k)
-      out[safeKey] = sanitizeForJSON(v as any)
+      out[safeKey] = sanitizeForJSON(v)
     }
     return out
   }
@@ -37,7 +37,7 @@ export function sanitizeForJSON<T = any>(value: T): T {
   return value
 }
 
-export function safeJSONStringify(value: any, space?: number): string {
+export function safeJSONStringify(value: unknown, space?: number): string {
   const sanitized = sanitizeForJSON(value)
   return JSON.stringify(sanitized, undefined, space)
 }

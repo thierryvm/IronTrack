@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
   ArrowLeft,
@@ -351,7 +351,7 @@ export default function TicketDetailPage() {
             </h3>
             
             <div className="space-y-4">
-              {responses.map((response, index) => (
+              {responses.map((response) => (
                 <div
                   key={response.id}
                   className={`p-4 rounded-lg border transition-all duration-200 ${

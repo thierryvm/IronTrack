@@ -27,6 +27,7 @@ export default function ProgressCharts({
   progressData = [], 
   muscleGroupData = [], 
   chartType, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedExercise 
 }: ProgressChartsProps) {
   
@@ -56,7 +57,7 @@ export default function ProgressCharts({
           />
           <Tooltip 
             labelFormatter={(label) => `Date: ${label}`}
-            formatter={(value, name) => [`${value} kg`, 'Poids']}
+            formatter={(value) => [`${value} kg`, 'Poids']}
             contentStyle={{
               backgroundColor: '#F9FAFB',
               border: '1px solid #E5E7EB',

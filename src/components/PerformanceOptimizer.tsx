@@ -4,12 +4,10 @@
  */
 'use client'
 
-import { Suspense, lazy, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import IronBuddyFAB from './ui/IronBuddyFAB-ENRICHED'
 // ULTRAHARDCORE: OptimizedHead désactivé
 // import { OptimizedSkeleton } from './OptimizedHead'
-
-// LAZY COMPONENTS CRITIQUES - Chargement différé pour économiser 52KB
-const LazyIronBuddyFAB = lazy(() => import('./ui/IronBuddyFAB-ENRICHED'))
 
 // HOOK: Détection interaction utilisateur pour chargement intelligent
 function useUserInteraction() {
@@ -60,11 +58,7 @@ export function PerformanceOptimizedIronBuddy() {
     return null // Pas de rendu = 0KB JavaScript initial
   }
   
-  return (
-    <Suspense fallback={null}>
-      <LazyIronBuddyFAB />
-    </Suspense>
-  )
+  return <IronBuddyFAB />
 }
 
 // COMPOSANT SIMPLE: Placeholder pour composants lourds (pour l'instant)
@@ -104,7 +98,6 @@ export default function PerformanceOptimizer() {
     // Précharger les ressources critiques APRÈS LCP
     const preloadCriticalResources = () => {
       // DÉSACTIVÉ: Google Fonts causent conflits Service Worker
-      console.log('✅ PerformanceOptimizer: Google Fonts désactivées pour stabilité')
 
       // Préconnecter aux domaines critiques
       const preconnectSupabase = document.createElement('link')

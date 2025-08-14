@@ -2,14 +2,8 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
-import { lazy, Suspense, useState, useEffect } from 'react'
-
-// Lazy load Framer Motion pour éviter le blocage LCP
-const MotionDiv = lazy(() => 
-  import('framer-motion').then(mod => ({ 
-    default: mod.motion.div 
-  }))
-)
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 interface UserGreetingProps {
   className?: string
@@ -61,15 +55,13 @@ export default function UserGreeting({ className = '', showError = false }: User
   return (
     <div className={`text-center ${className}`} style={{ minHeight: '120px' }}>
       {useMotion ? (
-        <Suspense fallback={<div>{content}</div>}>
-          <MotionDiv
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {content}
-          </MotionDiv>
-        </Suspense>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {content}
+        </motion.div>
       ) : (
         <div>{content}</div>
       )}

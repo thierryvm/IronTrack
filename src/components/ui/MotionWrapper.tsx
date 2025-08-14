@@ -31,12 +31,12 @@ const AnimatePresence = dynamic(
 interface MotionWrapperProps {
   children: ReactNode
   type?: 'div' | 'button'
-  initial?: any
-  animate?: any
-  exit?: any
-  transition?: any
-  whileHover?: any
-  whileTap?: any
+  initial?: Record<string, unknown>
+  animate?: Record<string, unknown>
+  exit?: Record<string, unknown>
+  transition?: Record<string, unknown>
+  whileHover?: Record<string, unknown>
+  whileTap?: Record<string, unknown>
   layout?: boolean
   className?: string
   onClick?: () => void

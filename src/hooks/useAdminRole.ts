@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
 /**
@@ -48,7 +48,6 @@ export const useAdminRole = () => {
 
 
       if (roleError || !roleData) {
-        console.log('❌ [ADMIN ROLE] Pas de rôle admin trouvé. Error:', roleError)
         setIsAdmin(false)
         setIsModerator(false)
         return

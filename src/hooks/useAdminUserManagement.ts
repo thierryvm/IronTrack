@@ -144,7 +144,7 @@ export const useAdminUserManagement = () => {
       // Log admin sécurisé supprimé
 
       // Utiliser la nouvelle fonction RPC corrigée
-      const { data, error } = await supabase
+      const { error } = await supabase
         .rpc('admin_change_user_role', {
           target_user_id: userId,
           new_role: newRole
@@ -159,7 +159,7 @@ export const useAdminUserManagement = () => {
       // Logger l'action admin
       try {
         await logAdminAction('update_user_role', 'user_account', userId, { new_role: newRole })
-      } catch (logError) {
+      } catch {
       }
 
       // Mettre à jour localement l'utilisateur au lieu de recharger toute la liste
@@ -177,7 +177,7 @@ export const useAdminUserManagement = () => {
       try {
         await refreshUserRoles()
         // Log admin sécurisé supprimé
-      } catch (refreshError) {
+      } catch {
         // Log admin sécurisé supprimé
         // Ne pas faire échouer toute l'opération pour ça
       }
@@ -229,7 +229,7 @@ export const useAdminUserManagement = () => {
       // Logger l'action admin
       try {
         await logAdminAction('ban_user', 'user_account', userId, { banned_until, ban_reason })
-      } catch (logError) {
+      } catch {
       }
 
       // Mettre à jour localement l'utilisateur banni
@@ -282,7 +282,7 @@ export const useAdminUserManagement = () => {
       // Logger l'action admin
       try {
         await logAdminAction('delete_user', 'user_account', userId)
-      } catch (logError) {
+      } catch {
       }
 
       // Retirer l'utilisateur de la liste locale
