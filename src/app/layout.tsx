@@ -53,10 +53,11 @@ export default function RootLayout({
         {/* Meta pour performance */}
         <meta name="format-detection" content="telephone=no" />
         {/* PRELOAD - Font supprimé (fichier inexistant causait 404) */}
-        {/* Preload logo principal pour éviter warning */}
-        <link rel="preload" href="/logo.png" as="image" />
+        {/* Preload logo supprimé - inexistant, causait warnings */}
         {/* Extension Error Shield - Optimisé en composant séparé */}
         
+        {/* ULTRAHARDCORE: Script d'interception supprimé - causait erreurs Object.defineProperty */}
+
         {/* Theme init - Garde dans head pour performance */}
         <script dangerouslySetInnerHTML={{
           __html: `(function(){try{const s=localStorage.getItem('theme'),d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.remove('dark','light');s==='dark'||(!s&&d)?document.documentElement.classList.add('dark'):document.documentElement.classList.add('light')}catch{document.documentElement.classList[window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'add':'remove']('dark')}})();`

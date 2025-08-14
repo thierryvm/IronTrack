@@ -12,9 +12,7 @@ const RegisterSW = dynamic(() => import("@/components/register-sw"), {
   ssr: false
 });
 
-const ExtensionErrorShield = dynamic(() => import("@/components/ExtensionErrorShield"), {
-  ssr: false
-});
+// ExtensionErrorShield supprimé - maintenant géré directement dans layout.tsx head
 
 interface ClientProvidersProps {
   children: ReactNode
@@ -23,7 +21,6 @@ interface ClientProvidersProps {
 export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
     <>
-      <ExtensionErrorShield />
       <RegisterSW />
       <ThemeProvider>
         {children}

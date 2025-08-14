@@ -58,6 +58,7 @@ interface UserExercise {
 
 // Définir un type pour les logs de performance
 interface PerfLog {
+  id: string;
   performed_at: string;
   weight?: number;
   reps?: number;
@@ -547,10 +548,19 @@ export default function ProgressPage() {
         setLoading(false)
         return
       }
-      // Récupérer toutes les performances de l'utilisateur
+      // Récupérer toutes les performances de l'utilisateur avec gestion des exercices manquants
       const { data: perfLogsRaw } = await supabase
         .from('performance_logs')
-        .select('*, exercise_id, exercises(name, exercise_type, muscle_group_id, muscle_groups(name))')
+        .select(`
+          *,
+          exercise_id,
+          exercises!left (
+            name,
+            exercise_type,
+            muscle_group_id,
+            muscle_groups!left (name)
+          )
+        `)
         .eq('user_id', user.id)
         .order('performed_at', { ascending: true })
       const perfLogs: PerfLog[] = perfLogsRaw as PerfLog[];
@@ -560,6 +570,37 @@ export default function ProgressPage() {
         setLoading(false)
         return
       }
+      
+      // Debug: identifier et supprimer les exercices sans nom
+      const exercisesWithoutName = perfLogs.filter(log => !log.exercises?.name)
+      if (exercisesWithoutName.length > 0) {
+        const orphanedIds = exercisesWithoutName.map(log => log.id).filter(Boolean)
+        const orphanedData = exercisesWithoutName.map(log => ({
+          id: log.id,
+          exercise_id: log.exercise_id,
+          performed_at: log.performed_at,
+          weight: log.weight,
+          reps: log.reps
+        }))
+        console.warn('🔍 Exercices orphelins détectés:', orphanedData)
+        
+        // Suppression automatique des logs orphelins
+        if (orphanedIds.length > 0) {
+          const { error: deleteError } = await supabase
+            .from('performance_logs')
+            .delete()
+            .in('id', orphanedIds)
+          
+          if (deleteError) {
+            console.error('❌ Erreur suppression logs orphelins:', deleteError)
+          } else {
+            console.log('✅ Supprimé', orphanedIds.length, 'logs orphelins:', orphanedIds)
+            // Recharger les données après suppression
+            setTimeout(() => window.location.reload(), 1000)
+            return
+          }
+        }
+      }
       // Mise en forme des données pour les widgets
       // 1. ProgressData pour le graphique principal (par date)
       const progressData: ProgressData[] = perfLogs.map((log) => ({
@@ -567,7 +608,7 @@ export default function ProgressPage() {
         weight: Number(log.weight) || 0,
         reps: log.reps || 0,
         sets: log.set_number || 1,
-        exercise: log.exercises?.name || `Exercice #${log.exercise_id}`
+        exercise: log.exercises?.name || `⚠️ Exercice manquant (#${log.exercise_id})`
       }))
       // 2. Calcul de la progression par exercice
       const exerciseMap: Record<string, { 
@@ -579,8 +620,18 @@ export default function ProgressPage() {
         durations: number[] 
       }> = {}
       
+      // Créer une map pour débugger les exercices manquants
+      const missingExerciseIds = new Set<string>()
+      
       perfLogs.forEach((log) => {
-        const exName = log.exercises?.name || `Exercice #${log.exercise_id}`
+        let exName = log.exercises?.name
+        
+        // Si l'exercice n'a pas de nom, c'est qu'il a été supprimé ou corrompu
+        if (!exName) {
+          missingExerciseIds.add(log.exercise_id)
+          exName = `⚠️ Exercice manquant (#${log.exercise_id})`
+        }
+        
         const mgName = log.exercises?.muscle_groups?.name || 'Autre'
         const exType = log.exercises?.exercise_type || 'Musculation'
         
@@ -599,6 +650,11 @@ export default function ProgressPage() {
         if (log.distance) exerciseMap[log.exercise_id].distances.push(Number(log.distance))
         if (log.duration) exerciseMap[log.exercise_id].durations.push(Number(log.duration))
       })
+      
+      // Debug: afficher les exercices manquants trouvés
+      if (missingExerciseIds.size > 0) {
+        console.warn('⚠️ IDs exercices manquants détectés:', Array.from(missingExerciseIds))
+      }
       
       const exerciseProgress: ExerciseProgress[] = Object.entries(exerciseMap).map(([, ex]) => {
         let improvement = 0
