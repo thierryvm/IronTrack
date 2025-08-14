@@ -140,7 +140,11 @@ export function ExerciseCard2025({
     return { text: diffStr, class: 'bg-gray-100 text-gray-700' }
   }
   
-  const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(exercise.difficulty)
+  const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(
+    typeof exercise.difficulty === 'string' 
+      ? exercise.difficulty as 'beginner' | 'intermediate' | 'advanced'
+      : null
+  )
 
   // Fonction pour obtenir icône et couleurs selon exercice
   const getPlaceholderConfig = () => {

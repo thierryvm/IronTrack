@@ -13,6 +13,7 @@ interface AdminTicket {
   created_at: string
   user_id: string
   user_email?: string
+  description?: string
 }
 
 interface TicketResponse {
@@ -25,6 +26,7 @@ interface TicketResponse {
   profiles?: {
     email: string
     full_name?: string
+    pseudo?: string
   }
 }
 
@@ -265,7 +267,12 @@ export default function AdminTicketPage() {
         console.error('❌ Erreur sauvegarde:', error)
         setError('Erreur lors de la sauvegarde des modifications')
       } else {
-        setTicket((prev: AdminTicket | null) => prev ? { ...prev, ...pendingChanges } : null)
+        setTicket((prev: AdminTicket | null) => prev ? { 
+          ...prev, 
+          ...pendingChanges,
+          priority: (pendingChanges.priority as AdminTicket['priority']) || prev.priority,
+          status: (pendingChanges.status as AdminTicket['status']) || prev.status
+        } : null)
         setPendingChanges({})
         setError('')
       }

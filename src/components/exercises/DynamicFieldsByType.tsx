@@ -50,7 +50,7 @@ export const DynamicFieldsByType: React.FC<DynamicFieldsByTypeProps> = ({
   errors = {},
   className = ''
 }) => {
-  const updateField = (field: keyof PerformanceData, value: string | number) => {
+  const updateField = (field: keyof PerformanceData, value: string | number | undefined) => {
     onChange({
       ...data,
       [field]: value
