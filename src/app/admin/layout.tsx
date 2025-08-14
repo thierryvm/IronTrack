@@ -14,7 +14,8 @@ import {
   Activity,
   AlertTriangle,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  FileText
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -85,6 +86,13 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
       icon: Users,
       permission: 'admin',
       active: pathname.startsWith('/admin/users')
+    },
+    {
+      name: 'Documentation',
+      href: '/admin/documentation',
+      icon: FileText,
+      permission: 'admin',
+      active: pathname.startsWith('/admin/documentation')
     },
     {
       name: 'Exports',
