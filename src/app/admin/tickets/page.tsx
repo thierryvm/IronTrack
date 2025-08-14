@@ -71,7 +71,7 @@ export default function AdminTicketsPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   const { logAdminAction, hasPermission } = useAdminAuth()
-  const { getAllTickets, updateTicketStatus, updateTicketPriority, refreshSchemaCache } = useSupport()
+  const { getAllTickets, updateTicketStatus, updateTicketPriority } = useSupport()
 
   // ✅ CORRECTION CRITIQUE: Throttler les logs admin pour éviter appels excessifs
   const throttledLogAdminAction = useCallback(
@@ -85,14 +85,11 @@ export default function AdminTicketsPage() {
   const loadTickets = async (skipLogging = false) => {
     setLoading(true)
     try {
-      console.log('🚨 [ADMIN_LIST_ULTRA] Chargement tickets...')
       const allTickets = await getAllTickets()
-      console.log('🚨 [ADMIN_LIST_ULTRA] Tickets chargés:', allTickets.length)
       setTickets(allTickets)
       
       // ✅ CORRECTION CRITIQUE: Utiliser throttled logging pour éviter boucles
       if (!skipLogging) {
-        console.log('🚨 [ADMIN_LIST_ULTRA] Throttled logging action...')
         throttledLogAdminAction('tickets_viewed', 'tickets')
       }
     } catch (error) {
@@ -109,7 +106,6 @@ export default function AdminTicketsPage() {
     if (initialized.current) return
     initialized.current = true
 
-    console.log('🚨 [ADMIN_LIST_ULTRA] Initialisation UNIQUE')
     loadTickets()
     
     // Cleanup function pour reset lors des changements de route
@@ -225,6 +221,16 @@ export default function AdminTicketsPage() {
     return colors[priority] || colors.medium
   }
 
+  const getPriorityLabel = (priority: SupportTicketPriority) => {
+    const labels = {
+      'low': '📝 Faible',
+      'medium': '📋 Normale', 
+      'high': '🔥 Élevée',
+      'critical': '🚨 Critique'
+    }
+    return labels[priority] || priority
+  }
+
   const getCategoryLabel = (category: SupportTicketCategory) => {
     const labels = {
       'bug': '🐛 Bug',
@@ -283,20 +289,11 @@ export default function AdminTicketsPage() {
               Filtres
             </button>
             <button
-              onClick={async () => {
-                await refreshSchemaCache()
-                await loadTickets(true) // PATCH: Skip logging
-              }}
-              className="flex items-center px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              title="Forcer le refresh du cache schema et recharger"
+              onClick={() => loadTickets(true)}
+              className="flex items-center px-3 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              title="Recharger la liste des tickets"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              Fix Cache
-            </button>
-            <button
-              onClick={() => loadTickets(true)} // PATCH: Skip logging
-              className="flex items-center px-3 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-            >
               Actualiser
             </button>
           </div>
@@ -484,7 +481,7 @@ export default function AdminTicketsPage() {
                     {/* Priorité */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
-                        {ticket.priority}
+                        {getPriorityLabel(ticket.priority)}
                       </span>
                     </td>
 
@@ -590,7 +587,7 @@ export default function AdminTicketsPage() {
                 
                 <div className="flex items-center space-x-2">
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(selectedTicket.priority)}`}>
-                    {selectedTicket.priority}
+                    {getPriorityLabel(selectedTicket.priority)}
                   </span>
                   <button
                     onClick={() => setShowDetails(false)}
@@ -714,10 +711,10 @@ export default function AdminTicketsPage() {
                               onChange={(e) => handlePriorityChange(selectedTicket.id, e.target.value as SupportTicketPriority)}
                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             >
-                              <option value="low">Basse</option>
-                              <option value="medium">Moyenne</option>
-                              <option value="high">Haute</option>
-                              <option value="critical">Critique</option>
+                              <option value="low">📝 Faible</option>
+                              <option value="medium">📋 Normale</option>
+                              <option value="high">🔥 Élevée</option>
+                              <option value="critical">🚨 Critique</option>
                             </select>
                           </div>
                         </div>

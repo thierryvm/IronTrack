@@ -31,6 +31,7 @@ export const useAdminAuth = () => {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [initialized, setInitialized] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -108,16 +109,23 @@ export const useAdminAuth = () => {
 
   // Initialiser l\'authentification admin
   useEffect(() => {
+    // ✅ PROTECTION: Éviter re-initialisation multiple
+    if (initialized) return
+    
     const initializeAuth = async () => {
       try {
         setLoading(true)
         setError(null)
+        setInitialized(true)
 
         const { data: { user: authUser } } = await supabase.auth.getUser()
         
         if (!authUser) {
           setError('Authentification requise')
-          router.push('/auth')
+          // Éviter redirection en boucle si déjà sur auth
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth')) {
+            router.push('/auth')
+          }
           return
         }
 
@@ -125,15 +133,21 @@ export const useAdminAuth = () => {
         
         if (!adminUser) {
           setError('Accès administrateur non autorisé')
-          router.push('/')
+          // Éviter redirection en boucle si déjà sur l'accueil
+          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+            router.push('/')
+          }
           return
         }
 
         setUser(adminUser)
       } catch (error) {
-        // Erreur d'initialisation de l'authentification admin
+        console.error('💥 [ADMIN AUTH] Erreur:', error)
         setError('Erreur d\'authentification admin')
-        router.push('/')
+        // Éviter redirection en boucle sur erreur
+        if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+          router.push('/')
+        }
       } finally {
         setLoading(false)
       }
@@ -160,7 +174,7 @@ export const useAdminAuth = () => {
     )
 
     return () => subscription.unsubscribe()
-  }, []) // ✅ DÉPENDANCES VIDES - Fonctions stables
+  }, [initialized]) // ✅ Dépend de initialized pour éviter re-déclenchement
 
   // Récupérer les statistiques admin via RPC sécurisée
   const getAdminStats = async (): Promise<AdminStats | null> => {

@@ -14,7 +14,6 @@ import {
   User,
   Tag,
   Send,
-  FileText,
   Shield
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
@@ -48,7 +47,7 @@ interface TicketResponse {
 
 export default function TicketDetailPage() {
   const params = useParams()
-  const router = useRouter()
+  // const router = useRouter() // Non utilisé actuellement
   const ticketId = params.id as string
   
   const [ticket, setTicket] = useState<TicketDetail | null>(null)
@@ -57,7 +56,7 @@ export default function TicketDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [userResponse, setUserResponse] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  // const [currentUser, setCurrentUser] = useState<any>(null) // Non utilisé
   
   // 🚀 Activation de la communication bidirectionnelle
   const { addTicketResponse, getTicketWithResponses } = useSupport()
@@ -73,7 +72,7 @@ export default function TicketDetailPage() {
           return
         }
 
-        setCurrentUser(user)
+        // User authentifié - continuons
 
         // Récupérer les détails du ticket
         const { data: ticketData, error: ticketError } = await supabase
@@ -95,10 +94,8 @@ export default function TicketDetailPage() {
         setTicket(ticketData)
 
         // 🚀 UTILISER LA MÊME LOGIQUE QUE L'ADMIN pour récupérer les réponses
-        console.log('[DEBUG] User page - Récupération réponses via getTicketWithResponses')
         try {
           const { responses: responsesData } = await getTicketWithResponses(ticketId)
-          console.log('[DEBUG] User page - Réponses récupérées:', responsesData.length)
           setResponses(responsesData || [])
         } catch (responseError) {
           console.error('[DEBUG] Erreur récupération réponses:', responseError)
@@ -112,7 +109,6 @@ export default function TicketDetailPage() {
           if (responsesError) {
             console.warn('Erreur chargement réponses (fallback):', responsesError)
           } else {
-            console.log('[DEBUG] Fallback réponses récupérées:', responsesData?.length || 0)
             setResponses(responsesData || [])
           }
         }

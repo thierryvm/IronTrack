@@ -1,16 +1,17 @@
-// Configuration Next.js ULTRAHARDCORE - JEST WORKER FIX RADICAL
+// Configuration Next.js optimisée pour performance et stabilité
 const nextConfig = {
-  // FIX ULTIME Jest Worker - DÉSACTIVATION TOTALE
+  // Configuration optimisée pour performances
   experimental: {
     workerThreads: false,
     cpus: 1,
     webpackBuildWorker: false,
-    forceSwcTransforms: false,
-    optimizeCss: false,
-    optimizePackageImports: false,
-    turbotrace: false,
-    // NOUVEAU: Désactiver complètement Jest
-    esmExternals: false,
+    // Correction: optimizePackageImports doit être un array
+    optimizePackageImports: [
+      '@supabase/supabase-js',
+      '@supabase/ssr',
+      'framer-motion',
+      'tailwindcss',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -21,10 +22,15 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'taspdceblvmpvdjixyit.supabase.co' },
-      // ULTRAHARDCORE: Google Fonts supprimé
-      // { protocol: 'https', hostname: 'fonts.googleapis.com' },
-      // { protocol: 'https', hostname: 'fonts.gstatic.com' },
     ],
+    // Optimisations d'images pour performance
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 an
+    dangerouslyAllowSVG: false,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    loader: 'default',
+    unoptimized: false,
   },
   // SOLUTION ULTIME: Variables d'environnement Next.js
   env: {
@@ -36,37 +42,65 @@ const nextConfig = {
     FORCE_COLOR: '0',
     CI: 'true', // Simule environnement CI pour désactiver optimisations
   },
+  // Ignorer warnings spécifiques Supabase Edge Runtime
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Configuration simple optimisée pour stabilité  
   webpack: (config: any, { dev, isServer }: { dev: boolean, isServer: boolean }) => {
-    if (dev) {
-      // SOLUTION RADICALE: Élimination totale Jest worker
-      config.parallelism = 1;
-      config.cache = false;
-      config.experiments = {
-        ...config.experiments,
-        topLevelAwait: false,
+    // ULTRAHARDCORE: Suppression warnings Supabase Edge Runtime
+    config.ignoreWarnings = [
+      /Critical dependency: the request of a dependency is an expression/,
+      /A Node\.js API is used \(process\./,
+      /which is not supported in the Edge Runtime/,
+    ];
+    // ULTRAHARDCORE: Configuration simplifiée pour éviter problèmes webpack
+    if (isServer && !dev) {
+      config.resolve = config.resolve || {};
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        child_process: false,
       };
-      
-      // DÉSACTIVER TOUS LES WORKERS
+    }
+
+    // Production: optimisations bundle
+    if (!dev) {
       config.optimization = {
         ...config.optimization,
-        minimize: false,
-        sideEffects: false,
-        splitChunks: false,
-        runtimeChunk: false,
-        removeAvailableModules: false,
-        removeEmptyChunks: false,
-        mergeDuplicateChunks: false,
-      };
-      
-      // PATCH JEST DIRECT
-      config.resolve = {
-        ...config.resolve,
-        alias: {
-          ...config.resolve.alias,
-          'jest-worker': false,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 5,
+            },
+          },
         },
       };
     }
+    
+    // Developement: stabilité
+    if (dev) {
+      config.parallelism = 1;
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+    
     return config;
   },
   // Mode développement simplifié - swcMinify retiré (deprecated)

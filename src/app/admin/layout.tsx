@@ -37,7 +37,7 @@ interface AdminLayoutProps {
   children: React.ReactNode
 }
 
-// Wrapper avec Provider - encapsule toute l'authentification admin
+// ✅ Layout admin complet avec hook useAdminAuth corrigé
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <AdminAuthProvider>
@@ -147,7 +147,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   const handleLogout = async () => {
     try {
       await logAdminAction('logout', 'session')
-    } catch (error) {
+    } catch {
+      // Erreur silencieuse pour éviter crash lors logout
     }
     await supabase.auth.signOut()
     router.push('/')

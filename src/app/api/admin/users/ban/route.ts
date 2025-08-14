@@ -4,9 +4,11 @@
  * Utilise le service key côté serveur pour éviter l'exposition côté client
  */
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+
+// ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
+export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
   if (process.env.NODE_ENV === 'development') {}
@@ -58,11 +60,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Permissions super admin requises' }, { status: 403 })
     }
 
-    // 🔒 3. Créer client avec service key pour les opérations admin
-    const supabaseAdmin = createClient(
+    // 🔒 3. Créer client admin avec service key pour les opérations admin
+    const supabaseAdmin = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!, // Service key côté serveur
       {
+        cookies: {
+          get() { return undefined },
+          set() {},
+          remove() {},
+        },
         auth: {
           autoRefreshToken: false,
           persistSession: false

@@ -155,7 +155,6 @@ export const useAdminUserManagement = () => {
         throw error
       }
 
-      console.log('[DEBUG] Rôle mis à jour avec succès:', data)
 
       // Logger l'action admin
       try {
@@ -164,7 +163,6 @@ export const useAdminUserManagement = () => {
       }
 
       // Mettre à jour localement l'utilisateur au lieu de recharger toute la liste
-      console.log('[DEBUG] Mise à jour locale de l\'utilisateur...')
       setUsers(prevUsers => 
         prevUsers.map(user => 
           user.id === userId 
@@ -325,7 +323,6 @@ export const useAdminUserManagement = () => {
         throw error
       }
 
-      console.log('[DEBUG] Statistiques utilisateur récupérées:', data)
 
       return data as UserStats
 

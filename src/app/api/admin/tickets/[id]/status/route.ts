@@ -1,6 +1,9 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+// ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
+export const runtime = 'nodejs'
+
 interface RouteContext {
   params: Promise<{ id: string }>
 }

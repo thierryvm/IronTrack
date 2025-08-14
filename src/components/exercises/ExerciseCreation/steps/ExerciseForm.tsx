@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Settings, AlertCircle } from 'lucide-react'
 import { ExerciseType, ExerciseCreationData, DifficultyLevel } from '@/types/exercise'
@@ -235,10 +236,12 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
             {uploadedPhoto && (
               <div className="relative">
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border-2 border-green-200">
-                  <img
+                  <Image
                     src={uploadedPhoto.url}
                     alt="Aperçu photo exercice"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 384px"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200" />
                 </div>

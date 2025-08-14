@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { safeJSONStringify } from '@/utils/json'
 import { createClient } from '@/utils/supabase/client'
 
 interface Profile {
@@ -173,7 +174,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({
+        body: safeJSONStringify({
           partnerId,
           shareWorkouts: settings.share_workouts,
           shareNutrition: settings.share_nutrition,

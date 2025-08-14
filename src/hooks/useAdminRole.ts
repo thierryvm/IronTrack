@@ -36,6 +36,7 @@ export const useAdminRole = () => {
         return
       }
 
+
       // Vérifier le rôle admin (sans redirection)
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
@@ -47,10 +48,12 @@ export const useAdminRole = () => {
 
 
       if (roleError || !roleData) {
+        console.log('❌ [ADMIN ROLE] Pas de rôle admin trouvé. Error:', roleError)
         setIsAdmin(false)
         setIsModerator(false)
         return
       }
+
 
       // Vérifier expiration
       if (roleData.expires_at && new Date(roleData.expires_at) < new Date()) {
