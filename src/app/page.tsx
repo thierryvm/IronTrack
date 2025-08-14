@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 // PERFORMANCE CRITICAL: Garde les icônes critiques en direct pour homepage
 import { 
@@ -29,10 +29,10 @@ import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 
 // PERFORMANCE CRITICAL: Élimination Framer Motion homepage (-150ms LCP)
 // Remplacé par CSS animations natives plus légères
-const SessionTimer = lazy(() => import('@/components/ui/SessionTimer'))
-const SoundLibrary = lazy(() => import('@/components/ui/SoundLibrary'))
-const QuickTimer = lazy(() => import('@/components/ui/Timer').then(mod => ({ default: mod.QuickTimer })))
-const PWAInstallPrompt = lazy(() => import('@/components/ui/PWAInstallPrompt'))
+import SessionTimer from '@/components/ui/SessionTimer'
+import SoundLibrary from '@/components/ui/SoundLibrary'
+import { QuickTimer } from '@/components/ui/Timer'
+import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
 
 // PERFORMANCE CRITICAL: IronBuddy defer pour réduire TBT
 // const IronBuddyFAB = lazy(() => import('@/components/ui/IronBuddyFAB-ENRICHED')) // Utilisé via ClientIronBuddyWrapper
@@ -80,7 +80,7 @@ export default function HomePage() {
       setShowTooltip(false)
     }
 
-    if (showTooltip) {
+    if (showTooltip && typeof window !== 'undefined') {
       document.addEventListener('click', handleClickOutside)
       return () => document.removeEventListener('click', handleClickOutside)
     }
@@ -112,7 +112,6 @@ export default function HomePage() {
   });
   const [userId, setUserId] = useState<string | null>(null)
   // Mascottes gérées par la nouvelle FAB unifiée
-  const router = useRouter();
   const [allExercises, setAllExercises] = useState<ExerciseItem[]>([])
 
   const loadDashboardData = useCallback(async () => {
@@ -125,17 +124,49 @@ export default function HomePage() {
         setLoading(false)
         return
       }
-      // Récupérer toutes les séances réalisées (plusieurs statuts possibles)
-      const { data: workouts, error: workoutsError } = await supabase
-        .from('workouts')
-        .select('*')
-        .eq('user_id', user.id)
-        .in('status', ['Réalisé', 'Terminé', 'Completed'])
-        .order('created_at', { ascending: false })
-        .limit(10)
+
+      // PERFORMANCE CRITICAL: Paralléliser toutes les requêtes Supabase
+      // Réduction attendue: 5716ms -> <1800ms FCP
+      const [
+        { data: workouts, error: workoutsError },
+        { data: perfLogs, error: perfLogsError },
+        { data: exercises, error: exercisesError },
+        { data: allExercisesData, error: allExercisesError }
+      ] = await Promise.all([
+        // Requête 1: Workouts récents
+        supabase
+          .from('workouts')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('status', ['Réalisé', 'Terminé', 'Completed'])
+          .order('created_at', { ascending: false })
+          .limit(10),
+        
+        // Requête 2: Performance logs pour calcul poids total
+        supabase
+          .from('performance_logs')
+          .select('weight, reps, sets')
+          .eq('user_id', user.id),
+          
+        // Requête 3: Exercices récents avec type
+        supabase
+          .from('exercises')
+          .select('id, name, muscle_group, exercise_type')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5),
+          
+        // Requête 4: Tous les exercices pour dropdown (optimisé)
+        supabase
+          .from('exercises')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('name', { ascending: true })
+      ]);
       
-      if (workoutsError) {
-        console.error('Erreur récupération workouts:', workoutsError)
+      // Gestion des erreurs en batch
+      if (workoutsError || perfLogsError || exercisesError) {
+        console.error('Erreur récupération données:', { workoutsError, perfLogsError, exercisesError });
         setRecentExercises([])
         setStats({ totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 })
         setLoading(false)
@@ -144,13 +175,14 @@ export default function HomePage() {
       
       const workoutsList = workouts || []
       
-      // Calculer les stats
-      const totalWorkouts = workoutsList.length
+      // PERFORMANCE: Calculs stats en mémoire (plus rapide)
       const now = new Date()
       const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+      
+      const totalWorkouts = workoutsList.length
       const thisWeek = workoutsList.filter(w => new Date(w.created_at) >= weekStart).length
       
-      // Calculer la série actuelle
+      // Calcul série optimisé
       let currentStreak = 0
       const sortedWorkouts = workoutsList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       
@@ -165,46 +197,37 @@ export default function HomePage() {
         }
       }
       
-      // Calculer le poids total soulevé
-      const { data: perfLogs } = await supabase
-        .from('performance_logs')
-        .select('weight, reps, sets')
-        .eq('user_id', user.id)
-      
+      // PERFORMANCE: Calcul poids total optimisé
       const totalWeight = perfLogs?.reduce((sum, log) => {
         return sum + (log.weight || 0) * (log.reps || 0) * (log.sets || 1)
       }, 0) || 0
       
+      // Mettre à jour stats
       setStats({ totalWorkouts, thisWeek, currentStreak, totalWeight })
       
-      // Récupérer les exercices récents avec leur type
-      const { data: exercises, error: exercisesError } = await supabase
-        .from('exercises')
-        .select('id, name, muscle_group, exercise_type')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5)
-      
-      if (!exercisesError && exercises) {
-        // Pour chaque exercice, récupérer les dernières données de performance_logs (source principale)
-        const recentWithData = await Promise.all(
-          exercises.map(async (ex) => {
-            // D'abord, essayer de récupérer depuis performance_logs (source principale)
-            const { data: lastPerformance } = await supabase
-              .from('performance_logs')
-              .select('weight, reps, sets, duration, distance, speed, calories, notes, stroke_rate, watts, heart_rate, incline, cadence, resistance, distance_unit')
-              .eq('exercise_id', ex.id)
-              .order('performed_at', { ascending: false })
-              .limit(1)
+      // PERFORMANCE CRITICAL: Éviter N+1 queries pour exercices récents
+      // Récupérer toutes les performances en une seule requête
+      if (!exercisesError && exercises && exercises.length > 0) {
+        const exerciseIds = exercises.map(ex => ex.id);
+        const { data: allPerformances } = await supabase
+          .from('performance_logs')
+          .select('*')
+          .in('exercise_id', exerciseIds)
+          .order('performed_at', { ascending: false });
+        
+        // Traiter les exercices avec leurs performances (plus rapide)
+        const recentWithData = exercises.map((ex) => {
+          // Trouver la dernière performance pour cet exercice
+          const lastPerformance = allPerformances?.find(perf => perf.exercise_id === ex.id);
+          
+          let displayValue = 'Aucune donnée'
+          let displayLabel = 'Dernière performance'
+          const metrics: string[] = []
+          
+          if (lastPerformance) {
+            const perf = lastPerformance
             
-            let displayValue = 'Aucune donnée'
-            let displayLabel = 'Dernière performance'
-            const metrics: string[] = []
-            
-            if (lastPerformance?.[0]) {
-              const perf = lastPerformance[0]
-              
-              if (ex.exercise_type === 'Musculation') {
+            if (ex.exercise_type === 'Musculation') {
                 // Pour la musculation : afficher le poids principal + reps/sets si disponibles
                 if (perf.weight && perf.weight > 0) {
                   metrics.push(`${perf.weight} kg`)
@@ -306,53 +329,23 @@ export default function HomePage() {
                   displayValue = 'Aucune donnée'
                 }
               }
-            } else {
-              // Si aucune performance trouvée dans performance_logs, essayer workout_exercises (fallback)
-              const { data: lastWorkout } = await supabase
-                .from('workout_exercises')
-                .select('weight, reps, sets')
-                .eq('exercise_id', ex.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-              
-              if (lastWorkout?.[0]) {
-                const workout = lastWorkout[0]
-                if (ex.exercise_type === 'Musculation') {
-                  if (workout.weight && workout.weight > 0) {
-                    displayValue = `${workout.weight} kg`
-                    displayLabel = 'Dernier poids'
-                  } else {
-                    displayValue = 'Poids du corps'
-                    displayLabel = 'Dernier poids'
-                  }
-                } else if (workout.reps) {
-                  displayValue = `${workout.reps} reps`
-                  displayLabel = 'Dernières reps'
-                }
-              }
             }
+            // PERFORMANCE: Fallback workout_exercises supprimé pour éviter requêtes supplémentaires
             
             return {
               id: ex.id,
               name: ex.name,
               muscle_group: ex.muscle_group || 'Général',
               exercise_type: ex.exercise_type,
-              weight: lastPerformance?.[0]?.weight || 0,
+              weight: lastPerformance?.weight || 0,
               displayValue,
               displayLabel
             }
-          })
-        )
+          });
         setRecentExercises(recentWithData)
       }
       
-      // Récupérer TOUS les exercices pour le dropdown
-      const { data: allExercisesData, error: allExercisesError } = await supabase
-        .from('exercises')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('name', { ascending: true })
-      
+      // PERFORMANCE: Utiliser allExercisesData déjà récupéré dans Promise.all
       if (!allExercisesError && allExercisesData) {
         const allEx = allExercisesData.map(ex => ({
           id: ex.id,
@@ -378,13 +371,15 @@ export default function HomePage() {
     loadDashboardData()
     
     // Vérifier si l'utilisateur vient de terminer l'onboarding
-    const urlParams = new URLSearchParams(window.location.search)
-    if (urlParams.get('onboarding') === 'success') {
-      // Afficher un message de bienvenue ou notification
-      setTimeout(() => {
-        // Nettoyer l'URL
-        window.history.replaceState({}, '', '/')
-      }, 3000)
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('onboarding') === 'success') {
+        // Afficher un message de bienvenue ou notification
+        setTimeout(() => {
+          // Nettoyer l'URL
+          window.history.replaceState({}, '', '/')
+        }, 3000)
+      }
     }
   }, [loadDashboardData])
 

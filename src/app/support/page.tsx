@@ -5,7 +5,7 @@ import { Users, UserPlus, Search, Check, X, Clock, Settings, ArrowRight, BookOpe
 import Link from 'next/link'
 
 export default function SupportPage() {
-  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding' | 'technical'>('partners')
+  const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding'>('partners')
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -34,14 +34,13 @@ export default function SupportPage() {
                   { id: 'general', label: 'Utilisation générale', icon: BookOpen, desc: 'Fonctionnalités de base' },
                   { id: 'progression', label: 'Progression & Badges', icon: TrendingUp, desc: 'Suivi des performances' },
                   { id: 'account', label: 'Compte & Profil', icon: Settings, desc: 'Gestion du compte' },
-                  { id: 'onboarding', label: 'Onboarding & Configuration', icon: Target, desc: 'Première configuration' },
-                  { id: 'technical', label: 'Documentation Technique', icon: BookOpen, desc: 'Guides développeur & audits' }
+                  { id: 'onboarding', label: 'Onboarding & Configuration', icon: Target, desc: 'Première configuration' }
                 ].map((section) => {
                   const Icon = section.icon
                   return (
                     <button
                       key={section.id}
-                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression' | 'onboarding' | 'technical')}
+                      onClick={() => setActiveSection(section.id as 'partners' | 'general' | 'account' | 'progression' | 'onboarding')}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
                         activeSection === section.id
                           ? 'bg-orange-50 text-orange-700 border border-orange-200'
@@ -709,105 +708,6 @@ export default function SupportPage() {
                 </div>
               )}
 
-              {/* Documentation Technique */}
-              {activeSection === 'technical' && (
-                <div>
-                  <div className="flex items-center space-x-3 mb-6">
-                    <BookOpen className="h-6 w-6 text-orange-800" />
-                    <h2 className="text-xl font-bold text-gray-900">Documentation Technique</h2>
-                  </div>
-
-                  <div className="space-y-8">
-                    {/* Solutions Récentes */}
-                    <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🛠️ Solutions Techniques 2025</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                          <h4 className="font-semibold text-green-800 mb-2">Jest Worker - Node.js v24</h4>
-                          <p className="text-sm text-green-700 mb-2">
-                            Solution complète pour erreur "Jest worker encountered 2 child process exceptions"
-                          </p>
-                          <code className="text-xs bg-green-100 px-2 py-1 rounded">docs/SOLUTION_JEST_WORKER.md</code>
-                        </div>
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <h4 className="font-semibold text-blue-800 mb-2">Tests Unitaires - 293/293</h4>
-                          <p className="text-sm text-blue-700 mb-2">
-                            Système de tests complet avec Jest et React Testing Library
-                          </p>
-                          <code className="text-xs bg-blue-100 px-2 py-1 rounded">docs/TESTS_UNITAIRES_RESUME.md</code>
-                        </div>
-                      </div>
-                    </section>
-
-                    {/* Audits Qualité */}
-                    <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📊 Audits Qualité 2025</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <div>
-                            <span className="font-medium">Contraste WCAG</span> - 
-                            <code className="ml-2 text-sm">docs/AUDIT_CONTRASTE_2025_COMPLET.md</code>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <div>
-                            <span className="font-medium">Responsive Mobile</span> - 
-                            <code className="ml-2 text-sm">docs/AUDIT_RESPONSIVE_2025_COMPLET.md</code>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <div>
-                            <span className="font-medium">Sécurité OWASP</span> - 
-                            <code className="ml-2 text-sm">docs/AUDIT_SECURITE_2025_COMPLET.md</code>
-                          </div>
-                        </div>
-                      </div>
-                    </section>
-
-                    {/* Documentation Complète */}
-                    <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">📚 Guides Complets</h3>
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-orange-800 mb-2">Index Complet Documentation</h4>
-                        <p className="text-sm text-orange-700 mb-3">
-                          Index complet de toute la documentation technique, guides développeur, audits, et solutions.
-                        </p>
-                        <code className="text-sm bg-orange-100 px-3 py-1 rounded font-mono">docs/INDEX.md</code>
-                      </div>
-                    </section>
-
-                    {/* Outils de Test */}
-                    <section>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">🧪 Outils de Test</h3>
-                      <Link
-                        href="/support/test-bidirectional"
-                        className="block bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 hover:border-blue-300 transition-colors group"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
-                              <MessageSquare className="h-4 w-4 mr-2" />
-                              Test Communication Bidirectionnelle
-                            </h4>
-                            <p className="text-sm text-blue-700 mb-2">
-                              Interface de test pour valider la communication entre utilisateurs et admins dans le système de support.
-                            </p>
-                            <div className="flex items-center space-x-4 text-xs text-blue-600">
-                              <span>• Création tickets automatique</span>
-                              <span>• Test réponses utilisateur/admin</span>
-                              <span>• Validation complète</span>
-                            </div>
-                          </div>
-                          <ArrowRight className="h-5 w-5 text-blue-600 group-hover:text-blue-700" />
-                        </div>
-                      </Link>
-                    </section>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
