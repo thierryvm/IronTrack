@@ -25,9 +25,16 @@ export default function Timer({
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    // Créer l'élément audio pour les notifications
-    audioRef.current = new Audio('/notification.mp3') // On ajoutera ce fichier plus tard
-    audioRef.current.volume = 0.5
+    // Créer l'élément audio pour les notifications avec gestion d'erreur
+    try {
+      audioRef.current = new Audio('/notification.mp3')
+      audioRef.current.volume = 0.5
+      // Précharger silencieusement pour éviter les erreurs console
+      audioRef.current.load()
+    } catch (error) {
+      // Éviter les erreurs console si audio non supporté
+      console.debug('Audio notification non disponible:', error)
+    }
   }, [])
 
   useEffect(() => {
@@ -37,7 +44,9 @@ export default function Timer({
           if (prev <= 1) {
             setIsRunning(false)
             if (!isMuted && audioRef.current) {
-              audioRef.current.play().catch(console.error)
+              audioRef.current.play().catch(() => {
+                // Éviter les erreurs console d'autoplay - normal en développement
+              })
             }
             setShowNotification(true)
             if (onComplete) setTimeout(onComplete, 0)
@@ -120,19 +129,21 @@ export default function Timer({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={startTimer}
-                className="bg-green-500 hover:bg-green-600 p-3 rounded-full transition-colors"
+                className="bg-green-500 hover:bg-green-600 p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500"
                 disabled={timeLeft === 0}
+                aria-label="Démarrer le minuteur"
               >
-                <Play className="h-5 w-5" />
+                <Play className="h-5 w-5" aria-hidden="true" />
               </motion.button>
             ) : (
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={pauseTimer}
-                className="bg-yellow-500 hover:bg-yellow-600 p-3 rounded-full transition-colors"
+                className="bg-yellow-500 hover:bg-yellow-600 p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-yellow-500"
+                aria-label="Mettre en pause le minuteur"
               >
-                <Pause className="h-5 w-5" />
+                <Pause className="h-5 w-5" aria-hidden="true" />
               </motion.button>
             )}
 
@@ -140,20 +151,22 @@ export default function Timer({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={resetTimer}
-              className="bg-gray-500 hover:bg-gray-600 p-3 rounded-full transition-colors"
+              className="bg-gray-500 hover:bg-gray-600 p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-500"
+              aria-label="Remettre le minuteur à zéro"
             >
-              <RotateCcw className="h-5 w-5" />
+              <RotateCcw className="h-5 w-5" aria-hidden="true" />
             </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleMute}
-              className={`p-3 rounded-full transition-colors ${
-                isMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+              className={`p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 ${
+                isMuted ? 'bg-red-500 hover:bg-red-600 focus:ring-offset-red-500' : 'bg-blue-500 hover:bg-blue-600 focus:ring-offset-blue-500'
               }`}
+              aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
             >
-              {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+              {isMuted ? <VolumeX className="h-5 w-5" aria-hidden="true" /> : <Volume2 className="h-5 w-5" aria-hidden="true" />}
             </motion.button>
           </div>
         )}
@@ -196,7 +209,8 @@ export function QuickTimer() {
         />
         <button
           onClick={() => setShowTimer(false)}
-          className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          aria-label="Fermer le minuteur"
         >
           Fermer
         </button>
@@ -215,8 +229,9 @@ export function QuickTimer() {
               setSelectedTime(time)
               setShowTimer(true)
             }}
-            className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
+            className="bg-orange-700 hover:bg-orange-800 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
             style={{minWidth: 0}}
+            aria-label={`Démarrer un minuteur de ${time} secondes`}
           >
             {time}s
           </button>
