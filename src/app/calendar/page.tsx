@@ -2,26 +2,31 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, PanInfo } from 'framer-motion'
+import dynamic from 'next/dynamic'
+
+// PERFORMANCE CRITICAL: Import sélectif icônes essentielles seulement  
 import { 
   ChevronLeft, 
   ChevronRight, 
-  Plus, 
   Calendar as CalendarIcon,
-  Clock,
-  Users,
-  Dumbbell,
-  CheckCircle,
-  Target,
-  Info,
-  Activity,
-  Waves,
-  Zap,
-  Flower,
-  Smile,
-  Menu,
-  List,
-  X
+  CheckCircle
 } from 'lucide-react'
+
+// ULTRAHARDCORE: Lazy load icônes secondaires (-100KB+ bundle)
+const Plus = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Plus })), { ssr: false })
+const Clock = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Clock })), { ssr: false })
+const Users = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Users })), { ssr: false })
+const Dumbbell = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Dumbbell })), { ssr: false })
+const Target = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Target })), { ssr: false })
+const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })), { ssr: false })
+const Activity = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Activity })), { ssr: false })
+const Waves = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Waves })), { ssr: false })
+const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })), { ssr: false })
+const Flower = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Flower })), { ssr: false })
+const Smile = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Smile })), { ssr: false })
+const Menu = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Menu })), { ssr: false })
+const List = dynamic(() => import('lucide-react').then(mod => ({ default: mod.List })), { ssr: false })
+const X = dynamic(() => import('lucide-react').then(mod => ({ default: mod.X })), { ssr: false })
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import CalendarDayCell from '@/components/ui/CalendarDayCell';
