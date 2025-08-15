@@ -14,7 +14,7 @@ Disallow: /auth/*
 Disallow: /profile
 Disallow: /exercises
 Disallow: /workouts
-Disallow: /calendar
+# Allow: /calendar - Page publique pour démo/SEO
 Disallow: /progress
 Disallow: /nutrition
 Disallow: /notifications
