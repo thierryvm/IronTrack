@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# Pages publiques indexables
+Allow: /faq
+Allow: /legal/privacy
+Allow: /legal/terms
+Allow: /pwa-guide
+
+# Pages privées non indexables
+Disallow: /admin/*
+Disallow: /api/*
+Disallow: /auth/*
+Disallow: /profile
+Disallow: /exercises
+Disallow: /workouts
+Disallow: /calendar
+Disallow: /progress
+Disallow: /nutrition
+Disallow: /notifications
+Disallow: /support
+Disallow: /training-partners
+Disallow: /shared/*
+Disallow: /onboarding
+
+# Ressources techniques
+Disallow: /_next/*
+Disallow: /static/*
+
+# Sitemap (sera ajouté plus tard)
+# Sitemap: https://iron-track-dusky.vercel.app/sitemap.xml
