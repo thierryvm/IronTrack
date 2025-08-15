@@ -215,7 +215,7 @@ export function QuickTimer() {
               setSelectedTime(time)
               setShowTimer(true)
             }}
-            className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
+            className="bg-orange-700 hover:bg-orange-800 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full"
             style={{minWidth: 0}}
           >
             {time}s
