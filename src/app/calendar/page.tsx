@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import Head from 'next/head'
 import { motion, PanInfo } from 'framer-motion'
 import dynamic from 'next/dynamic'
 
@@ -458,7 +459,16 @@ export default function CalendarPage() {
   }).reduce((total, w) => total + (w.duration || 0), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Head>
+        <title>Calendrier - Planning entraînements | IronTrack</title>
+        <meta name="description" content="Planifiez et organisez vos séances de musculation. Calendrier interactif pour suivre vos entraînements, cardio, repos et progression hebdomadaire." />
+        <meta name="keywords" content="calendrier musculation, planning entraînement, organisation fitness, suivi séances" />
+        <meta property="og:title" content="Calendrier IronTrack - Planning musculation" />
+        <meta property="og:description" content="Organisez vos séances de musculation avec le calendrier interactif IronTrack" />
+        <meta property="og:type" content="website" />
+      </Head>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1312,6 +1322,7 @@ export default function CalendarPage() {
           </motion.div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 } 
