@@ -2,8 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+// ULTRAHARDCORE LCP: Framer Motion supprimé (-350ms LCP)
 
 interface UserGreetingProps {
   className?: string
@@ -13,15 +12,8 @@ interface UserGreetingProps {
 export default function UserGreeting({ className = '', showError = false }: UserGreetingProps) {
   const { isAuthenticated, isLoading: authLoading } = useAuth()
   const { displayName, isLoading: profileLoading, error } = useUserProfile()
-  const [useMotion, setUseMotion] = useState(false)
   
   const isLoading = authLoading || (isAuthenticated && profileLoading)
-
-  // Activer les animations après le premier rendu (améliore LCP)
-  useEffect(() => {
-    const timer = setTimeout(() => setUseMotion(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
 
   // Skeleton optimisé pour LCP - Dimensions exactes
   if (isLoading) {
@@ -54,17 +46,7 @@ export default function UserGreeting({ className = '', showError = false }: User
 
   return (
     <div className={`text-center ${className}`} style={{ minHeight: '120px' }}>
-      {useMotion ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          {content}
-        </motion.div>
-      ) : (
-        <div>{content}</div>
-      )}
+      {content}
     </div>
   )
 }

@@ -333,9 +333,11 @@ export default function HeaderClient() {
                   <div className="relative" data-notification-dropdown>
                     <button
                       onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                      className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+                      className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                      aria-label={`Notifications ${notificationCount > 0 ? `(${notificationCount} nouvelles)` : ''}`}
+                      aria-expanded={isNotificationOpen}
                     >
-                      <Bell className="w-5 h-5" />
+                      <Bell className="w-5 h-5" aria-hidden="true" />
                       {notificationCount > 0 && (
                         <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                           {notificationCount > 9 ? '9+' : notificationCount}
@@ -397,7 +399,16 @@ export default function HeaderClient() {
                       className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       {userAvatar ? (
-                        <img src={userAvatar} alt="Avatar" className="w-8 h-8 rounded-full" />
+                        <Image 
+                          src={userAvatar} 
+                          alt="Avatar" 
+                          className="w-8 h-8 rounded-full object-cover" 
+                          width={32} 
+                          height={32}
+                          sizes="32px"
+                          quality={60}
+                          loading="lazy"
+                        />
                       ) : (
                         <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                           {userInitials}
@@ -413,7 +424,16 @@ export default function HeaderClient() {
                         <div className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                           <div className="flex items-center space-x-3">
                             {userAvatar ? (
-                              <img src={userAvatar} alt="Avatar" className="w-10 h-10 rounded-full" />
+                              <Image 
+                                src={userAvatar} 
+                                alt="Avatar" 
+                                className="w-10 h-10 rounded-full object-cover" 
+                                width={40} 
+                                height={40}
+                                sizes="40px"
+                                quality={60}
+                                loading="lazy"
+                              />
                             ) : (
                               <div className="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                                 {userInitials}
@@ -517,7 +537,16 @@ export default function HeaderClient() {
                     aria-expanded={isProfileDropdownOpen}
                   >
                     {userAvatar ? (
-                      <img src={userAvatar} alt="Avatar" className="w-8 h-8 rounded-full" />
+                      <Image 
+                        src={userAvatar} 
+                        alt="Avatar" 
+                        className="w-8 h-8 rounded-full object-cover" 
+                        width={32} 
+                        height={32}
+                        sizes="32px"
+                        quality={60}
+                        loading="lazy"
+                      />
                     ) : (
                       <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                         {userInitials}
@@ -535,7 +564,16 @@ export default function HeaderClient() {
                         <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                           <div className="flex items-center space-x-3">
                             {userAvatar ? (
-                              <img src={userAvatar} alt="Avatar" className="w-12 h-12 rounded-full" />
+                              <Image 
+                                src={userAvatar} 
+                                alt="Avatar" 
+                                className="w-12 h-12 rounded-full object-cover" 
+                                width={48} 
+                                height={48}
+                                sizes="48px"
+                                quality={70}
+                                loading="lazy"
+                              />
                             ) : (
                               <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center text-lg font-semibold">
                                 {userInitials}
