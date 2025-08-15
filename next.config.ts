@@ -5,13 +5,15 @@ const nextConfig = {
     workerThreads: false,
     cpus: 1,
     webpackBuildWorker: false,
-    // DÉSACTIVATION temporaire optimizePackageImports pour debug
-    // optimizePackageImports: [
-    //   '@supabase/supabase-js',
-    //   '@supabase/ssr',
-    //   'framer-motion',
-    //   'tailwindcss',
-    // ],
+    // RÉACTIVATION optimizePackageImports pour performance critique
+    optimizePackageImports: [
+      '@supabase/supabase-js',
+      '@supabase/ssr', 
+      'framer-motion',
+      'lucide-react',
+      'react-easy-crop',
+      'react-hot-toast',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -79,13 +81,21 @@ const nextConfig = {
       );
     }
 
-    // Production: optimisations bundle DÉSACTIVÉES temporairement
+    // Production: optimisations bundle SÉCURISÉES
     if (!dev) {
-      // DÉSACTIVATION splitChunks qui génère vendors.js problématique
+      // Configuration conservative pour éviter erreurs 'self is not defined'
       config.optimization = {
         ...config.optimization,
         splitChunks: {
-          chunks: 'async', // Seulement splits async, pas vendors.js
+          chunks: 'async', // Seulement async pour sécurité
+          cacheGroups: {
+            // Optimisation légère sans risque
+            default: {
+              minChunks: 2,
+              priority: 5,
+              reuseExistingChunk: true,
+            },
+          },
         },
       };
     }
