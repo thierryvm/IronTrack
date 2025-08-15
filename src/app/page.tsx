@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 // PERFORMANCE CRITICAL: Garde les icônes critiques en direct pour homepage
 import { 
   Dumbbell, 
@@ -15,23 +16,43 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useUserProfile } from '@/hooks/useUserProfile'
-import UserGreeting from '@/components/UserGreeting'
-import PerformanceOptimizer from '@/components/PerformanceOptimizer'
+
+// LAZY LOADING: Composants non-critiques pour réduire bundle initial
+const UserGreeting = dynamic(() => import('@/components/UserGreeting'), {
+  ssr: true,
+  loading: () => <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+})
+const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  ssr: false,
+  loading: () => null
+})
 // PERFORMANCE CRITICAL: Optimisation images WebP/AVIF (-2s LCP)
 // import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer' // TODO: Utiliser si nécessaire
-// PHASE 3 PERFORMANCE CRITICAL: Critical CSS + Service Worker
-import { CriticalCSSExtractor } from '@/components/CriticalCSSExtractor'
-// ULTRAHARDCORE: ServiceWorkerCache supprimé (conflit avec register-sw)
-// import { ServiceWorkerCache } from '@/components/ServiceWorkerCache'
+// HOOKS critiques (légers, gardés en direct)
 import { useBadges } from '@/hooks/useBadges'
 import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 
-// PERFORMANCE CRITICAL: Élimination Framer Motion homepage (-150ms LCP)
-// Remplacé par CSS animations natives plus légères
-import SessionTimer from '@/components/ui/SessionTimer'
-import SoundLibrary from '@/components/ui/SoundLibrary'
-import { QuickTimer } from '@/components/ui/Timer'
-import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
+// LAZY LOADING: Composants lourds non-critiques (-400ms bundle)
+const CriticalCSSExtractor = dynamic(() => import('@/components/CriticalCSSExtractor'), {
+  ssr: false,
+  loading: () => null
+})
+const SessionTimer = dynamic(() => import('@/components/ui/SessionTimer'), {
+  ssr: false,
+  loading: () => <div className="h-12 bg-gray-100 rounded-lg animate-pulse" />
+})
+const SoundLibrary = dynamic(() => import('@/components/ui/SoundLibrary'), {
+  ssr: false,
+  loading: () => null
+})
+const QuickTimer = dynamic(() => import('@/components/ui/Timer').then(mod => ({ default: mod.QuickTimer })), {
+  ssr: false,
+  loading: () => null
+})
+const PWAInstallPrompt = dynamic(() => import('@/components/ui/PWAInstallPrompt'), {
+  ssr: false,
+  loading: () => null
+})
 
 // PERFORMANCE CRITICAL: IronBuddy defer pour réduire TBT
 // const IronBuddyFAB = lazy(() => import('@/components/ui/IronBuddyFAB-ENRICHED')) // Utilisé via ClientIronBuddyWrapper

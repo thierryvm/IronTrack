@@ -50,6 +50,38 @@ export default function RootLayout({
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
         {/* Preload logo critique pour LCP */}
         <link rel="preload" as="image" href="/logo-32.webp" type="image/webp" />
+        
+        {/* CSS CRITIQUE INLINE - Éliminer render blocking 174ms */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Critical styles for Homepage LCP */
+            .bg-orange-600{background-color:rgb(234 88 12)}
+            .bg-orange-700{background-color:rgb(194 65 12)}
+            .hover\\:bg-orange-800:hover{background-color:rgb(154 52 18)}
+            .text-white{color:rgb(255 255 255)}
+            .rounded-xl{border-radius:0.75rem}
+            .px-6{padding-left:1.5rem;padding-right:1.5rem}
+            .py-4{padding-top:1rem;padding-bottom:1rem}
+            .font-semibold{font-weight:600}
+            .transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms}
+            .duration-200{transition-duration:200ms}
+            .flex{display:flex}
+            .items-center{align-items:center}
+            .justify-center{justify-content:center}
+            .gap-2{gap:0.5rem}
+            .h-5{height:1.25rem}
+            .w-5{width:1.25rem}
+            .h-8{height:2rem}
+            .w-8{width:2rem}
+            .bg-white{background-color:rgb(255 255 255)}
+            .rounded-lg{border-radius:0.5rem}
+            .p-1{padding:0.25rem}
+            .shadow-sm{box-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05)}
+            .h-full{height:100%}
+            .w-full{width:100%}
+            .object-contain{object-fit:contain}
+          `
+        }} />
         {/* TEMPORAIRE: Désactivé pour résoudre conflits SW, DNS prefetch Google Fonts supprimé */}
         <link rel="dns-prefetch" href="//vercel.app" />
         {/* Meta pour performance */}
