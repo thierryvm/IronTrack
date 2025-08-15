@@ -27,8 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false, // Empêche zoom mobile
+  maximumScale: 5, // WCAG compliance - minimum 5x zoom
+  userScalable: true, // Accessibilité requise pour zoom
   viewportFit: "cover", // Support iPhone safe areas
   themeColor: "#f97316",
 };
@@ -48,6 +48,8 @@ export default function RootLayout({
         {/* Préconnexions pour optimiser la latence réseau */}
         <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" />
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
+        {/* Preload logo critique pour LCP */}
+        <link rel="preload" as="image" href="/logo-32.webp" type="image/webp" />
         {/* TEMPORAIRE: Désactivé pour résoudre conflits SW, DNS prefetch Google Fonts supprimé */}
         <link rel="dns-prefetch" href="//vercel.app" />
         {/* Meta pour performance */}

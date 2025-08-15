@@ -703,7 +703,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="/calendar"
-                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300"
+                  className="bg-orange-700 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-800 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300"
                   aria-label="Afficher le calendrier des entraînements"
                   role="button"
                 >
@@ -1076,6 +1076,7 @@ export default function HomePage() {
                       <button
                         className="text-blue-500 hover:text-blue-700 bg-blue-50 rounded-full p-2 shadow flex-shrink-0 ml-2 h-9 w-9 flex items-center justify-center"
                         title="Écouter le son"
+                        aria-label="Écouter le son sélectionné"
                         onClick={() => {
                           const sound = userSounds.find(s => s.id === sessionSounds[idx]);
                           if (sound) {
@@ -1084,6 +1085,7 @@ export default function HomePage() {
                           }
                         }}
                         style={{height:'36px', width:'36px'}}
+                        type="button"
                       >
                         <span className="sr-only">Écouter</span>
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z" /></svg>
@@ -1094,7 +1096,9 @@ export default function HomePage() {
                       onClick={() => setSessionSteps((steps: { name: string; duration: number }[]) => steps.filter((steps: { name: string; duration: number }, i: number) => i !== idx))}
                       className="text-gray-400 hover:text-red-500 text-lg font-bold ml-1 flex-shrink-0 h-9 w-9 flex items-center justify-center"
                       title="Supprimer l'étape"
+                      aria-label="Supprimer cette étape du timer"
                       style={{height:'36px', width:'36px'}}
+                      type="button"
                     >
                       ×
                     </button>
@@ -1103,6 +1107,8 @@ export default function HomePage() {
                 <button
                   onClick={() => setSessionSteps([...sessionSteps, { name: 'Nouvelle étape', duration: 60 }])}
                   className="mt-2 text-sm text-orange-800 hover:underline font-semibold"
+                  aria-label="Ajouter une nouvelle étape au timer"
+                  type="button"
                 >
                   + Ajouter une étape
                 </button>

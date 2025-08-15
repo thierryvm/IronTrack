@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/utils/supabase/client'
@@ -290,13 +291,15 @@ export default function HeaderClient() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 group">
               <div className="h-8 w-8 bg-white rounded-lg p-1 shadow-sm">
-                <img 
-                  src="/logo.png" 
+                <Image 
+                  src="/logo-32.webp" 
                   alt="IronTrack Logo" 
+                  width={32}
+                  height={32}
                   className="h-full w-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.outerHTML = '<div class="h-8 w-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-sm">IT</div>';
-                  }}
+                  priority
+                  sizes="32px"
+                  quality={95}
                 />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -471,13 +474,15 @@ export default function HeaderClient() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-white rounded-lg p-1 shadow-sm">
-              <img 
-                src="/logo.png" 
+              <Image 
+                src="/logo-32.webp" 
                 alt="IronTrack Logo" 
+                width={32}
+                height={32}
                 className="h-full w-full object-contain"
-                onError={(e) => {
-                  e.currentTarget.outerHTML = '<div class="h-8 w-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-sm">IT</div>';
-                }}
+                priority
+                sizes="32px"
+                quality={95}
               />
             </div>
             <span className="text-lg font-bold text-gray-900 dark:text-white">
