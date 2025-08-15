@@ -5,13 +5,13 @@ const nextConfig = {
     workerThreads: false,
     cpus: 1,
     webpackBuildWorker: false,
-    // DÉSACTIVATION temporaire optimizePackageImports pour debug
-    // optimizePackageImports: [
-    //   '@supabase/supabase-js',
-    //   '@supabase/ssr',
-    //   'framer-motion',
-    //   'tailwindcss',
-    // ],
+    // MICRO-OPT: Réactivation optimizePackageImports (sécurisé)
+    optimizePackageImports: [
+      '@supabase/supabase-js',
+      '@supabase/ssr',
+      'framer-motion',
+      'lucide-react',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,

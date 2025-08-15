@@ -31,7 +31,13 @@ import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 import SessionTimer from '@/components/ui/SessionTimer'
 import SoundLibrary from '@/components/ui/SoundLibrary'
 import { QuickTimer } from '@/components/ui/Timer'
-import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
+import dynamic from 'next/dynamic'
+
+// MICRO-OPT: Lazy load composant non-critique (-15-20KB bundle)
+const PWAInstallPrompt = dynamic(() => import('@/components/ui/PWAInstallPrompt'), {
+  ssr: false,
+  loading: () => null
+})
 
 // PERFORMANCE CRITICAL: IronBuddy defer pour réduire TBT
 // const IronBuddyFAB = lazy(() => import('@/components/ui/IronBuddyFAB-ENRICHED')) // Utilisé via ClientIronBuddyWrapper
