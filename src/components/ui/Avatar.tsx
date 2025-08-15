@@ -30,7 +30,10 @@ const Avatar = memo(function Avatar({ src, name = '', size = 96, className = '',
           className="object-cover w-full h-full rounded-full border-2 border-white"
           width={size}
           height={size}
-          priority
+          priority={size > 96} // LCP CRITICAL: Priority seulement pour grands avatars
+          sizes={`${size}px`} // LCP CRITICAL: Optimise le téléchargement
+          quality={size > 96 ? 80 : 60} // LCP CRITICAL: Qualité réduite pour petits avatars
+          loading={size <= 32 ? 'lazy' : 'eager'} // LCP CRITICAL: Lazy loading pour mini avatars
           onError={(e) => {
             // Masquer l'image si elle ne charge pas
             e.currentTarget.style.display = 'none';
