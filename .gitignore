@@ -13,6 +13,7 @@
 
 # Tests et couverture
 /coverage
+/tests/
 __tests__/
 *.test.ts
 *.test.tsx
@@ -48,6 +49,11 @@ CLAUDE.md
 HTTP_PERFORMANCE_GUIDE.md
 DIAGNOSTIC_*.md
 *_DIAGNOSTIC.md
+
+# IDE et éditeurs - configurations privées
+.cursor/
+.vscode/settings.json
+.idea/
 *_FIXED.md
 
 # 🚨 SCRIPTS SENSIBLES - LISTE EXPLICITE
