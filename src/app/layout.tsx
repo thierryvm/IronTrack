@@ -60,6 +60,11 @@ export default function RootLayout({
         
         {/* ULTRAHARDCORE: Script d'interception supprimé - causait erreurs Object.defineProperty */}
 
+        {/* Extension Error Shield ULTRAHARDCORE - Bloque toutes erreurs extensions */}
+        <script dangerouslySetInnerHTML={{
+          __html: `(function(){if(typeof chrome!=='undefined'){const orig={error:console.error,warn:console.warn};console.error=console.warn=function(...a){const msg=a[0]?.toString?.()??'';if(msg.includes('runtime.lastError')||msg.includes('Receiving end does not exist')||msg.includes('message port closed')||msg.includes('Could not establish connection')||msg.includes('Extension context')||msg.includes('chrome-extension://')||msg.includes('unload')||a[1]?.url?.includes?.('chrome-extension'))return;return orig.error.apply(console,a)};window.addEventListener('error',e=>{const src=e.filename||e.target?.src||'';if(src.includes('chrome-extension')||src.includes('content.js'))e.stopImmediatePropagation()},true)}})();`
+        }} />
+
         {/* Theme init - Garde dans head pour performance */}
         <script dangerouslySetInnerHTML={{
           __html: `(function(){try{const s=localStorage.getItem('theme'),d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.remove('dark','light');s==='dark'||(!s&&d)?document.documentElement.classList.add('dark'):document.documentElement.classList.add('light')}catch{document.documentElement.classList[window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'add':'remove']('dark')}})();`
