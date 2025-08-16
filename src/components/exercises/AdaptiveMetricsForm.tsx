@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import { Activity, Heart, Zap, TrendingUp } from 'lucide-react'
 import { FormField, Input } from '@/components/ui/form'
 import { NumberWheel } from '@/components/ui/NumberWheel'
+import { PowerInput2025 } from '@/components/ui/PowerInput2025'
+import { TimeInput2025 } from '@/components/ui/TimeInput2025'
+import { CadenceInput2025 } from '@/components/ui/CadenceInput2025'
 import { CardioMetrics, StrengthMetrics } from '@/types/performance'
 
 interface AdaptiveMetricsFormProps {
@@ -104,7 +107,7 @@ export function AdaptiveMetricsForm({
               <h4 className="font-semibold text-gray-900">Métriques Rameur</h4>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
               {/* Split Time - Most important rowing metric */}
               <FormField>
                 <div className="p-3 bg-blue-50 rounded-lg">
@@ -123,9 +126,9 @@ export function AdaptiveMetricsForm({
                 </div>
               </FormField>
 
-              {/* SPM - Strokes Per Minute avec NumberWheel */}
+              {/* SPM - Strokes Per Minute avec CadenceInput2025 */}
               <FormField>
-                <NumberWheel
+                <CadenceInput2025
                   label="Cadence (SPM)"
                   value={cardioData.rowing?.stroke_rate || 20}
                   onChange={(value) => setCardioData(prev => ({
@@ -138,16 +141,14 @@ export function AdaptiveMetricsForm({
                   min={16}
                   max={36}
                   step={1}
+                  unit="SPM"
                   className="mx-auto"
                 />
-                <div className="text-xs text-gray-500 mt-1 text-center">
-                  Warm-up: 20-24 • Endurance: 24-26 • High intensity: 26-30
-                </div>
               </FormField>
 
-              {/* Watts - Power Output avec NumberWheel */}
+              {/* Watts - Power Output avec PowerInput2025 */}
               <FormField>
-                <NumberWheel
+                <PowerInput2025
                   label="Puissance (Watts)"
                   value={cardioData.rowing?.watts || 150}
                   onChange={(value) => setCardioData(prev => ({
@@ -160,11 +161,16 @@ export function AdaptiveMetricsForm({
                   min={50}
                   max={500}
                   step={10}
+                  unit="W"
+                  presets={[
+                    { label: 'Débutant', value: 100 },
+                    { label: 'Moyen', value: 150 },
+                    { label: 'Bon', value: 200 },
+                    { label: 'Excellent', value: 250 },
+                    { label: 'Elite', value: 300 }
+                  ]}
                   className="mx-auto"
                 />
-                <div className="text-xs text-gray-500 mt-1 text-center">
-                  Beginner: 100-150W • Competitive: 250W+ • Elite: 300-400W+
-                </div>
               </FormField>
             </div>
           </motion.div>
@@ -182,7 +188,7 @@ export function AdaptiveMetricsForm({
               <h4 className="font-semibold text-gray-900">Métriques Course</h4>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
               {/* Incline */}
               <FormField>
                 <Input
@@ -238,10 +244,10 @@ export function AdaptiveMetricsForm({
               <h4 className="font-semibold text-gray-900">Métriques Vélo</h4>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Cadence RPM avec NumberWheel */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+              {/* Cadence RPM avec CadenceInput2025 */}
               <FormField>
-                <NumberWheel
+                <CadenceInput2025
                   label="Cadence (RPM)"
                   value={cardioData.cycling?.cadence || 85}
                   onChange={(value) => setCardioData(prev => ({
@@ -254,11 +260,9 @@ export function AdaptiveMetricsForm({
                   min={50}
                   max={120}
                   step={5}
+                  unit="RPM"
                   className="mx-auto"
                 />
-                <div className="text-xs text-gray-500 mt-1 text-center">
-                  Flat road: 80-110 • Hill climbing: 60-80 • High-speed: 100+ RPM
-                </div>
               </FormField>
 
               {/* Resistance Level avec NumberWheel */}
@@ -298,7 +302,7 @@ export function AdaptiveMetricsForm({
               <h4 className="font-semibold text-gray-900">Métriques HIIT</h4>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
               {/* Work Time */}
               <FormField>
                 <Input
@@ -365,7 +369,7 @@ export function AdaptiveMetricsForm({
           <h4 className="font-semibold text-gray-900">Métriques Avancées</h4>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {/* RPE - Rate of Perceived Exertion avec Input simple (peu de valeurs) */}
           <FormField>
             <label htmlFor="rpe" className="block text-sm font-medium text-gray-700 mb-1">
@@ -388,10 +392,10 @@ export function AdaptiveMetricsForm({
             </div>
           </FormField>
 
-          {/* Rest Time avec NumberWheel (valeurs longues 30-300) */}
+          {/* Rest Time avec TimeInput2025 (valeurs longues 30-300) */}
           <FormField>
-            <NumberWheel
-              label="Repos entre séries (sec)"
+            <TimeInput2025
+              label="Repos entre séries"
               value={strengthData.rest_seconds || 60}
               onChange={(value) => setStrengthData(prev => ({
                 ...prev,
@@ -399,12 +403,8 @@ export function AdaptiveMetricsForm({
               }))}
               min={30}
               max={300}
-              step={15}
               className="mx-auto"
             />
-            <div className="text-xs text-gray-500 mt-1 text-center">
-              30-60s: Force • 60-120s: Hypertrophie • 120-300s: Endurance
-            </div>
           </FormField>
         </div>
       </motion.div>

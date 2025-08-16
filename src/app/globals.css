@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 /* CORRECTIONS RESPONSIVE MOBILE */
 html {
@@ -47,15 +50,15 @@ img, video, svg, canvas {
   .safe-top {
     padding-top: max(1rem, env(safe-area-inset-top));
   }
-  
+
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
-  
+
   .safe-left {
     padding-left: max(1rem, env(safe-area-inset-left));
   }
-  
+
   .safe-right {
     padding-right: max(1rem, env(safe-area-inset-right));
   }
@@ -63,49 +66,79 @@ img, video, svg, canvas {
 
 :root {
   /* ===== SYSTÈME DE THÈME IRONTRACK ===== */
-  
+
   /* Surfaces principales */
   --surface-light: #ffffff;
   --surface-light-alt: #f9fafb;
   --surface-dark: #0b1220;
   --surface-dark-alt: #111827;
-  
+
   /* Brand - Orange IronTrack */
   --brand-500: #f97316;
   --brand-600: #ea580c;
   --brand-700: #c2410c;
   --brand-800: #9a3412;
   --brand-900: #7c2d12;
-  
+
   /* États système */
   --success-50: #ecfdf5;
   --success-500: #10b981;
   --success-600: #059669;
-  
+
   --warning-50: #fffbeb;
   --warning-500: #f59e0b;
   --warning-600: #d97706;
-  
+
   --danger-50: #fef2f2;
   --danger-500: #ef4444;
   --danger-600: #dc2626;
-  
+
   /* Textes adaptatifs */
   --text-primary-light: #0d0d0d;
   --text-secondary-light: #6b6b6b;
   --text-primary-dark: #f4f4f4;
   --text-secondary-dark: #a1a1aa;
-  
+
   /* Bordures adaptatifs */
   --border-light: #e5e7eb;
   --border-dark: #374151;
-  
+
   /* Variables dynamiques (changent avec le thème) */
-  --background: var(--surface-light);
   --background-alt: var(--surface-light-alt);
-  --foreground: var(--text-primary-light);
   --foreground-secondary: var(--text-secondary-light);
   --border-color: var(--border-light);
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 /* Mode clair explicite - priorité maximale */
@@ -119,11 +152,40 @@ img, video, svg, canvas {
 
 /* Thème sombre - Mode classe .dark */
 .dark {
-  --background: var(--surface-dark);
+  --background: oklch(0.145 0 0);
   --background-alt: var(--surface-dark-alt);
-  --foreground: var(--text-primary-dark);
+  --foreground: oklch(0.985 0 0);
   --foreground-secondary: var(--text-secondary-dark);
   --border-color: var(--border-dark);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 /* Détection automatique thème sombre (priorité faible) */
@@ -308,7 +370,7 @@ input[type="submit"] {
     bottom: max(1.5rem, env(safe-area-inset-bottom, 1rem)) !important;
     right: max(1.5rem, env(safe-area-inset-right, 1rem)) !important;
   }
-  
+
   .modal-2025 {
     bottom: max(6rem, calc(env(safe-area-inset-bottom, 0px) + 6rem)) !important;
     right: max(1.5rem, calc(env(safe-area-inset-right, 0px) + 1.5rem)) !important;
@@ -323,7 +385,7 @@ input[type="submit"] {
     right: 2rem !important;
     transform: scale(1.2) !important;
   }
-  
+
   .modal-2025 {
     bottom: 8rem !important;
     right: 2rem !important;
@@ -339,7 +401,7 @@ input[type="submit"] {
     right: 1rem !important;
     transform: scale(0.9) !important;
   }
-  
+
   .modal-2025 {
     bottom: 1rem !important;
     right: 1rem !important;
@@ -355,7 +417,7 @@ input[type="submit"] {
     border-width: 3px !important;
     box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
   }
-  
+
   .text-sharp {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -376,12 +438,12 @@ input[type="submit"] {
   .avoid-notch {
     padding-top: max(1rem, env(safe-area-inset-top));
   }
-  
+
   /* Header mobile iOS - éviter status bar */
   .header-mobile-ios {
     padding-top: max(12px, env(safe-area-inset-top)) !important;
   }
-  
+
   /* iPhone 14+ avec Dynamic Island */
   @media screen and (min-device-width: 390px) and (max-device-width: 430px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
     .header-mobile-ios {
@@ -394,5 +456,52 @@ input[type="submit"] {
 @media screen and (min-height: 812px) {
   .avoid-home-indicator {
     padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

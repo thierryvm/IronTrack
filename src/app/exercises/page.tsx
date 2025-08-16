@@ -303,11 +303,12 @@ export default function ExercisesPageOptimized() {
         {/* Liste d'exercices avec Suspense */}
         <Suspense fallback={<ExerciseLoadingSkeleton />}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredExercises.map((exercise) => (
+            {filteredExercises.map((exercise, index) => (
               // CARTES DESIGN 2025 - PERMANENT
               <ExerciseCard2025
                 key={exercise.id}
                 exercise={exercise}
+                priority={index < 3}
                 lastPerformance={exercise.last_weight || exercise.last_distance ? {
                   weight: exercise.last_weight,
                   reps: exercise.last_reps,
