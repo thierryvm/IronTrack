@@ -94,10 +94,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
           throw exerciseError
         }
 
-        // Récupérer les notes de la dernière performance
+        // Récupérer la dernière performance complète avec métriques
         const { data: latestPerformanceData } = await supabase
           .from('performance_logs')
-          .select('notes')
+          .select('*')
           .eq('exercise_id', exerciseId)
           .order('performed_at', { ascending: false })
           .limit(1)
@@ -129,6 +129,49 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
         setExercise(formattedExercise)
         setEquipmentOptions(equipmentData || [])
         setCurrentPhotoUrl(exerciseData.image_url)
+        
+        // 📊 CHARGER MÉTRIQUES PERFORMANCE EXISTANTE
+        if (latestPerformance) {
+          // Charger métriques cardio depuis performance_logs
+          if (exerciseData.exercise_type === 'Cardio') {
+            setCardioData({
+              duration_seconds: latestPerformance.duration_seconds || 0,
+              distance: latestPerformance.distance || 0,
+              distance_unit: latestPerformance.distance_unit || 'km',
+              heart_rate: latestPerformance.heart_rate || 0,
+              // Métriques spécialisées selon équipement
+              rowing: {
+                stroke_rate: latestPerformance.stroke_rate || 20,
+                watts: latestPerformance.watts || 150
+              },
+              cycling: {
+                cadence: latestPerformance.cadence || 85,
+                resistance: latestPerformance.resistance || 8
+              },
+              running: {
+                incline: latestPerformance.incline || 0
+              }
+            })
+          }
+          
+          // Charger métriques musculation depuis performance_logs
+          if (exerciseData.exercise_type === 'Musculation') {
+            setStrengthData({
+              weight: latestPerformance.weight || 0,
+              reps: latestPerformance.reps || 0,
+              sets: latestPerformance.sets || 1,
+              rpe: latestPerformance.rpe || 5,
+              rest_seconds: latestPerformance.rest_seconds || 60
+            })
+          }
+        }
+        
+        // 🔍 DEBUG IMAGE BUG
+        console.log('🔍 DEBUG ExerciseEditForm2025 - Image URL:', {
+          exerciseId,
+          rawImageUrl: exerciseData.image_url,
+          currentPhotoUrlState: exerciseData.image_url
+        })
 
       } catch (error) {
         console.error('Erreur lors du chargement:', error)
@@ -202,7 +245,31 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
       if (error) throw error
 
-      toast.success('Exercice mis à jour avec succès')
+      // 📝 MISE À JOUR NOTES PERFORMANCE si modifiées
+      if (exercise.notes) {
+        // Récupérer la dernière performance pour mettre à jour les notes
+        const { data: latestPerformanceData } = await supabase
+          .from('performance_logs')
+          .select('id')
+          .eq('exercise_id', exerciseId)
+          .order('performed_at', { ascending: false })
+          .limit(1)
+          
+        if (latestPerformanceData && latestPerformanceData[0]) {
+          // Mettre à jour les notes de la dernière performance
+          const { error: notesError } = await supabase
+            .from('performance_logs')
+            .update({ notes: exercise.notes })
+            .eq('id', latestPerformanceData[0].id)
+            
+          if (notesError) {
+            console.warn('Erreur mise à jour notes:', notesError)
+            // Ne pas bloquer la sauvegarde de l'exercice pour une erreur de notes
+          }
+        }
+      }
+
+      toast.success('Exercice et notes mis à jour avec succès')
       router.push('/exercises')
 
     } catch (error) {
@@ -426,21 +493,20 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 />
               </FormField2025>
 
-              {/* Notes de performance (lecture seule) */}
-              {exercise.notes && (
-                <FormField2025
-                  label="Notes de la dernière performance"
-                  helpText="Ces notes proviennent de votre dernière session. Pour les modifier, éditez la performance directement."
-                >
-                  <Textarea2025
-                    value={exercise.notes}
-                    readOnly
-                    variant="filled"
-                    className="bg-gray-50 text-gray-600 cursor-not-allowed"
-                    rows={3}
-                  />
-                </FormField2025>
-              )}
+              {/* Notes de performance (maintenant éditables) */}
+              <FormField2025
+                label="Notes de la dernière performance"
+                helpText="Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance."
+              >
+                <Textarea2025
+                  value={exercise.notes || ''}
+                  onChange={(e) => setExercise(prev => ({ ...prev!, notes: e.target.value }))}
+                  placeholder="Ajoutez des notes sur votre dernière performance..."
+                  variant="outline"
+                  className="focus:ring-orange-500 focus:border-orange-500"
+                  rows={3}
+                />
+              </FormField2025>
 
               {/* Section Métriques Spécifiques - Nouveau */}
               {exercise && equipmentOptions.length > 0 && (
@@ -466,9 +532,9 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
             </div>
           </div>
 
-          {/* Footer Actions - Alignement correct à droite */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center sm:pr-2">
+          {/* Footer Actions - Position fixe en bas */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 shadow-lg">
+            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center">
               <Button2025
                 variant="outline"
                 onClick={handleCancel}

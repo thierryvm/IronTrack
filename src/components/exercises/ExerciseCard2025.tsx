@@ -36,6 +36,7 @@ interface ExerciseCard2025Props {
   exercise: Exercise
   lastPerformance?: Performance
   variant?: 'default' | 'compact' | 'detailed'
+  priority?: boolean // ULTRAHARDCORE LCP: eager loading pour premières images
   onAddPerformance: (exerciseId: number) => void
   onViewDetails: (exerciseId: number) => void
   onDelete?: (exerciseId: number) => void
@@ -46,6 +47,7 @@ interface ExerciseCard2025Props {
 export function ExerciseCard2025({
   exercise,
   lastPerformance,
+  priority = false,
   variant = 'default',
   onAddPerformance,
   onViewDetails,
@@ -122,8 +124,8 @@ export function ExerciseCard2025({
   }
   
   // Fonction pour obtenir la difficulté normalisée
-  const getDifficultyDisplay = (difficulty: 'beginner' | 'intermediate' | 'advanced' | null | undefined) => {
-    if (!difficulty) {
+  const getDifficultyDisplay = (difficulty: string | number | null | undefined) => {
+    if (!difficulty && difficulty !== 0) {
       return { text: 'Non défini', class: 'bg-gray-100 text-gray-700' }
     }
     
@@ -140,11 +142,7 @@ export function ExerciseCard2025({
     return { text: diffStr, class: 'bg-gray-100 text-gray-700' }
   }
   
-  const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(
-    typeof exercise.difficulty === 'string' 
-      ? exercise.difficulty as 'beginner' | 'intermediate' | 'advanced'
-      : null
-  )
+  const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(exercise.difficulty)
 
   // Fonction pour obtenir icône et couleurs selon exercice
   const getPlaceholderConfig = () => {
@@ -262,7 +260,8 @@ export function ExerciseCard2025({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            quality={priority ? 90 : 60}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
           />

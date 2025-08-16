@@ -10,7 +10,8 @@ import {
   CheckCircle, 
   Loader2,
   Shield,
-  Smartphone
+  Smartphone,
+  Zap
 } from 'lucide-react'
 import Image from 'next/image'
 import { uploadExercisePhoto, SecureAttachment } from '@/utils/fileUpload'
@@ -47,6 +48,15 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   })
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // 🔍 DEBUG IMAGE BUG
+  useEffect(() => {
+    console.log('🔍 DEBUG ExercisePhotoUpload - currentPhoto prop:', {
+      currentPhoto,
+      hasCurrentPhoto: !!currentPhoto,
+      currentPhotoLength: currentPhoto?.length
+    })
+  }, [currentPhoto])
 
   // Formats acceptés SÉCURISÉS (conforme OWASP) - formats dangereux retirés
   const acceptedTypes = [
@@ -415,18 +425,35 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Informations sur le format HEIC */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <div className="flex items-start space-x-2">
-          <Smartphone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <h5 className="text-sm font-medium text-blue-900 mb-1">
-              📱 Compatible iPhone/iPad - HEIC vers JPEG
-            </h5>
-            <p className="text-xs text-blue-800">
-              Les photos HEIC d&apos;Apple sont automatiquement converties en JPEG pour compatibilité. 
-              La conversion préserve la qualité tout en optimisant la taille.
-            </p>
+      {/* Informations sur le format HEIC et optimisation */}
+      <div className="space-y-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
+            <Smartphone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h5 className="text-sm font-medium text-blue-900 mb-1">
+                📱 Compatible iPhone/iPad - HEIC vers JPEG
+              </h5>
+              <p className="text-xs text-blue-800">
+                Les photos HEIC d&apos;Apple sont automatiquement converties en JPEG pour compatibilité. 
+                La conversion préserve la qualité tout en optimisant la taille.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
+            <Zap className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h5 className="text-sm font-medium text-green-900 mb-1">
+                ⚡ Optimisation automatique pour performances
+              </h5>
+              <p className="text-xs text-green-800">
+                Les images sont automatiquement redimensionnées et compressées pour un chargement ultra-rapide 
+                tout en préservant la qualité visuelle. Aucune action requise de votre part.
+              </p>
+            </div>
           </div>
         </div>
       </div>

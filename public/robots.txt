@@ -12,7 +12,7 @@ Disallow: /admin/*
 Disallow: /api/*
 Disallow: /auth/*
 Disallow: /profile
-Disallow: /exercises
+# Allow: /exercises - Page publique pour SEO/démo
 Disallow: /workouts
 # Allow: /calendar - Page publique pour démo/SEO
 Disallow: /progress

@@ -7,6 +7,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import DOMPurify from 'isomorphic-dompurify'
+import { optimizeImageSafe, shouldOptimizeImage } from './imageOptimization'
 
 // Types sécurisés
 export interface SecureAttachment {
@@ -532,16 +533,41 @@ function sanitizeFilename(filename: string): string {
 
 /**
  * Upload sécurisé d'un fichier vers Supabase Storage
+ * AVEC OPTIMISATION AUTOMATIQUE INTÉGRÉE
  */
 export async function uploadSecureFile(
   file: File,
   bucket: string = 'avatars'
 ): Promise<UploadResult> {
   try {
+    let processedFile = file
+    
     // 1. Validation complète du fichier
     await validateFile(file)
     
-    // 2. Initialisation Supabase et authentification
+    // 2. Optimisation automatique si image
+    if (file.type.startsWith('image/') && shouldOptimizeImage(file)) {
+      try {
+        console.log(`[OPTIMIZATION] Auto-optimisation ${bucket}:`, file.name, `${(file.size / 1024).toFixed(0)}KB`)
+        
+        const optimizedFile = await optimizeImageSafe(file)
+        
+        if (optimizedFile !== file) {
+          const reduction = ((file.size - optimizedFile.size) / file.size * 100).toFixed(1)
+          console.log(`[OPTIMIZATION] ${bucket} optimisé:`, {
+            original: `${(file.size / 1024).toFixed(0)}KB`,
+            optimized: `${(optimizedFile.size / 1024).toFixed(0)}KB`,
+            reduction: `${reduction}%`
+          })
+          processedFile = optimizedFile
+        }
+      } catch (optimizationError) {
+        console.warn(`[OPTIMIZATION] Échec optimisation ${bucket} (fichier original conservé):`, optimizationError)
+        // Continuer avec fichier original
+      }
+    }
+    
+    // 3. Initialisation Supabase et authentification
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
@@ -549,7 +575,7 @@ export async function uploadSecureFile(
       throw new FileUploadError('Utilisateur non authentifié', 'NOT_AUTHENTICATED')
     }
     
-    // 3. Vérification rate limiting (prévention abus)
+    // 4. Vérification rate limiting (prévention abus)
     if (!checkRateLimit(user.id)) {
       throw new FileUploadError(
         'Limite d\'upload atteinte. Veuillez patienter avant d\'uploader à nouveau.',
@@ -558,14 +584,14 @@ export async function uploadSecureFile(
       )
     }
     
-    // 4. Génération nom sécurisé
-    const secureFilename = generateSecureFilename(file.name, user.id)
-    const sanitizedOriginalName = sanitizeFilename(file.name)
+    // 5. Génération nom sécurisé
+    const secureFilename = generateSecureFilename(processedFile.name, user.id)
+    const sanitizedOriginalName = sanitizeFilename(processedFile.name)
     
-    // 5. Upload vers Supabase Storage avec sécurité renforcée
+    // 6. Upload vers Supabase Storage avec sécurité renforcée
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(secureFilename, file, {
+      .upload(secureFilename, processedFile, {
         cacheControl: '3600',
         upsert: false // Pas d'écrasement
       })
@@ -605,18 +631,18 @@ export async function uploadSecureFile(
       publicUrl = urlData.signedUrl
     }
     
-    // 6. Créer objet attachment sécurisé
+    // 7. Créer objet attachment sécurisé
     const attachment: SecureAttachment = {
       id: crypto.randomUUID(),
       name: secureFilename,
       originalName: sanitizedOriginalName,
-      type: file.type,
-      size: file.size,
+      type: processedFile.type,
+      size: processedFile.size,
       url: publicUrl,
       uploadedAt: new Date().toISOString()
     }
     
-    // 7. Log de sécurité (aucune donnée sensible logged)
+    // 8. Log de sécurité (aucune donnée sensible logged)
     
     return {
       success: true,
@@ -706,13 +732,13 @@ async function convertHeicToJpeg(file: File): Promise<File> {
 /**
  * Upload spécialisé pour les photos d'exercices
  * Utilise le bucket 'exercise-images' existant dans Supabase Storage
- * GÈRE LA CONVERSION HEIC → JPEG automatiquement
+ * PIPELINE COMPLET: HEIC→JPEG + OPTIMISATION AUTOMATIQUE + UPLOAD
  */
 export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
   try {
     let processedFile = file
     
-    // Si le fichier est HEIC/HEIF, le convertir en JPEG
+    // ÉTAPE 1: Conversion HEIC→JPEG si nécessaire
     if (file.type === 'image/heic' || file.type === 'image/heif' || 
         file.name.toLowerCase().endsWith('.heic') || 
         file.name.toLowerCase().endsWith('.heif')) {
@@ -728,9 +754,36 @@ export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
       }
     }
     
+    // ÉTAPE 2: Optimisation automatique pour performances Web Core Vitals
+    if (shouldOptimizeImage(processedFile)) {
+      try {
+        console.log('[OPTIMIZATION] Optimisation automatique démarrée:', processedFile.name, `${(processedFile.size / 1024).toFixed(0)}KB`)
+        
+        const optimizedFile = await optimizeImageSafe(processedFile)
+        
+        if (optimizedFile !== processedFile) {
+          const reduction = ((processedFile.size - optimizedFile.size) / processedFile.size * 100).toFixed(1)
+          console.log('[OPTIMIZATION] Optimisation réussie:', {
+            original: `${(processedFile.size / 1024).toFixed(0)}KB`,
+            optimized: `${(optimizedFile.size / 1024).toFixed(0)}KB`, 
+            reduction: `${reduction}%`
+          })
+          processedFile = optimizedFile
+        } else {
+          console.log('[OPTIMIZATION] Fichier déjà optimisé ou optimisation non bénéfique')
+        }
+      } catch (optimizationError) {
+        console.warn('[OPTIMIZATION] Échec optimisation (fichier original conservé):', optimizationError)
+        // Continuer avec fichier non-optimisé (fallback sécurisé)
+      }
+    } else {
+      console.log('[OPTIMIZATION] Optimisation non nécessaire:', processedFile.name, `${(processedFile.size / 1024).toFixed(0)}KB`)
+    }
+    
+    // ÉTAPE 3: Upload final vers Supabase
     return uploadSecureFile(processedFile, 'exercise-images')
   } catch (error) {
-    console.error('[HEIC] Erreur upload exercice photo:', error)
+    console.error('[UPLOAD] Erreur upload exercice photo:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur upload photo exercice'
