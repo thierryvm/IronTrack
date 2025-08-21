@@ -22,7 +22,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
     }
     return { 
       text: 'Nouveau', 
-      color: 'bg-gray-100 text-gray-800 border-gray-200',
+      color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600',
       icon: <Dumbbell className="w-3 h-3" />
     }
   }
@@ -34,7 +34,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
       case 'Débutant': return 'bg-green-100 text-green-800'
       case 'Intermédiaire': return 'bg-yellow-100 text-yellow-800'
       case 'Avancé': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
     }
   }
 
@@ -45,7 +45,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
       transition={{ delay, duration: 0.3 }}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer
                  hover:border-orange-300 hover:shadow-lg transition-all duration-200
                  group"
       onClick={onSelect}
@@ -54,15 +54,15 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             {suggestion.type === 'Musculation' ? (
-              <Dumbbell className="w-4 h-4 text-orange-800" />
+              <Dumbbell className="w-4 h-4 text-orange-800 dark:text-orange-300" />
             ) : (
               <Clock className="w-4 h-4 text-blue-500" />
             )}
-            <h3 className="font-semibold text-gray-900 group-hover:text-orange-800 transition-colors">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors">
               {suggestion.name}
             </h3>
           </div>
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             {suggestion.muscle_group} • {suggestion.equipment}
           </p>
           <div className="flex items-center gap-2">
@@ -75,10 +75,10 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
             </span>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-orange-800 transition-colors" />
+        <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300 transition-colors" />
       </div>
       
-      <div className="flex items-center gap-4 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
         {suggestion.values.firstWeight && (
           <div className="flex items-center gap-1">
             <span className="font-medium">💪</span>
@@ -118,7 +118,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
       </div>
 
       {/* Feedback buttons */}
-      <div className="flex justify-end mt-3 pt-3 border-t border-gray-100">
+      <div className="flex justify-end mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
         <FeedbackButtons suggestion={suggestion} />
       </div>
     </motion.div>

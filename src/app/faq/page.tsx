@@ -252,31 +252,31 @@ export default function FAQPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-purple-100 rounded-xl">
               <HelpCircle className="h-8 w-8 text-purple-500" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Questions Fréquentes (FAQ)</h1>
-              <p className="text-gray-600">Trouvez rapidement les réponses à vos questions</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Questions Fréquentes (FAQ)</h1>
+              <p className="text-gray-600 dark:text-gray-300">Trouvez rapidement les réponses à vos questions</p>
             </div>
           </div>
         </div>
 
         {/* Search */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-700 dark:text-gray-300" />
             <input
               type="text"
               placeholder="Rechercher dans les questions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -284,8 +284,8 @@ export default function FAQPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Categories Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Catégories</h3>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Catégories</h3>
               <nav className="space-y-2">
                 {categories.map((category) => {
                   const Icon = category.icon
@@ -297,7 +297,7 @@ export default function FAQPage() {
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-center justify-between ${
                         isActive
                           ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                          : 'hover:bg-gray-50 text-gray-700'
+                          : 'hover:bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
                       }`}
                       aria-label={`Filtrer par catégorie ${category.label}`}
                       aria-pressed={isActive}
@@ -310,7 +310,7 @@ export default function FAQPage() {
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         isActive 
                           ? 'bg-purple-100 text-purple-700' 
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                       }`}>
                         {category.count}
                       </span>
@@ -323,20 +323,20 @@ export default function FAQPage() {
 
           {/* FAQ Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   {selectedCategory === 'all' ? 'Toutes les questions' : categories.find(c => c.id === selectedCategory)?.label}
                 </h2>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   {filteredFAQ.length} question{filteredFAQ.length > 1 ? 's' : ''}
                 </span>
               </div>
 
               {filteredFAQ.length === 0 ? (
                 <div className="text-center py-8">
-                  <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">
+                  <HelpCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
                     {searchQuery ? 'Aucune question trouvée pour votre recherche' : 'Aucune question dans cette catégorie'}
                   </p>
                   {searchQuery && (
@@ -355,35 +355,35 @@ export default function FAQPage() {
                   {filteredFAQ.map((item) => {
                     const isOpen = openItems.includes(item.id)
                     return (
-                      <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                      <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                         <button
                           onClick={() => toggleItem(item.id)}
-                          className="w-full text-left p-4 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                          className="w-full text-left p-4 hover:bg-gray-50 dark:bg-gray-800 transition-colors flex items-center justify-between"
                           aria-expanded={isOpen}
                           aria-controls={`faq-answer-${item.id}`}
                           aria-label={`${isOpen ? 'Masquer' : 'Afficher'} la réponse pour: ${item.question}`}
                           type="button"
                         >
                           <span 
-                            className="font-medium text-gray-900 pr-4" 
+                            className="font-medium text-gray-900 dark:text-gray-100 pr-4" 
                             id={`faq-question-${item.id}`}
                           >
                             {item.question}
                           </span>
                           {isOpen ? (
-                            <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" aria-hidden="true" />
+                            <ChevronUp className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
                           ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" aria-hidden="true" />
+                            <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
                           )}
                         </button>
                         {isOpen && (
                           <div 
-                            className="px-4 pb-4 border-t border-gray-100"
+                            className="px-4 pb-4 border-t border-gray-100 dark:border-gray-700"
                             id={`faq-answer-${item.id}`}
                             role="region"
                             aria-labelledby={`faq-question-${item.id}`}
                           >
-                            <div className="pt-3 text-gray-700 leading-relaxed">
+                            <div className="pt-3 text-gray-700 dark:text-gray-300 leading-relaxed">
                               {item.answer}
                             </div>
                           </div>
@@ -398,7 +398,7 @@ export default function FAQPage() {
         </div>
 
         {/* Help Section */}
-        <div className="mt-8 bg-gradient-to-r from-orange-600 to-red-500 rounded-xl shadow-md p-6 text-white">
+        <div className="mt-8 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 rounded-xl shadow-md p-6 text-white">
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Vous ne trouvez pas votre réponse ?</h3>
             <p className="text-white/90 mb-4">
@@ -407,7 +407,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
               >
                 Guide Complet
               </Link>

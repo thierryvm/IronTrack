@@ -34,7 +34,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           icon: Trash2,
           iconBg: 'bg-red-100',
           iconColor: 'text-red-600',
-          confirmBg: 'bg-red-500 hover:bg-red-600',
+          confirmBg: 'bg-red-500 hover:bg-red-500',
           confirmText: 'text-white'
         }
       case 'warning':
@@ -73,7 +73,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -83,15 +83,15 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                   <IconComponent className={`w-6 h-6 ${styles.iconColor}`} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>
-                  <p className="text-gray-600 text-sm">{message}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">{message}</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="w-4 h-4 text-gray-500" />
+                <X className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
 
@@ -99,7 +99,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             <div className="flex gap-3 mt-6">
               <button
                 onClick={onClose}
-                className="flex-1 bg-gray-200 text-gray-700 py-2.5 px-4 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2.5 px-4 rounded-lg font-medium hover:bg-gray-300 transition-colors"
               >
                 {cancelText}
               </button>
@@ -109,7 +109,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 className={`flex-1 ${styles.confirmBg} ${styles.confirmText} py-2.5 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50`}
               >
                 {loading ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white dark:border-gray-700/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   confirmText
                 )}

@@ -3,17 +3,18 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Dumbbell, Target, AlertCircle, CheckCircle, Activity } from 'lucide-react'
+import { ArrowLeft, Dumbbell, Target, AlertCircle, Activity } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'react-hot-toast'
 import { ExercisePhotoUpload } from '@/components/exercises/ExercisePhotoUpload'
 import { SecureAttachment } from '@/utils/fileUpload'
 import { mapDifficultyFromNumber, mapDifficultyToNumber, difficulties, type DifficultyString } from '@/utils/difficultyMapping'
-import { FormField2025 } from '@/components/ui/FormField2025'
-import { Input2025 } from '@/components/ui/Input2025'
-import { Button2025 } from '@/components/ui/Button2025'
-import { Textarea2025 } from '@/components/ui/Textarea2025'
-import { AdaptiveMetricsForm } from '@/components/exercises/AdaptiveMetricsForm'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ExerciseDefaultMetricsForm } from '@/components/exercises/ExerciseDefaultMetricsForm'
 import { validateExerciseClientSide, validateExerciseUpdateData, type ExerciseUpdateData } from '@/utils/exerciseValidation'
 import { CardioMetrics, StrengthMetrics } from '@/types/performance'
 
@@ -32,10 +33,11 @@ interface ExerciseData {
   notes?: string // Notes from latest performance (read-only)
 }
 
-const muscleGroups = [
-  'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 'Jambes', 
-  'Abdominaux', 'Cardio', 'Corps entier', 'Avant-bras', 'Mollets', 'Fessiers'
-]
+// Les groupes musculaires seront chargés depuis la base de données
+interface MuscleGroupOption {
+  id: number
+  name: string
+}
 
 const difficultyColors: Record<DifficultyString, string> = {
   'Débutant': 'bg-green-100 text-green-700 border-green-200',
@@ -51,9 +53,11 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   const [saving, setSaving] = useState(false)
   const [exercise, setExercise] = useState<ExerciseData | null>(null)
   const [equipmentOptions, setEquipmentOptions] = useState<{id: number, name: string}[]>([])
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroupOption[]>([])
   const [exercisePhoto, setExercisePhoto] = useState<SecureAttachment | null>(null)
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | undefined>(undefined)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [updateLastPerformance, setUpdateLastPerformance] = useState(false)
   
   // États pour métriques adaptatives (structure simplifiée pour l'UI)
   const [cardioData, setCardioData] = useState<CardioMetrics>({
@@ -76,10 +80,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
       try {
         const supabase = createClient()
         
-        // Récupérer l'exercice
+        // Récupérer l'exercice avec toutes les colonnes métriques
         const { data: exerciseData, error: exerciseError } = await supabase
           .from('exercises')
-          .select('*')
+          .select('*, default_cardio_metrics, default_strength_metrics')
           .eq('id', exerciseId)
           .single()
 
@@ -112,6 +116,20 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
         if (equipmentError) throw equipmentError
 
+        // Récupérer les groupes musculaires
+        const { data: muscleGroupData, error: muscleGroupError } = await supabase
+          .from('muscle_groups')
+          .select('id, name')
+          .order('name')
+
+        if (muscleGroupError) throw muscleGroupError
+
+        // Vérification exercice existe
+        if (!exerciseData) {
+          throw new Error('Exercice non trouvé')
+        }
+
+
         // Format des données
         const formattedExercise: ExerciseData = {
           name: exerciseData.name || '',
@@ -128,50 +146,51 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
         setExercise(formattedExercise)
         setEquipmentOptions(equipmentData || [])
+        setMuscleGroups(muscleGroupData || [])
         setCurrentPhotoUrl(exerciseData.image_url)
         
-        // 📊 CHARGER MÉTRIQUES PERFORMANCE EXISTANTE
-        if (latestPerformance) {
-          // Charger métriques cardio depuis performance_logs
-          if (exerciseData.exercise_type === 'Cardio') {
-            setCardioData({
-              duration_seconds: latestPerformance.duration_seconds || 0,
-              distance: latestPerformance.distance || 0,
-              distance_unit: latestPerformance.distance_unit || 'km',
-              heart_rate: latestPerformance.heart_rate || 0,
-              // Métriques spécialisées selon équipement
-              rowing: {
-                stroke_rate: latestPerformance.stroke_rate || 20,
-                watts: latestPerformance.watts || 150
-              },
-              cycling: {
-                cadence: latestPerformance.cadence || 85,
-                resistance: latestPerformance.resistance || 8
-              },
-              running: {
-                incline: latestPerformance.incline || 0
-              }
-            })
-          }
-          
-          // Charger métriques musculation depuis performance_logs
-          if (exerciseData.exercise_type === 'Musculation') {
-            setStrengthData({
-              weight: latestPerformance.weight || 0,
-              reps: latestPerformance.reps || 0,
-              sets: latestPerformance.sets || 1,
-              rpe: latestPerformance.rpe || 5,
-              rest_seconds: latestPerformance.rest_seconds || 60
-            })
-          }
+        // 📊 CHARGER MÉTRIQUES PAR DÉFAUT depuis exercises
+        // Prioriser les métriques par défaut stockées dans exercises
+        // Priorité 1: Métriques par défaut stockées dans exercises  
+        if (exerciseData.default_cardio_metrics && exerciseData.exercise_type === 'Cardio') {
+          setCardioData(exerciseData.default_cardio_metrics)
+        } else if (latestPerformance && exerciseData.exercise_type === 'Cardio') {
+          // Fallback: Dernière performance cardio
+          setCardioData({
+            duration_seconds: latestPerformance.duration_seconds || 0,
+            distance: latestPerformance.distance || 0,
+            distance_unit: latestPerformance.distance_unit || 'km',
+            heart_rate: latestPerformance.heart_rate || 0,
+            calories: latestPerformance.calories || 0,
+            // Métriques spécialisées selon équipement
+            rowing: {
+              stroke_rate: latestPerformance.stroke_rate || 20,
+              watts: latestPerformance.watts || 150
+            },
+            cycling: {
+              cadence: latestPerformance.cadence || 85,
+              resistance: latestPerformance.resistance || 8
+            },
+            running: {
+              speed: latestPerformance.speed || 10,
+              incline: latestPerformance.incline || 0
+            }
+          })
         }
         
-        // 🔍 DEBUG IMAGE BUG
-        console.log('🔍 DEBUG ExerciseEditForm2025 - Image URL:', {
-          exerciseId,
-          rawImageUrl: exerciseData.image_url,
-          currentPhotoUrlState: exerciseData.image_url
-        })
+        // Métriques musculation - même logique  
+        if (exerciseData.default_strength_metrics && exerciseData.exercise_type === 'Musculation') {
+          setStrengthData(exerciseData.default_strength_metrics)
+        } else if (latestPerformance && exerciseData.exercise_type === 'Musculation') {
+          // Fallback: Dernière performance musculation
+          setStrengthData({
+            weight: latestPerformance.weight || 0,
+            reps: latestPerformance.reps || 0,
+            sets: latestPerformance.sets || 1,
+            rpe: latestPerformance.rpe || 5,
+            rest_seconds: latestPerformance.rest_seconds || 60
+          })
+        }
 
       } catch (error) {
         console.error('Erreur lors du chargement:', error)
@@ -203,7 +222,15 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   }
 
   const handleSave = async () => {
-    if (!exercise || !validateForm()) return
+    if (!exercise) {
+      return
+    }
+    
+    const isValid = validateForm()
+    
+    if (!isValid) {
+      return
+    }
 
     setSaving(true)
     
@@ -218,8 +245,13 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
         equipment_id: exercise.equipment_id,
         difficulty: mapDifficultyToNumber(exercise.difficulty),
         description: exercise.description || null,
-        image_url: exercisePhoto?.url || currentPhotoUrl || null
+        image_url: exercisePhoto?.url || currentPhotoUrl || null,
+        // Ajouter métriques par défaut
+        default_strength_metrics: strengthData,
+        default_cardio_metrics: cardioData
       }
+
+
 
       // Validation sécurisée complète côté serveur
       const serverValidation = validateExerciseUpdateData(candidateData)
@@ -237,13 +269,68 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
         updated_at: new Date().toISOString()
       }
 
+
       // Mettre à jour l'exercice avec données sécurisées
       const { error } = await supabase
         .from('exercises')
         .update(updateData)
         .eq('id', exerciseId)
+        .select() // Récupérer les données mises à jour
+
 
       if (error) throw error
+
+      // 🔄 MISE À JOUR DERNIÈRE PERFORMANCE si demandée
+      if (updateLastPerformance) {
+        // Récupérer la dernière performance
+        const { data: latestPerfData } = await supabase
+          .from('performance_logs')
+          .select('*')
+          .eq('exercise_id', exerciseId)
+          .order('performed_at', { ascending: false })
+          .limit(1)
+          
+        if (latestPerfData && latestPerfData[0]) {
+          const latestPerf = latestPerfData[0]
+          
+          // Préparer les nouvelles données selon le type d'exercice
+          const perfUpdateData: any = {}
+          
+          if (exercise.exercise_type === 'Cardio') {
+            if (cardioData.distance) perfUpdateData.distance = cardioData.distance
+            if (cardioData.duration_seconds) perfUpdateData.duration_seconds = cardioData.duration_seconds
+            if (cardioData.heart_rate) perfUpdateData.heart_rate = cardioData.heart_rate
+            if (cardioData.calories) perfUpdateData.calories = cardioData.calories
+            
+            // Métriques spécialisées
+            if (cardioData.running?.speed) perfUpdateData.speed = cardioData.running.speed
+            if (cardioData.running?.incline) perfUpdateData.incline = cardioData.running.incline
+            if (cardioData.rowing?.stroke_rate) perfUpdateData.stroke_rate = cardioData.rowing.stroke_rate
+            if (cardioData.rowing?.watts) perfUpdateData.watts = cardioData.rowing.watts
+            if (cardioData.cycling?.cadence) perfUpdateData.cadence = cardioData.cycling.cadence
+            if (cardioData.cycling?.resistance) perfUpdateData.resistance = cardioData.cycling.resistance
+          } else if (exercise.exercise_type === 'Musculation') {
+            if (strengthData.weight) perfUpdateData.weight = strengthData.weight
+            if (strengthData.reps) perfUpdateData.reps = strengthData.reps
+            if (strengthData.sets) perfUpdateData.sets = strengthData.sets
+            if (strengthData.rpe) perfUpdateData.rpe = strengthData.rpe
+            if (strengthData.rest_seconds) perfUpdateData.rest_seconds = strengthData.rest_seconds
+          }
+          
+          // Mettre à jour la performance si des données ont changé
+          if (Object.keys(perfUpdateData).length > 0) {
+            const { error: perfError } = await supabase
+              .from('performance_logs')
+              .update(perfUpdateData)
+              .eq('id', latestPerf.id)
+              
+            if (perfError) {
+              console.warn('Erreur mise à jour performance:', perfError)
+              // Ne pas bloquer la sauvegarde de l'exercice pour une erreur de performance
+            }
+          }
+        }
+      }
 
       // 📝 MISE À JOUR NOTES PERFORMANCE si modifiées
       if (exercise.notes) {
@@ -269,7 +356,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
         }
       }
 
-      toast.success('Exercice et notes mis à jour avec succès')
+      toast.success('Exercice mis à jour avec succès')
       router.push('/exercises')
 
     } catch (error) {
@@ -296,11 +383,11 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full"
+          className="w-8 h-8 border-2 border-orange-600 border-t-transparent rounded-full"
         />
       </div>
     )
@@ -308,39 +395,39 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Exercice introuvable</h2>
-          <p className="text-gray-600 mb-4">L'exercice demandé n'existe pas ou a été supprimé.</p>
-          <Button2025 onClick={() => router.push('/exercises')}>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Exercice introuvable</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">L'exercice demandé n'existe pas ou a été supprimé.</p>
+          <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
-          </Button2025>
+          </Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Button2025
+              <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleCancel}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
               >
                 <ArrowLeft className="h-5 w-5" />
-              </Button2025>
+              </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   Modifier l'exercice
                 </h1>
-                <p className="text-sm text-gray-500">{exercise.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{exercise.name}</p>
               </div>
             </div>
             
@@ -351,15 +438,15 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">
             
             {/* Photo Upload Section */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                <Target className="h-5 w-5 text-orange-800" />
+            <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 Photo de l'exercice
               </h3>
               <ExercisePhotoUpload
@@ -372,26 +459,28 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
             {/* Basic Information */}
             <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                <Dumbbell className="h-5 w-5 text-orange-800" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Dumbbell className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 Informations de base
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField2025
-                  label="Nom de l'exercice"
-                  required
-                  error={errors.name}
-                >
-                  <Input2025
+                <div className="space-y-2">
+                  <Label htmlFor="exercise-name">Nom de l'exercice *</Label>
+                  <Input
+                    id="exercise-name"
                     value={exercise.name}
                     onChange={(e) => setExercise({...exercise, name: e.target.value})}
                     placeholder="Ex: Développé couché"
-                    isError={!!errors.name}
+                    className={errors.name ? 'border-red-500' : ''}
                   />
-                </FormField2025>
+                  {errors.name && (
+                    <p className="text-sm text-red-600">{errors.name}</p>
+                  )}
+                </div>
 
-                <FormField2025 label="Type d'exercice">
+                <div className="space-y-2">
+                  <Label>Type d'exercice</Label>
                   <div className="flex gap-3">
                     {(['Musculation', 'Cardio'] as const).map((type) => (
                       <label
@@ -399,8 +488,8 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                         className={`
                           flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                           ${exercise.exercise_type === type
-                            ? 'border-orange-500 bg-orange-50 text-orange-700'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-700'
+                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600'
                           }
                         `}
                       >
@@ -416,46 +505,62 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                       </label>
                     ))}
                   </div>
-                </FormField2025>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField2025
-                  label="Groupe musculaire"
-                  required
-                  error={errors.muscle_group}
-                >
-                  <select
-                    value={exercise.muscle_group}
-                    onChange={(e) => setExercise({...exercise, muscle_group: e.target.value})}
-                    className={`
-                      w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors
-                      ${errors.muscle_group ? 'border-red-300' : 'border-gray-300'}
-                    `}
+                <div className="space-y-2">
+                  <Label htmlFor="muscle-group">Groupe musculaire *</Label>
+                  <Select
+                    value={exercise.muscle_group || 'none'}
+                    onValueChange={(value) => {
+                      // SÉCURITÉ: Nettoyer les valeurs de contrôle avant envoi
+                      const cleanValue = value === 'none' ? '' : value
+                      setExercise({...exercise, muscle_group: cleanValue})
+                    }}
                   >
-                    <option value="">Sélectionner un groupe</option>
-                    {muscleGroups.map((group) => (
-                      <option key={group} value={group}>{group}</option>
-                    ))}
-                  </select>
-                </FormField2025>
+                    <SelectTrigger id="muscle-group" className={errors.muscle_group ? 'border-red-500' : ''}>
+                      <SelectValue placeholder="Sélectionner un groupe" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sélectionner un groupe</SelectItem>
+                      {muscleGroups.map((group) => (
+                        <SelectItem key={group.id} value={group.name}>{group.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.muscle_group && (
+                    <p className="text-sm text-red-600">{errors.muscle_group}</p>
+                  )}
+                </div>
 
-                <FormField2025 label="Équipement">
-                  <select
-                    value={exercise.equipment_id}
-                    onChange={(e) => setExercise({...exercise, equipment_id: Number(e.target.value)})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                <div className="space-y-2">
+                  <Label htmlFor="equipment">Équipement</Label>
+                  <Select
+                    value={exercise.equipment_id?.toString() || 'none'}
+                    onValueChange={(value) => {
+                      // SÉCURITÉ: Nettoyer les valeurs de contrôle avant envoi
+                      const cleanValue = value === 'none' ? 0 : Number(value)
+                      setExercise({...exercise, equipment_id: cleanValue})
+                    }}
                   >
-                    {equipmentOptions.map((equipment) => (
-                      <option key={equipment.id} value={equipment.id}>
-                        {equipment.name}
-                      </option>
-                    ))}
-                  </select>
-                </FormField2025>
+                    <SelectTrigger id="equipment">
+                      <SelectValue placeholder="Sélectionner un équipement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sélectionner un équipement</SelectItem>
+                      {equipmentOptions.map((equipment) => (
+                        <SelectItem key={equipment.id} value={equipment.id.toString()}>
+                          {equipment.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <FormField2025 label="Niveau de difficulté">
+              <div className="space-y-2">
+                <Label>Niveau de difficulté</Label>
                 <div className="flex gap-3">
                   {difficulties.map((level) => (
                     <label
@@ -464,7 +569,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                         flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                         ${exercise.difficulty === level
                           ? difficultyColors[level]
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600'
                         }
                       `}
                     >
@@ -478,64 +583,81 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                     </label>
                   ))}
                 </div>
-              </FormField2025>
+              </div>
 
-              <FormField2025
-                label="Description"
-                helpText="Instructions d'exécution, conseils techniques, muscles ciblés..."
-              >
-                <Textarea2025
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Instructions d'exécution, conseils techniques, muscles ciblés...</p>
+                <Textarea
                   value={exercise.description || ''}
                   onChange={(e) => setExercise({...exercise, description: e.target.value})}
                   placeholder="Décrivez l'exercice, la technique d'exécution, les muscles travaillés..."
-                  autoResize
                   rows={4}
                 />
-              </FormField2025>
+              </div>
 
               {/* Notes de performance (maintenant éditables) */}
-              <FormField2025
-                label="Notes de la dernière performance"
-                helpText="Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance."
-              >
-                <Textarea2025
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes de la dernière performance</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance.</p>
+                <Textarea
                   value={exercise.notes || ''}
                   onChange={(e) => setExercise(prev => ({ ...prev!, notes: e.target.value }))}
                   placeholder="Ajoutez des notes sur votre dernière performance..."
-                  variant="outline"
-                  className="focus:ring-orange-500 focus:border-orange-500"
+                  className="focus:ring-orange-500 focus:border-orange-600"
                   rows={3}
                 />
-              </FormField2025>
+              </div>
 
               {/* Section Métriques Spécifiques - Nouveau */}
-              {exercise && equipmentOptions.length > 0 && (
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-orange-800" />
+              {exercise && (
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                     Métriques spécifiques à l'exercice
                   </h3>
-                  <p className="text-sm text-gray-600 mb-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                     Configurez les métriques par défaut pour ce type d'exercice. Ces valeurs serviront de base pour les nouvelles performances.
                   </p>
-                  <AdaptiveMetricsForm
+                  <ExerciseDefaultMetricsForm
                     exerciseType={exercise.exercise_type}
-                    equipment={equipmentOptions.find(eq => eq.id === exercise.equipment_id)?.name || 'Machine'}
+                    equipment={equipmentOptions.find(eq => eq.id === exercise.equipment_id)?.name || ''}
                     exerciseName={exercise.name}
                     cardioData={cardioData}
                     strengthData={strengthData}
                     setCardioData={setCardioData}
                     setStrengthData={setStrengthData}
                   />
+                  
+                  {/* Option de mise à jour de la dernière performance */}
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={updateLastPerformance}
+                        onChange={(e) => setUpdateLastPerformance(e.target.checked)}
+                        className="mt-1 h-6 w-6 text-orange-600 focus:ring-orange-500 border-gray-300 dark:border-gray-600 rounded"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-blue-900">
+                          Mettre à jour aussi la dernière performance
+                        </div>
+                        <div className="text-sm text-blue-700 mt-1">
+                          💡 Cochez cette option si vous corrigez une erreur de saisie dans vos métriques. 
+                          Laissez décoché si vous configurez simplement les valeurs par défaut pour de futures performances.
+                        </div>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Footer Actions - Position fixe en bas */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 shadow-lg">
+          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center">
-              <Button2025
+              <Button
                 variant="outline"
                 onClick={handleCancel}
                 disabled={saving}
@@ -543,16 +665,15 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 className="sm:w-auto order-2 sm:order-1"
               >
                 Annuler
-              </Button2025>
-              <Button2025
+              </Button>
+              <Button
+                variant="default"
                 onClick={handleSave}
-                loading={saving}
-                icon={!saving ? <CheckCircle className="h-4 w-4" /> : undefined}
-                fullWidth
+                disabled={saving}
                 className="sm:w-auto order-1 sm:order-2"
               >
                 {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
-              </Button2025>
+              </Button>
             </div>
           </div>
         </div>

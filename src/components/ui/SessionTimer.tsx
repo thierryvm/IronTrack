@@ -244,7 +244,7 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleMute}
-            className={`p-3 rounded-full transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+            className={`p-3 rounded-full transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-500' : 'bg-blue-500 hover:bg-blue-600'}`}
           >
             {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </motion.button>
@@ -256,10 +256,10 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl border-2 border-white animate-timer-congrats"
+            className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl border-2 border-white dark:border-gray-700 animate-timer-congrats"
           >
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full animate-pulse" />
               <span className="font-semibold">{currentStep === steps.length - 1 ? "Session terminée ! IronBuddy valide 💪" : "Étape terminée !"}</span>
             </div>
           </motion.div>

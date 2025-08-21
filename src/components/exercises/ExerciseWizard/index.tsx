@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft } from 'lucide-react'
 import { useWizardState } from './hooks/useWizardState'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { ProgressIndicator } from './components/ProgressIndicator'
+// import { ProgressIndicator } from './components/ProgressIndicator' // Composant disponible si nécessaire
 import { TypeSelection } from './steps/TypeSelection'
 import { SuggestionsList } from './steps/SuggestionsList'
 import { CustomForm } from './steps/CustomForm'
@@ -187,43 +187,62 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
     : state.currentStep
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-800 ${className}`}>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+        <div className="max-w-4xl mx-auto">
+          {/* Première ligne: Boutons de navigation + Titre sur la même ligne */}
+          <div className="flex items-center justify-between mb-3">
             <button
               onClick={state.currentStep > 0 ? prevStep : handleClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
               title={state.currentStep > 0 ? "Étape précédente" : "Retour"}
             >
-              <ArrowLeft className="w-5 h-5 text-gray-500" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
-            <h1 className="text-lg font-semibold text-gray-900">
+            
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {isEditMode && initialData ? `Modifier ${initialData.name}` : 'Nouveau exercice'}
             </h1>
+            
+            {onClose && (
+              <button
+                onClick={handleClose}
+                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+                title="Annuler"
+              >
+                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </button>
+            )}
           </div>
-          {onClose && (
-            <button
-              onClick={handleClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              title="Annuler"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
-          )}
+          
+          {/* Deuxième ligne: Indicateur d'étape centré */}
+          <div className="flex justify-center">
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalSteps }, (_, i) => (
+                <motion.div
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    i <= currentStepForProgress
+                      ? 'bg-orange-600'
+                      : i < currentStepForProgress
+                      ? 'bg-orange-200'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                  }`}
+                  initial={{ scale: 0.8 }}
+                  animate={{ 
+                    scale: i === currentStepForProgress ? 1.2 : 1,
+                    backgroundColor: i <= currentStepForProgress ? '#f97316' : i < currentStepForProgress ? '#fed7aa' : '#d1d5db'
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="py-8 px-4">
-        {/* Indicateur de progression */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <ProgressIndicator
-            currentStep={currentStepForProgress}
-            totalSteps={totalSteps}
-            variant="dots"
-          />
-        </div>
 
         {/* Affichage des erreurs */}
         {error && (
@@ -265,14 +284,14 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
             animate={{ opacity: 1 }}
             className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
           >
-            <div className="bg-white rounded-xl p-8 max-w-sm mx-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-8 max-w-sm mx-4">
               <div className="flex items-center gap-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                     Enregistrement en cours...
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     Création de ton exercice
                   </p>
                 </div>

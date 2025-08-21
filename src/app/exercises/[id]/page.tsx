@@ -80,7 +80,7 @@ export default function ExerciseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-lightAlt dark:bg-surface-dark">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
@@ -94,7 +94,7 @@ export default function ExerciseDetailPage() {
 
   if (error || !exercise) {
     return (
-      <div className="min-h-screen bg-surface-lightAlt dark:bg-surface-dark flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Exercice non trouvé
@@ -115,7 +115,7 @@ export default function ExerciseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-lightAlt dark:bg-surface-dark">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -130,7 +130,7 @@ export default function ExerciseDetailPage() {
           <div className="flex items-center gap-2">
             <Link
               href={`/exercises/${exerciseId}/edit-exercise`}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Edit className="w-4 h-4" />
               Modifier
@@ -146,7 +146,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Exercise Info */}
-        <div className="bg-white dark:bg-surface-darkAlt rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             {exercise.name}
           </h1>
@@ -182,7 +182,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Recent Performances */}
-        <div className="bg-white dark:bg-surface-darkAlt rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Performances récentes
@@ -230,7 +230,7 @@ export default function ExerciseDetailPage() {
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {new Date(performance.date).toLocaleDateString('fr-FR', {
                       day: 'numeric',
                       month: 'short',
@@ -242,7 +242,7 @@ export default function ExerciseDetailPage() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Aucune performance enregistrée pour cet exercice
               </p>
               <Link

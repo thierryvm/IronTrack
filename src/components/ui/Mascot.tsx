@@ -223,7 +223,7 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-orange-600 to-red-500 text-white rounded-2xl shadow-2xl p-4 max-w-sm max-sm:p-2 max-sm:text-sm max-sm:rounded-xl"
+            className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white rounded-2xl shadow-2xl p-4 max-w-sm max-sm:p-2 max-sm:text-sm max-sm:rounded-xl"
           >
             {/* Mascotte */}
             <div className="flex items-center space-x-2 mb-2 max-sm:space-x-1">
@@ -239,7 +239,7 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
                 }}
                 className={`${mascotBgColor} rounded-full p-2 max-sm:p-1`}
               >
-                <MascotIcon className="h-6 w-6 text-orange-800 max-sm:h-5 max-sm:w-5" />
+                <MascotIcon className="h-6 w-6 text-orange-800 dark:text-orange-300 max-sm:h-5 max-sm:w-5" />
               </motion.div>
               <div>
                 <h3 className="font-bold text-lg max-sm:text-base">{mascotName}</h3>
@@ -261,8 +261,8 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
 
             {/* Boutons interactifs */}
             <div className="flex gap-2 mb-2 max-sm:gap-1">
-              <button onClick={handleJoke} className="bg-white text-orange-800 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
-              <button onClick={handleAdvice} className="bg-white text-orange-800 px-2 py-1 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-1 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
+              <button onClick={handleJoke} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
+              <button onClick={handleAdvice} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
             </div>
 
             {/* Boutons fermer/masquer */}
@@ -354,8 +354,8 @@ export function MascotGlobal() {
     <ClientOnly>
       {minimized ? (
         <div className="fixed bottom-20 right-4 z-[60] cursor-pointer md:bottom-4" onClick={handleRestore} title="Afficher la mascotte">
-          <div className="bg-white rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
-            <Dumbbell className="h-6 w-6 text-orange-800" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
+            <Dumbbell className="h-6 w-6 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
       ) : (
@@ -370,11 +370,11 @@ export function MascotGlobal() {
           <div className="relative">
             <button
               onClick={handleMinimize}
-              className="absolute -top-3 -right-3 bg-orange-600 text-white rounded-full p-1 shadow hover:bg-orange-700 transition-all"
+              className="absolute -top-3 -right-3 bg-orange-600 dark:bg-orange-500 text-white rounded-full p-1 shadow hover:bg-orange-700 transition-all"
               aria-label="Réduire la mascotte"
               style={{ zIndex: 70 }}
             >
-              <X className="h-4 w-4" />
+              <X className="h-6 w-6" />
             </button>
             <Mascot show={true} message={joke || undefined} type="success" onClose={handleMinimize} />
           </div>

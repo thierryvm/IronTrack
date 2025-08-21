@@ -92,10 +92,10 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
         transition={{ delay: 0.2 }}
         className="text-center"
       >
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
           À quelle fréquence souhaitez-vous vous entraîner ?
         </h2>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
           Nous personnaliserons votre programme selon votre disponibilité
         </p>
       </motion.div>
@@ -118,7 +118,7 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
                 relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden
                 ${isSelected 
                   ? `${freq.selectedBg} ${freq.selectedBorder} shadow-lg ring-4 ring-orange-100` 
-                  : `${freq.bgColor} ${freq.borderColor} hover:shadow-md hover:border-gray-300`
+                  : `${freq.bgColor} ${freq.borderColor} hover:shadow-md hover:border-gray-300 dark:border-gray-600`
                 }
               `}
               onClick={() => handleFrequencyChange(freq.id as 'Faible' | 'Modérée' | 'Élevée')}
@@ -151,8 +151,8 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
                     </motion.div>
                     
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-900 mb-1">{freq.title}</h3>
-                      <p className="text-gray-700 text-sm mb-2">{freq.description}</p>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">{freq.title}</h3>
+                      <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">{freq.description}</p>
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -172,7 +172,7 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: 180 }}
                         transition={{ type: "spring", stiffness: 200 }}
-                        className="text-orange-800"
+                        className="text-orange-800 dark:text-orange-300"
                       >
                         <CheckCircle className="h-6 w-6" />
                       </motion.div>
@@ -203,30 +203,30 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
         className="space-y-6"
       >
         <div className="text-center">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
             Combien de temps par séance ?
           </h3>
-          <p className="text-gray-600 leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             Durée moyenne souhaitée pour chaque entraînement
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
           <div className="space-y-6">
             {/* Current value display */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-orange-100 rounded-lg">
-                  <Target className="h-5 w-5 text-orange-800" />
+                  <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 </div>
-                <span className="text-sm font-medium text-gray-700">Durée par séance</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Durée par séance</span>
               </div>
               <motion.div
                 key={availabilityValue}
                 initial={{ scale: 1.2 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg font-bold text-lg shadow-lg"
+                className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white px-4 py-2 rounded-lg font-bold text-lg shadow-lg"
               >
                 {formatTime(availabilityValue || 60)}
               </motion.div>

@@ -43,11 +43,11 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
       icon: Activity,
       gradient: 'from-orange-400 to-red-500',
       bgColor: 'bg-gradient-to-br from-orange-50 to-red-50',
-      borderColor: 'border-orange-200',
+      borderColor: 'border-orange-200 dark:border-orange-800',
       selectedBg: 'bg-gradient-to-br from-orange-100 to-red-100',
-      selectedBorder: 'border-orange-500',
+      selectedBorder: 'border-orange-600',
       iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-800'
+      iconColor: 'text-orange-800 dark:text-orange-300'
     },
     {
       id: 'Performance',
@@ -77,10 +77,10 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
         transition={{ delay: 0.2 }}
         className="text-center"
       >
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
           Quel est votre objectif principal ?
         </h2>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
           Choisissez l'objectif qui vous correspond le mieux pour personnaliser votre programme
         </p>
       </motion.div>
@@ -102,7 +102,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
                 relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden
                 ${isSelected 
                   ? `${goal.selectedBg} ${goal.selectedBorder} shadow-lg ring-4 ring-orange-100` 
-                  : `${goal.bgColor} ${goal.borderColor} hover:shadow-md hover:border-gray-300`
+                  : `${goal.bgColor} ${goal.borderColor} hover:shadow-md hover:border-gray-300 dark:border-gray-600`
                 }
               `}
               onClick={() => onChange(goal.id as 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance')}
@@ -134,7 +134,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
                     >
                       <Icon className="h-6 w-6" />
                     </motion.div>
-                    <h3 className="text-lg font-bold text-gray-900">{goal.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{goal.title}</h3>
                   </div>
                   
                   {/* Selection indicator */}
@@ -145,7 +145,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: 180 }}
                         transition={{ type: "spring", stiffness: 200 }}
-                        className="text-orange-800"
+                        className="text-orange-800 dark:text-orange-300"
                       >
                         <CheckCircle className="h-6 w-6" />
                       </motion.div>
@@ -154,7 +154,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-700 leading-relaxed text-sm">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
                   {goal.description}
                 </p>
 
@@ -181,7 +181,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-6 text-center"
+            className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 dark:border-orange-800 rounded-xl p-6 text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -192,7 +192,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-              <p className="text-lg font-bold text-orange-800">
+              <p className="text-lg font-bold text-orange-800 dark:text-orange-300">
                 Excellent choix !
               </p>
             </motion.div>

@@ -5,9 +5,9 @@ import { Suspense, ReactNode } from 'react'
 // Skeleton simple remplacement
 function SimpleSkeleton({ height = "h-20", className = "" }: { height?: string; className?: string }) {
   return (
-    <div className={`animate-pulse ${height} bg-gray-200 rounded-lg ${className}`}>
+    <div className={`animate-pulse ${height} bg-gray-200 dark:bg-gray-700 rounded-lg ${className}`}>
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600"></div>
       </div>
     </div>
   )
@@ -31,11 +31,11 @@ export function LazyPageWrapper({
 }: LazyPageWrapperProps) {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center space-y-4">
           <SimpleSkeleton height={loadingHeight} className="max-w-md mx-auto" />
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="text-gray-600 text-sm">{loadingMessage}</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">{loadingMessage}</p>
         </div>
       </div>
     }>
@@ -52,14 +52,14 @@ export function LazyListSkeleton({ itemCount = 5 }: { itemCount?: number }) {
     <div className="space-y-4">
       {Array.from({ length: itemCount }).map((_, i) => (
         <div key={i} className="animate-pulse">
-          <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md">
             <div className="flex items-center space-x-4">
-              <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
+              <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
               </div>
-              <div className="h-8 w-20 bg-gray-200 rounded"></div>
+              <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
             </div>
           </div>
         </div>
@@ -75,20 +75,20 @@ export function LazyDashboardSkeleton() {
   return (
     <div className="space-y-6">
       {/* Header skeleton */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-xl p-6">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 rounded-xl p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-white/20 rounded w-1/3 mb-2"></div>
-          <div className="h-4 bg-white/20 rounded w-1/2"></div>
+          <div className="h-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded w-1/2"></div>
         </div>
       </div>
       
       {/* Stats cards skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-xl p-6 shadow-md">
+          <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md">
             <div className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-              <div className="h-8 bg-gray-200 rounded w-2/3"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
             </div>
           </div>
         ))}

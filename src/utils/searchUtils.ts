@@ -3,7 +3,8 @@
 /**
  * Normalise un texte pour la recherche (supprime accents, casse, espaces)
  */
-export function normalizeForSearch(text: string): string {
+export function normalizeForSearch(text: string | null | undefined): string {
+  if (!text) return '';
   return text
     .toLowerCase()
     .normalize('NFD') // Décompose les caractères accentués
@@ -16,7 +17,7 @@ export function normalizeForSearch(text: string): string {
 /**
  * Vérifie si un texte correspond à un terme de recherche (insensible aux accents)
  */
-export function matchesSearch(text: string, searchTerm: string): boolean {
+export function matchesSearch(text: string | null | undefined, searchTerm: string | null | undefined): boolean {
   if (!text || !searchTerm) return false;
   
   const normalizedText = normalizeForSearch(text);
@@ -28,7 +29,7 @@ export function matchesSearch(text: string, searchTerm: string): boolean {
 /**
  * Filtre un tableau d'exercices selon un terme de recherche
  */
-export function filterExercisesBySearch<T extends { name: string; description?: string; muscle_group?: string }>(
+export function filterExercisesBySearch<T extends { name?: string | null; description?: string | null; muscle_group?: string | null }>(
   exercises: T[], 
   searchTerm: string
 ): T[] {
@@ -36,8 +37,8 @@ export function filterExercisesBySearch<T extends { name: string; description?: 
   
   return exercises.filter(exercise => 
     matchesSearch(exercise.name, searchTerm) ||
-    matchesSearch(exercise.description || '', searchTerm) ||
-    matchesSearch(exercise.muscle_group || '', searchTerm)
+    matchesSearch(exercise.description, searchTerm) ||
+    matchesSearch(exercise.muscle_group, searchTerm)
   );
 }
 
@@ -85,7 +86,7 @@ export function applySuggestions(searchTerm: string): string {
 /**
  * Recherche intelligente avec correction d'accents et suggestions
  */
-export function intelligentSearch<T extends { name: string; description?: string; muscle_group?: string }>(
+export function intelligentSearch<T extends { name?: string | null; description?: string | null; muscle_group?: string | null }>(
   exercises: T[], 
   searchTerm: string
 ): T[] {

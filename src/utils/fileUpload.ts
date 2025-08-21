@@ -200,7 +200,7 @@ async function validateMagicBytes(file: File): Promise<boolean> {
       
       if (detectedType) {
         // Si on détecte un type image valide, accepter
-        const validImageTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/heic', 'image/heif']
+        const validImageTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/heic', 'image/heif', 'image/webp', 'image/avif']
         resolve(validImageTypes.includes(detectedType))
         return
       }
@@ -297,8 +297,11 @@ function detectFileTypeByMagicBytes(bytes: Uint8Array): string | null {
   
   // WebP - vérification plus approfondie (après RIFF doit suivre WebP)
   if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46) {
-    if (bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
-      return 'image/webp'
+    // Recherche signature WEBP dans les 16 premiers bytes
+    for (let i = 8; i < Math.min(16, bytes.length - 3); i++) {
+      if (bytes[i] === 0x57 && bytes[i+1] === 0x45 && bytes[i+2] === 0x42 && bytes[i+3] === 0x50) {
+        return 'image/webp'
+      }
     }
   }
   
@@ -548,17 +551,13 @@ export async function uploadSecureFile(
     // 2. Optimisation automatique si image
     if (file.type.startsWith('image/') && shouldOptimizeImage(file)) {
       try {
-        console.log(`[OPTIMIZATION] Auto-optimisation ${bucket}:`, file.name, `${(file.size / 1024).toFixed(0)}KB`)
+        // Auto-optimisation silencieuse
         
         const optimizedFile = await optimizeImageSafe(file)
         
         if (optimizedFile !== file) {
           const reduction = ((file.size - optimizedFile.size) / file.size * 100).toFixed(1)
-          console.log(`[OPTIMIZATION] ${bucket} optimisé:`, {
-            original: `${(file.size / 1024).toFixed(0)}KB`,
-            optimized: `${(optimizedFile.size / 1024).toFixed(0)}KB`,
-            reduction: `${reduction}%`
-          })
+          // Optimisation réussie
           processedFile = optimizedFile
         }
       } catch (optimizationError) {
@@ -693,36 +692,91 @@ export async function uploadMultipleFiles(
 }
 
 /**
- * Convertit un fichier HEIC en JPEG pour compatibilité Supabase Storage
+ * Détecte le meilleur format de conversion supporté par le navigateur
+ */
+function detectBestConversionFormat(): { mimeType: string; extension: string; quality: number } {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1
+  canvas.height = 1
+  
+  // Test support WebP (Moderne, excellent support)
+  if (canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0) {
+    return { mimeType: 'image/webp', extension: '.webp', quality: 0.40 }
+  }
+  
+  // Fallback JPEG (Compatibilité universelle) - plus agressif pour HEIC
+  return { mimeType: 'image/jpeg', extension: '.jpg', quality: 0.70 }
+}
+
+/**
+ * Convertit un fichier HEIC vers le meilleur format moderne supporté (WebP ou JPEG)
  * Utilise la bibliothèque heic2any pour conversion native
  */
-async function convertHeicToJpeg(file: File): Promise<File> {
+async function convertHeicToModernFormat(file: File): Promise<File> {
   try {
     // Import dynamique de heic2any (éviter erreurs SSR)
     const heic2any = (await import('heic2any')).default
     
-    console.log('[HEIC] Début conversion:', file.name, `${(file.size / 1024 / 1024).toFixed(1)}MB`)
+    // Détecter le meilleur format supporté
+    const bestFormat = detectBestConversionFormat()
     
-    // Convertir HEIC vers JPEG avec qualité optimisée
+    console.log('[HEIC] Début conversion:', file.name, `${(file.size / 1024 / 1024).toFixed(1)}MB`)
+    console.log('[HEIC] Format cible:', bestFormat.mimeType, `(qualité: ${Math.round(bestFormat.quality * 100)}%)`)
+    
+    // Convertir HEIC vers le meilleur format avec qualité optimisée pour réduction taille
     const convertedBlob = await heic2any({
       blob: file,
-      toType: 'image/jpeg',
-      quality: 0.85 // Qualité 85% pour bon compromis taille/qualité
+      toType: bestFormat.mimeType,
+      quality: bestFormat.quality
     }) as Blob
     
-    // Créer nouveau fichier JPEG
-    const jpegFile = new File(
+    console.log('[HEIC] Taille avant conversion:', `${(file.size / 1024 / 1024).toFixed(1)}MB`)
+    console.log('[HEIC] Taille après conversion:', `${(convertedBlob.size / 1024 / 1024).toFixed(1)}MB`)
+    
+    // Vérifier si la conversion a réellement réduit la taille
+    if (convertedBlob.size > file.size * 1.5) {
+      console.warn('[HEIC] Conversion a augmenté la taille. Fallback vers JPEG avec compression agressive.')
+      
+      // Retry avec JPEG et qualité très basse
+      const jpegBlob = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.50
+      }) as Blob
+      
+      console.log('[HEIC] Taille avec JPEG 50%:', `${(jpegBlob.size / 1024 / 1024).toFixed(1)}MB`)
+      
+      // Utiliser le plus petit des deux
+      const finalBlob = jpegBlob.size < convertedBlob.size ? jpegBlob : convertedBlob
+      const finalExtension = jpegBlob.size < convertedBlob.size ? '.jpg' : bestFormat.extension
+      const finalMimeType = jpegBlob.size < convertedBlob.size ? 'image/jpeg' : bestFormat.mimeType
+      
+      const optimizedFile = new File(
+        [finalBlob],
+        file.name.replace(/\.(heic|heif)$/i, finalExtension),
+        {
+          type: finalMimeType,
+          lastModified: Date.now()
+        }
+      )
+      
+      console.log('[HEIC] Conversion finale optimisée:', optimizedFile.name, `${(optimizedFile.size / 1024 / 1024).toFixed(1)}MB`)
+      return optimizedFile
+    }
+    
+    // Créer nouveau fichier avec le format optimal
+    const optimizedFile = new File(
       [convertedBlob],
-      file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+      file.name.replace(/\.(heic|heif)$/i, bestFormat.extension),
       {
-        type: 'image/jpeg',
+        type: bestFormat.mimeType,
         lastModified: Date.now()
       }
     )
     
-    console.log('[HEIC] Conversion réussie:', jpegFile.name, `${(jpegFile.size / 1024 / 1024).toFixed(1)}MB`)
+    console.log('[HEIC] Conversion réussie:', optimizedFile.name, `${(optimizedFile.size / 1024 / 1024).toFixed(1)}MB`)
     
-    return jpegFile
+    return optimizedFile
   } catch (error) {
     console.error('[HEIC] Erreur conversion:', error)
     throw new Error(`Impossible de convertir le fichier HEIC: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
@@ -744,8 +798,8 @@ export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
         file.name.toLowerCase().endsWith('.heif')) {
       
       try {
-        console.log('[HEIC] Conversion HEIC vers JPEG démarrée:', file.name)
-        processedFile = await convertHeicToJpeg(file)
+        console.log('[HEIC] Conversion HEIC vers format moderne démarrée:', file.name)
+        processedFile = await convertHeicToModernFormat(file)
         console.log('[HEIC] Conversion réussie:', processedFile.name, `${(processedFile.size / 1024 / 1024).toFixed(1)}MB`)
       } catch (conversionError) {
         console.error('[HEIC] Échec conversion:', conversionError)
@@ -757,27 +811,23 @@ export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
     // ÉTAPE 2: Optimisation automatique pour performances Web Core Vitals
     if (shouldOptimizeImage(processedFile)) {
       try {
-        console.log('[OPTIMIZATION] Optimisation automatique démarrée:', processedFile.name, `${(processedFile.size / 1024).toFixed(0)}KB`)
+        // Optimisation automatique démarrée
         
         const optimizedFile = await optimizeImageSafe(processedFile)
         
         if (optimizedFile !== processedFile) {
           const reduction = ((processedFile.size - optimizedFile.size) / processedFile.size * 100).toFixed(1)
-          console.log('[OPTIMIZATION] Optimisation réussie:', {
-            original: `${(processedFile.size / 1024).toFixed(0)}KB`,
-            optimized: `${(optimizedFile.size / 1024).toFixed(0)}KB`, 
-            reduction: `${reduction}%`
-          })
+          // Optimisation réussie
           processedFile = optimizedFile
         } else {
-          console.log('[OPTIMIZATION] Fichier déjà optimisé ou optimisation non bénéfique')
+          // Fichier déjà optimisé
         }
       } catch (optimizationError) {
         console.warn('[OPTIMIZATION] Échec optimisation (fichier original conservé):', optimizationError)
         // Continuer avec fichier non-optimisé (fallback sécurisé)
       }
     } else {
-      console.log('[OPTIMIZATION] Optimisation non nécessaire:', processedFile.name, `${(processedFile.size / 1024).toFixed(0)}KB`)
+      // Optimisation non nécessaire
     }
     
     // ÉTAPE 3: Upload final vers Supabase

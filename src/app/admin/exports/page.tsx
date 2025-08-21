@@ -16,6 +16,12 @@ import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useSupport } from '@/hooks/useSupport'
 import { createClient } from '@/utils/supabase/client'
 import { SupportTicket } from '@/types/support'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 interface ExportData {
   type: 'tickets' | 'users' | 'performance' | 'all'
@@ -274,8 +280,8 @@ export default function AdminExportsPage() {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Accès Refusé</h3>
-        <p className="text-gray-500">Seuls les administrateurs peuvent exporter des données.</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Accès Refusé</h3>
+        <p className="text-gray-600 dark:text-gray-400">Seuls les administrateurs peuvent exporter des données.</p>
       </div>
     )
   }
@@ -283,133 +289,142 @@ export default function AdminExportsPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-3 mb-4">
           <div className="p-2 bg-blue-100 rounded-lg">
             <Download className="h-6 w-6 text-blue-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Export de Données</h1>
-            <p className="text-gray-600">Exportez les données de l'application pour analyse ou sauvegarde</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Export de Données</h1>
+            <p className="text-gray-600 dark:text-gray-300">Exportez les données de l'application pour analyse ou sauvegarde</p>
           </div>
         </div>
 
         {/* Statistiques rapides */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="bg-orange-50 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <MessageSquare className="h-8 w-8 text-orange-800" />
-                <div>
-                  <div className="text-2xl font-bold text-orange-800">{stats.tickets}</div>
-                  <div className="text-sm text-orange-700">Tickets de support</div>
+            <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <MessageSquare className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">{stats.tickets}</div>
+                    <div className="text-sm text-orange-700">Tickets de support</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="bg-blue-50 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Users className="h-8 w-8 text-blue-500" />
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{stats.users}</div>
-                  <div className="text-sm text-blue-700">Utilisateurs avec rôles</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Users className="h-8 w-8 text-blue-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">{stats.users}</div>
+                    <div className="text-sm text-blue-700">Utilisateurs avec rôles</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="bg-green-50 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Database className="h-8 w-8 text-green-500" />
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{stats.performance_logs}</div>
-                  <div className="text-sm text-green-700">Logs de performance</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Database className="h-8 w-8 text-green-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{stats.performance_logs}</div>
+                    <div className="text-sm text-green-700">Logs de performance</div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
 
       {/* Configuration d'export */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Configuration de l'Export</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Configuration de l'Export</CardTitle>
+        </CardHeader>
+        <CardContent>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Type de données */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Type de données</label>
-            <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Type de données</label>
+            <RadioGroup
+              value={exportData.type}
+              onValueChange={(value) => setExportData({ ...exportData, type: value as ExportData['type'] })}
+              className="space-y-3"
+            >
               {[
                 { value: 'tickets', label: 'Tickets de support', icon: MessageSquare },
                 { value: 'users', label: 'Utilisateurs et rôles', icon: Users },
                 { value: 'performance', label: 'Logs de performance', icon: Database },
                 { value: 'all', label: 'Export complet', icon: FileText }
               ].map(({ value, label, icon: Icon }) => (
-                <label key={value} className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="exportType"
-                    value={value}
-                    checked={exportData.type === value}
-                    onChange={(e) => setExportData({ ...exportData, type: e.target.value as ExportData['type'] })}
-                    className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                  />
-                  <Icon className="h-5 w-5 text-gray-400" />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
+                <div key={value} className="flex items-center space-x-3">
+                  <RadioGroupItem value={value} id={`type-${value}`} />
+                  <Label htmlFor={`type-${value}`} className="flex items-center space-x-2 cursor-pointer">
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm">{label}</span>
+                  </Label>
+                </div>
               ))}
-            </div>
+            </RadioGroup>
           </div>
 
           {/* Format */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Format d'export</label>
-            <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Format d'export</label>
+            <RadioGroup
+              value={exportData.format}
+              onValueChange={(value) => setExportData({ ...exportData, format: value as ExportData['format'] })}
+              className="space-y-3"
+            >
               {[
                 { value: 'json', label: 'JSON (structure complète)' },
                 { value: 'csv', label: 'CSV (tableur)' }
               ].map(({ value, label }) => (
-                <label key={value} className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="exportFormat"
-                    value={value}
-                    checked={exportData.format === value}
-                    onChange={(e) => setExportData({ ...exportData, format: e.target.value as ExportData['format'] })}
-                    className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
+                <div key={value} className="flex items-center space-x-3">
+                  <RadioGroupItem value={value} id={`format-${value}`} />
+                  <Label htmlFor={`format-${value}`} className="text-sm cursor-pointer">
+                    {label}
+                  </Label>
+                </div>
               ))}
-            </div>
+            </RadioGroup>
           </div>
         </div>
 
         {/* Plage de dates */}
         {['tickets', 'performance', 'all'].includes(exportData.type) && (
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Plage de dates</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Plage de dates</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Du</label>
-                <input
+                <Label htmlFor="date-from" className="text-xs mb-1">Du</Label>
+                <Input
+                  id="date-from"
                   type="date"
                   value={exportData.dateRange.from}
                   onChange={(e) => setExportData({
                     ...exportData,
                     dateRange: { ...exportData.dateRange, from: e.target.value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Au</label>
-                <input
+                <Label htmlFor="date-to" className="text-xs mb-1">Au</Label>
+                <Input
+                  id="date-to"
                   type="date"
                   value={exportData.dateRange.to}
                   onChange={(e) => setExportData({
                     ...exportData,
                     dateRange: { ...exportData.dateRange, to: e.target.value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -418,71 +433,72 @@ export default function AdminExportsPage() {
 
         {/* Bouton d'export */}
         <div className="mt-8">
-          <button
+          <Button
             onClick={handleExport}
             disabled={loading}
-            className={`w-full md:w-auto inline-flex items-center px-6 py-3 rounded-lg font-medium transition-colors ${
-              loading
-                ? 'bg-gray-400 text-white cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
+            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700"
           >
             {loading ? (
               <>
-                <Clock className="h-5 w-5 mr-2 animate-spin" />
+                <Clock className="h-4 w-4 mr-2 animate-spin" />
                 Export en cours...
               </>
             ) : (
               <>
-                <Download className="h-5 w-5 mr-2" />
+                <Download className="h-4 w-4 mr-2" />
                 Lancer l'export
               </>
             )}
-          </button>
+          </Button>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Historique des exports */}
       {exportHistory.length > 0 && (
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Historique des Exports</h2>
-          <div className="space-y-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Historique des Exports</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
             {exportHistory.map((item) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {item.filename}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
                       {item.count} enregistrement{item.count !== 1 ? 's' : ''} • 
                       {new Date(item.created_at).toLocaleString('fr-FR')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    item.type === 'tickets' ? 'bg-orange-100 text-orange-700' :
-                    item.type === 'users' ? 'bg-blue-100 text-blue-700' :
-                    item.type === 'performance' ? 'bg-green-100 text-green-700' :
-                    'bg-purple-100 text-purple-700'
-                  }`}>
+                  <Badge variant={
+                    item.type === 'tickets' ? 'destructive' :
+                    item.type === 'users' ? 'default' :
+                    item.type === 'performance' ? 'secondary' :
+                    'outline'
+                  }>
                     {item.type}
-                  </span>
-                  <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                  </Badge>
+                  <Badge variant="outline">
                     {item.format.toUpperCase()}
-                  </span>
+                  </Badge>
                 </div>
               </motion.div>
             ))}
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

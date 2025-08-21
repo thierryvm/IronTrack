@@ -19,7 +19,7 @@ const mascotConfig = {
     icon: Dumbbell,
     name: 'IronBuddy',
     bgColor: 'bg-gradient-to-br from-orange-400 to-orange-600',
-    hoverColor: 'hover:from-orange-600 hover:to-orange-700',
+    hoverColor: 'hover:from-orange-600 hover:to-red-600',
     emoji: '💪'
   },
   cat: {
@@ -615,7 +615,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
             text-white rounded-full shadow-2xl 
             transform transition-all duration-300 
             focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50
-            border-2 border-white/20
+            border-2 border-white dark:border-gray-700/20
             touch-manipulation select-none
             fab-enhanced smooth-120hz text-sharp
             p-3 xs:p-3.5 sm:p-4 md:p-4.5 lg:p-5 xl:p-6
@@ -662,7 +662,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               >
                 <MascotIcon className="h-5 w-5 xs:h-5.5 xs:w-5.5 sm:h-6 sm:w-6 md:h-6.5 md:w-6.5 lg:h-7 lg:w-7 xl:h-8 xl:w-8" />
                 <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white dark:border-gray-700"
                   animate={{ scale: [1, 1.3, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -691,8 +691,8 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="
                 modal-2025 fixed z-[80] 
-                bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl 
-                border border-gray-200/50 overflow-hidden
+                bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl 
+                border border-gray-200 dark:border-gray-700/50 overflow-hidden
                 smooth-120hz text-sharp
                 min-w-[300px] xs:min-w-[320px] sm:min-w-[340px]
                 max-w-[calc(100vw-2rem)] xs:max-w-[calc(100vw-2.5rem)] sm:max-w-[calc(100vw-3rem)]
@@ -731,7 +731,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                       repeat: Infinity,
                       repeatDelay: 2
                     }}
-                    className="bg-white/20 rounded-full p-2"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-full p-2"
                   >
                     <MascotIcon className="h-8 w-8 text-white" />
                   </motion.div>
@@ -753,28 +753,28 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               </div>
 
               {/* Sélecteur de mode */}
-              <div className="px-6 py-3 bg-gray-50/80 border-b border-gray-200/50">
+              <div className="px-6 py-3 bg-gray-50 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700/50">
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setShowMascotMode(false)}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
                       !showMascotMode 
-                        ? 'bg-orange-500 text-white shadow-md' 
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
+                        ? 'bg-orange-600 text-white shadow-md' 
+                        : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800'
                     }`}
                   >
-                    <MessageSquare className="h-4 w-4 inline mr-2" />
+                    <MessageSquare className="h-6 w-6 inline mr-2" />
                     Support
                   </button>
                   <button
                     onClick={() => setShowMascotMode(true)}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
                       showMascotMode 
-                        ? 'bg-orange-500 text-white shadow-md' 
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
+                        ? 'bg-orange-600 text-white shadow-md' 
+                        : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800'
                     }`}
                   >
-                    <Heart className="h-4 w-4 inline mr-2" />
+                    <Heart className="h-6 w-6 inline mr-2" />
                     Coach
                   </button>
                 </div>
@@ -826,7 +826,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                           }}
                           className="flex items-center space-x-2 p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors group"
                         >
-                          <Smile className="h-4 w-4 text-yellow-600 group-hover:scale-110 transition-transform" />
+                          <Smile className="h-6 w-6 text-yellow-600 group-hover:scale-110 transition-transform" />
                           <span className="text-sm font-medium text-yellow-800">Blague</span>
                         </button>
                         
@@ -841,7 +841,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                           }}
                           className="flex items-center space-x-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
                         >
-                          <Sparkles className="h-4 w-4 text-blue-600 group-hover:scale-110 transition-transform" />
+                          <Sparkles className="h-6 w-6 text-blue-600 group-hover:scale-110 transition-transform" />
                           <span className="text-sm font-medium text-blue-800">Conseil</span>
                         </button>
                         
@@ -856,7 +856,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                           }}
                           className="flex items-center space-x-2 p-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors group"
                         >
-                          <Zap className="h-4 w-4 text-red-600 group-hover:scale-110 transition-transform" />
+                          <Zap className="h-6 w-6 text-red-600 group-hover:scale-110 transition-transform" />
                           <span className="text-sm font-medium text-red-800">Motivation</span>
                         </button>
                         
@@ -871,14 +871,14 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                           }}
                           className="flex items-center space-x-2 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors group"
                         >
-                          <Trophy className="h-4 w-4 text-purple-600 group-hover:scale-110 transition-transform" />
+                          <Trophy className="h-6 w-6 text-purple-600 group-hover:scale-110 transition-transform" />
                           <span className="text-sm font-medium text-purple-800">Défi</span>
                         </button>
                       </div>
 
                       {/* Changement de mascotte */}
                       <div>
-                        <p className="text-xs text-gray-600 mb-2 font-medium">Changer de coach :</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mb-2 font-medium">Changer de coach :</p>
                         <div className="flex space-x-2">
                           {(Object.keys(mascotConfig) as MascotKey[]).map((key) => {
                             const config = mascotConfig[key]
@@ -890,11 +890,11 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                                 className={`p-2 rounded-lg transition-all ${
                                   selectedMascot === key
                                     ? `${config.bgColor} text-white shadow-md scale-110`
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700'
                                 }`}
                                 title={config.name}
                               >
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-6 w-6" />
                               </button>
                             )
                           })}
@@ -916,16 +916,16 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                             key={option.title}
                             href={option.href}
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                            className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors group"
                           >
                             <div className={`p-2 rounded-lg ${option.color} group-hover:scale-110 transition-transform`}>
-                              <Icon className="h-4 w-4" />
+                              <Icon className="h-6 w-6" />
                             </div>
                             <div className="flex-1">
-                              <p className="font-medium text-gray-900 text-sm">
+                              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                                 {option.title}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
                                 {option.description}
                               </p>
                             </div>
@@ -933,19 +933,19 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                         )
                       })}
 
-                      <div className="border-t border-gray-100 pt-2 mt-3">
+                      <div className="border-t border-gray-100 dark:border-gray-700 pt-2 mt-3">
                         <div className="grid grid-cols-2 gap-2">
                           <Link
                             href="/faq"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center justify-center px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                            className="flex items-center justify-center px-3 py-2 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors"
                           >
                             📚 FAQ
                           </Link>
                           <Link
                             href="/pwa-guide"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center justify-center px-3 py-2 text-xs text-orange-800 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors font-medium"
+                            className="flex items-center justify-center px-3 py-2 text-xs text-orange-800 dark:text-orange-300 hover:text-orange-700 hover:bg-orange-50 dark:bg-orange-900/20 rounded-lg transition-colors font-medium"
                           >
                             📱 Installer App
                           </Link>
@@ -957,7 +957,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-3 bg-green-50/80 border-t border-gray-200/50">
+              <div className="px-6 py-3 bg-green-50/80 border-t border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                   <p className="text-xs text-green-700 font-medium">

@@ -119,12 +119,12 @@ export default function SharedNutritionPage() {
   const getMealTypeColor = (mealType: string) => {
     const colors: Record<string, string> = {
       'Petit-déjeuner': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'Déjeuner': 'bg-orange-100 text-orange-800 border-orange-200',
+      'Déjeuner': 'bg-orange-100 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800',
       'Dîner': 'bg-blue-100 text-blue-800 border-blue-200',
       'Souper': 'bg-purple-100 text-purple-800 border-purple-200',
       'Collation': 'bg-green-100 text-green-800 border-green-200'
     }
-    return colors[mealType] || 'bg-gray-100 text-gray-800 border-gray-200'
+    return colors[mealType] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'
   }
 
   const formatMacroPercentage = (value: number, total: number) => {
@@ -138,8 +138,8 @@ export default function SharedNutritionPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
       </div>
     )
   }
@@ -151,7 +151,7 @@ export default function SharedNutritionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6">
             <div className="flex items-center space-x-3">
@@ -171,7 +171,7 @@ export default function SharedNutritionPage() {
                 </div>
                 <button
                   onClick={() => router.push('/training-partners')}
-                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
                   Gérer mes partenaires
                 </button>
@@ -185,8 +185,8 @@ export default function SharedNutritionPage() {
 
   if (!nutritionData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
       </div>
     )
   }
@@ -196,7 +196,7 @@ export default function SharedNutritionPage() {
     : nutritionData.dailyStats[0]
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl p-6 mb-8">
@@ -204,13 +204,13 @@ export default function SharedNutritionPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-lg hover:bg-white dark:bg-gray-900/30 transition-colors"
                 aria-label="Retour à la page précédente"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="bg-white/20 rounded-full p-3">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-full p-3">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
@@ -224,7 +224,7 @@ export default function SharedNutritionPage() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="bg-white/20 rounded-lg p-3">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-lg p-3">
                 <Calendar className="h-6 w-6" />
               </div>
             </div>
@@ -232,8 +232,8 @@ export default function SharedNutritionPage() {
         </div>
 
         {/* Sélecteur de date */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Sélectionner un jour</h3>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Sélectionner un jour</h3>
           <div className="grid grid-cols-7 gap-2">
             {generateDateOptions().map(date => {
               const dateObj = new Date(date)
@@ -249,7 +249,7 @@ export default function SharedNutritionPage() {
                       ? 'bg-green-500 text-white'
                       : hasData
                       ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                      : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
                   }`}
                   disabled={!hasData}
                 >
@@ -276,14 +276,14 @@ export default function SharedNutritionPage() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {/* Statistiques du jour */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-green-500" />
                 <span>Résumé du jour</span>
               </h3>
               
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white rounded-lg p-4">
+                <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white rounded-lg p-4">
                   <div className="text-2xl font-bold">{selectedDayStats.totalCalories}</div>
                   <div className="text-white/90">Calories totales</div>
                 </div>
@@ -309,8 +309,8 @@ export default function SharedNutritionPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600 mb-2">Répartition macronutriments</div>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">Répartition macronutriments</div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs">
                       <span>Protéines: {formatMacroPercentage(selectedDayStats.totalProtein * 4, selectedDayStats.totalCalories)}</span>
@@ -330,27 +330,27 @@ export default function SharedNutritionPage() {
                 if (mealsOfType.length === 0) return null
 
                 return (
-                  <div key={mealType} className="bg-white rounded-xl shadow-md p-6">
+                  <div key={mealType} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
                     <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getMealTypeColor(mealType)} mb-4`}>
                       <span>{getMealTypeIcon(mealType)}</span>
                       <span>{mealType}</span>
-                      <span className="bg-white/50 px-2 py-0.5 rounded-full text-xs">
+                      <span className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/50 px-2 py-0.5 rounded-full text-xs">
                         {mealsOfType.length} élément{mealsOfType.length > 1 ? 's' : ''}
                       </span>
                     </div>
 
                     <div className="space-y-3">
                       {mealsOfType.map(meal => (
-                        <div key={meal.id} className="border border-gray-200 rounded-lg p-4">
+                        <div key={meal.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{meal.food_name}</h4>
-                              <div className="text-sm text-gray-500 mt-1">
+                              <h4 className="font-medium text-gray-900 dark:text-gray-100">{meal.food_name}</h4>
+                              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                 {meal.time && `${meal.time} • `}
                                 {meal.calories} cal
                               </div>
                             </div>
-                            <div className="text-right text-sm text-gray-600">
+                            <div className="text-right text-sm text-gray-600 dark:text-gray-300">
                               <div>P: {meal.protein}g</div>
                               <div>G: {meal.carbs}g</div>
                               <div>L: {meal.fat}g</div>
@@ -367,14 +367,14 @@ export default function SharedNutritionPage() {
         )}
 
         {nutritionData.dailyStats.length === 0 && (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center">
-            <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-              <Calendar className="h-8 w-8 text-gray-400" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-8 text-center">
+            <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+              <Calendar className="h-8 w-8 text-gray-700 dark:text-gray-300" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Aucune donnée nutrition disponible
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               {getPartnerDisplayName(nutritionData.partner)} n'a pas encore enregistré de repas pour cette période.
             </p>
           </div>

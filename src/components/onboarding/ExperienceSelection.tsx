@@ -39,10 +39,10 @@ export function ExperienceSelection({ value, onChange }: ExperienceSelectionProp
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Quel est votre niveau d'expérience ?
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Cela nous aidera à adapter l'intensité et la complexité de vos entraînements
         </p>
       </div>
@@ -67,16 +67,16 @@ export function ExperienceSelection({ value, onChange }: ExperienceSelectionProp
                   <div className={`p-3 rounded-lg ${
                     isSelected 
                       ? 'bg-blue-500 text-white' 
-                      : 'bg-white text-gray-700'
+                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300'
                   }`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{exp.title}</CardTitle>
-                    <CardDescription className="text-gray-700 mt-1">
+                    <CardDescription className="text-gray-700 dark:text-gray-300 mt-1">
                       {exp.description}
                     </CardDescription>
-                    <div className="text-sm text-gray-500 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {exp.details}
                     </div>
                   </div>

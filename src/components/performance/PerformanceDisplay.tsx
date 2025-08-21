@@ -63,21 +63,21 @@ export function PerformanceDisplay({
       if (performance.weight) {
         metrics.push({
           text: `${performance.weight}kg`,
-          icon: <Target className="h-3 w-3" />,
+          icon: <Target className="h-5 w-5" />,
           priority: 1
         })
       }
       if (performance.reps) {
         metrics.push({
           text: `${performance.reps} reps`,
-          icon: <Activity className="h-3 w-3" />,
+          icon: <Activity className="h-5 w-5" />,
           priority: 2
         })
       }
       if (performance.sets) {
         metrics.push({
           text: `${performance.sets} sets`,
-          icon: <TrendingUp className="h-3 w-3" />,
+          icon: <TrendingUp className="h-5 w-5" />,
           priority: 3
         })
       }
@@ -95,7 +95,7 @@ export function PerformanceDisplay({
         }
         metrics.push({
           text: distanceText,
-          icon: <Target className="h-3 w-3" />,
+          icon: <Target className="h-5 w-5" />,
           priority: 1
         })
       }
@@ -106,7 +106,7 @@ export function PerformanceDisplay({
         const seconds = performance.duration % 60
         metrics.push({
           text: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-          icon: <Timer className="h-3 w-3" />,
+          icon: <Timer className="h-5 w-5" />,
           priority: 2
         })
       }
@@ -117,14 +117,14 @@ export function PerformanceDisplay({
           if (performance.stroke_rate) {
             metrics.push({
               text: `${performance.stroke_rate} SPM`,
-              icon: <Activity className="h-3 w-3" />,
+              icon: <Activity className="h-5 w-5" />,
               priority: 3
             })
           }
           if (performance.watts) {
             metrics.push({
               text: `${performance.watts}W`,
-              icon: <Zap className="h-3 w-3" />,
+              icon: <Zap className="h-5 w-5" />,
               priority: 4
             })
           }
@@ -134,14 +134,14 @@ export function PerformanceDisplay({
           if (performance.speed) {
             metrics.push({
               text: `${performance.speed} km/h`,
-              icon: <TrendingUp className="h-3 w-3" />,
+              icon: <TrendingUp className="h-5 w-5" />,
               priority: 3
             })
           }
           if (performance.incline && performance.incline > 0) {
             metrics.push({
               text: `${performance.incline}%`,
-              icon: <Activity className="h-3 w-3" />,
+              icon: <Activity className="h-5 w-5" />,
               priority: 4
             })
           }
@@ -151,14 +151,14 @@ export function PerformanceDisplay({
           if (performance.cadence) {
             metrics.push({
               text: `${performance.cadence} RPM`,
-              icon: <Activity className="h-3 w-3" />,
+              icon: <Activity className="h-5 w-5" />,
               priority: 3
             })
           }
           if (performance.resistance) {
             metrics.push({
               text: `Niv.${performance.resistance}`,
-              icon: <Zap className="h-3 w-3" />,
+              icon: <Zap className="h-5 w-5" />,
               priority: 4
             })
           }
@@ -169,14 +169,14 @@ export function PerformanceDisplay({
           if (performance.speed) {
             metrics.push({
               text: `${performance.speed} km/h`,
-              icon: <TrendingUp className="h-3 w-3" />,
+              icon: <TrendingUp className="h-5 w-5" />,
               priority: 3
             })
           }
           if (performance.calories) {
             metrics.push({
               text: `${performance.calories} kcal`,
-              icon: <Zap className="h-3 w-3" />,
+              icon: <Zap className="h-5 w-5" />,
               priority: 5
             })
           }
@@ -187,7 +187,7 @@ export function PerformanceDisplay({
       if (performance.heart_rate) {
         metrics.push({
           text: `${performance.heart_rate} BPM`,
-          icon: <Activity className="h-3 w-3" />,
+          icon: <Activity className="h-5 w-5" />,
           priority: 6
         })
       }
@@ -215,9 +215,9 @@ export function PerformanceDisplay({
   const getVariantClasses = (): string => {
     switch (variant) {
       case 'card':
-        return 'bg-gray-50 rounded-lg p-4 border border-gray-200'
+        return 'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600'
       case 'detailed':
-        return 'bg-white rounded-lg p-6 border border-gray-200 shadow-sm'
+        return 'bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-600 shadow-sm'
       case 'compact':
         return 'text-sm'
       default:
@@ -230,7 +230,7 @@ export function PerformanceDisplay({
   if (metrics.length === 0) {
     return (
       <div 
-        className={`text-gray-500 italic ${getVariantClasses()} ${className}`}
+        className={`text-gray-600 dark:text-gray-400 italic ${getVariantClasses()} ${className}`}
         data-testid={testId}
       >
         Aucune métrique enregistrée
@@ -246,8 +246,8 @@ export function PerformanceDisplay({
       {/* En-tête pour variantes card/detailed */}
       {(variant === 'card' || variant === 'detailed') && (
         <div className="flex items-center space-x-2 text-sm mb-2">
-          {showIcon && <TrendingUp className="h-4 w-4 text-orange-800 flex-shrink-0" />}
-          <span className="text-gray-600 font-medium">
+          {showIcon && <TrendingUp className="h-6 w-6 text-orange-800 dark:text-orange-300 flex-shrink-0" />}
+          <span className="text-gray-600 dark:text-gray-300 font-medium">
             {exerciseType === 'Musculation' ? 'Performance musculation' : 'Performance cardio'}
           </span>
         </div>
@@ -262,16 +262,16 @@ export function PerformanceDisplay({
         {metrics.map((metric, index) => (
           <div key={index} className="flex items-center space-x-1 flex-shrink-0">
             {showIcon && variant !== 'compact' && (
-              <span className="text-gray-400">{metric.icon}</span>
+              <span className="text-gray-700 dark:text-gray-300">{metric.icon}</span>
             )}
             <span className={`
               font-medium
-              ${variant === 'detailed' ? 'text-gray-900' : 'text-gray-700'}
+              ${variant === 'detailed' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'}
             `}>
               {metric.text}
             </span>
             {index < metrics.length - 1 && variant !== 'detailed' && (
-              <span className="text-gray-400 mx-1">•</span>
+              <span className="text-gray-700 dark:text-gray-300 mx-1">•</span>
             )}
           </div>
         ))}
@@ -281,14 +281,14 @@ export function PerformanceDisplay({
       {(variant === 'card' || variant === 'detailed') && (
         <div className="mt-3 space-y-2">
           {showDate && (
-            <div className="flex items-center space-x-2 text-xs text-gray-500">
-              <Calendar className="h-3 w-3 flex-shrink-0" />
+            <div className="flex items-center space-x-2 text-xs text-gray-600 dark:text-gray-400">
+              <Calendar className="h-5 w-5 flex-shrink-0" />
               <span>{formatDate(performance.performed_at)}</span>
             </div>
           )}
           
           {performance.notes && variant === 'detailed' && (
-            <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+            <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300">
               <strong>Notes:</strong> {performance.notes}
             </div>
           )}
@@ -297,8 +297,8 @@ export function PerformanceDisplay({
 
       {/* Date inline pour variante standard */}
       {variant === 'inline' && showDate && (
-        <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
-          <Calendar className="h-3 w-3 flex-shrink-0" />
+        <div className="flex items-center space-x-1 text-xs text-gray-600 dark:text-gray-400 mt-1">
+          <Calendar className="h-5 w-5 flex-shrink-0" />
           <span>{formatDate(performance.performed_at)}</span>
         </div>
       )}

@@ -190,9 +190,9 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           {isLoading ? (
-            <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+            <Loader2 className="h-6 w-6 text-gray-700 dark:text-gray-300 animate-spin" />
           ) : (
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-6 w-6 text-gray-700 dark:text-gray-300" />
           )}
         </div>
         
@@ -206,7 +206,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
             if (results.length > 0) setIsOpen(true)
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           autoComplete="off"
           spellCheck="false"
         />
@@ -214,9 +214,9 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 dark:text-gray-300"
           >
-            <X className="h-4 w-4 text-gray-400" />
+            <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
           </button>
         )}
       </div>
@@ -230,18 +230,18 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Résultats de recherche */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {results.map((food, index) => (
               <button
                 key={`${food.id}-${index}-${food.name}`}
                 onClick={() => handleFoodSelect(food)}
-                className={`w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0 ${
-                  index === selectedIndex ? 'bg-orange-50' : ''
+                className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:bg-gray-800 focus:bg-gray-50 dark:bg-gray-800 focus:outline-none border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                  index === selectedIndex ? 'bg-orange-50 dark:bg-orange-900/20' : ''
                 }`}
               >
                 <div className="flex items-start space-x-3">
                   {/* Image ou icône */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
                     {food.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -255,27 +255,27 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
                         }}
                       />
                     ) : null}
-                    <Package className={`h-6 w-6 text-gray-400 ${food.image_url ? 'hidden' : ''}`} />
+                    <Package className={`h-6 w-6 text-gray-700 dark:text-gray-300 ${food.image_url ? 'hidden' : ''}`} />
                   </div>
 
                   {/* Informations produit */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 truncate">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {food.name}
                     </h4>
                     
                     {food.brand && (
-                      <p className="text-xs text-gray-500 truncate mt-1">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-1">
                         {food.brand}
                       </p>
                     )}
                     
-                    <p className="text-xs text-orange-800 mt-1">
+                    <p className="text-xs text-orange-800 dark:text-orange-300 mt-1">
                       {formatNutrientInfo(food)} (pour 100g)
                     </p>
 
                     {food.quantity && (
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
                         Conditionnement: {food.quantity}
                       </p>
                     )}
@@ -285,14 +285,14 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
             ))}
             
             {/* Footer avec attribution OpenFoodFacts */}
-            <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 Données fournies par{' '}
                 <a 
                   href="https://world.openfoodfacts.org" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-orange-800 hover:underline"
+                  className="text-orange-800 dark:text-orange-300 hover:underline"
                 >
                   Open Food Facts
                 </a>
@@ -303,10 +303,10 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Message aucun résultat */}
       {isOpen && !isLoading && results.length === 0 && query.length >= 2 && (
-        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 text-center text-gray-600 dark:text-gray-400">
           <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
           <p className="text-sm">Aucun aliment trouvé pour &quot;{query}&quot;</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
             Essayez un terme plus général ou vérifiez l'orthographe
           </p>
         </div>

@@ -121,7 +121,7 @@ function ResetPasswordForm() {
           className="w-full max-w-md"
         >
           {/* Carte glassmorphism */}
-          <div className="relative backdrop-blur-lg bg-white/10 rounded-2xl border border-white/20 shadow-2xl overflow-hidden">
+          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 rounded-2xl border border-white dark:border-gray-700/20 shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent" />
             
             <div className="relative z-10 p-8">
@@ -174,7 +174,7 @@ function ResetPasswordForm() {
                           type={showPassword ? 'text' : 'password'}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full px-4 py-3 pr-12 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+                          className="w-full px-4 py-3 pr-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 border border-white dark:border-gray-700/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
                           placeholder="Au moins 8 caractères"
                           required
                           minLength={8}
@@ -183,7 +183,7 @@ function ResetPasswordForm() {
                         <motion.button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/90 transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                         >
@@ -200,10 +200,10 @@ function ResetPasswordForm() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`w-full px-4 py-3 bg-white/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
+                        className={`w-full px-4 py-3 bg-white dark:bg-gray-900/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
                           confirmPassword && password !== confirmPassword
                             ? 'border-red-400/60 bg-red-500/10 focus:ring-red-400/50 focus:border-red-400/50'
-                            : 'border-white/20 focus:ring-orange-400/50 focus:border-orange-400/50'
+                            : 'border-white dark:border-gray-700/20 focus:ring-orange-400/50 focus:border-orange-400/50'
                         }`}
                         placeholder="Répétez votre nouveau mot de passe"
                         required
@@ -243,12 +243,12 @@ function ResetPasswordForm() {
                     <motion.button
                       type="submit"
                       disabled={loading || password !== confirmPassword || password.length < 8}
-                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg backdrop-blur-md"
+                      className="w-full bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg backdrop-blur-md"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {loading ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-white dark:border-gray-700/30 border-t-white rounded-full animate-spin" />
                       ) : (
                         <span>🔄 Mettre à jour le mot de passe</span>
                       )}
@@ -266,7 +266,7 @@ function ResetPasswordForm() {
                     <p className="text-white/90 text-lg mb-6">
                       Parfait ! Votre mot de passe a été mis à jour avec succès.
                     </p>
-                    <p className="text-white/70 text-sm">
+                    <p className="text-white/90 text-sm">
                       Redirection automatique vers la connexion...
                     </p>
                   </motion.div>
@@ -300,7 +300,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600"></div>
       </div>
     }>
       <ResetPasswordForm />

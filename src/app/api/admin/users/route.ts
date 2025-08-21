@@ -20,6 +20,7 @@ interface AdminUser {
   created_at: string
   updated_at: string
   is_banned: boolean
+  is_onboarding_complete: boolean
   workout_count: number
   badge_count: number
 }
@@ -83,12 +84,7 @@ export async function GET() {
     }
 
     // 🔒 3. Récupération sécurisée des utilisateurs
-    // DÉSACTIVATION TEMPORAIRE RPC pour debug statut ban
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[API ADMIN USERS] Utilisation fallback manuel forcé (debug mode)`);
-    }
-
-    // Fallback : récupération manuelle avec calculs
+    // Récupération directe des profils utilisateurs avec calculs manuels
     const { data: profilesData, error: profilesError } = await supabase
       .from('profiles')
       .select(`
@@ -107,6 +103,8 @@ export async function GET() {
         is_onboarding_complete
       `)
       .order('created_at', { ascending: false })
+    
+    // DEBUG temporaire retiré - problème onboarding résolu
 
     if (profilesError) {
       if (process.env.NODE_ENV === 'development') {
@@ -114,8 +112,6 @@ export async function GET() {
       }
       return NextResponse.json({ error: 'Erreur lors de la récupération des utilisateurs' }, { status: 500 })
     }
-
-    // DEBUG temporaire désactivé
 
     // Enrichir avec les statistiques
     const enrichedUsers: AdminUser[] = await Promise.all(
@@ -169,6 +165,7 @@ export async function GET() {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         const is_active = lastActive ? lastActive > thirtyDaysAgo : false
 
+
         return {
           id: profile.id,
           email: profile.email || '',
@@ -183,7 +180,7 @@ export async function GET() {
           ban_reason: profile.ban_reason,
           is_active: is_active,
           last_active: profile.last_active,
-          is_onboarding_complete: profile.is_onboarding_complete !== false,
+          is_onboarding_complete: Boolean(profile.is_onboarding_complete),
           workout_count: workoutCount,
           badge_count: badgeCount
         }
@@ -207,8 +204,6 @@ export async function GET() {
     } catch (logError) {
       console.warn('[API ADMIN USERS] Erreur logging admin:', logError)
     }
-
-    // DEBUG temporaire désactivé
 
     return NextResponse.json({ users: enrichedUsers })
 

@@ -41,19 +41,19 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-orange-800" />
+                  <AlertTriangle className="w-5 h-5 text-orange-800 dark:text-orange-300" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     {hasExactMatch ? 'Exercice identique trouvé' : 'Exercices similaires détectés'}
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {hasExactMatch 
                       ? 'Un exercice avec ce nom existe déjà'
                       : 'Des exercices similaires existent dans votre bibliothèque'
@@ -63,7 +63,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+                className="w-8 h-12 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center transition-colors"
                 aria-label="Fermer"
               >
                 <X className="w-4 h-4" />
@@ -81,7 +81,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {/* Correspondances exactes */}
               {hasExactMatch && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <Check className="w-4 h-4 text-red-500" />
                     Correspondance exacte
                   </h3>
@@ -103,7 +103,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
                         </div>
                         <button
                           onClick={() => onUseExisting(exercise)}
-                          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
                         >
                           Utiliser cet exercice
                         </button>
@@ -116,12 +116,12 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {/* Correspondances similaires */}
               {hasSimilarMatch && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-orange-800" />
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-orange-800 dark:text-orange-300" />
                     Exercices similaires ({duplicateResult.similarMatches.length})
                   </h3>
                   {duplicateResult.similarMatches.slice(0, 3).map((exercise) => (
-                    <div key={exercise.id} className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <div key={exercise.id} className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium text-orange-900">"{exercise.name}"</p>
@@ -134,14 +134,14 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
                               <Clock className="w-3 h-3" />
                               {formatDate(exercise.created_at)}
                             </span>
-                            <span className="bg-orange-200 text-orange-800 px-2 py-0.5 rounded text-xs font-medium">
+                            <span className="bg-orange-200 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded text-xs font-medium">
                               {Math.round(exercise.similarity * 100)}% similaire
                             </span>
                           </div>
                         </div>
                         <button
                           onClick={() => onUseExisting(exercise)}
-                          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                          className="bg-orange-600 dark:bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
                         >
                           Utiliser
                         </button>
@@ -154,7 +154,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {/* Options de renommage */}
               {duplicateResult.suggestions.renameOptions.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <Edit3 className="w-4 h-4 text-green-500" />
                     Suggestions de noms alternatifs
                   </h3>
@@ -174,11 +174,11 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
             </div>
 
             {/* Actions */}
-            <div className="border-t border-gray-200 p-6">
+            <div className="border-t border-gray-200 dark:border-gray-700 p-6">
               <div className="flex flex-col sm:flex-row gap-3 justify-end">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:bg-gray-700 transition-colors font-medium"
                 >
                   Annuler
                 </button>
@@ -193,7 +193,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               </div>
               
               {hasExactMatch && (
-                <p className="text-sm text-gray-600 mt-3 text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 text-center">
                   💡 Il est recommandé d'utiliser l'exercice existant pour conserver votre historique de progression.
                 </p>
               )}

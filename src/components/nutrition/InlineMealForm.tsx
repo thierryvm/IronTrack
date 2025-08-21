@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { Plus, Save, X } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import FoodSearchAutocomplete from './FoodSearchAutocomplete'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface Food {
   id: string
@@ -107,24 +110,25 @@ export default function InlineMealForm({
 
   if (!isOpen) {
     return (
-      <button
+      <Button
+        variant="outline"
         onClick={() => setIsOpen(true)}
-        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-orange-400 hover:text-orange-800 transition-colors flex items-center justify-center space-x-2"
+        className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
       >
         <Plus className="h-5 w-5" />
         <span>Ajouter un aliment</span>
-      </button>
+      </Button>
     )
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 bg-orange-50">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-orange-50 dark:bg-orange-900/20">
       <div className="space-y-4">
         {/* Recherche d'aliment */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Rechercher un aliment
-          </label>
+          </Label>
           <FoodSearchAutocomplete
             onFoodSelect={(food) => {
               setSelectedFood({
@@ -146,14 +150,14 @@ export default function InlineMealForm({
           <>
             {/* Nom personnalisé */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Nom du repas (optionnel)
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 value={mealName}
                 onChange={(e) => setMealName(sanitizeInput(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                className="w-full focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
                 placeholder={selectedFood.name}
                 maxLength={100}
               />
@@ -161,45 +165,45 @@ export default function InlineMealForm({
 
             {/* Quantité */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Quantité (g)
-              </label>
-              <input
+              </Label>
+              <Input
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, Math.min(10000, Number(e.target.value))))}
                 min="1"
                 max="10000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                className="w-full focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
               />
             </div>
 
             {/* Aperçu nutritionnel */}
-            <div className="bg-white p-3 rounded-lg border">
-              <h4 className="font-medium text-gray-900 mb-2">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-lg">
+              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
                 Valeurs nutritionnelles pour {quantity}g
               </h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <span className="text-gray-600">Calories:</span>
-                  <span className="ml-2 font-medium text-orange-800">
+                  <span className="text-gray-600 dark:text-gray-300">Calories:</span>
+                  <span className="ml-2 font-medium text-orange-800 dark:text-orange-300">
                     {Math.round(selectedFood.calories * quantity / 100)} kcal
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Protéines:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Protéines:</span>
                   <span className="ml-2 font-medium text-blue-600">
                     {Math.round(selectedFood.protein * quantity / 100 * 10) / 10}g
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Glucides:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Glucides:</span>
                   <span className="ml-2 font-medium text-green-600">
                     {Math.round(selectedFood.carbs * quantity / 100 * 10) / 10}g
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Lipides:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Lipides:</span>
                   <span className="ml-2 font-medium text-yellow-600">
                     {Math.round(selectedFood.fat * quantity / 100 * 10) / 10}g
                   </span>
@@ -211,17 +215,18 @@ export default function InlineMealForm({
 
         {/* Boutons d'action */}
         <div className="flex justify-end space-x-2">
-          <button
+          <Button
+            variant="outline"
             onClick={handleCancel}
-            className="px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+            className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
-            <X className="h-4 w-4 inline mr-1" />
+            <X className="h-4 w-4 mr-1" />
             Annuler
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
             disabled={!selectedFood || saving}
-            className="px-3 py-1.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center"
+            className="bg-orange-600 dark:bg-orange-500 text-white hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
           >
             {saving ? (
               <>
@@ -234,7 +239,7 @@ export default function InlineMealForm({
                 Sauvegarder
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

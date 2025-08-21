@@ -165,10 +165,10 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Vérification des permissions admin...</p>
+          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">Vérification des permissions admin...</p>
         </div>
       </div>
     )
@@ -177,13 +177,13 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   // Error state avec debug
   if (error || !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-4">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="h-8 w-8 text-red-500" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Accès Non Autorisé</h1>
-          <p className="text-gray-600 mb-4">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Accès Non Autorisé</h1>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             {error || 'Vous n\'avez pas les permissions nécessaires pour accéder à cette interface.'}
           </p>
           
@@ -191,7 +191,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           <div className="flex gap-4 justify-center">
             <Link
               href="/"
-              className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               Retour à l'accueil
             </Link>
@@ -208,20 +208,20 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header Mobile avec support safe areas iPhone */}
-      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between header-mobile-ios">
+      <div className="lg:hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between header-mobile-ios">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 transition-colors"
             aria-label="Ouvrir le menu"
           >
             <Menu className="h-6 w-6" />
           </button>
           <div className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-orange-800" />
-            <span className="font-bold text-gray-900">IronTrack Admin</span>
+            <Shield className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+            <span className="font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
           </div>
         </div>
         
@@ -230,22 +230,22 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           <div className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 transition-colors"
             >
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800">
+                <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronDown className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </button>
             
             {userMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
               >
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-                    <p className="text-xs text-gray-500 capitalize">
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.email}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
                       {user?.role.replace('_', ' ')}
                     </p>
                   </div>
@@ -254,7 +254,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="h-6 w-6 mr-2" />
                     Se déconnecter
                   </button>
               </div>
@@ -265,10 +265,10 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
 
       <div className="flex">
         {/* Sidebar Desktop */}
-        <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200">
-          <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200">
-            <Shield className="h-8 w-8 text-orange-800 mr-3" />
-            <span className="text-xl font-bold text-gray-900">IronTrack Admin</span>
+        <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white dark:bg-gray-900 lg:border-r lg:border-gray-200 dark:border-gray-600">
+          <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200 dark:border-gray-700">
+            <Shield className="h-8 w-8 text-orange-800 dark:text-orange-300 mr-3" />
+            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
           </div>
           
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
@@ -282,8 +282,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                   href={item.href}
                   className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     item.active
-                      ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 border border-orange-200 dark:border-orange-800'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
                   }`}
                 >
                   <Icon className="h-5 w-5 mr-3" />
@@ -298,25 +298,25 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             })}
           </nav>
           
-          <div className="flex-shrink-0 border-t border-gray-200 p-4">
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800">
+                <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
-                <p className="text-xs text-gray-500 capitalize">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{user?.email}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
                   {user?.role.replace('_', ' ')}
                 </p>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors"
                 title="Se déconnecter"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-6 w-6" />
               </button>
             </div>
           </div>
@@ -331,16 +331,16 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             />
             
             <div
-              className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col"
+              className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 flex flex-col"
             >
-                <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+                <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center space-x-2">
-                    <Shield className="h-6 w-6 text-orange-800" />
-                    <span className="font-bold text-gray-900">IronTrack Admin</span>
+                    <Shield className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+                    <span className="font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
                   </div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -358,8 +358,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                         onClick={() => setSidebarOpen(false)}
                         className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           item.active
-                            ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 border border-orange-200 dark:border-orange-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
                         }`}
                       >
                         <Icon className="h-5 w-5 mr-3" />

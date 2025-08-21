@@ -12,6 +12,14 @@ import { RealtimeNotificationToast } from '@/components/ui/RealtimeNotificationT
 // PERFORMANCE CRITICAL: Images optimisées WebP/AVIF pour avatars
 import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer'
 
+// MIGRATION SHADCN/UI PARTENAIRES - 100% COMPLET
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+
 interface Profile {
   id: string
   pseudo: string | null
@@ -338,8 +346,8 @@ export default function TrainingPartnersPage() {
   // Affichage du loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
       </div>
     )
   }
@@ -347,28 +355,30 @@ export default function TrainingPartnersPage() {
   // Affichage si non connecté
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-md p-8 text-center">
-            <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Training Partners</h1>
-            <p className="text-gray-600 mb-6">
-              Connectez-vous pour partager vos entraînements avec vos partenaires !
-            </p>
-            <button
-              onClick={() => router.push('/auth')}
-              className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
-            >
-              Se connecter
-            </button>
-          </div>
+          <Card className="text-center max-w-md mx-auto">
+            <CardContent className="p-8">
+              <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <CardTitle className="text-2xl mb-4">Training Partners</CardTitle>
+              <p className="text-muted-foreground mb-6">
+                Connectez-vous pour partager vos entraînements avec vos partenaires !
+              </p>
+              <Button
+                onClick={() => router.push('/auth')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Se connecter
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       {/* Notifications en temps réel */}
       <RealtimeNotificationToast
         notifications={notifications}
@@ -380,30 +390,35 @@ export default function TrainingPartnersPage() {
         fallbackEnabled={fallbackEnabled}
       />
 
-      {/* Notification Toast */}
+      {/* Notification Alert - ShadCN UI + fond flou */}
       {notification && (
-        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2">
-          <div className={`rounded-lg p-4 shadow-lg max-w-md ${
-            notification.type === 'success' ? 'bg-green-500 text-white' :
-            notification.type === 'error' ? 'bg-red-500 text-white' :
-            notification.type === 'warning' ? 'bg-yellow-500 text-white' :
-            'bg-blue-500 text-white'
-          }`}>
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 max-w-md">
+          <Alert
+            className={`shadow-lg backdrop-blur-sm border-2 ${
+              notification.type === 'success' ? 'bg-green-50/90 border-green-200 text-green-800' :
+              notification.type === 'error' ? 'bg-red-50/90 border-red-200 text-red-800' :
+              notification.type === 'warning' ? 'bg-yellow-50/90 border-yellow-200 text-yellow-800' :
+              'bg-blue-50/90 border-blue-200 text-blue-800'
+            }`}
+          >
             <div className="flex items-start justify-between">
-              <div>
+              <AlertDescription className="flex-1">
                 <p className="font-medium">{notification.message}</p>
                 {notification.suggestion && (
-                  <p className="text-sm mt-1 opacity-90">{notification.suggestion}</p>
+                  <p className="text-sm mt-1 opacity-80">{notification.suggestion}</p>
                 )}
-              </div>
-              <button
+              </AlertDescription>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setNotification(null)}
-                className="ml-4 text-white hover:text-gray-200 transition-colors"
+                className="ml-2 h-6 w-6 p-0 text-current hover:bg-current/10"
+                aria-label="Fermer la notification"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
-          </div>
+          </Alert>
         </div>
       )}
 
@@ -413,7 +428,7 @@ export default function TrainingPartnersPage() {
           <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-md p-6 mb-6 text-white">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-white/20 rounded-xl">
+                <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl">
                   <Users className="h-8 w-8 text-white" />
                 </div>
                 <div className="flex-1">
@@ -424,22 +439,22 @@ export default function TrainingPartnersPage() {
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex items-center space-x-2 text-sm">
-                      <UserPlus className="h-4 w-4" />
+                      <UserPlus className="h-6 w-6" />
                       <span>Invitez vos amis</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                      <MessageCircle className="h-4 w-4" />
+                      <MessageCircle className="h-6 w-6" />
                       <span>Partagez vos séances</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                      <Settings className="h-4 w-4" />
+                      <Settings className="h-6 w-6" />
                       <span>Contrôlez vos données</span>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <a 
                       href="/support" 
-                      className="flex-1 sm:flex-none bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm text-center min-w-[120px]"
+                      className="flex-1 sm:flex-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
                     >
                       Guide complet
                     </a>
@@ -463,15 +478,15 @@ export default function TrainingPartnersPage() {
         )}
 
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 sm:p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="p-2 sm:p-3 bg-orange-100 rounded-xl flex-shrink-0">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800" />
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-800 dark:text-gray-200" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Training Partners</h1>
-                <p className="text-sm sm:text-base text-gray-600 truncate">Partagez vos entraînements avec vos partenaires</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Training Partners</h1>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 truncate">Partagez vos entraînements avec vos partenaires</p>
               </div>
             </div>
             
@@ -488,52 +503,49 @@ export default function TrainingPartnersPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-md mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'partners', label: 'Mes Partenaires', count: acceptedPartnerships.length },
-                { id: 'invitations', label: 'Invitations', count: pendingInvitations.length },
-                { id: 'search', label: 'Rechercher' }
-              ].map((tab: { id: string; label: string; count?: number }) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as 'partners' | 'invitations' | 'search')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-orange-500 text-orange-800'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.label}
-                  {tab.count !== undefined && tab.count > 0 && (
-                    <span className="ml-2 bg-orange-100 text-orange-800 py-0.5 px-2 rounded-full text-xs">
-                      {tab.count}
+        {/* Tabs ShadCN UI */}
+        <Card>
+          <CardContent>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'partners' | 'invitations' | 'search')} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="partners" className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>Mes Partenaires</span>
+                  {acceptedPartnerships.length > 0 && (
+                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-gray-800 dark:text-gray-200 py-0.5 px-1.5 rounded-full text-xs">
+                      {acceptedPartnerships.length}
                     </span>
                   )}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="p-6">
-            {/* Onglet Partenaires */}
-            {activeTab === 'partners' && (
+                </TabsTrigger>
+                <TabsTrigger value="invitations" className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4" />
+                  <span>Invitations</span>
+                  {pendingInvitations.length > 0 && (
+                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-gray-800 dark:text-gray-200 py-0.5 px-1.5 rounded-full text-xs">
+                      {pendingInvitations.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="search" className="flex items-center space-x-2">
+                  <Search className="h-4 w-4" />
+                  <span>Rechercher</span>
+                </TabsTrigger>
+              </TabsList>
+            <TabsContent value="partners">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold mb-4">
                   Partenaires Actifs ({acceptedPartnerships.length})
                 </h2>
                 {acceptedPartnerships.length === 0 ? (
                   <div className="text-center py-8">
-                    <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-4">Aucun partenaire pour le moment</p>
-                    <button
+                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">Aucun partenaire pour le moment</p>
+                    <Button
                       onClick={() => setActiveTab('search')}
-                      className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Rechercher des partenaires
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -542,56 +554,61 @@ export default function TrainingPartnersPage() {
                         ? partnership.partner 
                         : partnership.requester
                       return (
-                        <div key={partnership.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <Card key={partnership.id} className="p-4">
+                          <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <OptimizedAvatar
                               src={partner.avatar_url}
                               alt={`Avatar de ${getDisplayName(partner)}`}
                               size="md"
-                              className="border-2 border-orange-200"
+                              className="border-2 border-blue-200 dark:border-orange-600"
                               priority={false}
                             />
                             <div>
-                              <p className="font-medium text-gray-900">{getDisplayName(partner)}</p>
-                              <p className="text-sm text-gray-500">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">{getDisplayName(partner)}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
                                 Partenaires depuis {new Date(partnership.created_at).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <button
+                            <Button
                               onClick={() => router.push(`/training-partners/${partnership.id}/settings`)}
-                              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                              variant="ghost"
+                              size="sm"
+                              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200"
                               title="Paramètres de partage"
                             >
                               <Settings className="h-5 w-5" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={() => handlePartnership(partnership.id, 'remove')}
-                              className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                              variant="ghost"
+                              size="sm"
+                              className="p-2 text-red-400 hover:text-red-600"
                               title="Supprimer le partenariat"
                             >
                               <Trash2 className="h-5 w-5" />
-                            </button>
+                            </Button>
                           </div>
                         </div>
+                        </Card>
                       )
                     })}
                   </div>
                 )}
               </div>
-            )}
+            </TabsContent>
 
-            {/* Onglet Invitations */}
-            {activeTab === 'invitations' && (
+            <TabsContent value="invitations">
               <div>
                 {/* Invitations reçues */}
                 <div className="mb-8">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h2 className="text-lg font-semibold mb-4">
                     Invitations Reçues ({pendingInvitations.length})
                   </h2>
                   {pendingInvitations.length === 0 ? (
-                    <p className="text-gray-500 py-4">Aucune invitation en attente</p>
+                    <p className="text-gray-600 dark:text-gray-400 py-4">Aucune invitation en attente</p>
                   ) : (
                     <div className="space-y-4">
                       {pendingInvitations.map((invitation) => (
@@ -606,10 +623,10 @@ export default function TrainingPartnersPage() {
                                 priority={false}
                               />
                               <div>
-                                <p className="font-medium text-gray-900">
+                                <p className="font-medium text-gray-900 dark:text-gray-100">
                                   {getDisplayName(invitation.requester)}
                                 </p>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                   Invitation envoyée le {new Date(invitation.created_at).toLocaleDateString()}
                                 </p>
                                 {invitation.message && (
@@ -620,20 +637,23 @@ export default function TrainingPartnersPage() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <button
+                              <Button
                                 onClick={() => handlePartnership(invitation.id, 'accept')}
-                                className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors flex items-center space-x-1"
+                                className="bg-green-500 hover:bg-green-600 text-white min-h-[44px]"
+                                aria-label={`Accepter l'invitation de ${getDisplayName(invitation.requester)}`}
                               >
-                                <Check className="h-4 w-4" />
+                                <Check className="h-4 w-4 mr-1" />
                                 <span>Accepter</span>
-                              </button>
-                              <button
+                              </Button>
+                              <Button
                                 onClick={() => handlePartnership(invitation.id, 'decline')}
-                                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors flex items-center space-x-1"
+                                variant="destructive"
+                                className="min-h-[44px]"
+                                aria-label={`Refuser l'invitation de ${getDisplayName(invitation.requester)}`}
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-4 w-4 mr-1" />
                                 <span>Refuser</span>
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -644,11 +664,11 @@ export default function TrainingPartnersPage() {
 
                 {/* Invitations envoyées */}
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h2 className="text-lg font-semibold mb-4">
                     Invitations Envoyées ({sentInvitations.length})
                   </h2>
                   {sentInvitations.length === 0 ? (
-                    <p className="text-gray-500 py-4">Aucune invitation envoyée</p>
+                    <p className="text-gray-600 dark:text-gray-400 py-4">Aucune invitation envoyée</p>
                   ) : (
                     <div className="space-y-4">
                       {sentInvitations.map((invitation) => (
@@ -663,22 +683,24 @@ export default function TrainingPartnersPage() {
                                 priority={false}
                               />
                               <div>
-                                <p className="font-medium text-gray-900">
+                                <p className="font-medium text-gray-900 dark:text-gray-100">
                                   {getDisplayName(invitation.partner)}
                                 </p>
-                                <p className="text-sm text-gray-500 flex items-center space-x-1">
-                                  <Clock className="h-4 w-4" />
+                                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-1">
+                                  <Clock className="h-6 w-6" />
                                   <span>En attente depuis le {new Date(invitation.created_at).toLocaleDateString()}</span>
                                 </p>
                               </div>
                             </div>
-                            <button
+                            <Button
                               onClick={() => handlePartnership(invitation.id, 'cancel')}
-                              className="text-red-500 hover:text-red-700 transition-colors"
-                              title="Annuler l'invitation"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 min-h-[44px] min-w-[44px]"
+                              aria-label={`Annuler l'invitation envoyée à ${getDisplayName(invitation.partner)}`}
                             >
                               <X className="h-5 w-5" />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -686,74 +708,79 @@ export default function TrainingPartnersPage() {
                   )}
                 </div>
               </div>
-            )}
+            </TabsContent>
 
-            {/* Onglet Recherche */}
-            {activeTab === 'search' && (
+            <TabsContent value="search">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold mb-4">
                   Rechercher des Partenaires
                 </h2>
                 
                 <div className="mb-6">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Email complet ou pseudo exact uniquement"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value)
-                        // Vider les résultats quand on tape
-                        if (e.target.value.length < 2) {
-                          setSearchResults([])
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        // Chercher seulement quand on appuie sur Entrée
-                        if (e.key === 'Enter' && searchQuery.length >= 2) {
-                          searchUsers()
-                        }
-                      }}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  </div>
-                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-start space-x-2">
-                      <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                      <div className="text-sm text-blue-700">
-                        <p className="font-medium mb-1">Recherche sécurisée :</p>
-                        <ul className="list-disc list-inside space-y-1 text-xs">
-                          <li>Email complet : exemple@domain.com</li>
-                          <li>Pseudo exact (insensible à la casse) : MonPseudo123</li>
-                          <li>Limite : 3 recherches par minute</li>
-                        </ul>
-                      </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="partner-search" className="text-sm font-medium">
+                      Rechercher des partenaires d'entraînement
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="partner-search"
+                        type="text"
+                        placeholder="Email complet ou pseudo exact uniquement"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value)
+                          // Vider les résultats quand on tape
+                          if (e.target.value.length < 2) {
+                            setSearchResults([])
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          // Chercher seulement quand on appuie sur Entrée
+                          if (e.key === 'Enter' && searchQuery.length >= 2) {
+                            searchUsers()
+                          }
+                        }}
+                        className="w-full pl-10 pr-4 py-3 focus:ring-2 focus:ring-blue-500"
+                        aria-describedby="search-help"
+                        aria-label="Rechercher des partenaires par email ou pseudo"
+                      />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     </div>
                   </div>
+                  <Alert id="search-help" className="mt-2 bg-blue-50/80 border-blue-200">
+                    <Info className="h-5 w-5 text-blue-500" />
+                    <AlertDescription className="text-blue-700">
+                      <p className="font-medium mb-1">Recherche sécurisée :</p>
+                      <ul className="list-disc list-inside space-y-1 text-xs">
+                        <li>Email complet : exemple@domain.com</li>
+                        <li>Pseudo exact (insensible à la casse) : MonPseudo123</li>
+                        <li>Limite : 3 recherches par minute</li>
+                      </ul>
+                    </AlertDescription>
+                  </Alert>
                 </div>
 
                 {searchLoading && (
                   <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600 mx-auto"></div>
                   </div>
                 )}
 
                 {searchResults.length > 0 && (
                   <div className="space-y-4">
                     {searchResults.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                         <div className="flex items-center space-x-4">
                           <OptimizedAvatar
                             src={user.avatar_url}
                             alt={`Avatar de ${user.displayName}`}
                             size="md"
-                            className="border-2 border-gray-300"
+                            className="border-2 border-gray-300 dark:border-gray-500"
                             priority={false}
                           />
                           <div>
-                            <p className="font-medium text-gray-900">{user.displayName}</p>
-                            <p className="text-sm text-gray-500">{user.email}</p>
+                            <p className="font-medium text-gray-900 dark:text-gray-100">{user.displayName}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
                             {user.pseudo && user.pseudo !== user.displayName && (
                               <p className="text-xs text-blue-600">Pseudo: {user.pseudo}</p>
                             )}
@@ -779,13 +806,14 @@ export default function TrainingPartnersPage() {
                             </span>
                           )}
                           {!user.partnershipStatus && (
-                            <button
+                            <Button
                               onClick={() => sendInvitation(user.id)}
-                              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2"
+                              className="bg-orange-600 hover:bg-orange-700 text-white min-h-[44px]"
+                              aria-label={`Envoyer une invitation à ${user.displayName}`}
                             >
-                              <UserPlus className="h-4 w-4" />
+                              <UserPlus className="h-4 w-4 mr-2" />
                               <span>Inviter</span>
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -794,14 +822,15 @@ export default function TrainingPartnersPage() {
                 )}
 
                 {searchQuery.length >= 2 && !searchLoading && searchResults.length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="text-gray-600 dark:text-gray-400 text-center py-8">
                     Aucun utilisateur trouvé pour &ldquo;{searchQuery}&rdquo;
                   </p>
                 )}
               </div>
-            )}
-          </div>
-        </div>
+            </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

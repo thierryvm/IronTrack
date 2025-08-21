@@ -6,7 +6,7 @@ export const muscleGroups = [
 ]
 export const difficulties = ['Débutant', 'Intermédiaire', 'Avancé']
 export const exerciseTypes = [
-  { value: 'Musculation', label: 'Musculation', icon: Dumbbell, color: 'text-orange-800' },
+  { value: 'Musculation', label: 'Musculation', icon: Dumbbell, color: 'text-orange-800 dark:text-orange-300' },
   { value: 'Cardio', label: 'Cardio', icon: Clock, color: 'text-blue-500' }
 ]
 

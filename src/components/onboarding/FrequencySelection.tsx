@@ -61,10 +61,10 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           À quelle fréquence souhaitez-vous vous entraîner ?
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Nous personnaliserons votre programme selon votre disponibilité
         </p>
       </div>
@@ -89,13 +89,13 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
                   <div className={`p-3 rounded-lg ${
                     isSelected 
                       ? 'bg-blue-500 text-white' 
-                      : 'bg-white text-gray-700'
+                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300'
                   }`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{freq.title}</CardTitle>
-                    <CardDescription className="text-gray-700 mt-1">
+                    <CardDescription className="text-gray-700 dark:text-gray-300 mt-1">
                       {freq.description}
                     </CardDescription>
                     <Badge variant="outline" className="mt-2">
@@ -111,19 +111,19 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
 
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Combien de temps par séance ?
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Durée moyenne souhaitée pour chaque entraînement
           </p>
         </div>
 
-        <Card className="bg-gray-50">
+        <Card className="bg-gray-50 dark:bg-gray-800">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Durée par séance</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Durée par séance</span>
                 <span className="text-lg font-semibold text-blue-600">
                   {formatTime(availabilityValue || 60)}
                 </span>
@@ -138,7 +138,7 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
                 className="w-full"
               />
               
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
                 <span>30min</span>
                 <span>45min</span>
                 <span>1h</span>

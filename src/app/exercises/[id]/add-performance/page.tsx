@@ -7,7 +7,7 @@ import { ExerciseType } from '@/types/exercise'
 import { StrengthMetrics, CardioMetrics } from '@/types/performance'
 import { ArrowLeft, Dumbbell, Target } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 // Note: Remplacé toast par console.log temporairement
 
 interface ExerciseInfo {
@@ -43,7 +43,6 @@ export default function AddPerformancePage() {
         }
 
         if (data) {
-          console.log('📋 Exercice trouvé:', data)
           // Transformer les données au nouveau format
           const exerciseData: ExerciseInfo = {
             id: data.id,
@@ -130,7 +129,7 @@ export default function AddPerformancePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -139,9 +138,9 @@ export default function AddPerformancePage() {
           <motion.div 
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-12 h-12 border-2 border-orange-500 border-t-transparent rounded-full mx-auto mb-4"
+            className="w-12 h-12 border-2 border-orange-600 border-t-transparent rounded-full mx-auto mb-4"
           />
-          <p className="text-gray-600">Chargement de l'exercice...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement de l'exercice...</p>
         </motion.div>
       </div>
     )
@@ -149,7 +148,7 @@ export default function AddPerformancePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,13 +165,13 @@ export default function AddPerformancePage() {
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <p className="text-gray-600 mb-4">Exercice non trouvé</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">Exercice non trouvé</p>
           <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
           </Button>
@@ -182,12 +181,12 @@ export default function AddPerformancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header - Design 2025 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-10 bg-white border-b border-gray-200"
+        className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -196,20 +195,20 @@ export default function AddPerformancePage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleBack}
-                leftIcon={<ArrowLeft className="h-4 w-4" />}
               >
+                <ArrowLeft className="h-6 w-6 mr-2" />
                 Retour
               </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   {exercise.type === 'Musculation' ? (
-                    <Dumbbell className="h-5 w-5 text-orange-800" />
+                    <Dumbbell className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                   ) : (
-                    <Target className="h-5 w-5 text-orange-800" />
+                    <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                   )}
                   Nouvelle performance
                 </h1>
-                <p className="text-sm text-gray-500">{exercise.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{exercise.name}</p>
               </div>
             </div>
           </div>

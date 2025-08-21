@@ -52,35 +52,35 @@ function TypeCard({ option, selected, onSelect }: TypeCardProps) {
       className={`flex items-center gap-4 p-6 rounded-xl border-2 transition-all duration-200 text-left w-full ${
         selected
           ? color === 'orange' 
-            ? 'border-orange-500 bg-orange-50 shadow-lg' 
+            ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20 shadow-lg' 
             : 'border-red-500 bg-red-50 shadow-lg'
           : color === 'orange'
-            ? 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50'
-            : 'border-gray-200 bg-white hover:border-red-300 hover:bg-red-50'
+            ? 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 hover:border-orange-300 hover:bg-orange-50 dark:bg-orange-900/20'
+            : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 hover:border-red-300 hover:bg-red-50'
       }`}
     >
       <div className={`p-3 rounded-lg ${
         selected 
-          ? color === 'orange' ? 'bg-orange-500' : 'bg-red-500'
-          : 'bg-gray-100'
+          ? color === 'orange' ? 'bg-orange-600' : 'bg-red-500'
+          : 'bg-gray-100 dark:bg-gray-800'
       }`}>
         <Icon className={`h-8 w-8 ${
-          selected ? 'text-white' : 'text-gray-600'
+          selected ? 'text-white' : 'text-gray-600 dark:text-gray-300'
         }`} />
       </div>
       
       <div className="flex-1">
         <h3 className={`text-lg font-semibold mb-1 ${
           selected 
-            ? color === 'orange' ? 'text-orange-800' : 'text-red-800'
-            : 'text-gray-900'
+            ? color === 'orange' ? 'text-orange-800 dark:text-orange-300' : 'text-red-800'
+            : 'text-gray-900 dark:text-gray-100'
         }`}>
           {title}
         </h3>
         <p className={`text-sm ${
           selected 
-            ? color === 'orange' ? 'text-orange-800' : 'text-red-600'
-            : 'text-gray-600'
+            ? color === 'orange' ? 'text-orange-800 dark:text-orange-300' : 'text-red-600'
+            : 'text-gray-600 dark:text-gray-300'
         }`}>
           {description}
         </p>
@@ -90,10 +90,10 @@ function TypeCard({ option, selected, onSelect }: TypeCardProps) {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className={color === 'orange' ? 'text-orange-800' : 'text-red-500'}
+          className={color === 'orange' ? 'text-orange-800 dark:text-orange-300' : 'text-red-500'}
         >
           <div className="w-6 h-6 bg-current rounded-full flex items-center justify-center">
-            <div className="w-2 h-2 bg-white rounded-full" />
+            <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full" />
           </div>
         </motion.div>
       )}
@@ -115,13 +115,13 @@ export function TypeSelection({ selectedType, onNext }: TypeSelectionProps) {
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Zap className="w-8 h-8 text-orange-800" />
+            <Zap className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Quel type d'exercice créer ?
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           Choisis le type d'entraînement qui correspond à ton objectif
         </p>
       </motion.div>

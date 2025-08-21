@@ -240,7 +240,7 @@ export default function PWAGuidePage() {
       id: 'desktop',
       name: 'Ordinateur (Chrome/Edge)',
       icon: <Monitor className="h-6 w-6" />,
-      color: 'from-orange-600 to-orange-700',
+      color: 'from-orange-600 to-red-500',
       requirements: [
         'Chrome 73+, Edge 79+, ou Firefox 100+',
         'Windows 10+, macOS 10.12+, ou Linux',
@@ -331,7 +331,7 @@ export default function PWAGuidePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -339,7 +339,7 @@ export default function PWAGuidePage() {
             className="text-center"
           >
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+              <div className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-xl backdrop-blur-sm">
                 <Download className="h-8 w-8" />
               </div>
             </div>
@@ -362,7 +362,7 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
             Pourquoi installer IronTrack ?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -372,13 +372,13 @@ export default function PWAGuidePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center mb-4">
                   {benefit.icon}
-                  <h3 className="font-semibold text-gray-900 ml-3">{benefit.title}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 ml-3">{benefit.title}</h3>
                 </div>
-                <p className="text-gray-600 text-sm">{benefit.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">{benefit.description}</p>
               </motion.div>
             ))}
           </div>
@@ -391,7 +391,7 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.3 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
             Choisissez votre appareil
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -401,8 +401,8 @@ export default function PWAGuidePage() {
                 onClick={() => setSelectedDevice(device.id)}
                 className={`p-4 rounded-xl border-2 transition-all ${
                   selectedDevice === device.id
-                    ? 'border-orange-500 bg-orange-50'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900'
                 }`}
                 aria-label={`Sélectionner le guide pour ${device.name}`}
               >
@@ -411,7 +411,7 @@ export default function PWAGuidePage() {
                     {device.icon}
                   </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 text-sm text-center">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm text-center">
                   {device.name}
                 </h3>
               </button>
@@ -424,15 +424,15 @@ export default function PWAGuidePage() {
           key={selectedDevice}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-xl shadow-md p-6 sm:p-8"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 sm:p-8"
         >
           <div className="flex items-center mb-6">
             <div className={`p-3 rounded-lg bg-gradient-to-r ${selectedGuide.color} text-white mr-4`}>
               {selectedGuide.icon}
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">{selectedGuide.name}</h3>
-              <p className="text-gray-600">Guide d'installation étape par étape</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedGuide.name}</h3>
+              <p className="text-gray-600 dark:text-gray-300">Guide d'installation étape par étape</p>
             </div>
           </div>
 
@@ -445,7 +445,7 @@ export default function PWAGuidePage() {
             <ul className="space-y-1">
               {selectedGuide.requirements.map((req, index) => (
                 <li key={index} className="text-blue-800 text-sm flex items-center">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-blue-600 mr-2 flex-shrink-0" />
                   {req}
                 </li>
               ))}
@@ -454,29 +454,29 @@ export default function PWAGuidePage() {
 
           {/* Étapes */}
           <div className="mb-8">
-            <h4 className="text-lg font-semibold text-gray-900 mb-6">Étapes d'installation</h4>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Étapes d'installation</h4>
             <div className="space-y-4">
               {selectedGuide.steps.map((step) => (
-                <div key={step.step} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div key={step.step} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <button
                     onClick={() => setExpandedStep(expandedStep === step.step ? null : step.step)}
-                    className="w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                    className="w-full p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:bg-gray-800 transition-colors flex items-center justify-between"
                     aria-label={`${expandedStep === step.step ? 'Réduire' : 'Développer'} l'étape ${step.step}: ${step.title}`}
                     aria-expanded={expandedStep === step.step}
                   >
                     <div className="flex items-center">
-                      <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4">
+                      <div className="w-8 h-8 bg-orange-600 dark:bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4">
                         {step.step}
                       </div>
                       <div className="text-left">
-                        <h5 className="font-semibold text-gray-900">{step.title}</h5>
-                        <p className="text-gray-600 text-sm">{step.description}</p>
+                        <h5 className="font-semibold text-gray-900 dark:text-gray-100">{step.title}</h5>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">{step.description}</p>
                       </div>
                     </div>
                     {expandedStep === step.step ? (
-                      <ChevronDown className="h-5 w-5 text-gray-400" />
+                      <ChevronDown className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                      <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                     )}
                   </button>
                   
@@ -485,7 +485,7 @@ export default function PWAGuidePage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="p-4 bg-white border-t border-gray-200"
+                      className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
                     >
                       <div className="flex items-start">
                         <div className="p-2 bg-orange-100 rounded-lg mr-4 flex-shrink-0">
@@ -493,8 +493,8 @@ export default function PWAGuidePage() {
                         </div>
                         <ul className="space-y-2 flex-1">
                           {step.details.map((detail, index) => (
-                            <li key={index} className="text-gray-700 text-sm flex items-start">
-                              <ArrowRight className="h-4 w-4 text-orange-800 mr-2 mt-0.5 flex-shrink-0" />
+                            <li key={index} className="text-gray-700 dark:text-gray-300 text-sm flex items-start">
+                              <ArrowRight className="h-6 w-6 text-orange-800 dark:text-orange-300 mr-2 mt-0.5 flex-shrink-0" />
                               {detail}
                             </li>
                           ))}
@@ -516,7 +516,7 @@ export default function PWAGuidePage() {
             <ul className="space-y-2">
               {selectedGuide.tips.map((tip, index) => (
                 <li key={index} className="text-green-800 text-sm flex items-start">
-                  <Zap className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <Zap className="h-6 w-6 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                   {tip}
                 </li>
               ))}
@@ -531,7 +531,7 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-xl p-8 text-white">
+          <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 rounded-xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Prêt à commencer ?</h3>
             <p className="text-white/90 mb-6 max-w-2xl mx-auto">
               Suivez le guide ci-dessus pour installer IronTrack et profiter d'une expérience 
@@ -540,7 +540,7 @@ export default function PWAGuidePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center justify-center"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors inline-flex items-center justify-center"
               >
                 <Home className="h-5 w-5 mr-2" />
                 Retour à l'accueil

@@ -20,11 +20,20 @@ import { createClient } from '@/utils/supabase/client'
 import type { TrainingGoal } from '@/types/training-goal';
 import { MotionWrapper } from '@/components/ui/MotionWrapper'
 
+// MIGRATION SHADCN/UI PROGRESSION - 100% COMPLET
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 // Lazy loading des graphiques lourds
 const ProgressCharts = dynamic(() => import('@/components/progress/ProgressCharts'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-500">Chargement des graphiques...</span>
+  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
+    <span className="text-gray-600 dark:text-gray-400">Chargement des graphiques...</span>
   </div>
 })
 
@@ -863,9 +872,9 @@ export default function ProgressPage() {
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="h-4 w-4 text-green-500" />
-      case 'down': return <TrendingDown className="h-4 w-4 text-red-500" />
-      default: return <Activity className="h-4 w-4 text-gray-500" />
+      case 'up': return <TrendingUp className="h-6 w-6 text-green-500" />
+      case 'down': return <TrendingDown className="h-6 w-6 text-red-500" />
+      default: return <Activity className="h-6 w-6 text-gray-600 dark:text-gray-400" />
     }
   }
 
@@ -873,7 +882,7 @@ export default function ProgressPage() {
     switch (trend) {
       case 'up': return 'text-green-600'
       case 'down': return 'text-red-600'
-      default: return 'text-gray-600'
+      default: return 'text-gray-600 dark:text-gray-300'
     }
   }
 
@@ -1158,14 +1167,16 @@ export default function ProgressPage() {
         {/* Suggestions d’objectifs dynamiques */}
         {suggestions.length > 0 && (
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">Suggestions d’objectifs</label>
-            <p className="text-xs text-gray-500 mb-2">Clique sur une suggestion pour pré-remplir le formulaire automatiquement et gagner du temps (et de la motivation) ! 💡</p>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Suggestions d’objectifs</label>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Clique sur une suggestion pour pré-remplir le formulaire automatiquement et gagner du temps (et de la motivation) ! 💡</p>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((s, i) => (
-                <button
+                <Button
                   key={i}
                   type="button"
-                  className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm hover:bg-orange-200"
+                  variant="outline"
+                  size="sm"
+                  className="bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200"
                   onClick={() => {
                     setGoalType(s.type);
                     setGoalValue(s.value.toString());
@@ -1175,28 +1186,29 @@ export default function ProgressPage() {
                   }}
                 >
                   {s.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         )}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Type d'objectif</label>
-          <select
-            value={goalType}
-            onChange={e => setGoalType(e.target.value as GoalType)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="kg">Poids (kg)</option>
-            <option value="reps">Répétitions (reps)</option>
-            <option value="duration">Durée (minutes)</option>
-            <option value="distance">Distance (km)</option>
-            <option value="speed">Vitesse (km/h)</option>
-            <option value="calories">Calories</option>
-          </select>
+          <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Type d'objectif</label>
+          <Select value={goalType} onValueChange={(value) => setGoalType(value as GoalType)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Sélectionne le type d'objectif" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="kg">Poids (kg)</SelectItem>
+              <SelectItem value="reps">Répétitions (reps)</SelectItem>
+              <SelectItem value="duration">Durée (minutes)</SelectItem>
+              <SelectItem value="distance">Distance (km)</SelectItem>
+              <SelectItem value="speed">Vitesse (km/h)</SelectItem>
+              <SelectItem value="calories">Calories</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Valeur cible</label>
+          <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Valeur cible</label>
           <input
             type="number"
             min="1"
@@ -1212,14 +1224,14 @@ export default function ProgressPage() {
               goalType === 'calories' ? 'Ex: 200' :
               ''
             }
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
             required
           />
         </div>
         {/* Champ poids additionnel si objectif reps + kg généralisé */}
         {goalType === 'reps' && selected && muscuRepsKgDuration.some(exo => selected.name.toLowerCase().includes(exo)) && (
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">Durée max (minutes)</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Durée max (minutes)</label>
             <input
               type="number"
               min="1"
@@ -1227,14 +1239,14 @@ export default function ProgressPage() {
               value={goalExtraDuration}
               onChange={e => setGoalExtraDuration(e.target.value)}
               placeholder="Ex: 2 (minutes)"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
             />
           </div>
         )}
         {goalType === 'distance' && selected && cardioTypes.some(c => selected.name.toLowerCase().includes(c)) && (
           <>
             <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Durée max (minutes)</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Durée max (minutes)</label>
               <input
                 type="number"
                 min="1"
@@ -1242,11 +1254,11 @@ export default function ProgressPage() {
                 value={goalExtraDuration}
                 onChange={e => setGoalExtraDuration(e.target.value)}
                 placeholder="Ex: 15 (minutes)"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Vitesse cible (km/h)</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Vitesse cible (km/h)</label>
               <input
                 type="number"
                 min="1"
@@ -1254,7 +1266,7 @@ export default function ProgressPage() {
                 value={goalExtraSpeed}
                 onChange={e => setGoalExtraSpeed(e.target.value)}
                 placeholder="Ex: 10 (km/h)"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
               />
             </div>
           </>
@@ -1265,27 +1277,27 @@ export default function ProgressPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Skeleton header */}
-          <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8 rounded-xl mb-8 animate-pulse min-h-[80px]" />
+          <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8 rounded-xl mb-8 animate-pulse min-h-[80px]" />
           {/* Skeleton stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md p-6 min-h-[110px] animate-pulse" />
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px] animate-pulse" />
             ))}
           </div>
           {/* Skeleton graphiques */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div className="bg-white rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
-            <div className="bg-white rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
           </div>
           {/* Skeleton progression par exercice */}
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
           {/* Skeleton objectifs et badges */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
-            <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
           </div>
         </div>
       </div>
@@ -1293,9 +1305,9 @@ export default function ProgressPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-3xl font-bold">Progression</h1>
@@ -1311,11 +1323,11 @@ export default function ProgressPage() {
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Poids moyen</p>
-                <p className="text-2xl font-bold text-gray-900">{averageWeight > 0 ? `${averageWeight.toFixed(1)} kg` : 'Poids du corps'}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Poids moyen</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{averageWeight > 0 ? `${averageWeight.toFixed(1)} kg` : 'Poids du corps'}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
                 <BarChart3 className="h-6 w-6 text-blue-500" />
@@ -1323,12 +1335,12 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total soulevé</p>
-                <p className="text-2xl font-bold text-gray-900">{totalWeightDisplay}</p>
-                {ironBuddyMsg && <p className="text-xs text-orange-800 mt-1 italic">{ironBuddyMsg}</p>}
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total soulevé</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalWeightDisplay}</p>
+                {ironBuddyMsg && <p className="text-xs text-orange-800 dark:text-orange-300 mt-1 italic">{ironBuddyMsg}</p>}
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <Dumbbell className="h-6 w-6 text-green-500" />
@@ -1336,23 +1348,23 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Séances</p>
-                <p className="text-2xl font-bold text-gray-900">{totalSessions}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Séances</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalSessions}</p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
-                <Calendar className="h-6 w-6 text-orange-800" />
+                <Calendar className="h-6 w-6 text-orange-800 dark:text-orange-300" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Amélioration</p>
-                <p className="text-2xl font-bold text-gray-900">{globalImprovement}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Amélioration</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{globalImprovement}</p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
                 <TrendingUp className="h-6 w-6 text-purple-500" />
@@ -1366,20 +1378,21 @@ export default function ProgressPage() {
           <MotionWrapper
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Progression du poids</h2>
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="7j">7 jours</option>
-                <option value="30j">30 jours</option>
-                <option value="90j">90 jours</option>
-                <option value="1an">1 an</option>
-              </select>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Progression du poids</h2>
+              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                <SelectTrigger className="w-auto">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7j">7 jours</SelectItem>
+                  <SelectItem value="30j">30 jours</SelectItem>
+                  <SelectItem value="90j">90 jours</SelectItem>
+                  <SelectItem value="1an">1 an</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <ProgressCharts 
               progressData={filteredProgressData}
@@ -1391,9 +1404,9 @@ export default function ProgressPage() {
           <MotionWrapper
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-md p-6 min-h-[340px]"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px]"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Répartition par groupe musculaire</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Répartition par groupe musculaire</h2>
             
             <ProgressCharts 
               muscleGroupData={Object.entries(muscleGroupColors).map(([group, color]) => ({
@@ -1411,36 +1424,36 @@ export default function ProgressPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-md p-6 min-h-[180px]"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Progression par exercice</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Progression par exercice</h2>
           
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Exercice</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Groupe musculaire</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Valeur actuelle</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Valeur précédente</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Amélioration</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Tendance</th>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Exercice</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Groupe musculaire</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Valeur actuelle</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Valeur précédente</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Amélioration</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-gray-100">Tendance</th>
                 </tr>
               </thead>
               <tbody>
                 {exerciseProgress.map((exercise, index) => (
                   <tr
                     key={`${exercise.exercise}-${index}-${exercise.muscle_group}`}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 transition-colors"
                   >
-                    <td className="py-3 px-4 font-medium text-gray-900">{exercise.exercise}</td>
-                    <td className="py-3 px-4 text-gray-600">{exercise.muscle_group}</td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">
+                    <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">{exercise.exercise}</td>
+                    <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{exercise.muscle_group}</td>
+                    <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">
                       {exercise.metric_type === 'weight' && `${exercise.current_weight || 0} kg`}
                       {exercise.metric_type === 'distance' && `${exercise.current_distance || 0} km`}
                       {exercise.metric_type === 'duration' && `${Math.floor((exercise.current_duration || 0) / 60)}:${String((exercise.current_duration || 0) % 60).padStart(2, '0')}`}
                     </td>
-                    <td className="py-3 px-4 text-gray-600">
+                    <td className="py-3 px-4 text-gray-600 dark:text-gray-300">
                       {exercise.metric_type === 'weight' && `${exercise.previous_weight || 0} kg`}
                       {exercise.metric_type === 'distance' && `${exercise.previous_distance || 0} km`}
                       {exercise.metric_type === 'duration' && `${Math.floor((exercise.previous_duration || 0) / 60)}:${String((exercise.previous_duration || 0) % 60).padStart(2, '0')}`}
@@ -1466,22 +1479,22 @@ export default function ProgressPage() {
           className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8"
         >
           {/* Objectifs */}
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
-                <Target className="h-6 w-6 text-orange-800" />
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-2">
+                <Target className="h-6 w-6 text-orange-800 dark:text-orange-300" />
                 <span>Objectifs</span>
               </h2>
-              <button
-                className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg flex items-center gap-2 font-semibold shadow-sm"
+              <Button
+                className="bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 dark:hover:bg-orange-600 text-white font-semibold shadow-sm"
                 onClick={() => setShowGoalModal(true)}
               >
-                <Plus className="h-4 w-4" /> Ajouter
-              </button>
+                <Plus className="h-4 w-4 mr-2" /> Ajouter
+              </Button>
             </div>
             <div className="space-y-4">
               {trainingGoals.filter(goal => goal.status !== 'Atteint').length === 0 && (
-                <div className="text-gray-500 text-sm">
+                <div className="text-gray-600 dark:text-gray-400 text-sm">
                   {trainingGoals.length === 0 
                     ? "Aucun objectif défini pour l'instant. Ajoute-en un pour te challenger !" 
                     : "Tous tes objectifs sont atteints ! 🎉 Félicitations, ajoute-en de nouveaux pour continuer à progresser."
@@ -1542,20 +1555,20 @@ export default function ProgressPage() {
                   current = 0;
                 }
                 const percent = typeof target === 'number' && target ? Math.min((current! / target) * 100, 100) : 0;
-                const bgClass = goal.status !== 'Atteint' ? 'bg-gray-100' : (unit === 'kg' ? 'bg-orange-50' : 'bg-green-50');
-                const barClass = goal.status !== 'Atteint' ? 'bg-gray-300' : (unit === 'kg' ? 'bg-orange-500' : 'bg-green-500');
-                const textClass = goal.status !== 'Atteint' ? 'text-gray-500' : (unit === 'kg' ? 'text-orange-800' : 'text-green-600');
+                const bgClass = goal.status !== 'Atteint' ? 'bg-gray-100 dark:bg-gray-800' : (unit === 'kg' ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-green-50');
+                const barClass = goal.status !== 'Atteint' ? 'bg-gray-300' : (unit === 'kg' ? 'bg-orange-600' : 'bg-green-500');
+                const textClass = goal.status !== 'Atteint' ? 'text-gray-600 dark:text-gray-400' : (unit === 'kg' ? 'text-orange-800 dark:text-orange-300' : 'text-green-600');
                 return (
                   <div key={goal.id} className={`p-4 rounded-lg ${bgClass}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-500' : 'text-gray-900'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600">{badgeDesc(goal)}</span></h3>
+                      <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600 dark:text-gray-300">{badgeDesc(goal)}</span></h3>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm ${textClass}`}>{current}/{target} {unit}{extraKg ? ` à ${extraKg} kg` : ''}{extraDuration ? ` en ${extraDuration} min` : ''}</span>
-                        <button title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-blue-500 hover:text-blue-700"><Pencil className="h-4 w-4" /></button>
-                        <button title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-red-500 hover:text-red-700"><Trash2 className="h-4 w-4" /></button>
+                        <Button variant="ghost" size="sm" title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-blue-500 hover:text-blue-700 p-1"><Pencil className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="sm" title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-red-500 hover:text-red-700 p-1"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </div>
-                    <div className={`w-full rounded-full h-2 ${goal.status !== 'Atteint' ? 'bg-gray-200' : (unit === 'kg' ? 'bg-orange-200' : 'bg-green-200')}`}> 
+                    <div className={`w-full rounded-full h-2 ${goal.status !== 'Atteint' ? 'bg-gray-200 dark:bg-gray-700' : (unit === 'kg' ? 'bg-orange-200' : 'bg-green-200')}`}> 
                       <div className={`${barClass} h-2 rounded-full`} style={{ width: `${percent}%` }}></div>
                     </div>
                   </div>
@@ -1565,8 +1578,8 @@ export default function ProgressPage() {
           </div>
 
           {/* Badges à valider */}
-          <div className="bg-white rounded-xl shadow-md p-6 min-h-[180px]">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
               <Award className="h-6 w-6 text-yellow-500" />
               <span>Badges à valider</span>
             </h2>
@@ -1579,91 +1592,98 @@ export default function ProgressPage() {
                 );
                 return filteredAchievements;
               })().map(achievement => (
-                <div key={achievement.id} className="text-center p-4 rounded-lg bg-gray-50 opacity-50">
+                <div key={achievement.id} className="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800 opacity-50">
                   <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{achievement.icon}</span>
-                  <h3 className="font-medium text-gray-500">{achievement.name}</h3>
-                  <p className="text-sm text-gray-400">{achievement.description}</p>
+                  <h3 className="font-medium text-gray-600 dark:text-gray-400">{achievement.name}</h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{achievement.description}</p>
                 </div>
               ))}
               {achievements.filter(a => 
                 a.goal_id && 
                 trainingGoals.some(goal => goal.id === a.goal_id && goal.status !== 'Atteint')
               ).length === 0 && (
-                <div className="col-span-2 text-center text-gray-400 italic">Aucun badge à valider, lance-toi un nouveau défi !</div>
+                <div className="col-span-2 text-center text-gray-700 dark:text-gray-300 italic">Aucun badge à valider, lance-toi un nouveau défi !</div>
               )}
             </div>
           </div>
         </MotionWrapper>
 
-        {/* Modal ajout objectif */}
-        {showGoalModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm modal-backdrop"
-            style={{ backdropFilter: 'blur(8px)' }}
-          >
-            <form
-              onSubmit={handleAddGoal}
-              className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative"
-            >
-              <button
-                type="button"
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-                onClick={() => setShowGoalModal(false)}
-                title="Fermer"
-              >
-                <Close className="h-6 w-6" />
-              </button>
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Target className="h-5 w-5 text-orange-800" /> Nouvel objectif
-              </h3>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">Exercice</label>
-                <select
-                  value={goalExerciseId}
-                  onChange={e => setGoalExerciseId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-                  required
-                >
-                  <option value="">Sélectionne un exercice</option>
-                  {userExercises.map(ex => (
-                    <option key={ex.id} value={ex.id}>{ex.name}</option>
-                  ))}
-                </select>
+        {/* Modal ajout objectif - ShadCN UI + fond flou */}
+        <Dialog open={showGoalModal} onOpenChange={setShowGoalModal}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-orange-600" /> 
+                Nouvel objectif
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAddGoal} className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Exercice</Label>
+                <Select value={goalExerciseId} onValueChange={setGoalExerciseId} required>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Sélectionne un exercice" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {userExercises.map(ex => (
+                      <SelectItem key={ex.id} value={ex.id.toString()}>{ex.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               {dynamicGoalFields}
-              {goalError && <div className="text-red-500 text-sm mb-2">{goalError}</div>}
-              <button
-                type="submit"
-                disabled={goalLoading}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
-              >
-                {goalLoading ? 'Ajout...' : <><Plus className="h-4 w-4" /> Ajouter l'objectif</>}
-              </button>
+              {goalError && <div className="text-red-500 text-sm">{goalError}</div>}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowGoalModal(false)}
+                  className="min-h-[44px]"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={goalLoading}
+                  className="bg-orange-600 hover:bg-orange-700 text-white min-h-[44px]"
+                >
+                  {goalLoading ? 'Ajout...' : (<><Plus className="h-4 w-4 mr-2" /> Ajouter l'objectif</>)}
+                </Button>
+              </DialogFooter>
             </form>
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
 
-        {/* Modal de confirmation suppression */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-            <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Trash2 className="h-6 w-6 text-red-500" /> Supprimer l'objectif ?</h2>
-              <p className="mb-6">Tu es sûr de vouloir supprimer cet objectif ? IronBuddy va pleurer un peu…</p>
-              <div className="flex justify-end gap-2">
-                <button onClick={cancelDeleteGoal} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
-                <button onClick={confirmDeleteGoal} className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold">Supprimer</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Modal de confirmation suppression - ShadCN UI */}
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="h-6 w-6" /> 
+                Supprimer l'objectif ?
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-700 dark:text-gray-300">
+              Tu es sûr de vouloir supprimer cet objectif ? IronBuddy va pleurer un peu…
+            </p>
+            <DialogFooter>
+              <Button onClick={cancelDeleteGoal} variant="outline" className="min-h-[44px]">
+                Annuler
+              </Button>
+              <Button onClick={confirmDeleteGoal} variant="destructive" className="min-h-[44px]">
+                Supprimer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Animation/message de félicitations */}
         {showCongrats && (
           <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(8px)' }}>
-            <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
               <span className="text-5xl mb-4">🏅</span>
-              <h2 className="text-2xl font-bold text-orange-800 mb-2">Félicitations !</h2>
-              <p className="text-lg text-gray-800">{congratsMsg}</p>
+              <h2 className="text-2xl font-bold text-orange-800 dark:text-orange-300 mb-2">Félicitations !</h2>
+              <p className="text-lg text-gray-800 dark:text-gray-200">{congratsMsg}</p>
             </div>
           </div>
         )}

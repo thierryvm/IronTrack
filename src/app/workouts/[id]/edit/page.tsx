@@ -5,6 +5,11 @@ import { motion } from 'framer-motion'
 import { Calendar, Save, ArrowLeft, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import Mascot from '@/components/ui/Mascot'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function EditWorkoutPage() {
   const router = useRouter()
@@ -105,24 +110,24 @@ export default function EditWorkoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center p-4">
       <motion.form
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={handleSubmit}
-        className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center space-x-2 text-orange-800 hover:text-orange-800 font-semibold mb-4"
+          className="flex items-center space-x-2 text-orange-800 dark:text-orange-300 hover:text-orange-800 dark:text-orange-300 font-semibold mb-4"
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Retour</span>
         </button>
         <div className="flex items-center space-x-3 mb-6">
-          <Calendar className="h-8 w-8 text-orange-800" />
-          <h1 className="text-2xl font-bold text-gray-900">Modifier la séance</h1>
+          <Calendar className="h-8 w-8 text-orange-800 dark:text-orange-300" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Modifier la séance</h1>
         </div>
         {errorMsg && (
           <motion.div
@@ -137,90 +142,121 @@ export default function EditWorkoutPage() {
           </motion.div>
         )}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Nom de la séance</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <Label htmlFor="workout-name" className="block font-medium mb-2">Nom de la séance</Label>
+          <Input 
+            id="workout-name"
+            type="text" 
+            value={name} 
+            onChange={e => setName(e.target.value)} 
+            className="focus:ring-2 focus:ring-orange-500" 
+          />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Date</label>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <Label htmlFor="workout-date" className="block font-medium mb-2">Date</Label>
+          <Input 
+            id="workout-date"
+            type="date" 
+            value={date} 
+            onChange={e => setDate(e.target.value)} 
+            className="focus:ring-2 focus:ring-orange-500" 
+          />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Type de séance</label>
-          <select 
-            value={type} 
-            onChange={e => {
-              const newType = e.target.value as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates';
+          <Label htmlFor="workout-type" className="font-medium mb-2">Type de séance</Label>
+          <Select
+            value={type}
+            onValueChange={(value) => {
+              const newType = value as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates';
               setType(newType);
               if (newType === 'Repos') {
                 setDuration('');
               }
-            }} 
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            }}
           >
-            <option value="Musculation">💪 Musculation</option>
-            <option value="Cardio">❤️ Cardio</option>
-            <option value="Étirement">🧘 Étirement</option>
-            <option value="Cours collectif">👥 Cours collectif</option>
-            <option value="Gainage">🎯 Gainage</option>
-            <option value="Natation">🏊 Natation</option>
-            <option value="Crossfit">⚡ Crossfit</option>
-            <option value="Yoga">🕉️ Yoga</option>
-            <option value="Pilates">🤸 Pilates</option>
-            <option value="Repos">😴 Jour de repos</option>
-          </select>
+            <SelectTrigger id="workout-type" className="focus:ring-2 focus:ring-orange-500">
+              <SelectValue placeholder="Sélectionner le type de séance" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Musculation">💪 Musculation</SelectItem>
+              <SelectItem value="Cardio">❤️ Cardio</SelectItem>
+              <SelectItem value="Étirement">🧘 Étirement</SelectItem>
+              <SelectItem value="Cours collectif">👥 Cours collectif</SelectItem>
+              <SelectItem value="Gainage">🎯 Gainage</SelectItem>
+              <SelectItem value="Natation">🏊 Natation</SelectItem>
+              <SelectItem value="Crossfit">⚡ Crossfit</SelectItem>
+              <SelectItem value="Yoga">🕉️ Yoga</SelectItem>
+              <SelectItem value="Pilates">🤸 Pilates</SelectItem>
+              <SelectItem value="Repos">😴 Jour de repos</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Heure prévue</label>
-          <input
+          <Label htmlFor="workout-time" className="block font-medium mb-2">Heure prévue</Label>
+          <Input
+            id="workout-time"
             type="time"
             value={startTime}
             onChange={e => setStartTime(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            className="focus:ring-2 focus:ring-orange-500"
             placeholder="Ex: 18:00"
           />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">
-            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-500">(optionnel pour les jours de repos)</span>}
-          </label>
-          <input
+          <Label htmlFor="workout-duration" className="block font-medium mb-2">
+            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-600 dark:text-gray-400">(optionnel pour les jours de repos)</span>}
+          </Label>
+          <Input
+            id="workout-duration"
             type="number"
             min={0}
             value={duration}
             onChange={e => setDuration(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            className="focus:ring-2 focus:ring-orange-500"
             placeholder={type === 'Repos' ? 'Durée libre pour les jours de repos' : 'Ex: 30'}
             disabled={type === 'Repos'}
           />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Statut de la séance</label>
-          <select
-            value={status}
-            onChange={e => setStatus(e.target.value as 'Planifié' | 'Réalisé' | 'Annulé')}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="Planifié">Planifiée</option>
-            <option value="Réalisé">Réalisée</option>
-            <option value="Annulé">Annulée</option>
-          </select>
+          <Label htmlFor="workout-status" className="block font-medium mb-2">Statut de la séance</Label>
+          <Select value={status} onValueChange={(value) => setStatus(value as 'Planifié' | 'Réalisé' | 'Annulé')}>
+            <SelectTrigger id="workout-status" className="focus:ring-2 focus:ring-orange-500">
+              <SelectValue placeholder="Sélectionner le statut" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Planifié">Planifiée</SelectItem>
+              <SelectItem value="Réalisé">Réalisée</SelectItem>
+              <SelectItem value="Annulé">Annulée</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Notes</label>
-          <textarea value={notes} onChange={e => setNotes(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" rows={3} />
+          <Label htmlFor="workout-notes" className="block font-medium mb-2">Notes</Label>
+          <Textarea 
+            id="workout-notes"
+            value={notes} 
+            onChange={e => setNotes(e.target.value)} 
+            className="focus:ring-2 focus:ring-orange-500" 
+            rows={3} 
+          />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors" aria-label="Enregistrer les modifications de la séance">
-          <Save className="h-5 w-5 mr-2" />
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3"
+          aria-label="Enregistrer les modifications de la séance"
+        >
+          <Save className="h-4 w-4 mr-2" />
           <span>{loading ? 'Enregistrement...' : 'Enregistrer'}</span>
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="destructive"
           onClick={handleDelete}
           disabled={loading}
-          className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+          className="w-full mt-2 font-semibold py-3"
         >
           <span>🗑️ Supprimer la séance</span>
-        </button>
+        </Button>
       </motion.form>
       <Mascot message={mascotMsg || undefined} type={mascotType} show={showMascot} onClose={() => setShowMascot(false)} />
     </div>

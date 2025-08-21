@@ -89,7 +89,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
       document.addEventListener('touchmove', handleTouchMove, { passive: false })
-      document.addEventListener('touchend', handleTouchEnd)
+      document.addEventListener('touchend', handleTouchEnd, { passive: true })
     }
 
     return () => {
@@ -118,15 +118,15 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
   return (
     <div className={`flex flex-col items-center ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           {label}
         </label>
       )}
       
       <div 
         ref={containerRef}
-        className={`relative h-32 w-20 min-w-[44px] overflow-hidden rounded-lg border-2 ${
-          isDragging ? 'border-orange-400 bg-orange-50' : 'border-gray-300 bg-white'
+        className={`relative h-32 w-20 min-w-[44px] overflow-hidden rounded-lg border-2 number-wheel ${
+          isDragging ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900'
         } cursor-grab active:cursor-grabbing select-none touch-none focus:ring-2 focus:ring-orange-500 focus:outline-none touch-manipulation`}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -153,7 +153,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
         }}
       >
         {/* Indicateur central */}
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-orange-500 transform -translate-y-0.5 z-10 opacity-50" />
+        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-500 transform -translate-y-0.5 z-10 opacity-50" />
         
         {/* Liste des valeurs */}
         <div className="flex flex-col items-center justify-center h-full">
@@ -177,7 +177,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
                 transition={{ duration: 0.2, ease: 'easeOut' }}
               >
                 <span className={`text-lg font-semibold ${
-                  index === currentIndex ? 'text-orange-800' : 'text-gray-600'
+                  index === currentIndex ? 'text-orange-800 dark:text-orange-300' : 'text-gray-600 dark:text-gray-300'
                 }`}>
                   {val}
                 </span>
@@ -189,12 +189,12 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
         {/* Indicateurs de direction */}
         {!isDragging && (
           <>
-            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-gray-400">
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-gray-700 dark:text-gray-300">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
             </div>
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-gray-400">
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-gray-700 dark:text-gray-300">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -211,7 +211,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
           disabled={value <= min}
           aria-label={`Diminuer ${label || 'la valeur'} (${value - step})`}
           title={`Diminuer ${label || 'la valeur'}`}
-          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
+          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -223,7 +223,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
           disabled={value >= max}
           aria-label={`Augmenter ${label || 'la valeur'} (${value + step})`}
           title={`Augmenter ${label || 'la valeur'}`}
-          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
+          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />

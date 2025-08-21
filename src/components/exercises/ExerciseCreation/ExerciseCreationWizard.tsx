@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, X } from 'lucide-react'
 import { Exercise, ExerciseType, ExerciseCreationData, DIFFICULTY_VALUE_MAPPING } from '@/types/exercise'
 import { Performance, StrengthMetrics, CardioMetrics } from '@/types/performance'
-import { Button } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 
 // Import des étapes simplifiées
 import { TypeSelection } from './steps/TypeSelection'
@@ -162,52 +162,54 @@ export function ExerciseCreationWizard({
   const canGoBack = state.currentStep > 0 && !isLoading
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-800 ${className}`}>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+        <div className="max-w-4xl mx-auto">
+          {/* Première ligne: Boutons de navigation + Titre sur la même ligne */}
+          <div className="flex items-center justify-between mb-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={canGoBack ? prevStep : onClose}
               disabled={isLoading}
-              leftIcon={<ArrowLeft className="w-4 h-4" />}
             >
+              <ArrowLeft className="w-4 h-4 mr-2" />
               {canGoBack ? 'Précédent' : 'Annuler'}
             </Button>
-            <h1 className="text-lg font-semibold text-gray-900">
+            
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {getStepTitle()}
             </h1>
-          </div>
-          
-          {/* Indicateur d'étape */}
-          <div className="hidden sm:flex items-center gap-2">
-            {[0, 1, 2].map((step) => (
-              <div
-                key={step}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  step === state.currentStep
-                    ? 'bg-orange-500'
-                    : step < state.currentStep
-                    ? 'bg-orange-200'
-                    : 'bg-gray-200'
-                }`}
-              />
-            ))}
-          </div>
-
-          {onClose && (
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
               disabled={isLoading}
-              leftIcon={<X className="w-4 h-4" />}
             >
+              <X className="w-4 h-4 mr-2" />
               Fermer
             </Button>
-          )}
+          </div>
+          
+          {/* Deuxième ligne: Indicateur d'étape centré */}
+          <div className="flex justify-center">
+            <div className="flex items-center gap-2">
+              {[0, 1, 2].map((step) => (
+                <div
+                  key={step}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    step === state.currentStep
+                      ? 'bg-orange-600'
+                      : step < state.currentStep
+                      ? 'bg-orange-200'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -253,14 +255,14 @@ export function ExerciseCreationWizard({
             animate={{ opacity: 1 }}
             className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
           >
-            <div className="bg-white rounded-xl p-8 max-w-sm mx-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-8 max-w-sm mx-4">
               <div className="flex items-center gap-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                     Création en cours...
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     Enregistrement de ton exercice
                   </p>
                 </div>

@@ -50,6 +50,18 @@ HTTP_PERFORMANCE_GUIDE.md
 DIAGNOSTIC_*.md
 *_DIAGNOSTIC.md
 
+# 🤖 AGENTS CLAUDE CODE - SÉCURITÉ CRITIQUE
+# Agents autonomes contenant patterns de détection vulnérabilités
+# Ne pas exposer publiquement - outils internes uniquement
+agents/
+*-agent.js
+*-audit-report.md
+security-audit-report.md
+accessibility-audit-report.md
+performance-audit-report.md
+ui-ux-audit-report.md
+architecture-audit-report.md
+
 # IDE et éditeurs - configurations privées
 .cursor/
 .vscode/settings.json

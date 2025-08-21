@@ -5,12 +5,21 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Settings, AlertCircle } from 'lucide-react'
 import { ExerciseType, ExerciseCreationData, DifficultyLevel } from '@/types/exercise'
-import { FormField, FormDescription, Input, Select, Textarea, Button } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { FormField, STANDARD_INPUT_CLASSES, STANDARD_SELECT_CLASSES, STANDARD_TEXTAREA_CLASSES } from '@/components/ui/form-field'
 import { createClient } from '@/utils/supabase/client'
 import { ExercisePhotoUpload } from '@/components/exercises/ExercisePhotoUpload'
 import { SecureAttachment } from '@/utils/fileUpload'
 
 interface EquipmentOption {
+  id: number
+  name: string
+}
+
+interface MuscleGroupOption {
   id: number
   name: string
 }
@@ -22,16 +31,8 @@ interface ExerciseFormProps {
   onBack: () => void
 }
 
-// Groupes musculaires par type d'exercice
-const muscleGroupsByType = {
-  Musculation: [
-    'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 'Quadriceps', 
-    'Ischio-jambiers', 'Fessiers', 'Abdominaux', 'Mollets', 'Trapèzes', 'Avant-bras'
-  ],
-  Cardio: [
-    'Cardio', 'Full-body', 'Jambes', 'Bras', 'Core'
-  ]
-}
+// Les groupes musculaires seront chargés depuis la base de données
+// Pas de catégories artificielles, seulement les vrais groupes anatomiques
 
 const difficultyOptions = [
   { value: 'Débutant', label: 'Débutant' },
@@ -47,52 +48,87 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
   const [formData, setFormData] = useState<ExerciseCreationData>(() => ({
     name: initialData?.name || '',
     exercise_type: exerciseType,
-    muscle_group: initialData?.muscle_group || muscleGroupsByType[exerciseType][0],
+    muscle_group: initialData?.muscle_group || '',
     equipment: initialData?.equipment || '',
     difficulty: initialData?.difficulty || 'Débutant',
     instructions: initialData?.instructions || ''
   }))
   
   const [equipment, setEquipment] = useState<EquipmentOption[]>([])
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroupOption[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [uploadedPhoto, setUploadedPhoto] = useState<SecureAttachment | null>(null)
 
-  // Charger la liste des équipements
+  // Charger les équipements et groupes musculaires depuis la base de données
   useEffect(() => {
-    const loadEquipment = async () => {
+    const loadData = async () => {
       const supabase = createClient()
-      const { data, error } = await supabase
+      
+      // Charger les équipements
+      const { data: equipmentData, error: equipmentError } = await supabase
         .from('equipment')
         .select('id, name')
         .order('name')
       
-      if (data && !error) {
-        setEquipment(data)
-        // Sélectionner le premier équipement par défaut si pas déjà défini
-        if (!formData.equipment && data.length > 0) {
-          setFormData(prev => ({ ...prev, equipment: data[0].name }))
+      if (equipmentData && !equipmentError) {
+        setEquipment(equipmentData)
+        // Sélectionner "Aucun" par défaut
+        if (!formData.equipment) {
+          setFormData(prev => ({ ...prev, equipment: 'Aucun' }))
         }
+      } else {
+        console.error('Erreur chargement équipements:', equipmentError)
+      }
+      
+      // Charger les groupes musculaires
+      const { data: muscleGroupData, error: muscleGroupError } = await supabase
+        .from('muscle_groups')
+        .select('id, name')
+        .order('name')
+      
+      if (muscleGroupData && !muscleGroupError) {
+        setMuscleGroups(muscleGroupData)
+        // Sélectionner "Jambes" par défaut pour Cardio, sinon le premier groupe
+        if (!formData.muscle_group) {
+          const defaultGroup = exerciseType === 'Cardio' 
+            ? muscleGroupData.find(g => g.name === 'Jambes') || muscleGroupData[0]
+            : muscleGroupData[0]
+          
+          if (defaultGroup) {
+            setFormData(prev => ({ ...prev, muscle_group: defaultGroup.name }))
+          }
+        }
+      } else {
+        console.error('Erreur chargement groupes musculaires:', muscleGroupError)
       }
     }
     
-    loadEquipment()
-  }, [formData.equipment])
+    loadData()
+  }, [exerciseType]) // Dépendre uniquement du type d'exercice
 
   // Validation du formulaire
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
     
-    if (!formData.name.trim()) {
+    // Validation nom
+    if (!formData.name?.trim()) {
       newErrors.name = 'Le nom de l\'exercice est obligatoire'
     } else if (formData.name.length < 2) {
       newErrors.name = 'Le nom doit contenir au moins 2 caractères'
     }
     
-    if (!formData.equipment) {
+    // Validation groupe musculaire
+    if (!formData.muscle_group?.trim()) {
+      newErrors.muscle_group = 'Le groupe musculaire est obligatoire'
+    }
+    
+    // Validation équipement
+    if (!formData.equipment?.trim()) {
       newErrors.equipment = 'L\'équipement est obligatoire'
     }
     
+    // Validation instructions (optionnel)
     if (formData.instructions && formData.instructions.length > 500) {
       newErrors.instructions = 'Les instructions ne peuvent pas dépasser 500 caractères'
     }
@@ -133,7 +169,6 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
     }
   }
 
-  const muscleGroups = muscleGroupsByType[exerciseType]
   const equipmentOptions = equipment.map(eq => ({ value: eq.name, label: eq.name }))
 
   return (
@@ -145,13 +180,13 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Settings className="w-8 h-8 text-orange-800" />
+            <Settings className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Détails de l'exercice
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           Configure les propriétés de ton exercice {exerciseType.toLowerCase()}
         </p>
       </motion.div>
@@ -164,112 +199,145 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
         className="space-y-6"
       >
         {/* Nom de l'exercice */}
-        <FormField>
+        <FormField
+          label="Nom de l'exercice"
+          required
+          error={errors.name}
+          helpText="Donne un nom unique à ton exercice pour le retrouver facilement"
+        >
           <Input
-            label="Nom de l'exercice"
+            id="exercise-name"
             placeholder={exerciseType === 'Musculation' ? 'Ex: Développé couché' : 'Ex: Course sur tapis'}
             value={formData.name}
             onChange={(e) => updateField('name', e.target.value)}
-            error={errors.name}
-            required
+            className={`${STANDARD_INPUT_CLASSES} ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
           />
         </FormField>
 
         {/* Groupe musculaire */}
-        <FormField>
+        <FormField
+          label="Groupe musculaire principal"
+          required
+          error={errors.muscle_group}
+        >
           <Select
-            label="Groupe musculaire principal"
             value={formData.muscle_group}
-            onChange={(e) => updateField('muscle_group', e.target.value)}
-            options={muscleGroups.map(group => ({ value: group, label: group }))}
-            required
-          />
+            onValueChange={(value) => updateField('muscle_group', value)}
+          >
+            <SelectTrigger 
+              className={`${STANDARD_SELECT_CLASSES} ${errors.muscle_group ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+            >
+              <SelectValue placeholder="Sélectionner un groupe musculaire" />
+            </SelectTrigger>
+            <SelectContent>
+              {muscleGroups.map(group => (
+                <SelectItem key={group.id} value={group.name}>{group.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FormField>
 
         {/* Équipement */}
-        <FormField>
+        <FormField
+          label="Équipement nécessaire"
+          required
+          error={errors.equipment}
+        >
           <Select
-            label="Équipement nécessaire"
             value={formData.equipment}
-            onChange={(e) => updateField('equipment', e.target.value)}
-            options={equipmentOptions}
-            error={errors.equipment}
-            placeholder="Sélectionner un équipement"
-            required
-          />
+            onValueChange={(value) => updateField('equipment', value)}
+          >
+            <SelectTrigger className={`${STANDARD_SELECT_CLASSES} ${errors.equipment ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}>
+              <SelectValue placeholder="Sélectionner un équipement" />
+            </SelectTrigger>
+            <SelectContent>
+              {equipmentOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FormField>
 
         {/* Difficulté */}
-        <FormField>
+        <FormField
+          label="Niveau de difficulté"
+          helpText="Adapté à quel niveau de pratique ?"
+        >
           <Select
-            label="Niveau de difficulté"
             value={formData.difficulty}
-            onChange={(e) => updateField('difficulty', e.target.value as DifficultyLevel)}
-            options={difficultyOptions}
-            description="Adapté à quel niveau de pratique ?"
-          />
+            onValueChange={(value) => updateField('difficulty', value as DifficultyLevel)}
+          >
+            <SelectTrigger className={STANDARD_SELECT_CLASSES}>
+              <SelectValue placeholder="Sélectionner un niveau" />
+            </SelectTrigger>
+            <SelectContent>
+              {difficultyOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FormField>
 
         {/* Instructions */}
-        <FormField>
+        <FormField
+          label="Instructions (optionnel)"
+          error={errors.instructions}
+          helpText="Comment exécuter l'exercice en sécurité"
+        >
           <Textarea
-            label="Instructions (optionnel)"
             placeholder="Décris comment exécuter correctement cet exercice..."
             value={formData.instructions}
             onChange={(e) => updateField('instructions', e.target.value)}
-            error={errors.instructions}
+            className={`${STANDARD_TEXTAREA_CLASSES} ${errors.instructions ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             rows={4}
           />
-          <FormDescription>
-            {formData.instructions?.length || 0}/500 caractères
-          </FormDescription>
+          <div className="flex justify-end mt-1">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              {formData.instructions?.length || 0}/500 caractères
+            </span>
+          </div>
         </FormField>
 
         {/* Upload d'image avec aperçu */}
-        <FormField>
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">
-              Photo de démonstration (optionnel)
-            </label>
-            
-            {/* Aperçu de la photo uploadée */}
-            {uploadedPhoto && (
-              <div className="relative">
-                <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border-2 border-green-200">
-                  <Image
-                    src={uploadedPhoto.url}
-                    alt="Aperçu photo exercice"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 384px"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200" />
-                </div>
-                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
-                  <div className="flex items-center gap-2 text-sm text-green-700">
-                    <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                    <span>Photo uploadée avec succès</span>
-                  </div>
-                  <p className="text-xs text-green-600 mt-1">
-                    {uploadedPhoto.originalName} • {Math.round(uploadedPhoto.size / 1024)} KB
-                  </p>
-                </div>
+        <FormField
+          label="Photo de démonstration (optionnel)"
+          helpText="Ajoute une photo pour illustrer l'exercice (JPG, PNG, HEIC acceptés)"
+        >
+          
+          {/* Aperçu de la photo uploadée */}
+          {uploadedPhoto && (
+            <div className="relative">
+              <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                <Image
+                  src={uploadedPhoto.url}
+                  alt="Aperçu photo exercice"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 384px"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200" />
               </div>
-            )}
-            
-            <ExercisePhotoUpload
-              onPhotoUploaded={(attachment) => setUploadedPhoto(attachment)}
-              onPhotoRemoved={() => setUploadedPhoto(null)}
-              currentPhoto={uploadedPhoto?.url}
-              disabled={isLoading}
-              maxPhotos={1}
-            />
-            <FormDescription>
-              Ajoute une photo pour illustrer l'exercice (JPG, PNG, HEIC acceptés)
-            </FormDescription>
-          </div>
+              <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+                  <div className="w-4 h-4 rounded-full bg-green-500 dark:bg-green-600 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full"></div>
+                  </div>
+                  <span>Photo uploadée avec succès</span>
+                </div>
+                <p className="text-xs text-green-600 dark:text-green-500 mt-1">
+                  {uploadedPhoto.originalName} • {Math.round(uploadedPhoto.size / 1024)} KB
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <ExercisePhotoUpload
+            onPhotoUploaded={(attachment) => setUploadedPhoto(attachment)}
+            onPhotoRemoved={() => setUploadedPhoto(null)}
+            currentPhoto={uploadedPhoto?.url}
+            disabled={isLoading}
+            maxPhotos={1}
+          />
         </FormField>
 
         {/* Boutons d'action */}

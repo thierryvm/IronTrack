@@ -172,13 +172,13 @@ export default function TicketDetailPage() {
       case 'open':
         return <Clock className="h-5 w-5 text-blue-500" />
       case 'in_progress':
-        return <AlertTriangle className="h-5 w-5 text-orange-800" />
+        return <AlertTriangle className="h-5 w-5 text-orange-800 dark:text-orange-300" />
       case 'resolved':
         return <CheckCircle className="h-5 w-5 text-green-500" />
       case 'closed':
-        return <CheckCircle className="h-5 w-5 text-gray-500" />
+        return <CheckCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
       default:
-        return <MessageCircle className="h-5 w-5 text-gray-400" />
+        return <MessageCircle className="h-5 w-5 text-gray-700 dark:text-gray-300" />
     }
   }
 
@@ -197,19 +197,19 @@ export default function TicketDetailPage() {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
       case 'open': return 'bg-blue-100 text-blue-800 border-blue-300'
-      case 'in_progress': return 'bg-orange-100 text-orange-800 border-orange-300'
+      case 'in_progress': return 'bg-orange-100 text-orange-800 dark:text-orange-300 border-orange-300'
       case 'resolved': return 'bg-green-100 text-green-800 border-green-300'
-      case 'closed': return 'bg-gray-100 text-gray-800 border-gray-300'
-      default: return 'bg-gray-100 text-gray-800 border-gray-300'
+      case 'closed': return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
     }
   }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'text-red-600'
-      case 'medium': return 'text-orange-800'
+      case 'medium': return 'text-orange-800 dark:text-orange-300'
       case 'low': return 'text-green-600'
-      default: return 'text-gray-600'
+      default: return 'text-gray-600 dark:text-gray-400'
     }
   }
 
@@ -225,11 +225,11 @@ export default function TicketDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-            <div className="bg-white dark:bg-surface-dark rounded-lg p-8">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-8">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
@@ -245,9 +245,9 @@ export default function TicketDetailPage() {
 
   if (error || !ticket) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-white dark:bg-surface-dark rounded-lg p-8 text-center">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-8 text-center">
             <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
             <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               {error || 'Ticket introuvable'}
@@ -257,9 +257,9 @@ export default function TicketDetailPage() {
             </p>
             <Link
               href="/profile"
-              className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-orange-600 dark:bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-6 w-6" />
               Retour au profil
             </Link>
           </div>
@@ -269,7 +269,7 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -292,7 +292,7 @@ export default function TicketDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800 p-6 mb-6"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
@@ -313,25 +313,25 @@ export default function TicketDetailPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <Tag className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-600 dark:text-gray-400">Catégorie:</span>
+              <Tag className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <span className="text-gray-600 dark:text-gray-300">Catégorie:</span>
               <span className="font-medium capitalize">{ticket.category}</span>
             </div>
             <div className="flex items-center gap-2">
-              <AlertTriangle className={`h-4 w-4 ${getPriorityColor(ticket.priority)}`} />
-              <span className="text-gray-600 dark:text-gray-400">Priorité:</span>
+              <AlertTriangle className={`h-6 w-6 ${getPriorityColor(ticket.priority)}`} />
+              <span className="text-gray-600 dark:text-gray-300">Priorité:</span>
               <span className={`font-medium capitalize ${getPriorityColor(ticket.priority)}`}>
                 {ticket.priority === 'high' ? 'Haute' : ticket.priority === 'medium' ? 'Moyenne' : 'Basse'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-600 dark:text-gray-400">Créé:</span>
+              <Calendar className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <span className="text-gray-600 dark:text-gray-300">Créé:</span>
               <span className="font-medium">{formatDate(ticket.created_at)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-blue-500" />
-              <span className="text-gray-600 dark:text-gray-400">Réponses:</span>
+              <Mail className="h-6 w-6 text-blue-500" />
+              <span className="text-gray-600 dark:text-gray-300">Réponses:</span>
               <span className="font-medium">{responses.length}</span>
             </div>
           </div>
@@ -343,7 +343,7 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800 p-6 mb-6"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6"
           >
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-blue-500" />
@@ -367,9 +367,9 @@ export default function TicketDetailPage() {
                         : 'bg-blue-100 dark:bg-blue-800'
                     }`}>
                       {response.user_id === ticket?.user_id ? (
-                        <User className="h-4 w-4 text-orange-700 dark:text-orange-300" />
+                        <User className="h-6 w-6 text-orange-700 dark:text-orange-300" />
                       ) : (
-                        <Shield className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                        <Shield className="h-6 w-6 text-blue-700 dark:text-blue-300" />
                       )}
                     </div>
                     <div className="flex-1">
@@ -390,7 +390,7 @@ export default function TicketDetailPage() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-600 dark:text-gray-300">
                         {formatDate(response.created_at)}
                       </span>
                     </div>
@@ -416,7 +416,7 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6"
           >
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Send className="h-5 w-5 text-orange-600" />
@@ -444,12 +444,12 @@ export default function TicketDetailPage() {
                 <button
                   type="submit"
                   disabled={!userResponse.trim() || submitting}
-                  className="inline-flex items-center gap-2 bg-orange-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-2 bg-orange-600 dark:bg-orange-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {submitting ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
                   ) : (
-                    <Send className="h-4 w-4" />
+                    <Send className="h-6 w-6" />
                   )}
                   {submitting ? 'Envoi...' : 'Envoyer la réponse'}
                 </button>

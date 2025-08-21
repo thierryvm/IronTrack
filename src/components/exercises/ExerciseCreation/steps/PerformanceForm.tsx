@@ -5,7 +5,11 @@ import { motion } from 'framer-motion'
 import { Trophy, SkipForward, Target } from 'lucide-react'
 import { ExerciseType, ExerciseCreationData } from '@/types/exercise'
 import { StrengthMetrics, CardioMetrics } from '@/types/performance'
-import { FormField, Input, Select, Textarea, Button } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   validatePositiveInteger, 
   validatePositiveFloat, 
@@ -191,13 +195,13 @@ export function PerformanceForm({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Trophy className="w-8 h-8 text-orange-800" />
+            <Trophy className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Première performance
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           {exerciseType === 'Musculation' 
             ? 'Enregistre ton premier set pour démarrer le suivi'
             : 'Enregistre ta première session cardio'
@@ -216,95 +220,119 @@ export function PerformanceForm({
           // Formulaire Musculation
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="weight">Poids (kg) *</Label>
                 <Input
-                  label="Poids (kg)"
+                  id="weight"
                   type="number"
                   min="0"
                   step="0.5"
+                  placeholder="20"
                   value={strengthData.weight || ''}
                   onChange={(e) => setStrengthData(prev => ({ 
                     ...prev, 
                     weight: parseFloat(e.target.value) || 0 
                   }))}
-                  error={errors.weight}
-                  required
+                  className={errors.weight ? 'border-red-500' : ''}
                 />
-              </FormField>
+                {errors.weight && (
+                  <p className="text-sm text-red-600">{errors.weight}</p>
+                )}
+              </div>
 
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="reps">Répétitions *</Label>
                 <Input
-                  label="Répétitions"
+                  id="reps"
                   type="number"
                   min="1"
+                  placeholder="10"
                   value={strengthData.reps || ''}
                   onChange={(e) => setStrengthData(prev => ({ 
                     ...prev, 
                     reps: parseInt(e.target.value) || 0 
                   }))}
-                  error={errors.reps}
-                  required
+                  className={errors.reps ? 'border-red-500' : ''}
                 />
-              </FormField>
+                {errors.reps && (
+                  <p className="text-sm text-red-600">{errors.reps}</p>
+                )}
+              </div>
 
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="sets">Séries *</Label>
                 <Input
-                  label="Séries"
+                  id="sets"
                   type="number"
                   min="1"
+                  placeholder="3"
                   value={strengthData.sets || ''}
                   onChange={(e) => setStrengthData(prev => ({ 
                     ...prev, 
                     sets: parseInt(e.target.value) || 0 
                   }))}
-                  error={errors.sets}
-                  required
+                  className={errors.sets ? 'border-red-500' : ''}
                 />
-              </FormField>
+                {errors.sets && (
+                  <p className="text-sm text-red-600">{errors.sets}</p>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="rest-seconds">Repos entre séries (sec)</Label>
                 <Input
-                  label="Repos entre séries (sec)"
+                  id="rest-seconds"
                   type="number"
                   min="0"
+                  placeholder="60"
                   value={strengthData.rest_seconds || ''}
                   onChange={(e) => setStrengthData(prev => ({ 
                     ...prev, 
                     rest_seconds: parseInt(e.target.value) || 60 
                   }))}
-                  description="Temps de récupération entre séries"
                 />
-              </FormField>
+                <p className="text-xs text-muted-foreground">Temps de récupération entre séries</p>
+              </div>
 
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="rpe">RPE (optionnel)</Label>
                 <Select
-                  label="RPE (optionnel)"
-                  value={strengthData.rpe?.toString() || ''}
-                  onChange={(e) => setStrengthData(prev => ({ 
+                  value={strengthData.rpe?.toString() || 'undefined'}
+                  onValueChange={(value) => setStrengthData(prev => ({ 
                     ...prev, 
-                    rpe: e.target.value ? parseInt(e.target.value) : undefined 
+                    rpe: value === 'undefined' ? undefined : parseInt(value) 
                   }))}
-                  options={[
-                    { value: '', label: 'Non défini' },
-                    ...Array.from({ length: 10 }, (_, i) => ({
-                      value: (i + 1).toString(),
-                      label: `${i + 1} - ${['Très facile', 'Facile', 'Modéré', 'Difficile', 'Très difficile', 'Dur', 'Très dur', 'Extrêmement dur', 'Maximum', 'Au-delà du maximum'][i] || 'Intense'}`
-                    }))
-                  ]}
-                  description="Rate of Perceived Exertion (1-10)"
-                />
-              </FormField>
+                >
+                  <SelectTrigger id="rpe">
+                    <SelectValue placeholder="Non défini" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="undefined">Non défini</SelectItem>
+                    <SelectItem value="1">1 - Très facile</SelectItem>
+                    <SelectItem value="2">2 - Facile</SelectItem>
+                    <SelectItem value="3">3 - Modéré</SelectItem>
+                    <SelectItem value="4">4 - Difficile</SelectItem>
+                    <SelectItem value="5">5 - Très difficile</SelectItem>
+                    <SelectItem value="6">6 - Dur</SelectItem>
+                    <SelectItem value="7">7 - Très dur</SelectItem>
+                    <SelectItem value="8">8 - Extrêmement dur</SelectItem>
+                    <SelectItem value="9">9 - Maximum</SelectItem>
+                    <SelectItem value="10">10 - Au-delà du maximum</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Rate of Perceived Exertion (1-10)</p>
+              </div>
             </div>
           </>
         ) : (
           // Formulaire Cardio
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField>
+              <div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Durée <span className="text-red-500">*</span>
                   </label>
                   <div className="flex gap-2">
@@ -328,11 +356,11 @@ export function PerformanceForm({
                     <p className="text-sm text-red-600">{errors.duration}</p>
                   )}
                 </div>
-              </FormField>
+              </div>
 
-              <FormField>
+              <div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Distance</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Distance</label>
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -346,19 +374,23 @@ export function PerformanceForm({
                     />
                     <Select
                       value={cardioData.distance_unit}
-                      onChange={(e) => setCardioData(prev => ({ 
+                      onValueChange={(value) => setCardioData(prev => ({ 
                         ...prev, 
-                        distance_unit: e.target.value as 'km' | 'm' | 'miles' 
+                        distance_unit: value as 'km' | 'm' | 'miles' 
                       }))}
-                      options={[
-                        { value: 'km', label: 'km' },
-                        { value: 'm', label: 'm' },
-                        { value: 'miles', label: 'miles' }
-                      ]}
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Unité" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="km">km</SelectItem>
+                        <SelectItem value="m">m</SelectItem>
+                        <SelectItem value="miles">miles</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-              </FormField>
+              </div>
             </div>
 
             {/* Métriques spécialisées selon l'équipement */}
@@ -366,12 +398,14 @@ export function PerformanceForm({
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <h4 className="font-semibold text-blue-800 mb-3">Métriques rameur</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField>
+                  <div className="space-y-2">
+                    <Label htmlFor="stroke-rate">Cadence (SPM)</Label>
                     <Input
-                      label="Cadence (SPM)"
+                      id="stroke-rate"
                       type="number"
                       min="16"
                       max="36"
+                      placeholder="24"
                       value={cardioData.rowing?.stroke_rate || ''}
                       onChange={(e) => setCardioData(prev => ({
                         ...prev,
@@ -381,16 +415,21 @@ export function PerformanceForm({
                           split_time: prev.rowing?.split_time
                         }
                       }))}
-                      description="Coups par minute"
-                      error={errors.stroke_rate}
+                      className={errors.stroke_rate ? 'border-red-500' : ''}
                     />
-                  </FormField>
-                  <FormField>
+                    {errors.stroke_rate && (
+                      <p className="text-sm text-red-600">{errors.stroke_rate}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Coups par minute</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="watts">Puissance (watts)</Label>
                     <Input
-                      label="Puissance (watts)"
+                      id="watts"
                       type="number"
                       min="50"
                       max="500"
+                      placeholder="150"
                       value={cardioData.rowing?.watts || ''}
                       onChange={(e) => setCardioData(prev => ({
                         ...prev,
@@ -400,9 +439,12 @@ export function PerformanceForm({
                           split_time: prev.rowing?.split_time
                         }
                       }))}
-                      error={errors.watts}
+                      className={errors.watts ? 'border-red-500' : ''}
                     />
-                  </FormField>
+                    {errors.watts && (
+                      <p className="text-sm text-red-600">{errors.watts}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -411,13 +453,15 @@ export function PerformanceForm({
               <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                 <h4 className="font-semibold text-green-800 mb-3">Métriques course</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField>
+                  <div className="space-y-2">
+                    <Label htmlFor="speed">Vitesse (km/h)</Label>
                     <Input
-                      label="Vitesse (km/h)"
+                      id="speed"
                       type="number"
                       min="1"
                       max="25"
                       step="0.1"
+                      placeholder="8.5"
                       value={cardioData.running?.speed || ''}
                       onChange={(e) => setCardioData(prev => ({
                         ...prev,
@@ -428,17 +472,22 @@ export function PerformanceForm({
                           elevation_gain: prev.running?.elevation_gain
                         }
                       }))}
-                      description="Vitesse moyenne"
-                      error={errors.speed}
+                      className={errors.speed ? 'border-red-500' : ''}
                     />
-                  </FormField>
-                  <FormField>
+                    {errors.speed && (
+                      <p className="text-sm text-red-600">{errors.speed}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Vitesse moyenne</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="incline">Inclinaison (%)</Label>
                     <Input
-                      label="Inclinaison (%)"
+                      id="incline"
                       type="number"
                       min="0"
                       max="15"
                       step="0.5"
+                      placeholder="2.0"
                       value={cardioData.running?.incline || ''}
                       onChange={(e) => setCardioData(prev => ({
                         ...prev,
@@ -449,10 +498,13 @@ export function PerformanceForm({
                           elevation_gain: prev.running?.elevation_gain
                         }
                       }))}
-                      description="Inclinaison tapis"
-                      error={errors.incline}
+                      className={errors.incline ? 'border-red-500' : ''}
                     />
-                  </FormField>
+                    {errors.incline && (
+                      <p className="text-sm text-red-600">{errors.incline}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Inclinaison tapis</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -461,12 +513,14 @@ export function PerformanceForm({
               <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                 <h4 className="font-semibold text-purple-800 mb-3">Métriques vélo</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField>
+                  <div className="space-y-2">
+                    <Label htmlFor="cadence">Cadence (RPM)</Label>
                     <Input
-                      label="Cadence (RPM)"
+                      id="cadence"
                       type="number"
                       min="50"
                       max="120"
+                      placeholder="85"
                       value={cardioData.cycling?.cadence || ''}
                       onChange={(e) => setCardioData(prev => ({
                         ...prev,
@@ -477,76 +531,99 @@ export function PerformanceForm({
                           max_speed: prev.cycling?.max_speed
                         }
                       }))}
-                      description="Tours par minute"
-                      error={errors.cadence}
+                      className={errors.cadence ? 'border-red-500' : ''}
                     />
-                  </FormField>
-                  <FormField>
+                    {errors.cadence && (
+                      <p className="text-sm text-red-600">{errors.cadence}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Tours par minute</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="resistance">Résistance</Label>
                     <Select
-                      label="Résistance"
                       value={cardioData.cycling?.resistance?.toString() || '1'}
-                      onChange={(e) => setCardioData(prev => ({
+                      onValueChange={(value) => setCardioData(prev => ({
                         ...prev,
                         cycling: { 
                           cadence: prev.cycling?.cadence || 0,
-                          resistance: parseInt(e.target.value) || 1,
+                          resistance: parseInt(value) || 1,
                           average_speed: prev.cycling?.average_speed,
                           max_speed: prev.cycling?.max_speed
                         }
                       }))}
-                      options={Array.from({ length: 20 }, (_, i) => ({
-                        value: (i + 1).toString(),
-                        label: `Niveau ${i + 1}`
-                      }))}
-                      description="Niveau de résistance"
-                      error={errors.resistance}
-                    />
-                  </FormField>
+                    >
+                      <SelectTrigger id="resistance" className={errors.resistance ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Niveau 1" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 20 }, (_, i) => (
+                          <SelectItem key={i + 1} value={(i + 1).toString()}>Niveau {i + 1}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.resistance && (
+                      <p className="text-sm text-red-600">{errors.resistance}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Niveau de résistance</p>
+                  </div>
                 </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="heart-rate">Fréquence cardiaque (BPM)</Label>
                 <Input
-                  label="Fréquence cardiaque (BPM)"
+                  id="heart-rate"
                   type="number"
                   min="60"
                   max="200"
+                  placeholder="140"
                   value={cardioData.heart_rate || ''}
                   onChange={(e) => setCardioData(prev => ({ 
                     ...prev, 
                     heart_rate: parseInt(e.target.value) || undefined 
                   }))}
+                  className={errors.heart_rate ? 'border-red-500' : ''}
                 />
-              </FormField>
+                {errors.heart_rate && (
+                  <p className="text-sm text-red-600">{errors.heart_rate}</p>
+                )}
+              </div>
 
-              <FormField>
+              <div className="space-y-2">
+                <Label htmlFor="calories">Calories brûlées</Label>
                 <Input
-                  label="Calories brûlées"
+                  id="calories"
                   type="number"
                   min="0"
+                  placeholder="250"
                   value={cardioData.calories || ''}
                   onChange={(e) => setCardioData(prev => ({ 
                     ...prev, 
                     calories: parseInt(e.target.value) || undefined 
                   }))}
+                  className={errors.calories ? 'border-red-500' : ''}
                 />
-              </FormField>
+                {errors.calories && (
+                  <p className="text-sm text-red-600">{errors.calories}</p>
+                )}
+              </div>
             </div>
           </>
         )}
 
         {/* Notes */}
-        <FormField>
+        <div className="space-y-2">
+          <Label htmlFor="notes">Notes (optionnel)</Label>
           <Textarea
-            label="Notes (optionnel)"
+            id="notes"
             placeholder="Ressenti, observations, modifications..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
           />
-        </FormField>
+        </div>
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-6">
@@ -565,16 +642,16 @@ export function PerformanceForm({
               variant="ghost"
               onClick={handleSkip}
               disabled={isLoading}
-              leftIcon={<SkipForward className="w-4 h-4" />}
             >
+              <SkipForward className="w-4 h-4 mr-2" />
               Ignorer
             </Button>
             
             <Button
               type="submit"
               loading={isLoading}
-              leftIcon={<Target className="w-4 h-4" />}
             >
+              <Target className="w-4 h-4 mr-2" />
               Enregistrer
             </Button>
           </div>

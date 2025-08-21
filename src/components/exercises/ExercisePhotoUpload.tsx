@@ -49,14 +49,6 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
-  // 🔍 DEBUG IMAGE BUG
-  useEffect(() => {
-    console.log('🔍 DEBUG ExercisePhotoUpload - currentPhoto prop:', {
-      currentPhoto,
-      hasCurrentPhoto: !!currentPhoto,
-      currentPhotoLength: currentPhoto?.length
-    })
-  }, [currentPhoto])
 
   // Formats acceptés SÉCURISÉS (conforme OWASP) - formats dangereux retirés
   const acceptedTypes = [
@@ -74,11 +66,15 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+      // Détection plus stable : priorité au touch et user agent
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      const isSmallScreen = window.innerWidth < 768
+      
+      setIsMobile(hasTouch || isMobileUA || isSmallScreen)
     }
     checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    // Pas de listener resize pour éviter les changements intempestifs
   }, [])
 
   const resetUploadState = useCallback(() => {
@@ -208,12 +204,12 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-sm font-medium text-gray-900 flex items-center">
-          <Camera className="h-4 w-4 mr-2" />
+        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
+          <Camera className="h-6 w-6 mr-2" />
           Photo de l&apos;exercice
         </h4>
-        <div className="flex items-center text-xs text-gray-500">
-          <Smartphone className="h-3 w-3 mr-1" />
+        <div className="flex items-center text-xs text-gray-600 dark:text-gray-400">
+          <Smartphone className="h-5 w-5 mr-1" />
           Support HEIC (iPhone)
         </div>
       </div>
@@ -221,7 +217,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       {/* Zone d'upload ou photo actuelle */}
       {currentPhoto ? (
         <div className="relative group">
-          <div className="relative w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-100">
+          <div className="relative w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 dark:bg-gray-800">
             <Image
               src={currentPhoto}
               alt="Photo de l'exercice"
@@ -237,37 +233,37 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                   <>
                     <button
                       onClick={openCameraDialog}
-                      className="bg-orange-600 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-orange-700 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-orange-600 dark:bg-orange-500 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-orange-700 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
-                      <Camera className="h-4 w-4 mr-1" />
+                      <Camera className="h-6 w-6 mr-1" />
                       Caméra
                     </button>
                     <button
                       onClick={openFileDialog}
-                      className="bg-white text-gray-900 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
-                      <ImageIcon className="h-4 w-4 mr-1" />
+                      <ImageIcon className="h-6 w-6 mr-1" />
                       Photos
                     </button>
                   </>
                 ) : (
                   <button
                     onClick={openFileDialog}
-                    className="bg-white text-gray-900 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 flex items-center min-h-[44px] touch-manipulation"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
                     disabled={disabled || uploadState.isUploading}
                   >
-                    <Camera className="h-4 w-4 mr-2" />
+                    <Camera className="h-6 w-6 mr-2" />
                     Changer
                   </button>
                 )}
                 <button
                   onClick={removePhoto}
-                  className="bg-red-600 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-red-700 flex items-center min-h-[44px] touch-manipulation"
+                  className="bg-red-500 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-red-700 flex items-center min-h-[44px] touch-manipulation"
                   disabled={disabled || uploadState.isUploading}
                 >
-                  <X className="h-4 w-4 mr-2" />
+                  <X className="h-6 w-6 mr-2" />
                   Supprimer
                 </button>
               </div>
@@ -283,10 +279,10 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onClick={isMobile ? undefined : openFileDialog}
           className={`
             relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center ${isMobile ? '' : 'cursor-pointer'}
-            transition-all duration-200 hover:bg-gray-50 touch-manipulation min-h-[200px] sm:min-h-[240px]
+            transition-all duration-200 hover:bg-gray-50 dark:bg-gray-800 touch-manipulation min-h-[200px] sm:min-h-[240px]
             ${isDragging 
-              ? 'border-orange-500 bg-orange-50' 
-              : 'border-gray-300'
+              ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
+              : 'border-gray-300 dark:border-gray-600'
             }
             ${disabled || uploadState.isUploading
               ? 'opacity-50 cursor-not-allowed' 
@@ -312,7 +308,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     e.stopPropagation()
                     openCameraDialog()
                   }}
-                  className="bg-orange-600 text-white px-6 py-4 rounded-xl font-medium hover:bg-orange-700 flex items-center min-h-[56px] touch-manipulation shadow-lg"
+                  className="bg-orange-600 dark:bg-orange-500 text-white px-6 py-4 rounded-xl font-medium hover:bg-orange-700 flex items-center min-h-[56px] touch-manipulation shadow-lg"
                   disabled={disabled || uploadState.isUploading}
                 >
                   <Camera className="h-6 w-6 mr-3" />
@@ -340,7 +336,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               {uploadState.isUploading ? (
                 <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
               ) : (
-                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800' : 'text-gray-400'}`} />
+                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`} />
               )}
             </div>
             
@@ -348,26 +344,26 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               {uploadState.isUploading ? (
                 <div className="space-y-2">
                   <p className="text-lg font-medium text-blue-600">Upload en cours...</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2 max-w-xs mx-auto">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 max-w-xs mx-auto">
                     <div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadState.progress}%` }}
                     />
                   </div>
-                  <p className="text-sm text-gray-600">{uploadState.progress.toFixed(0)}%</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{uploadState.progress.toFixed(0)}%</p>
                 </div>
               ) : (
                 <>
-                  <p className="text-lg sm:text-xl font-medium text-gray-900 mb-2">
+                  <p className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
                     {isDragging ? 'Relâchez pour uploader' : 'Ajoutez une photo'}
                   </p>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-3">
                     {isMobile 
-                      ? <><span className="text-orange-800 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
-                      : <>Glissez votre photo ici ou <span className="text-orange-800 font-medium">cliquez pour sélectionner</span></>
+                      ? <><span className="text-orange-800 dark:text-orange-300 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
+                      : <>Glissez votre photo ici ou <span className="text-orange-800 dark:text-orange-300 font-medium">cliquez pour sélectionner</span></>
                     }
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     PNG, JPEG, GIF, HEIC, WebP, AVIF • Max 8MB • Sécurisé OWASP
                   </p>
                 </>
@@ -377,7 +373,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
 
           {/* Badge sécurité */}
           <div className="absolute top-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-            <Shield className="h-3 w-3 mr-1" />
+            <Shield className="h-5 w-5 mr-1" />
             Sécurisé
           </div>
         </div>
@@ -404,7 +400,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
             className="bg-red-50 border border-red-200 rounded-lg p-3"
           >
             <div className="flex items-center">
-              <AlertTriangle className="h-4 w-4 text-red-500 mr-2" />
+              <AlertTriangle className="h-6 w-6 text-red-500 mr-2" />
               <p className="text-sm text-red-800">{uploadState.error}</p>
             </div>
           </motion.div>
@@ -418,7 +414,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
             className="bg-green-50 border border-green-200 rounded-lg p-3"
           >
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
               <p className="text-sm text-green-800">Photo uploadée avec succès !</p>
             </div>
           </motion.div>
@@ -429,7 +425,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       <div className="space-y-3">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-start space-x-2">
-            <Smartphone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <Smartphone className="h-6 w-6 text-blue-500 flex-shrink-0 mt-0.5" />
             <div>
               <h5 className="text-sm font-medium text-blue-900 mb-1">
                 📱 Compatible iPhone/iPad - HEIC vers JPEG
@@ -444,7 +440,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           <div className="flex items-start space-x-2">
-            <Zap className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+            <Zap className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
             <div>
               <h5 className="text-sm font-medium text-green-900 mb-1">
                 ⚡ Optimisation automatique pour performances

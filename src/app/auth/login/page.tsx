@@ -19,7 +19,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirection...</p>
+        <p className="text-gray-600 dark:text-gray-300">Redirection...</p>
       </div>
     </div>
   )

@@ -107,9 +107,11 @@ export function useRealtimeNotifications() {
       )
     }, 500)
 
-    // Auto-remove après 8 secondes
+    // Auto-remove après 8 secondes (optimisé avec requestIdleCallback)
     setTimeout(() => {
-      removeNotification(newNotification.id)
+      requestIdleCallback(() => {
+        removeNotification(newNotification.id)
+      }, { timeout: 1000 })
     }, 8000)
 
     return newNotification.id
@@ -134,6 +136,11 @@ export function useRealtimeNotifications() {
     try {
       const now = Date.now()
       const since = new Date(lastCheckRef.current || now - 60000) // Dernière minute
+      
+      // Performance: skip si page pas visible
+      if (document.visibilityState === 'hidden') {
+        return
+      }
       
       // Vérifier nouvelles invitations reçues
       const { data: newInvitations } = await supabase
@@ -198,9 +205,32 @@ export function useRealtimeNotifications() {
   useEffect(() => {
     if (!fallbackEnabled || !user) return
     
-    const interval = setInterval(checkForNewNotifications, 30000) // 30 secondes
+    // Performance: interval adaptatif selon visibilité page
+    let currentInterval: NodeJS.Timeout
     
-    return () => clearInterval(interval)
+    const scheduleNext = () => {
+      const delay = document.visibilityState === 'hidden' ? 120000 : 30000 // 2min ou 30s
+      currentInterval = setTimeout(() => {
+        checkForNewNotifications()
+        scheduleNext() // Reprogrammer le prochain
+      }, delay)
+    }
+    
+    // Démarrer
+    scheduleNext()
+    
+    // Écouter changements de visibilité pour adapter la fréquence
+    const handleVisibilityChange = () => {
+      clearTimeout(currentInterval)
+      scheduleNext()
+    }
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      clearTimeout(currentInterval)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [fallbackEnabled, user, checkForNewNotifications])
 
   // Écouter les changements en temps réel avec fallback amélioré
@@ -220,23 +250,30 @@ export function useRealtimeNotifications() {
         async (payload) => {
           setRealtimeConnected(true)
           
-          // Récupérer les informations du requester
-          const { data: requesterData } = await supabase
-            .from('profiles')
-            .select('pseudo, full_name, email')
-            .eq('id', payload.new.requester_id)
-            .single()
+          // Optimisation performance: traitement asynchrone différé
+          requestIdleCallback(async () => {
+            try {
+              // Récupérer les informations du requester
+              const { data: requesterData } = await supabase
+                .from('profiles')
+                .select('pseudo, full_name, email')
+                .eq('id', payload.new.requester_id)
+                .single()
 
-          if (requesterData) {
-            const displayName = requesterData.pseudo || requesterData.full_name || requesterData.email?.split('@')[0] || 'Un utilisateur'
-            
-            addNotification({
-              type: 'partnership_request',
-              title: 'Nouvelle demande de partenariat',
-              message: `${displayName} souhaite devenir votre partenaire d'entraînement`,
-              data: { partnershipId: payload.new.id, requesterId: payload.new.requester_id }
-            })
-          }
+              if (requesterData) {
+                const displayName = requesterData.pseudo || requesterData.full_name || requesterData.email?.split('@')[0] || 'Un utilisateur'
+                
+                addNotification({
+                  type: 'partnership_request',
+                  title: 'Nouvelle demande de partenariat',
+                  message: `${displayName} souhaite devenir votre partenaire d'entraînement`,
+                  data: { partnershipId: payload.new.id, requesterId: payload.new.requester_id }
+                })
+              }
+            } catch (error) {
+              console.warn('Erreur notification temps réel:', error)
+            }
+          }, { timeout: 5000 })
         }
       )
       .on(
@@ -250,43 +287,50 @@ export function useRealtimeNotifications() {
         async (payload) => {
           setRealtimeConnected(true)
           
-          if (payload.new.status === 'accepted' && payload.old.status === 'pending') {
-            // Récupérer les informations du partner
-            const { data: partnerData } = await supabase
-              .from('profiles')
-              .select('pseudo, full_name, email')
-              .eq('id', payload.new.partner_id)
-              .single()
+          // Optimisation performance: traitement asynchrone différé  
+          requestIdleCallback(async () => {
+            try {
+              if (payload.new.status === 'accepted' && payload.old.status === 'pending') {
+                // Récupérer les informations du partner
+                const { data: partnerData } = await supabase
+                  .from('profiles')
+                  .select('pseudo, full_name, email')
+                  .eq('id', payload.new.partner_id)
+                  .single()
 
-            if (partnerData) {
-              const displayName = partnerData.pseudo || partnerData.full_name || partnerData.email?.split('@')[0] || 'Un utilisateur'
-              
-              addNotification({
-                type: 'partnership_accepted',
-                title: 'Partenariat accepté !',
-                message: `${displayName} a accepté votre demande de partenariat`,
-                data: { partnershipId: payload.new.id, partnerId: payload.new.partner_id }
-              })
-            }
-          } else if (payload.new.status === 'declined' && payload.old.status === 'pending') {
-            // Récupérer les informations du partner
-            const { data: partnerData } = await supabase
-              .from('profiles')
-              .select('pseudo, full_name, email')
-              .eq('id', payload.new.partner_id)
-              .single()
+                if (partnerData) {
+                  const displayName = partnerData.pseudo || partnerData.full_name || partnerData.email?.split('@')[0] || 'Un utilisateur'
+                  
+                  addNotification({
+                    type: 'partnership_accepted',
+                    title: 'Partenariat accepté !',
+                    message: `${displayName} a accepté votre demande de partenariat`,
+                    data: { partnershipId: payload.new.id, partnerId: payload.new.partner_id }
+                  })
+                }
+              } else if (payload.new.status === 'declined' && payload.old.status === 'pending') {
+                // Récupérer les informations du partner
+                const { data: partnerData } = await supabase
+                  .from('profiles')
+                  .select('pseudo, full_name, email')
+                  .eq('id', payload.new.partner_id)
+                  .single()
 
-            if (partnerData) {
-              const displayName = partnerData.pseudo || partnerData.full_name || partnerData.email?.split('@')[0] || 'Un utilisateur'
-              
-              addNotification({
-                type: 'partnership_declined',
-                title: 'Partenariat refusé',
-                message: `${displayName} a refusé votre demande de partenariat`,
-                data: { partnershipId: payload.new.id, partnerId: payload.new.partner_id }
-              })
+                if (partnerData) {
+                  const displayName = partnerData.pseudo || partnerData.full_name || partnerData.email?.split('@')[0] || 'Un utilisateur'
+                  
+                  addNotification({
+                    type: 'partnership_declined',
+                    title: 'Partenariat refusé',
+                    message: `${displayName} a refusé votre demande de partenariat`,
+                    data: { partnershipId: payload.new.id, partnerId: payload.new.partner_id }
+                  })
+                }
+              }
+            } catch (error) {
+              console.warn('Erreur notification temps réel:', error)
             }
-          }
+          }, { timeout: 5000 })
         }
       )
       .subscribe((status) => {

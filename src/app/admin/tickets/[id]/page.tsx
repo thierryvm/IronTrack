@@ -289,8 +289,8 @@ export default function AdminTicketPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Chargement du ticket admin...</p>
+          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">Chargement du ticket admin...</p>
         </div>
       </div>
     )
@@ -299,8 +299,8 @@ export default function AdminTicketPage() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
-        <p className="text-gray-500 mb-4">{error}</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Erreur de chargement</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
         <button
           onClick={() => router.push('/admin/tickets')}
           className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
@@ -314,8 +314,8 @@ export default function AdminTicketPage() {
   if (!ticket) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Ticket non trouvé</h3>
-        <p className="text-gray-500 mb-4">Ce ticket n'existe pas.</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Ticket non trouvé</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">Ce ticket n'existe pas.</p>
         <button
           onClick={() => router.push('/admin/tickets')}
           className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
@@ -329,20 +329,20 @@ export default function AdminTicketPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-4 mb-4">
           <button
             onClick={() => router.push('/admin/tickets')}
-            className="flex items-center px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-800"
+            className="flex items-center px-3 py-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200"
             title="Retour aux tickets"
           >
             ← Retour aux tickets
           </button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {ticket.title}
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
               {ticket.category} • Créé le {new Date(ticket.created_at).toLocaleDateString('fr-FR')} 
               • Par {ticket.user_email || 'Utilisateur'}
             </p>
@@ -352,7 +352,7 @@ export default function AdminTicketPage() {
               ticket.priority === 'critical' ? 'bg-red-100 text-red-700' :
               ticket.priority === 'high' ? 'bg-orange-100 text-orange-700' :
               ticket.priority === 'medium' ? 'bg-blue-100 text-blue-700' :
-              'bg-gray-100 text-gray-700'
+              'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
             }`}>
               {getPriorityLabel(ticket.priority)}
             </span>
@@ -360,9 +360,9 @@ export default function AdminTicketPage() {
               ticket.status === 'resolved' ? 'bg-green-100 text-green-700' :
               ticket.status === 'in_progress' ? 'bg-orange-100 text-orange-700' :
               ticket.status === 'open' ? 'bg-blue-100 text-blue-700' :
-              ticket.status === 'closed' ? 'bg-gray-100 text-gray-700' :
+              ticket.status === 'closed' ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' :
               ticket.status === 'waiting_user' ? 'bg-yellow-100 text-yellow-700' :
-              'bg-gray-100 text-gray-700'
+              'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
             }`}>
               {getStatusLabel(ticket.status)}
             </span>
@@ -371,19 +371,19 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Description */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-gray-700 whitespace-pre-wrap">{ticket.description}</p>
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Description</h3>
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{ticket.description}</p>
         </div>
       </div>
 
       {/* Conversation */}
       {responses.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Conversation ({responses.length})</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Conversation ({responses.length})</h3>
           {responses.map((response) => (
-            <div key={response.id} className="bg-white rounded-xl shadow-md p-6">
+            <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
               <div className="flex items-start space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   response.is_internal ? 'bg-orange-100' : 
@@ -394,7 +394,7 @@ export default function AdminTicketPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {(() => {
                         // Si c'est une note interne ou un admin qui répond
                         if (response.is_internal || adminUsers.has(response.user_id)) {
@@ -411,12 +411,12 @@ export default function AdminTicketPage() {
                         Note interne
                       </span>
                     )}
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
                       {new Date(response.created_at).toLocaleString('fr-FR')}
                     </span>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                       {response.message}
                     </p>
                   </div>
@@ -428,13 +428,13 @@ export default function AdminTicketPage() {
       )}
 
       {/* Contrôles Admin */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Gestion du ticket</h3>
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Gestion du ticket</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Statut */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Statut
             </label>
             <select
@@ -443,7 +443,7 @@ export default function AdminTicketPage() {
                 const selectedStatus = e.target.value
                 setPendingChanges(prev => ({ ...prev, status: selectedStatus }))
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               <option value="open">🆕 Ouvert</option>
               <option value="in_progress">🔄 En cours</option>
@@ -455,7 +455,7 @@ export default function AdminTicketPage() {
           
           {/* Priorité */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Priorité
             </label>
             <select
@@ -464,7 +464,7 @@ export default function AdminTicketPage() {
                 const newPriority = e.target.value
                 setPendingChanges(prev => ({ ...prev, priority: newPriority }))
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               <option value="low">📝 Faible</option>
               <option value="medium">📋 Normale</option>
@@ -490,7 +490,7 @@ export default function AdminTicketPage() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setPendingChanges({})}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -499,13 +499,13 @@ export default function AdminTicketPage() {
                   disabled={savingChanges}
                   className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     savingChanges
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
                       : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
                 >
                   {savingChanges ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-white dark:border-gray-700 border-t-transparent rounded-full animate-spin mr-2" />
                       Sauvegarde...
                     </>
                   ) : (
@@ -521,8 +521,8 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Formulaire de réponse */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Répondre au ticket</h3>
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répondre au ticket</h3>
         
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -533,7 +533,7 @@ export default function AdminTicketPage() {
                 onChange={(e) => setIsInternalNote(e.target.checked)}
                 className="w-4 h-4 text-orange-600 focus:ring-orange-500 rounded"
               />
-              <span className="text-sm text-gray-700">Note interne (non visible par l'utilisateur)</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Note interne (non visible par l'utilisateur)</span>
             </label>
           </div>
 
@@ -541,7 +541,7 @@ export default function AdminTicketPage() {
             value={responseMessage}
             onChange={(e) => setResponseMessage(e.target.value)}
             rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
             placeholder={isInternalNote 
               ? "Rédigez une note interne pour l'équipe..."
               : "Rédigez votre réponse à l'utilisateur..."
@@ -549,7 +549,7 @@ export default function AdminTicketPage() {
           />
 
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-600 dark:text-gray-400">
               {responseMessage.length} caractères
             </div>
             <button
@@ -557,14 +557,14 @@ export default function AdminTicketPage() {
               disabled={!responseMessage.trim() || sendingResponse}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
                 !responseMessage.trim() || sendingResponse
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
                   : isInternalNote
                     ? 'bg-orange-600 text-white hover:bg-orange-700'
                     : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
               {sendingResponse ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="w-4 h-4 border-2 border-white dark:border-gray-700 border-t-transparent rounded-full animate-spin mr-2" />
               ) : (
                 <span className="mr-2">💬</span>
               )}

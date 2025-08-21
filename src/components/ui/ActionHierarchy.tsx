@@ -64,7 +64,7 @@ export function ActionHierarchy({
       case 'neutral':
         return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 focus:ring-gray-500'
       default:
-        return 'bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500'
+        return 'bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white hover:from-orange-600 hover:to-red-600 focus:ring-orange-500'
     }
   }
 
@@ -77,9 +77,9 @@ export function ActionHierarchy({
       case 'warning':
         return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 focus:ring-yellow-400'
       case 'neutral':
-        return 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
       default:
-        return 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
     }
   }
 
@@ -92,9 +92,9 @@ export function ActionHierarchy({
       case 'warning':
         return 'text-yellow-600 hover:bg-yellow-50 focus:ring-yellow-300'
       case 'neutral':
-        return 'text-gray-600 hover:bg-gray-50 focus:ring-gray-300'
+        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 focus:ring-gray-300'
       default:
-        return 'text-gray-600 hover:bg-gray-50 focus:ring-gray-300'
+        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 focus:ring-gray-300'
     }
   }
 
@@ -167,7 +167,7 @@ export function useStandardActions() {
   const createViewDetailsAction = (onClick: () => void): ActionConfig => ({
     type: 'secondary',
     label: 'Détails',
-    icon: <Eye className="h-4 w-4" />,
+    icon: <Eye className="h-6 w-6" />,
     onClick,
     variant: 'neutral',
     ariaLabel: 'Voir les détails'
@@ -176,7 +176,7 @@ export function useStandardActions() {
   const createEditAction = (onClick: () => void): ActionConfig => ({
     type: 'tertiary',
     label: 'Modifier',
-    icon: <Edit className="h-4 w-4" />,
+    icon: <Edit className="h-6 w-6" />,
     onClick,
     variant: 'neutral',
     ariaLabel: 'Modifier cet élément'
@@ -185,7 +185,7 @@ export function useStandardActions() {
   const createDeleteAction = (onClick: () => void): ActionConfig => ({
     type: 'tertiary',
     label: 'Supprimer',
-    icon: <Trash2 className="h-4 w-4" />,
+    icon: <Trash2 className="h-6 w-6" />,
     onClick,
     variant: 'danger',
     ariaLabel: 'Supprimer cet élément'
@@ -194,7 +194,7 @@ export function useStandardActions() {
   const createDuplicateAction = (onClick: () => void): ActionConfig => ({
     type: 'tertiary',
     label: 'Dupliquer',
-    icon: <Copy className="h-4 w-4" />,
+    icon: <Copy className="h-6 w-6" />,
     onClick,
     variant: 'neutral',
     ariaLabel: 'Dupliquer cet élément'

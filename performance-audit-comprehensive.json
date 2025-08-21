@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-08-19T14:14:37.398Z",
+  "summary": {
+    "overallScore": 90,
+    "criticalIssues": [],
+    "recommendations": [
+      "Optimiser les images et implémenter le lazy loading",
+      "Utiliser next/image pour toutes les images",
+      "Minimiser le JavaScript critique"
+    ]
+  },
+  "lighthouse": [],
+  "bundle": {
+    "success": true,
+    "timestamp": "2025-08-19T14:14:37.396Z",
+    "pages": [],
+    "chunks": [
+      {
+        "file": "polyfills.js",
+        "size": 110,
+        "type": "chunk"
+      }
+    ],
+    "totalSize": 110
+  },
+  "images": {
+    "total": 0,
+    "optimized": 0,
+    "webpReady": 0,
+    "oversized": [],
+    "recommendations": []
+  },
+  "dependencies": {
+    "dependencies": 48,
+    "devDependencies": 24,
+    "heavyPackages": [],
+    "recommendations": []
+  },
+  "coreWebVitals": {}
+}

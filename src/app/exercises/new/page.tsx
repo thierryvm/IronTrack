@@ -49,18 +49,34 @@ export default function NewExercisePage() {
     const supabase = createClient()
     
     try {
+      // 0. Mapper le nom d'équipement vers l'ID
+      let equipment_id = 1 // Défaut
+      if (data.exercise.equipment) {
+        const { data: equipmentData } = await supabase
+          .from('equipment')
+          .select('id')
+          .eq('name', data.exercise.equipment)
+          .single()
+        
+        if (equipmentData) {
+          equipment_id = equipmentData.id
+        }
+      }
+      
       // 1. Créer l'exercice
       const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercises')
         .insert({
+          user_id: (await supabase.auth.getUser()).data.user?.id,
           name: data.exercise.name,
           exercise_type: data.exercise.exercise_type,
-          muscle_group: data.exercise.muscle_group,
-          equipment: data.exercise.equipment,
+          muscle_group: data.exercise.muscle_group, // Texte, pas ID
+          equipment_id: equipment_id,
           difficulty: data.exercise.difficulty,
-          instructions: data.exercise.instructions,
-          is_template: false, // Exercice personnel
-          is_public: false,   // Exercice privé par défaut
+          description: data.exercise.instructions,
+          image_url: data.exercise.image_url, // ✅ AJOUT de l'image_url
+          is_template: false,
+          is_public: false
         })
         .select()
         .single()

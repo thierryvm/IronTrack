@@ -114,10 +114,10 @@ export default function PWAInstallPrompt() {
           exit={{ opacity: 0, y: 100 }}
           className="fixed bottom-4 left-4 right-4 z-50 max-w-sm mx-auto"
         >
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center">
-                <div className="p-2 bg-gradient-to-r from-orange-600 to-red-500 rounded-lg mr-3">
+                <div className="p-2 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 rounded-lg mr-3">
                   {deviceType === 'mobile' ? (
                     <Smartphone className="h-5 w-5 text-white" />
                   ) : (
@@ -125,10 +125,10 @@ export default function PWAInstallPrompt() {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
                     Installer IronTrack
                   </h3>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
                     {deviceType === 'mobile' 
                       ? 'Ajoutez l\'app à votre écran d\'accueil'
                       : 'Installez l\'app sur votre ordinateur'
@@ -138,30 +138,30 @@ export default function PWAInstallPrompt() {
               </div>
               <button
                 onClick={handleDismiss}
-                className="text-gray-400 hover:text-gray-600 p-1"
+                className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 p-1"
               >
-                <X className="h-4 w-4" />
+                <X className="h-6 w-6" />
               </button>
             </div>
             
             <div className="flex gap-2">
               <button
                 onClick={handleInstallClick}
-                className="flex-1 bg-gradient-to-r from-orange-600 to-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-red-600 transition-all flex items-center justify-center"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-red-600 transition-all flex items-center justify-center"
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-6 w-6 mr-2" />
                 {deferredPrompt ? 'Installer' : 'Guide'}
               </button>
               
               <Link
                 href="/pwa-guide"
-                className="px-3 py-2 text-orange-800 hover:text-orange-700 text-sm font-medium transition-colors"
+                className="px-3 py-2 text-orange-800 dark:text-orange-300 hover:text-orange-700 text-sm font-medium transition-colors"
               >
                 Aide
               </Link>
             </div>
             
-            <p className="text-xs text-gray-500 mt-2 text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
               ⚡ Accès rapide • 🔔 Notifications • 📱 Mode hors-ligne
             </p>
           </div>

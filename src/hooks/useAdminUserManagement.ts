@@ -46,6 +46,8 @@ export const useAdminUserManagement = () => {
   const { hasPermission, logAdminAction, refreshUserRoles } = useAdminAuth()
   const supabase = createClient()
 
+  // SUPPRIMÉ : Doublon avec useEffect ligne 350-354
+
   // Récupérer tous les utilisateurs (admin uniquement)
   const getAllUsers = useCallback(async (): Promise<AdminUser[]> => {
     if (!hasPermission('moderator')) {
@@ -90,24 +92,26 @@ export const useAdminUserManagement = () => {
       // Log admin sécurisé supprimé
       
       // Transformer les données au format AdminUser
-      const transformedUsers: AdminUser[] = users.map((user: Record<string, unknown>) => ({
-        id: user.id as string,
-        email: (user.email as string) || '',
-        full_name: user.full_name as string,
-        pseudo: user.pseudo as string, // 🎯 AJOUT DU CHAMP PSEUDO
-        avatar_url: user.avatar_url as string,
-        role: (user.role as AdminUser['role']) || 'user',
-        is_onboarding_complete: (user.is_onboarding_complete as boolean) || false,
-        created_at: user.created_at as string,
-        updated_at: user.updated_at as string,
-        last_workout: user.last_workout as string,
-        total_workouts: parseInt(String(user.workout_count)) || 0,
-        is_active: user.is_active as boolean, // Actif récemment (calculé par API)
-        is_banned: user.is_banned as boolean, // Banni explicitement (calculé par API)
-        banned_until: user.banned_until as string,
-        ban_reason: user.ban_reason as string,
-        last_active: user.last_active as string
-      }))
+      const transformedUsers: AdminUser[] = users.map((user: Record<string, unknown>) => {
+        return {
+          id: user.id as string,
+          email: (user.email as string) || '',
+          full_name: user.full_name as string,
+          pseudo: user.pseudo as string, // 🎯 AJOUT DU CHAMP PSEUDO
+          avatar_url: user.avatar_url as string,
+          role: (user.role as AdminUser['role']) || 'user',
+          is_onboarding_complete: Boolean(user.is_onboarding_complete),
+          created_at: user.created_at as string,
+          updated_at: user.updated_at as string,
+          last_workout: user.last_workout as string,
+          total_workouts: parseInt(String(user.workout_count)) || 0,
+          is_active: user.is_active as boolean, // Actif récemment (calculé par API)
+          is_banned: user.is_banned as boolean, // Banni explicitement (calculé par API)
+          banned_until: user.banned_until as string,
+          ban_reason: user.ban_reason as string,
+          last_active: user.last_active as string
+        }
+      })
 
       setUsers(transformedUsers)
       
@@ -338,10 +342,10 @@ export const useAdminUserManagement = () => {
 
   // Charger automatiquement les utilisateurs au premier rendu
   useEffect(() => {
-    if (hasPermission('moderator')) {
+    if (hasPermission('moderator') && users.length === 0 && !isLoadingRef.current) {
       getAllUsers()
     }
-  }, [hasPermission, getAllUsers])
+  }, [hasPermission, users.length, getAllUsers])
 
   // Utilitaires pour le filtrage et tri côté client
   const getActiveUsers = useCallback(() => {

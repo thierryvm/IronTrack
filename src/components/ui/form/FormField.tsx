@@ -44,7 +44,7 @@ export function FormLabel({ children, required, className, ...props }: FormLabel
   return (
     <label 
       className={cn(
-        'text-sm font-medium leading-none text-gray-900',
+        'text-sm font-medium leading-none text-gray-900 dark:text-gray-100',
         'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
         className
       )}
@@ -76,7 +76,7 @@ export function FormControl({ children, className }: FormControlProps) {
 export function FormDescription({ children, className, ...props }: FormDescriptionProps) {
   return (
     <p 
-      className={cn('text-sm text-gray-600', className)}
+      className={cn('text-sm text-gray-600 dark:text-gray-300', className)}
       {...props}
     >
       {children}

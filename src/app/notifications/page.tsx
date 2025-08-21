@@ -125,7 +125,7 @@ export default function NotificationsPage() {
       case 'partner':
         return <Users className="w-5 h-5 text-green-500" />
       default:
-        return <Bell className="w-5 h-5 text-gray-500" />
+        return <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
     }
   }
 
@@ -142,12 +142,12 @@ export default function NotificationsPage() {
 
   if (loading || roleLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-surface-dark rounded-lg p-4 mb-4">
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-4">
                   <div className="w-5 h-5 bg-gray-200 rounded"></div>
                   <div className="flex-1">
@@ -164,7 +164,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-dark dark:to-surface-darkAlt">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -185,7 +185,7 @@ export default function NotificationsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white dark:bg-surface-dark rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <HeadphonesIcon className="w-5 h-5 text-blue-600" />
@@ -199,7 +199,7 @@ export default function NotificationsPage() {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-surface-dark rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                 <Users className="w-5 h-5 text-green-600" />
@@ -213,10 +213,10 @@ export default function NotificationsPage() {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-surface-dark rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                <Bell className="w-5 h-5 text-gray-600" />
+              <div className="p-2 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg">
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
@@ -232,7 +232,7 @@ export default function NotificationsPage() {
         <div className="space-y-4">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
-              <div key={notification.id} className="bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={notification.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="p-4">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
@@ -250,8 +250,8 @@ export default function NotificationsPage() {
                               {notification.description}
                             </p>
                           )}
-                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800">
                               {getNotificationTypeLabel(notification.type)}
                             </span>
                             <span>
@@ -282,8 +282,8 @@ export default function NotificationsPage() {
               </div>
             ))
           ) : (
-            <div className="bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
-              <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-8 text-center">
+              <Bell className="w-12 h-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 Aucune notification
               </h3>
@@ -295,14 +295,14 @@ export default function NotificationsPage() {
         </div>
         
         {/* Actions rapides */}
-        <div className="mt-8 p-4 bg-white dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-800">
+        <div className="mt-8 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700">
           <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Actions rapides</h3>
           <div className="flex flex-wrap gap-3">
             {/* SÉCURITÉ: Lien admin tickets UNIQUEMENT pour admin/modérateurs */}
             {(isAdmin || isModerator) && (
               <Link 
                 href="/admin/tickets" 
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <HeadphonesIcon className="w-4 h-4" />
                 Gérer tickets support
@@ -311,7 +311,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/training-partners" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Users className="w-4 h-4" />
               Gérer partenaires
@@ -319,7 +319,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/support/contact" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Calendar className="w-4 h-4" />
               Contacter le support

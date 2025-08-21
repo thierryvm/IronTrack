@@ -15,7 +15,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             key={i}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               i <= currentStep 
-                ? 'bg-orange-500' 
+                ? 'bg-orange-600' 
                 : 'bg-gray-300'
             }`}
             initial={{ scale: 0.8 }}
@@ -36,16 +36,16 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     return (
       <div className="w-full mb-8">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Étape {currentStep + 1} sur {totalSteps}
           </span>
-          <span className="text-sm font-medium text-orange-800">
+          <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
             {Math.round(progress)}%
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <motion.div
-            className="bg-orange-500 h-2 rounded-full"
+            className="bg-orange-600 dark:bg-orange-500 h-2 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -63,8 +63,8 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             <motion.div
               className={`flex items-center justify-center w-8 h-8 rounded-full border-2 font-semibold text-sm ${
                 i <= currentStep
-                  ? 'bg-orange-500 border-orange-500 text-white'
-                  : 'bg-white border-gray-300 text-gray-400'
+                  ? 'bg-orange-600 border-orange-600 text-white'
+                  : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
               }`}
               initial={{ scale: 0.8 }}
               animate={{ 
@@ -80,7 +80,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             {i < totalSteps - 1 && (
               <div className="flex-1 h-px bg-gray-300 mx-4">
                 <motion.div
-                  className="h-full bg-orange-500"
+                  className="h-full bg-orange-600 dark:bg-orange-500"
                   initial={{ width: '0%' }}
                   animate={{ width: i < currentStep ? '100%' : '0%' }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
