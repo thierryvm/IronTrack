@@ -27,7 +27,7 @@ const Avatar = memo(function Avatar({ src, name = '', size = 96, className = '',
         <Image
           src={src}
           alt={name || 'Avatar'}
-          className="object-cover w-full h-full rounded-full border-2 border-white"
+          className="object-cover w-full h-full rounded-full border-2 border-white dark:border-gray-700"
           width={size}
           height={size}
           priority={size > 96} // LCP CRITICAL: Priority seulement pour grands avatars

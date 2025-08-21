@@ -14,6 +14,12 @@ import {
   Download
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
 
 interface OptimizationStats {
   totalImages: number
@@ -233,69 +239,72 @@ export default function ImageOptimizationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <Database className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
               Optimisation Images Existantes
             </h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Optimisez rétroactivement toutes les images déjà stockées dans Supabase Storage pour améliorer les performances.
           </p>
         </div>
 
         {/* Configuration */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Zap className="h-5 w-5 text-orange-600 mr-2" />
-            Configuration
-          </h2>
-          
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Zap className="h-5 w-5 text-orange-600 mr-2" />
+              Configuration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Buckets à optimiser
               </label>
               <div className="flex space-x-4">
                 {['exercise-images', 'avatars'].map(bucket => (
-                  <label key={bucket} className="flex items-center">
-                    <input
-                      type="checkbox"
+                  <div key={bucket} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`bucket-${bucket}`}
                       checked={selectedBuckets.includes(bucket)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
+                      onCheckedChange={(checked) => {
+                        if (checked) {
                           setSelectedBuckets([...selectedBuckets, bucket])
                         } else {
                           setSelectedBuckets(selectedBuckets.filter(b => b !== bucket))
                         }
                       }}
-                      className="mr-2"
                     />
-                    <span className="text-sm text-gray-700">{bucket}</span>
-                  </label>
+                    <Label htmlFor={`bucket-${bucket}`} className="text-sm cursor-pointer">
+                      {bucket}
+                    </Label>
+                  </div>
                 ))}
               </div>
             </div>
             
             <div className="flex space-x-4">
-              <button
+              <Button
                 onClick={scanBuckets}
                 disabled={stats.isRunning || selectedBuckets.length === 0}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 <Database className="h-4 w-4 mr-2" />
                 Scanner les buckets
-              </button>
+              </Button>
               
               {scanResults && (
-                <button
+                <Button
                   onClick={startOptimization}
                   disabled={stats.isRunning}
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 flex items-center"
+                  className="bg-orange-600 hover:bg-orange-700"
                 >
                   {stats.isRunning ? (
                     <>
@@ -308,15 +317,16 @@ export default function ImageOptimizationPage() {
                       Démarrer optimisation
                     </>
                   )}
-                </button>
+                </Button>
               )}
             </div>
           </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Résultats scan */}
         {scanResults && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <ImageIcon className="h-5 w-5 text-blue-600 mr-2" />
               Résultats du scan
@@ -324,9 +334,9 @@ export default function ImageOptimizationPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.entries(scanResults).map(([bucket, data]: [string, { totalFiles: number; estimatedSize: number; files: unknown[]; totalFoundFiles?: number; alreadyOptimized?: number; estimatedSavings?: number }]) => (
-                <div key={bucket} className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2">{bucket}</h3>
-                  <div className="space-y-2 text-sm text-gray-600">
+                <div key={bucket} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{bucket}</h3>
+                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <div>📁 {data.totalFoundFiles || data.totalFiles} images totales</div>
                     <div>🎯 {data.totalFiles} à optimiser</div>
                     {(data.alreadyOptimized || 0) > 0 && (
@@ -343,89 +353,93 @@ export default function ImageOptimizationPage() {
 
         {/* Statistiques en temps réel */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div 
-            className="bg-white p-6 rounded-xl shadow-md"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Images traitées</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.processedImages}/{stats.totalImages}
-                </p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-blue-600" />
-            </div>
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Images traitées</p>
+                    <p className="text-2xl font-bold">
+                      {stats.processedImages}/{stats.totalImages}
+                    </p>
+                  </div>
+                  <BarChart3 className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
           
-          <motion.div 
-            className="bg-white p-6 rounded-xl shadow-md"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Images optimisées</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {stats.optimizedImages}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Images optimisées</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {stats.optimizedImages}
+                    </p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
           
-          <motion.div 
-            className="bg-white p-6 rounded-xl shadow-md"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Espace économisé</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {(stats.totalSavings / 1024 / 1024).toFixed(1)}MB
-                </p>
-              </div>
-              <Download className="h-8 w-8 text-orange-600" />
-            </div>
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Espace économisé</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {(stats.totalSavings / 1024 / 1024).toFixed(1)}MB
+                    </p>
+                  </div>
+                  <Download className="h-8 w-8 text-orange-600" />
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
           
-          <motion.div 
-            className="bg-white p-6 rounded-xl shadow-md"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Compression</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {(stats.compressionRatio * 100).toFixed(1)}%
-                </p>
-              </div>
-              <Zap className="h-8 w-8 text-purple-600" />
-            </div>
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Compression</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      {(stats.compressionRatio * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                  <Zap className="h-8 w-8 text-purple-600" />
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
 
         {/* Barre de progression */}
         {stats.isRunning && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Progression</h3>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
                 Batch {stats.currentBatch}/{stats.totalBatches}
               </span>
             </div>
             
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
               <div 
-                className="bg-orange-600 h-3 rounded-full transition-all duration-300"
+                className="bg-orange-600 dark:bg-orange-500 h-3 rounded-full transition-all duration-300"
                 style={{ 
                   width: `${stats.totalBatches > 0 ? (stats.currentBatch / stats.totalBatches) * 100 : 0}%` 
                 }}
               />
             </div>
             
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-orange-600 rounded-full mr-2 animate-pulse" />
+                <div className="w-3 h-3 bg-orange-600 dark:bg-orange-500 rounded-full mr-2 animate-pulse" />
                 Optimisation en cours...
               </div>
               <div>
@@ -441,49 +455,49 @@ export default function ImageOptimizationPage() {
 
         {/* Résultats détaillés */}
         {stats.completed && stats.results.length > 0 && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
               Résultats Détaillés ({stats.results.length} fichiers traités)
             </h3>
             
             {/* Résumé rapide */}
-            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
                   {stats.results.filter(r => r.status === 'optimized').length}
                 </div>
-                <div className="text-sm text-gray-600">Optimisées</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Optimisées</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">
                   {stats.results.filter(r => r.status === 'skipped').length}
                 </div>
-                <div className="text-sm text-gray-600">Ignorées</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Ignorées</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">
                   {stats.results.filter(r => r.status === 'error').length}
                 </div>
-                <div className="text-sm text-gray-600">Erreurs</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Erreurs</div>
               </div>
             </div>
             
             {/* Liste détaillée */}
             <div className="max-h-64 overflow-y-auto space-y-2">
               {stats.results.map((result, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    {result.status === 'optimized' && <CheckCircle className="h-4 w-4 text-green-600" />}
-                    {result.status === 'skipped' && <Pause className="h-4 w-4 text-blue-600" />}
-                    {result.status === 'error' && <AlertTriangle className="h-4 w-4 text-red-600" />}
+                    {result.status === 'optimized' && <CheckCircle className="h-6 w-6 text-green-600" />}
+                    {result.status === 'skipped' && <Pause className="h-6 w-6 text-blue-600" />}
+                    {result.status === 'error' && <AlertTriangle className="h-6 w-6 text-red-600" />}
                     
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {result.file.substring(0, 20)}...
                     </span>
                   </div>
                   
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     {result.status === 'optimized' && result.originalSize && result.optimizedSize && (
                       <span className="text-green-600 font-medium">
                         {Math.round((result.originalSize - result.optimizedSize) / 1024)}KB économisés 

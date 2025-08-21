@@ -61,56 +61,56 @@ export default function UnifiedMealModal({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+          className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 Ajouter un repas - {mealType}
               </h2>
               <button
                 onClick={handleClose}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-1 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
             
             {/* Onglets de sélection du mode */}
-            <div className="flex space-x-1 mt-4 bg-gray-100 p-1 rounded-lg">
+            <div className="flex space-x-1 mt-4 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 p-1 rounded-lg">
               <button
                 onClick={() => setAddMode('smart')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
-                    ? 'bg-white text-orange-800 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
                 }`}
               >
-                <Search className="h-4 w-4 inline mr-2" />
+                <Search className="h-6 w-6 inline mr-2" />
                 Recherche intelligente
               </button>
               <button
                 onClick={() => setAddMode('manual')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
-                    ? 'bg-white text-orange-800 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
                 }`}
               >
-                <Edit className="h-4 w-4 inline mr-2" />
+                <Edit className="h-6 w-6 inline mr-2" />
                 Saisie manuelle
               </button>
               <button
                 onClick={() => setAddMode('builder')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
-                    ? 'bg-white text-orange-800 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
                 }`}
               >
-                <ChefHat className="h-4 w-4 inline mr-2" />
+                <ChefHat className="h-6 w-6 inline mr-2" />
                 Créateur de repas
               </button>
             </div>
@@ -122,8 +122,8 @@ export default function UnifiedMealModal({
               <div className="p-6">
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">🔍</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Recherche intelligente</h3>
-                  <p className="text-gray-600 text-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Recherche intelligente</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Trouvez rapidement des aliments avec notre base de données étendue
                   </p>
                 </div>
@@ -141,8 +141,8 @@ export default function UnifiedMealModal({
               <div className="p-6">
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">✏️</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Saisie manuelle</h3>
-                  <p className="text-gray-600 text-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Saisie manuelle</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Entrez manuellement les valeurs nutritionnelles de votre repas
                   </p>
                 </div>
@@ -160,8 +160,8 @@ export default function UnifiedMealModal({
               <div className="p-6">
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">👨‍🍳</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Créateur de repas</h3>
-                  <p className="text-gray-600 text-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Créateur de repas</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Créez des repas complexes avec plusieurs ingrédients
                   </p>
                 </div>
@@ -300,15 +300,15 @@ function ManualMealForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Nom du repas *
         </label>
         <input
           type="text"
           value={form.name}
           onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-            errors.name ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+            errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
           }`}
           placeholder="Ex: Salade de poulet"
           maxLength={100}
@@ -318,7 +318,7 @@ function ManualMealForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Quantité *
           </label>
           <div className="flex space-x-2">
@@ -326,8 +326,8 @@ function ManualMealForm({
               type="number"
               value={form.quantity}
               onChange={(e) => setForm(prev => ({ ...prev, quantity: e.target.value }))}
-              className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-                errors.quantity ? 'border-red-500' : 'border-gray-300'
+              className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+                errors.quantity ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               min="1"
               max="10000"
@@ -335,7 +335,7 @@ function ManualMealForm({
             <select
               value={form.unit}
               onChange={(e) => setForm(prev => ({ ...prev, unit: e.target.value }))}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
             >
               <option value="g">g</option>
               <option value="kg">kg</option>
@@ -349,15 +349,15 @@ function ManualMealForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Calories *
           </label>
           <input
             type="number"
             value={form.calories}
             onChange={(e) => setForm(prev => ({ ...prev, calories: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-              errors.calories ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+              errors.calories ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
             }`}
             min="1"
             max="5000"
@@ -369,15 +369,15 @@ function ManualMealForm({
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Protéines (g) *
           </label>
           <input
             type="number"
             value={form.protein}
             onChange={(e) => setForm(prev => ({ ...prev, protein: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-              errors.protein ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+              errors.protein ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
             }`}
             min="0"
             max="500"
@@ -387,15 +387,15 @@ function ManualMealForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Glucides (g) *
           </label>
           <input
             type="number"
             value={form.carbs}
             onChange={(e) => setForm(prev => ({ ...prev, carbs: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-              errors.carbs ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+              errors.carbs ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
             }`}
             min="0"
             max="500"
@@ -405,15 +405,15 @@ function ManualMealForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Lipides (g) *
           </label>
           <input
             type="number"
             value={form.fat}
             onChange={(e) => setForm(prev => ({ ...prev, fat: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-              errors.fat ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+              errors.fat ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
             }`}
             min="0"
             max="200"
@@ -427,11 +427,11 @@ function ManualMealForm({
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+          className="px-6 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
         >
           {saving ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
               <span>Sauvegarde...</span>
             </>
           ) : (
@@ -569,14 +569,14 @@ function MultiIngredientMealBuilder({
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Nom du repas *
           </label>
           <input
             type="text"
             value={mealName}
             onChange={(e) => setMealName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
             placeholder="Ex: Salade mixte"
             maxLength={100}
             required
@@ -584,7 +584,7 @@ function MultiIngredientMealBuilder({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Ajouter des ingrédients
           </label>
           <FoodSearchAutocomplete
@@ -595,12 +595,12 @@ function MultiIngredientMealBuilder({
 
         {ingredients.length > 0 && (
           <div className="space-y-3">
-            <h4 className="font-medium text-gray-900">Ingrédients ({ingredients.length})</h4>
+            <h4 className="font-medium text-gray-900 dark:text-gray-100">Ingrédients ({ingredients.length})</h4>
             {ingredients.map((ingredient) => (
-              <div key={ingredient.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <div key={ingredient.id} className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900">{ingredient.food.name}</div>
-                  <div className="text-sm text-gray-600">
+                  <div className="font-medium text-gray-900 dark:text-gray-100">{ingredient.food.name}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     {Math.round((ingredient.food.calories || 0) * ingredient.quantity / 100)} kcal • 
                     P: {Math.round((ingredient.food.protein || 0) * ingredient.quantity / 100 * 10) / 10}g • 
                     G: {Math.round((ingredient.food.carbs || 0) * ingredient.quantity / 100 * 10) / 10}g • 
@@ -612,24 +612,24 @@ function MultiIngredientMealBuilder({
                     type="number"
                     value={ingredient.quantity}
                     onChange={(e) => updateQuantity(ingredient.id, Number(e.target.value))}
-                    className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-600"
                     min="1"
                     max="10000"
                   />
-                  <span className="text-sm text-gray-500">g</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">g</span>
                   <button
                     type="button"
                     onClick={() => removeIngredient(ingredient.id)}
                     className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-6 w-6" />
                   </button>
                 </div>
               </div>
             ))}
 
             {/* Résumé nutritionnel */}
-            <div className="bg-orange-50 p-4 rounded-lg">
+            <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-orange-900 mb-2">Total nutritionnel</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
@@ -657,16 +657,16 @@ function MultiIngredientMealBuilder({
           <button
             type="submit"
             disabled={saving || !mealName.trim() || ingredients.length === 0}
-            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            className="px-6 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
           >
             {saving ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
                 <span>Sauvegarde...</span>
               </>
             ) : (
               <>
-                <Save className="h-4 w-4" />
+                <Save className="h-6 w-6" />
                 <span>Créer le repas</span>
               </>
             )}

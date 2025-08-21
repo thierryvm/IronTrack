@@ -42,8 +42,8 @@ export const ariaLabels = {
 
 // Classes CSS pour améliorer le contraste
 export const contrastClasses = {
-  highContrast: "text-gray-900 bg-white border-gray-300",
-  focusVisible: "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500",
+  highContrast: "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600",
+  focusVisible: "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-600",
   skipLink: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-orange-600 focus:text-white focus:rounded"
 } as const
 
@@ -65,7 +65,7 @@ export function getInteractiveDescription(type: 'button' | 'link' | 'input', con
 // Vérification du contraste des couleurs (approximatif)
 export function hasGoodContrast(bgColor: string, textColor: string): boolean {
   // Implémentation simplifiée - en production, utiliser une lib spécialisée
-  const darkBgs = ['bg-gray-900', 'bg-black', 'bg-orange-600', 'bg-red-600']
+  const darkBgs = ['bg-gray-900', 'bg-black', 'bg-orange-600', 'bg-red-500']
   const lightTexts = ['text-white', 'text-gray-100']
   
   return (darkBgs.some(bg => bgColor.includes(bg)) && lightTexts.some(text => textColor.includes(text))) ||

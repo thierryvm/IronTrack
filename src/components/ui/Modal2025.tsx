@@ -3,7 +3,7 @@
 import { ReactNode, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { Button2025 } from './Button2025'
+import { ButtonMigrated } from './ButtonMigrated'
 
 interface Modal2025Props {
   isOpen: boolean
@@ -81,7 +81,7 @@ export function Modal2025({
             transition={{ type: 'spring', duration: 0.3 }}
             className={`
               relative w-full ${sizeClasses[size]} mx-4 
-              bg-white rounded-xl shadow-2xl 
+              bg-white dark:bg-gray-900 rounded-xl shadow-2xl 
               max-h-[90vh] overflow-hidden
               ${className}
             `}
@@ -89,19 +89,19 @@ export function Modal2025({
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 {title && (
-                  <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
                 )}
                 {showCloseButton && (
-                  <Button2025
+                  <ButtonMigrated
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                   >
                     <X className="h-5 w-5" />
-                  </Button2025>
+                  </ButtonMigrated>
                 )}
               </div>
             )}
@@ -128,7 +128,7 @@ export function ModalContent({ children, className = '' }: { children: ReactNode
 
 export function ModalFooter({ children, className = '' }: { children: ReactNode, className?: string }) {
   return (
-    <div className={`flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50 ${className}`}>
+    <div className={`flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 ${className}`}>
       {children}
     </div>
   )

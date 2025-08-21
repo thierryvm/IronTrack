@@ -11,12 +11,10 @@ export default {
       // Système de couleurs complet IronTrack (ChatGPT optimisé)
       colors: {
         // Surfaces principales
-        surface: {
-          light: '#ffffff',      // Fond clair principal
-          lightAlt: '#f9fafb',   // Fond clair alternatif
-          dark: '#0b1220',       // Fond sombre principal
-          darkAlt: '#111827',    // Fond sombre alternatif
-        },
+        'surface-light': '#ffffff',      // Fond clair principal
+        'surface-lightAlt': '#f9fafb',   // Fond clair alternatif
+        'surface-dark': '#0b1220',       // Fond sombre principal
+        'surface-darkAlt': '#111827',    // Fond sombre alternatif
         
         // Brand - Orange IronTrack
         brand: {

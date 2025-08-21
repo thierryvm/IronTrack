@@ -1,10 +1,16 @@
 "use client"
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Eye, Edit, X as LucideX, Filter, Clock, Calendar, CheckCircle, Target, Users, Activity, Waves, Zap, Flower, Smile, Dumbbell } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Plus, Eye, Edit, X, Filter, Clock, Calendar, CheckCircle, Target, Users, Activity, Waves, Zap, Flower, Smile, Dumbbell } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+
+// MIGRATION SHADCN/UI
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
 // PERFORMANCE CRITICAL: Images optimisées WebP/AVIF
 // import { OptimizedAvatar, OptimizedImage } from '@/components/PerformanceImageOptimizer'
 
@@ -28,7 +34,7 @@ interface WorkoutModalProps {
 }
 
 const workoutTypes = [
-  { name: 'Musculation', color: 'bg-orange-500', icon: Dumbbell },
+  { name: 'Musculation', color: 'bg-orange-600', icon: Dumbbell },
   { name: 'Cardio', color: 'bg-blue-500', icon: Clock },
   { name: 'Étirement', color: 'bg-green-500', icon: Target },
   { name: 'Cours collectif', color: 'bg-purple-500', icon: Users },
@@ -48,116 +54,79 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
   const isCompleted = workout.status === 'Réalisé' || workout.status === 'Terminé'
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50"
-          onClick={onClose}
-        >
-          {/* Overlay avec effet de flou */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.75), rgba(20,20,30,0.6))',
-              backdropFilter: 'blur(15px) brightness(0.7)',
-              WebkitBackdropFilter: 'blur(15px) brightness(0.7)'
-            }}
-          />
-          
-          {/* Container centré pour la modal */}
-          <div className="relative flex items-center justify-center min-h-full p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${workoutType.color}`}>
-                  <Icon className="h-5 w-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">{workout.name}</h2>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                aria-label="Fermer la fenêtre de détails"
-              >
-                <LucideX className="h-5 w-5 text-gray-500" />
-              </button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-3">
+            <div className={`p-2 rounded-lg ${workoutType.color}`}>
+              <Icon className="h-5 w-5 text-white" />
             </div>
+            <span>{workout.name}</span>
+          </DialogTitle>
+        </DialogHeader>
 
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
-                  {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
-
-              {workout.start_time && (
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">{workout.start_time}</span>
-                </div>
-              )}
-
-              {workout.duration && (
-                <div className="flex items-center space-x-2">
-                  <Target className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">{workout.duration} minutes</span>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                }`}>
-                  {isCompleted ? '✅ Réalisé' : '⏳ Planifié'}
-                </span>
-              </div>
-
-              {workout.notes && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-700">{workout.notes}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex space-x-2 mt-6">
-              {!isCompleted && (
-                <button
-                  onClick={() => {
-                    onStatusChange(workout.id, 'Réalisé')
-                    onClose()
-                  }}
-                  className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors"
-                >
-                  ✅ Marquer comme réalisé
-                </button>
-              )}
-              <Link
-                href={`/workouts/${workout.id}/edit`}
-                className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors text-center"
-              >
-                ✏️ Modifier
-              </Link>
-            </div>
-          </motion.div>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </span>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+
+          {workout.start_time && (
+            <div className="flex items-center space-x-2">
+              <Clock className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm text-gray-600 dark:text-gray-300">{workout.start_time}</span>
+            </div>
+          )}
+
+          {workout.duration && (
+            <div className="flex items-center space-x-2">
+              <Target className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm text-gray-600 dark:text-gray-300">{workout.duration} minutes</span>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Badge variant={isCompleted ? "default" : "secondary"} className={isCompleted ? "bg-green-100 text-green-800 hover:bg-green-200" : "bg-blue-100 text-blue-800 hover:bg-blue-200"}>
+              {isCompleted ? '✅ Réalisé' : '⏳ Planifié'}
+            </Badge>
+          </div>
+
+          {workout.notes && (
+            <Card>
+              <CardContent className="pt-4">
+                <p className="text-sm text-gray-700 dark:text-gray-300">{workout.notes}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <div className="flex space-x-2 mt-6">
+          {!isCompleted && (
+            <Button
+              onClick={() => {
+                onStatusChange(workout.id, 'Réalisé')
+                onClose()
+              }}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              ✅ Marquer comme réalisé
+            </Button>
+          )}
+          <Button asChild variant="outline" size="sm" className="flex-1">
+            <Link href={`/workouts/${workout.id}/edit`}>
+              ✏️ Modifier
+            </Link>
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -263,7 +232,7 @@ export default function WorkoutsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       <WorkoutModal 
         workout={selectedWorkout} 
         isOpen={!!selectedWorkout} 
@@ -271,31 +240,31 @@ export default function WorkoutsPage() {
         onStatusChange={changeWorkoutStatus}
       />
       
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold">Mes Séances</h1>
               <p className="text-white/90">Organise et suis tes entraînements</p>
             </div>
-            <Link
-              href="/workouts/new"
-              className="bg-white text-orange-800 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="h-5 w-5" />
-              <span>Nouvelle séance</span>
-            </Link>
+            <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
+              <Link href="/workouts/new">
+                <Plus className="h-5 w-5" />
+                <span>Nouvelle séance</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtres */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-500" />
-              <span className="font-medium text-gray-700">Filtres :</span>
+              <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <span className="font-medium text-gray-700 dark:text-gray-300">Filtres :</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {[
@@ -303,31 +272,30 @@ export default function WorkoutsPage() {
                 { value: 'pending', label: 'À venir', icon: '⏳' },
                 { value: 'completed', label: 'Terminées', icon: '✅' }
               ].map(filter => (
-                <button
+                <Button
                   key={filter.value}
                   onClick={() => setFilterStatus(filter.value)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${ 
-                    filterStatus === filter.value
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  variant={filterStatus === filter.value ? "default" : "outline"}
+                  size="sm"
+                  className={filterStatus === filter.value ? "bg-orange-600 hover:bg-orange-700 text-white" : ""}
                 >
                   {filter.icon} {filter.label}
-                </button>
+                </Button>
               ))}
             </div>
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-            <p className="mt-4 text-gray-500">Chargement de tes séances...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Chargement de tes séances...</p>
           </div>
         ) : (
           <>
             <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {totalCount} séance{totalCount > 1 ? 's' : ''} trouvée{totalCount > 1 ? 's' : ''}
               </h2>
             </div>
@@ -345,44 +313,48 @@ export default function WorkoutsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer border-l-4 ${
-                      isCompleted ? 'border-green-500' : 'border-orange-500'
-                    }`}
-                    onClick={() => setSelectedWorkout(workout)}
                   >
-                    <div className="p-6">
+                    <Card 
+                      className={`cursor-pointer border-l-4 hover:shadow-lg transition-all min-h-[200px] flex flex-col ${
+                        isCompleted ? 'border-l-green-500' : 'border-l-orange-600'
+                      }`}
+                      onClick={() => setSelectedWorkout(workout)}
+                      data-shadcn-card="true"
+                    >
+                      <CardContent className="p-6 flex flex-col h-full">
+                      {/* Section titre - fixe */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-3">
                           <div className={`p-2 rounded-lg ${workoutType.color}`}>
                             <Icon className="h-5 w-5 text-white" />
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-900 text-lg">{workout.name}</h3>
-                            <p className="text-sm text-gray-500">{workoutType.name}</p>
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">{workout.name}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{workoutType.name}</p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      {/* Section détails - variable avec hauteur minimum */}
+                      <div className="flex-1 flex flex-col justify-center space-y-2 mb-4">
+                        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                           <Calendar className="h-4 w-4" />
                           <span>{new Date(workout.scheduled_date).toLocaleDateString('fr-FR')}</span>
                         </div>
                         {workout.start_time && (
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                             <Clock className="h-4 w-4" />
                             <span>{workout.start_time}</span>
                           </div>
                         )}
-                        {workout.duration && (
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <Target className="h-4 w-4" />
-                            <span>{workout.duration} min</span>
-                          </div>
-                        )}
+                        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                          <Target className="h-4 w-4" />
+                          <span>{workout.duration ? `${workout.duration} min` : 'Durée libre'}</span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
+                      {/* Section actions - fixe en bas */}
+                      <div className="flex items-center justify-between mt-auto">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         }`}>
@@ -390,41 +362,51 @@ export default function WorkoutsPage() {
                         </span>
 
                         <div className="flex space-x-1">
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedWorkout(workout);
                             }}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            variant="ghost"
+                            size="sm"
+                            className="p-2 h-auto w-auto hover:bg-blue-50 dark:hover:bg-blue-900/20"
                             title="Voir détails"
                             aria-label="Voir les détails de la séance"
                           >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <Link
-                            href={`/workouts/${workout.id}/edit`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-2 text-gray-400 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
+                            <Eye className="h-6 w-6" />
+                          </Button>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className="p-2 h-auto w-auto hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             title="Modifier"
                             aria-label="Modifier la séance"
                           >
-                            <Edit className="h-4 w-4" />
-                          </Link>
+                            <Link
+                              href={`/workouts/${workout.id}/edit`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Edit className="h-6 w-6" />
+                            </Link>
+                          </Button>
                         </div>
                       </div>
 
                       {!isCompleted && (
-                        <button
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             changeWorkoutStatus(workout.id, 'Réalisé');
                           }}
-                          className="w-full mt-4 bg-green-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors text-sm"
+                          className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
+                          size="sm"
                         >
                           ✅ Marquer comme réalisé
-                        </button>
+                        </Button>
                       )}
-                    </div>
+                      </CardContent>
+                    </Card>
                   </motion.div>
                 );
               })}
@@ -433,48 +415,41 @@ export default function WorkoutsPage() {
             {workouts.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🏋️</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucune séance trouvée</h3>
-                <p className="text-gray-500 mb-6">Commence par créer ta première séance d'entraînement !</p>
-                <Link
-                  href="/workouts/new"
-                  className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors inline-flex items-center space-x-2"
-                >
-                  <Plus className="h-5 w-5" />
-                  <span>Créer une séance</span>
-                </Link>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Aucune séance trouvée</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">Commence par créer ta première séance d'entraînement !</p>
+                <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
+                  <Link href="/workouts/new">
+                    <Plus className="h-5 w-5" />
+                    <span>Créer une séance</span>
+                  </Link>
+                </Button>
               </div>
             )}
 
             {/* Pagination */}
             {totalCount > PAGE_SIZE && (
               <div className="flex justify-center items-center gap-4 mt-8">
-                <button
+                <Button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    page === 1 
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                      : 'bg-orange-600 text-white hover:bg-orange-700'
-                  }`}
+                  variant={page === 1 ? "outline" : "default"}
+                  className={page === 1 ? "" : "bg-orange-600 hover:bg-orange-700 text-white"}
                   aria-label="Page précédente"
                 >
                   Précédent
-                </button>
-                <span className="font-semibold">
+                </Button>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">
                   Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
                 </span>
-                <button
+                <Button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    page >= Math.ceil(totalCount / PAGE_SIZE) 
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                      : 'bg-orange-600 text-white hover:bg-orange-700'
-                  }`}
+                  variant={page >= Math.ceil(totalCount / PAGE_SIZE) ? "outline" : "default"}
+                  className={page >= Math.ceil(totalCount / PAGE_SIZE) ? "" : "bg-orange-600 hover:bg-orange-700 text-white"}
                   aria-label="Page suivante"
                 >
                   Suivant
-                </button>
+                </Button>
               </div>
             )}
           </>

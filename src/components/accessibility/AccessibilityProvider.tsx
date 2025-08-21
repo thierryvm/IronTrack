@@ -119,10 +119,10 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
             background: #000 !important;
             color: #fff !important;
           }
-          .text-gray-600 {
+          .text-gray-600 dark:text-gray-300 {
             color: #000 !important;
           }
-          .bg-gray-50 {
+          .bg-gray-50 dark:bg-gray-800 {
             background: #fff !important;
           }
         `}</style>

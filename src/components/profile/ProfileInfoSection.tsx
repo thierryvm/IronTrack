@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { InlineEditField } from '@/components/ui/InlineEditField'
 import { createClient } from '@/utils/supabase/client'
 import { EmailChangeModal } from '@/components/profile/EmailChangeModal'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ProfileData {
   id: string
@@ -69,166 +70,191 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
   ]
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="font-bold text-gray-900 mb-6 text-xl">
-        Informations personnelles
-      </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl">
+          Informations personnelles
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
       
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Email - Modification sécurisée */}
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200 group cursor-pointer hover:shadow-sm transition-all" onClick={() => setShowEmailChangeModal(true)}>
-          <div className="text-sm text-gray-600 font-medium mb-2 flex items-center justify-between">
+        <Card className="cursor-pointer hover:shadow-sm transition-all" onClick={() => setShowEmailChangeModal(true)}>
+          <CardContent className="p-4">
+          <div className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2 flex items-center justify-between">
             📧 Email
             <button className="text-xs text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity">
               Modifier
             </button>
           </div>
-          <div className="font-bold text-gray-800 text-sm break-all">
+          <div className="font-bold text-gray-800 dark:text-gray-200 text-sm break-all">
             {profile.email}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Modification sécurisée disponible</div>
-        </div>
+          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Modification sécurisée disponible</div>
+          </CardContent>
+        </Card>
 
         {/* Pseudo */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
-          <InlineEditField
-            label="👤 Pseudo"
-            value={profile.pseudo}
-            onSave={(value) => updateProfile('pseudo', value)}
-            placeholder="Votre pseudo public"
-            type="text"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="👤 Pseudo"
+              value={profile.pseudo}
+              onSave={(value) => updateProfile('pseudo', value)}
+              placeholder="Votre pseudo public"
+              type="text"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Objectif */}
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
-          <InlineEditField
-            label="🎯 Objectif"
-            value={profile.goal}
-            onSave={(value) => updateProfile('goal', value)}
-            type="select"
-            options={goalOptions}
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 dark:border-orange-800">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="🎯 Objectif"
+              value={profile.goal}
+              onSave={(value) => updateProfile('goal', value)}
+              type="select"
+              options={goalOptions}
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Niveau d'expérience */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-          <InlineEditField
-            label="🏆 Niveau d'expérience"
-            value={profile.experience}
-            onSave={(value) => updateProfile('experience', value)}
-            type="select"
-            options={experienceOptions}
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="🏆 Niveau d'expérience"
+              value={profile.experience}
+              onSave={(value) => updateProfile('experience', value)}
+              type="select"
+              options={experienceOptions}
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Fréquence d'entraînement */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-          <InlineEditField
-            label="📅 Fréquence d'entraînement"
-            value={profile.frequency}
-            onSave={(value) => updateProfile('frequency', value)}
-            type="select"
-            options={frequencyOptions}
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="📅 Fréquence d'entraînement"
+              value={profile.frequency}
+              onSave={(value) => updateProfile('frequency', value)}
+              type="select"
+              options={frequencyOptions}
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Disponibilité par séance */}
-        <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl border border-teal-200">
-          <InlineEditField
-            label="⏱️ Disponibilité par séance"
-            value={profile.availability}
-            onSave={(value) => updateProfile('availability', value)}
-            type="number"
-            min={30}
-            max={180}
-            unit="min"
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="⏱️ Disponibilité par séance"
+              value={profile.availability}
+              onSave={(value) => updateProfile('availability', value)}
+              type="number"
+              min={30}
+              max={180}
+              unit="min"
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Âge */}
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl border border-indigo-200">
-          <InlineEditField
-            label="🎂 Âge"
-            value={profile.age}
-            onSave={(value) => updateProfile('age', value)}
-            type="number"
-            min={13}
-            max={100}
-            unit="ans"
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="🎂 Âge"
+              value={profile.age}
+              onSave={(value) => updateProfile('age', value)}
+              type="number"
+              min={13}
+              max={100}
+              unit="ans"
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Taille */}
-        <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl border border-cyan-200">
-          <InlineEditField
-            label="📏 Taille"
-            value={profile.height}
-            onSave={(value) => updateProfile('height', value)}
-            type="number"
-            min={100}
-            max={250}
-            unit="cm"
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="📏 Taille"
+              value={profile.height}
+              onSave={(value) => updateProfile('height', value)}
+              type="number"
+              min={100}
+              max={250}
+              unit="cm"
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Poids actuel */}
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200">
-          <InlineEditField
-            label="⚖️ Poids actuel"
-            value={profile.weight}
-            onSave={(value) => updateProfile('weight', value)}
-            type="number"
-            min={30}
-            max={300}
-            step={0.1}
-            unit="kg"
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="⚖️ Poids actuel"
+              value={profile.weight}
+              onSave={(value) => updateProfile('weight', value)}
+              type="number"
+              min={30}
+              max={300}
+              step={0.1}
+              unit="kg"
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
 
         {/* Poids initial */}
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl border border-amber-200">
-          <InlineEditField
-            label="📊 Poids initial"
-            value={profile.initial_weight}
-            onSave={(value) => updateProfile('initial_weight', value)}
-            type="number"
-            min={30}
-            max={300}
-            step={0.1}
-            unit="kg"
-            placeholder="Non renseigné"
-            className="p-4"
-          />
-        </div>
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+          <CardContent className="p-0">
+            <InlineEditField
+              label="📊 Poids initial"
+              value={profile.initial_weight}
+              onSave={(value) => updateProfile('initial_weight', value)}
+              type="number"
+              min={30}
+              max={300}
+              step={0.1}
+              unit="kg"
+              placeholder="Non renseigné"
+              className="p-4"
+            />
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">💡</span>
-          <div>
-            <p className="text-sm font-semibold text-blue-800">Modification instantanée</p>
-            <p className="text-xs text-blue-700">
-              Cliquez sur n'importe quel champ pour le modifier. Vos changements sont sauvegardés automatiquement.
-            </p>
+      <Card className="mt-6">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">💡</span>
+            <div>
+              <p className="text-sm font-semibold">Modification instantanée</p>
+              <p className="text-xs text-muted-foreground">
+                Cliquez sur n'importe quel champ pour le modifier. Vos changements sont sauvegardés automatiquement.
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Modal de changement d'email sécurisé */}
       <EmailChangeModal
@@ -240,6 +266,7 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
           setShowEmailChangeModal(false)
         }}
       />
-    </div>
+      </CardContent>
+    </Card>
   )
 }

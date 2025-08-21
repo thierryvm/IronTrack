@@ -64,10 +64,10 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Informations physiques
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Ces informations nous aideront à personnaliser vos programmes et suivre votre progression
         </p>
       </div>
@@ -91,10 +91,10 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 max="250"
                 value={height}
                 onChange={(e) => handleInputChange('height', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="170"
               />
-              <span className="text-gray-500 font-medium">cm</span>
+              <span className="text-gray-600 dark:text-gray-400 font-medium">cm</span>
             </div>
           </CardContent>
         </Card>
@@ -117,10 +117,10 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 max="200"
                 value={weight}
                 onChange={(e) => handleInputChange('weight', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="70"
               />
-              <span className="text-gray-500 font-medium">kg</span>
+              <span className="text-gray-600 dark:text-gray-400 font-medium">kg</span>
             </div>
           </CardContent>
         </Card>
@@ -142,10 +142,10 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 max="100"
                 value={age}
                 onChange={(e) => handleInputChange('age', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="25"
               />
-              <span className="text-gray-500 font-medium">ans</span>
+              <span className="text-gray-600 dark:text-gray-400 font-medium">ans</span>
             </div>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
         <Card className="p-4">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-50 text-orange-800">
+              <div className="p-2 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300">
                 <User className="h-5 w-5" />
               </div>
               <CardTitle className="text-lg">Poids initial</CardTitle>
@@ -169,12 +169,12 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                   max="200"
                   value={initialWeight}
                   onChange={(e) => handleInputChange('initial_weight', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="75"
                 />
-                <span className="text-gray-500 font-medium">kg</span>
+                <span className="text-gray-600 dark:text-gray-400 font-medium">kg</span>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 Votre poids au début de votre parcours fitness
               </p>
             </div>

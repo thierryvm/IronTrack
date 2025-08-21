@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./hmr-optimization";
 import dynamic from "next/dynamic";
 import ClientProviders from "@/components/ClientProviders";
 
 // Lazy loading pour optimiser le bundle initial  
 const ConditionalHeader = dynamic(() => import("@/components/layout/ConditionalHeader").then(mod => ({ default: mod.ConditionalHeader })), {
   ssr: true,
-  loading: () => <div className="h-16 bg-orange-600" />
+  loading: () => <div className="h-16 bg-orange-600 dark:bg-orange-500" />
 });
 
 // ULTRAHARDCORE: Police système uniquement
@@ -60,9 +61,9 @@ export default function RootLayout({
         
         {/* ULTRAHARDCORE: Script d'interception supprimé - causait erreurs Object.defineProperty */}
 
-        {/* Extension Error Shield ULTRAHARDCORE - Bloque toutes erreurs extensions */}
+        {/* Extension Error Shield ULTRAHARDCORE + Performance - Bloque erreurs et optimise messages */}
         <script dangerouslySetInnerHTML={{
-          __html: `(function(){if(typeof chrome!=='undefined'){const orig={error:console.error,warn:console.warn};console.error=console.warn=function(...a){const msg=a[0]?.toString?.()??'';if(msg.includes('runtime.lastError')||msg.includes('Receiving end does not exist')||msg.includes('message port closed')||msg.includes('Could not establish connection')||msg.includes('Extension context')||msg.includes('chrome-extension://')||msg.includes('unload')||a[1]?.url?.includes?.('chrome-extension'))return;return orig.error.apply(console,a)};window.addEventListener('error',e=>{const src=e.filename||e.target?.src||'';if(src.includes('chrome-extension')||src.includes('content.js'))e.stopImmediatePropagation()},true)}})();`
+          __html: `(function(){if(typeof chrome!=='undefined'){const orig={error:console.error,warn:console.warn};console.error=console.warn=function(...a){const msg=a[0]?.toString?.()??'';if(msg.includes('runtime.lastError')||msg.includes('Receiving end does not exist')||msg.includes('message port closed')||msg.includes('Could not establish connection')||msg.includes('Extension context')||msg.includes('chrome-extension://')||msg.includes('unload')||msg.includes('Violation')||a[1]?.url?.includes?.('chrome-extension'))return;return orig.error.apply(console,a)};window.addEventListener('error',e=>{const src=e.filename||e.target?.src||'';if(src.includes('chrome-extension')||src.includes('content.js'))e.stopImmediatePropagation()},true);window.addEventListener('message',e=>{if(e.source!==window&&(e.origin.includes('chrome-extension')||e.data?.type?.includes('extension')))e.stopImmediatePropagation()},{passive:true,capture:true})}})();`
         }} />
 
         {/* Theme init - Garde dans head pour performance */}
@@ -70,7 +71,7 @@ export default function RootLayout({
           __html: `(function(){try{const s=localStorage.getItem('theme'),d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.remove('dark','light');s==='dark'||(!s&&d)?document.documentElement.classList.add('dark'):document.documentElement.classList.add('light')}catch{document.documentElement.classList[window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'add':'remove']('dark')}})();`
         }} />
       </head>
-      <body className="antialiased min-h-screen bg-surface-lightAlt text-gray-900 dark:bg-surface-dark dark:text-gray-100 overflow-x-hidden" suppressHydrationWarning>
+      <body className="antialiased min-h-screen bg-gray-50 dark:bg-gray-800 text-gray-900 dark:bg-slate-900 dark:text-gray-100 overflow-x-hidden" suppressHydrationWarning>
         <ClientProviders>
           <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
             <ConditionalHeader />

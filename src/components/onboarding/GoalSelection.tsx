@@ -29,7 +29,7 @@ export function GoalSelection({ value, onChange }: GoalSelectionProps) {
       title: 'Maintien',
       description: 'Maintenir mon poids actuel et rester en forme',
       icon: Activity,
-      color: 'bg-orange-50 border-orange-200 hover:bg-orange-100'
+      color: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
     },
     {
       id: 'Performance',
@@ -43,10 +43,10 @@ export function GoalSelection({ value, onChange }: GoalSelectionProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Quel est votre objectif principal ?
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Choisissez l'objectif qui vous correspond le mieux pour personnaliser votre programme
         </p>
       </div>
@@ -71,7 +71,7 @@ export function GoalSelection({ value, onChange }: GoalSelectionProps) {
                   <div className={`p-2 rounded-lg ${
                     isSelected 
                       ? 'bg-blue-500 text-white' 
-                      : 'bg-white text-gray-700'
+                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300'
                   }`}>
                     <Icon className="h-5 w-5" />
                   </div>
@@ -79,7 +79,7 @@ export function GoalSelection({ value, onChange }: GoalSelectionProps) {
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <CardDescription className="text-gray-700">
+                <CardDescription className="text-gray-700 dark:text-gray-300">
                   {goal.description}
                 </CardDescription>
               </CardContent>

@@ -20,8 +20,8 @@ export default function UserGreeting({ className = '', showError = false }: User
     return (
       <div className={`text-center ${className}`} style={{ minHeight: '120px' }}>
         <div className="animate-pulse">
-          <div className="h-8 bg-white/20 rounded-lg w-64 mx-auto mb-4"></div>
-          <div className="h-6 bg-white/10 rounded-lg w-80 mx-auto"></div>
+          <div className="h-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-lg w-64 mx-auto mb-4"></div>
+          <div className="h-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 rounded-lg w-80 mx-auto"></div>
         </div>
       </div>
     )

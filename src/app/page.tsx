@@ -20,7 +20,7 @@ import { useUserProfile } from '@/hooks/useUserProfile'
 import UserGreeting from '@/components/UserGreeting'
 import PerformanceOptimizer from '@/components/PerformanceOptimizer'
 // PERFORMANCE CRITICAL: Optimisation images WebP/AVIF (-2s LCP)
-// import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer' // TODO: Utiliser si nécessaire
+// import { OptimizedAvatar } from '@/components/PerformanceImageOptimizer' // Disponible pour l'optimisation d'images si nécessaire
 // PHASE 3 PERFORMANCE CRITICAL: Critical CSS + Service Worker
 import { CriticalCSSExtractor } from '@/components/CriticalCSSExtractor'
 // ULTRAHARDCORE: ServiceWorkerCache supprimé (conflit avec register-sw)
@@ -33,6 +33,8 @@ import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 import SessionTimer from '@/components/ui/SessionTimer'
 import SoundLibrary from '@/components/ui/SoundLibrary'
 import { QuickTimer } from '@/components/ui/Timer'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
 
 // MICRO-OPT: Lazy load composant non-critique (-15-20KB bundle)
@@ -61,6 +63,14 @@ interface ExerciseItem {
   weight?: number;
   displayValue?: string;
   displayLabel?: string;
+}
+
+interface DatabaseExercise {
+  id: number;
+  name: string;
+  exercise_type: string | null;
+  muscle_group?: string;
+  equipment?: string;
 }
 
 export default function HomePage() {
@@ -202,7 +212,7 @@ export default function HomePage() {
           // Requête 3: Tous les exercices pour dropdown (optimisé)
           supabase
             .from('exercises')
-            .select('id, name, muscle_group, exercise_type')
+            .select('id, name, muscle_group, exercise_type, created_at')
             .eq('user_id', user.id)
             .order('name', { ascending: true })
         ]);
@@ -293,7 +303,7 @@ export default function HomePage() {
         
         // PERFORMANCE: Utiliser allExercisesData déjà récupéré dans Promise.all
         if (!allExercisesError && allExercisesData) {
-          const allEx = allExercisesData.map(ex => ({
+          const allEx = allExercisesData.map((ex: DatabaseExercise) => ({
             id: ex.id,
             name: ex.name,
             type: ex.exercise_type || 'Musculation',
@@ -496,9 +506,9 @@ export default function HomePage() {
   // CLS Optimisé : Skeletons avec dimensions exactes du contenu final
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900">
         {/* Hero Section Skeleton - Dimensions fixes */}
-        <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-12 min-h-[160px] flex items-center">
+        <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-12 min-h-[160px] flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="animate-pulse">
               <div className="h-8 w-2/3 bg-orange-400 rounded mb-2" />
@@ -509,12 +519,12 @@ export default function HomePage() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Séance du jour Skeleton - Dimensions fixes */}
-          <div className="mb-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-8 text-white shadow-lg min-h-[180px] flex items-center">
+          <div className="mb-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-2xl p-8 text-white shadow-lg min-h-[180px] flex items-center">
             <div className="animate-pulse w-full">
               <div className="h-8 w-1/3 bg-orange-300 rounded mb-4" />
               <div className="h-6 w-2/3 bg-orange-200 rounded mb-6" />
               <div className="flex gap-4">
-                <div className="h-12 w-48 bg-white/30 rounded-xl" />
+                <div className="h-12 w-48 bg-white/30 dark:bg-gray-600/30 rounded-xl" />
                 <div className="h-12 w-36 bg-orange-600/50 rounded-xl" />
               </div>
             </div>
@@ -523,7 +533,7 @@ export default function HomePage() {
           {/* Stats Skeleton - Dimensions exactes */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[110px] min-w-[180px] animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[110px] min-w-[180px] animate-pulse">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
                     <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-600 rounded mb-2" />
@@ -538,11 +548,11 @@ export default function HomePage() {
           {/* Actions et Exercices Skeleton - Layout exact */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 min-h-[280px] animate-pulse">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 min-h-[280px] animate-pulse">
                 <div className="h-6 w-1/3 bg-gray-200 dark:bg-gray-600 rounded mb-6" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="rounded-xl p-4 sm:p-6 shadow-md bg-gray-100 dark:bg-gray-700 min-h-[80px] sm:min-h-[90px]">
+                    <div key={i} className="rounded-xl p-4 sm:p-6 shadow-md bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 min-h-[80px] sm:min-h-[90px]">
                       <div className="flex items-center mb-2">
                         <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded mr-3" />
                         <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-600 rounded" />
@@ -556,7 +566,7 @@ export default function HomePage() {
             
             <div className="flex flex-col gap-4 lg:gap-6 w-full">
               {/* QuickTimer Skeleton */}
-              <div className="bg-white rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
                 <div className="h-5 w-1/2 bg-gray-200 rounded mb-4" />
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-gray-200 rounded" />
@@ -565,11 +575,11 @@ export default function HomePage() {
               </div>
               
               {/* Exercices récents Skeleton */}
-              <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px] animate-pulse">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px] animate-pulse">
                 <div className="h-6 w-1/2 bg-gray-200 rounded mb-4" />
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 dark:bg-gray-700 rounded-lg">
                       <div className="flex-1">
                         <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-600 rounded mb-1" />
                         <div className="h-3 w-1/3 bg-gray-200 dark:bg-gray-600 rounded" />
@@ -609,7 +619,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900">
       {/* PHASE 3 PERFORMANCE CRITICAL: Optimisations avancées */}
       <CriticalCSSExtractor />
       {/* ULTRAHARDCORE: ServiceWorkerCache supprimé (conflit avec register-sw) */}
@@ -617,7 +627,7 @@ export default function HomePage() {
       {/* Optimisateur de performance (invisible) */}
       <PerformanceOptimizer />
       {/* Hero Section - Fixed height to prevent CLS */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-gray-900 dark:to-gray-800 text-white dark:text-gray-100 py-12 min-h-[160px] flex items-center">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-800 dark:to-red-700 text-white py-12 min-h-[160px] flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <UserGreeting showError={true} />
         </div>
@@ -626,7 +636,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Séance du jour - Section prioritaire (sans animation pour LCP) */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-8 text-white shadow-lg">
+          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 dark:from-orange-600 dark:to-red-600 rounded-2xl p-8 text-white shadow-lg">
             <div className="flex flex-col lg:flex-row items-center justify-between">
               <div className="text-center lg:text-left mb-6 lg:mb-0">
                 <h2 className="text-3xl font-bold mb-2">Prêt pour ta séance ?</h2>
@@ -638,26 +648,26 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/workouts/new"
-                  prefetch={false}
-                  className="bg-white dark:bg-gray-800 text-orange-900 dark:text-orange-300 px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  aria-label="Commencer une nouvelle séance d'entraînement"
-                  role="button"
-                >
-                  <Dumbbell className="h-6 w-6" aria-hidden="true" />
-                  Commencer ma séance
-                </Link>
-                <Link
-                  href="/calendar"
-                  prefetch={false}
-                  className="bg-orange-700 text-white px-6 py-4 rounded-xl font-semibold hover:bg-orange-800 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-orange-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-700"
-                  aria-label="Afficher le calendrier des entraînements"
-                  role="button"
-                >
-                  <Calendar className="h-5 w-5" aria-hidden="true" />
-                  Voir le planning
-                </Link>
+                <Button asChild size="lg" className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 text-orange-900 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-700 shadow-md hover:shadow-lg transform hover:-translate-y-1 min-h-touch-44">
+                  <Link
+                    href="/workouts/new"
+                    prefetch={false}
+                    aria-label="Commencer une nouvelle séance d'entraînement"
+                  >
+                    <Dumbbell className="h-6 w-6" aria-hidden="true" />
+                    Commencer ma séance
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="border-orange-700 dark:border-orange-600 text-white bg-orange-700 dark:bg-orange-600 hover:bg-orange-800 dark:hover:bg-orange-700 min-h-touch-44">
+                  <Link
+                    href="/calendar"
+                    prefetch={false}
+                    aria-label="Afficher le calendrier des entraînements"
+                  >
+                    <Calendar className="h-5 w-5" aria-hidden="true" />
+                    Voir le planning
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -668,21 +678,23 @@ export default function HomePage() {
           {statCards.map((stat) => {
             const Icon = stat.icon
             return (
-              <div
+              <Card
                 key={stat.title}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow min-h-[110px] min-w-[180px]"
+                className="hover:shadow-lg transition-shadow min-h-[110px] min-w-[180px]"
                 style={{ minHeight: '110px', minWidth: '180px' }}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</p>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</p>
+                    </div>
+                    <div className={`p-3 rounded-full ${stat.bgColor} dark:bg-gray-700`}>
+                      <Icon className={`h-6 w-6 ${stat.color} dark:text-yellow-400`} />
+                    </div>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.bgColor} dark:bg-gray-700`}>
-                    <Icon className={`h-6 w-6 ${stat.color} dark:text-yellow-400`} />
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )
           })}
         </div>
@@ -690,18 +702,19 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Actions rapides - Layout fixe */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-0">Actions rapides</h2>
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Que veux-tu faire aujourd'hui ?</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <Card className="p-4 sm:p-6">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-0 mb-4 sm:mb-6">
+                <CardTitle className="text-lg sm:text-xl mb-2 sm:mb-0">Actions rapides</CardTitle>
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Que veux-tu faire aujourd'hui ?</span>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon
                   // Palette personnalisée WCAG AA+ contraste amélioré
                   const tileColors = [
                     'from-green-600 to-green-700 dark:from-green-700 dark:to-green-900', // Exercice
-                    'from-orange-600 to-orange-700 dark:from-orange-700 dark:to-orange-900', // Séance
+                    'from-orange-600 to-red-500 dark:from-orange-700 dark:to-orange-900', // Séance
                     'from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-900', // Nutrition
                     'from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-900', // Progression
                     'from-yellow-600 to-yellow-700 dark:from-yellow-700 dark:to-yellow-900' // Timer
@@ -723,15 +736,16 @@ export default function HomePage() {
                     </Link>
                   )
                 })}
-              </div>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Colonne de droite : timer + exercices récents */}
           <div className="flex flex-col gap-4 lg:gap-6 w-full">
             {/* Temps de repos rapide (lazy loading) */}
             <Suspense fallback={
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-4 min-h-[120px] animate-pulse">
                 <div className="h-5 w-1/2 bg-gray-200 rounded mb-4" />
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-gray-200 rounded" />
@@ -742,13 +756,16 @@ export default function HomePage() {
               <QuickTimer />
             </Suspense>
             {/* Exercices récents - Dimensions fixes */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 w-full min-h-[180px]" style={{ minHeight: '180px' }}>
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Exercices récents</h2>
-              <div className="space-y-2 sm:space-y-3">
+            <Card className="p-4 sm:p-6 w-full min-h-[180px]" style={{ minHeight: '180px' }}>
+              <CardHeader className="p-0 mb-3 sm:mb-4">
+                <CardTitle className="text-lg sm:text-xl">Exercices récents</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="space-y-2 sm:space-y-3">
                 {recentExercises.map((exercise: ExerciseItem) => (
                   <div
                     key={exercise.id}
-                    className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     style={{ minHeight: '60px' }}
                   >
                     <div className="flex-1 min-w-0 pr-2 sm:pr-3">
@@ -760,30 +777,29 @@ export default function HomePage() {
                       </p>
                     </div>
                     <div className="text-right flex-shrink-0 max-w-[40%] sm:max-w-[45%]">
-                      <span className="text-orange-800 dark:text-orange-300 font-bold text-xs sm:text-sm block leading-tight break-words">
+                      <span className="text-gray-800 dark:text-gray-200 font-bold text-xs sm:text-sm block leading-tight break-words">
                         {exercise.displayValue || 'Aucune donnée'}
                       </span>
-                      <p className="text-xs text-gray-500 dark:text-gray-300 leading-tight mt-1">
+                      <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight mt-1">
                         {exercise.displayLabel || 'Dernière performance'}
                       </p>
                     </div>
                   </div>
                 ))}
                 {recentExercises.length === 0 && (
-                  <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                  <div className="text-center py-6 text-gray-600 dark:text-gray-300">
                     <p className="text-sm">Aucun exercice récent</p>
                     <p className="text-xs mt-1">Commence ton premier exercice !</p>
                   </div>
                 )}
               </div>
-              <Link 
-                href="/exercises" 
-                prefetch={false}
-                className="block mt-3 sm:mt-4 text-orange-800 dark:text-orange-300 text-xs sm:text-sm font-semibold hover:underline"
-              >
-                Voir tous les exercices →
-              </Link>
-            </div>
+                <Button asChild variant="link" size="sm" className="p-0 h-auto mt-3 sm:mt-4 text-gray-800 dark:text-gray-200 font-semibold">
+                  <Link href="/exercises" prefetch={false}>
+                    Voir tous les exercices →
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -794,8 +810,10 @@ export default function HomePage() {
         >
           {/* Info bulle explicative */}
           <div className="absolute top-4 right-4 group">
-            <button 
-              className="bg-purple-600 hover:bg-purple-700 rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-600"
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-purple-600 dark:bg-purple-700 hover:bg-purple-700 dark:hover:bg-purple-800 rounded-full p-2 text-white border-0 min-h-touch-44 min-w-touch-44"
               onClick={(e) => {
                 e.stopPropagation()
                 setShowTooltip(!showTooltip)
@@ -805,12 +823,11 @@ export default function HomePage() {
               aria-label={showTooltip ? "Masquer les informations" : "Afficher les informations sur les phrases de motivation"}
               aria-expanded={showTooltip}
               aria-controls="motivation-tooltip"
-              type="button"
             >
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
-            </button>
+            </Button>
             <div 
               id="motivation-tooltip"
               className={`absolute right-0 md:right-0 top-10 bg-gray-800 text-white text-xs rounded-lg p-3 w-64 md:w-64 max-w-[calc(100vw-2rem)] transition-opacity pointer-events-none z-10 transform -translate-x-1/2 md:translate-x-0 left-1/2 md:left-auto ${showTooltip ? 'opacity-100' : 'opacity-0'}`}
@@ -936,30 +953,31 @@ export default function HomePage() {
           aria-modal="true"
           aria-labelledby="session-timer-title"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] dark:border-gray-700 max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-3xl shadow-2xl p-0 max-w-xl w-full relative flex flex-col border border-[#E5E7EB] dark:border-gray-700 max-h-[90vh] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-t-3xl">
               <h2 id="session-timer-title" className="text-2xl font-bold text-gray-900 tracking-tight">Configurer ta session</h2>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setShowSessionTimer(false)}
-                className="text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:rounded"
+                className="text-gray-700 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 text-2xl min-h-touch-44 min-w-touch-44"
                 title="Fermer"
                 aria-label="Fermer la fenêtre de configuration de session"
-                type="button"
               >
                 ✕
-              </button>
+              </Button>
             </div>
-            <div className="px-4 py-6 bg-white dark:bg-gray-800 overflow-y-auto" style={{maxHeight:'calc(90vh - 72px)'}}>
+            <div className="px-4 py-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 overflow-y-auto" style={{maxHeight:'calc(90vh - 72px)'}}>
               {/* Liste des étapes/exercices */}
               <div className="w-full max-w-2xl mx-auto space-y-2" style={{maxHeight:'260px', overflowY:'auto'}}>
                 {sessionSteps.map((step: { name: string; duration: number }, idx: number) => (
                   <div key={idx} className="flex flex-row items-center gap-1 bg-[#F6F8FA] rounded-lg p-2 shadow-sm border border-[#E5E7EB] min-h-[48px]">
                     {/* Icône à gauche */}
-                    <span className="text-xl text-gray-700 flex-shrink-0">🏋️‍♂️</span>
+                    <span className="text-xl text-gray-700 dark:text-gray-300 flex-shrink-0">🏋️‍♂️</span>
                     {/* Sélecteur d'exercice existant */}
                     <select
-                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm min-w-[90px] max-w-[140px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm min-w-[90px] max-w-[140px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       style={{height:'36px', width:'130px'}} 
                       value={allExercises.find((ex: ExerciseItem) => ex.name === step.name)?.id ?? ''}
                       aria-label={`Sélectionner un exercice pour l'étape ${idx + 1}`}
@@ -986,7 +1004,7 @@ export default function HomePage() {
                         newSteps[idx].name = e.target.value
                         setSessionSteps(newSteps)
                       }}
-                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm font-semibold flex-1 min-w-0 focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-700 truncate text-gray-900 dark:text-gray-100"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm font-semibold flex-1 min-w-0 focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 truncate text-gray-900 dark:text-gray-100"
                       placeholder="Nom de l'étape"
                       aria-label={`Nom de l'exercice pour l'étape ${idx + 1}`}
                       style={{height:'36px', minWidth:'60px', maxWidth:'100%'}}
@@ -1001,13 +1019,13 @@ export default function HomePage() {
                         newSteps[idx].duration = Number(e.target.value)
                         setSessionSteps(newSteps)
                       }}
-                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-12 text-center focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-12 text-center focus:ring-2 focus:ring-orange-400 h-9 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       placeholder="Durée"
                       style={{height:'36px', width:'48px'}}
                     />
                     {/* Sélecteur de son */}
                     <select
-                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-24 min-w-[60px] max-w-[100px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
+                      className="border border-[#E5E7EB] dark:border-gray-600 rounded px-2 py-1 text-sm w-24 min-w-[60px] max-w-[100px] focus:ring-2 focus:ring-orange-400 truncate h-9 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 flex-shrink-0 text-gray-900 dark:text-gray-100"
                       style={{height:'36px', width:'90px'}}
                       value={sessionSounds[idx] || ''}
                       onChange={(e) => {
@@ -1046,7 +1064,7 @@ export default function HomePage() {
                     {/* Bouton supprimer (croix) */}
                     <button
                       onClick={() => setSessionSteps((steps: { name: string; duration: number }[]) => steps.filter((steps: { name: string; duration: number }, i: number) => i !== idx))}
-                      className="text-gray-400 hover:text-red-500 text-lg font-bold ml-1 flex-shrink-0 h-9 w-9 flex items-center justify-center"
+                      className="text-gray-700 dark:text-gray-300 hover:text-red-500 text-lg font-bold ml-1 flex-shrink-0 h-9 w-9 flex items-center justify-center"
                       title="Supprimer l'étape"
                       aria-label="Supprimer cette étape du timer"
                       style={{height:'36px', width:'36px'}}
@@ -1056,19 +1074,20 @@ export default function HomePage() {
                     </button>
                   </div>
                 ))}
-                <button
+                <Button
+                  variant="link"
+                  size="sm"
                   onClick={() => setSessionSteps([...sessionSteps, { name: 'Nouvelle étape', duration: 60 }])}
-                  className="mt-2 text-sm text-orange-800 hover:underline font-semibold"
+                  className="mt-2 p-0 h-auto text-gray-800 dark:text-gray-200 font-semibold min-h-touch-44"
                   aria-label="Ajouter une nouvelle étape au timer"
-                  type="button"
                 >
                   + Ajouter une étape
-                </button>
+                </Button>
               </div>
               {/* Timer juste en dessous des étapes */}
               <div className="w-full flex items-center justify-center mt-8 mb-8">
                 <Suspense fallback={
-                  <div className="bg-gray-100 rounded-xl p-6 min-h-[200px] animate-pulse">
+                  <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-xl p-6 min-h-[200px] animate-pulse">
                     <div className="h-6 w-1/3 bg-gray-300 rounded mb-4 mx-auto" />
                     <div className="space-y-3">
                       <div className="h-4 w-full bg-gray-200 rounded" />
@@ -1085,7 +1104,7 @@ export default function HomePage() {
               {/* Bibliothèque de sons en bas */}
               <div className="w-full max-w-2xl mx-auto border-t border-[#E5E7EB] pt-6 mt-4">
                 <Suspense fallback={
-                  <div className="bg-gray-50 rounded-lg p-4 min-h-[150px] animate-pulse">
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 min-h-[150px] animate-pulse">
                     <div className="h-5 w-1/2 bg-gray-300 rounded mb-4" />
                     <div className="space-y-2">
                       <div className="h-4 w-full bg-gray-200 rounded" />

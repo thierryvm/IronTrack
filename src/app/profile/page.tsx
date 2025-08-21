@@ -24,8 +24,12 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Dialog, DialogTitle, DialogDescription } from '@headlessui/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import Avatar from '@/components/ui/Avatar'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
 
 const Cropper = dynamic(() => import('react-easy-crop'), {
@@ -708,10 +712,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement du profil...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Chargement du profil...</p>
         </div>
       </div>
     )
@@ -719,19 +723,19 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Profil non trouvé</p>
+          <User className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">Profil non trouvé</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
@@ -747,24 +751,25 @@ export default function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-md p-2 mb-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-2 mb-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200"
         >
           <div className="flex space-x-0.5 min-w-[300px] md:min-w-0 w-full flex-nowrap">
             {tabs.map(tab => {
               const Icon = tab.icon
               return (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center space-x-1 py-3 px-3 rounded-lg font-medium transition-colors min-w-[90px] md:min-w-[120px] text-xs md:text-base ${
+                  variant={activeTab === tab.id ? "default" : "ghost"}
+                  className={`flex-1 flex items-center justify-center space-x-1 py-3 px-3 font-medium transition-colors min-w-[90px] md:min-w-[120px] text-xs md:text-base ${
                     activeTab === tab.id
-                      ? 'bg-orange-500 text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-orange-600 text-white hover:bg-orange-700'
+                      : ''
                   }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span>{tab.name}</span>
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -780,7 +785,7 @@ export default function ProfilePage() {
             {/* Informations principales */}
             <div className="lg:col-span-2 space-y-4 md:space-y-6">
               {/* Photo de profil et infos de base */}
-              <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                   {/* Avatar Section */}
                   <div className="flex flex-col items-center space-y-4">
@@ -795,21 +800,23 @@ export default function ProfilePage() {
                         />
                       </div>
                       {showAvatarCongrats && (
-                        <div className="absolute left-1/2 -bottom-10 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold animate-fade-in-out z-20 border-2 border-white">
+                        <div className="absolute left-1/2 -bottom-10 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold animate-fade-in-out z-20 border-2 border-white dark:border-gray-700">
                           {avatarCongratsMsg}
                         </div>
                       )}
-                      <button
-                        className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-touch-44 min-w-touch-44"
                         onClick={handleChangeAvatar}
                         title="Changer l'avatar"
                       >
-                        <Camera className="h-4 w-4 text-gray-600" />
-                      </button>
+                        <Camera className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                      </Button>
                     </div>
                     <div className="text-center">
-                      <h2 className="text-xl font-bold text-gray-900">{profile.pseudo || profile.name || 'Utilisateur'}</h2>
-                      <p className="text-gray-600 text-sm break-all">{profile.email}</p>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{profile.pseudo || profile.name || 'Utilisateur'}</h2>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm break-all">{profile.email}</p>
                     </div>
                   </div>
 
@@ -826,12 +833,12 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
-                      <div className="text-sm text-orange-800 font-medium mb-1">Objectif</div>
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-800">
+                      <div className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-1">Objectif</div>
                       <div className="text-lg font-bold text-orange-700">
                         {profile.goal || 'Non défini'}
                       </div>
-                      <div className="text-xs text-orange-800 mt-1">
+                      <div className="text-xs text-gray-800 dark:text-gray-200 mt-1">
                         {profile.experience || 'Niveau inconnu'}
                       </div>
                     </div>
@@ -882,8 +889,11 @@ export default function ProfilePage() {
             {/* Colonne de droite - Statistiques rapides et tickets de support */}
             <div className="w-full lg:w-auto space-y-6">
               {/* Statistiques rapides */}
-              <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-2">
-                <h3 className="text-lg font-bold mb-2">Statistiques rapides</h3>
+              <Card className="flex flex-col gap-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Statistiques rapides</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                 <div className="flex flex-col gap-1">
                   <div><b>Séances totales</b> : {stats?.totalWorkouts ?? 0}</div>
                   <div className="flex items-center gap-2 text-green-600"><span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Réalisées : {stats?.totalWorkoutsDone ?? 0}</div>
@@ -891,11 +901,12 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2 text-red-600"><span className="w-2 h-2 rounded-full bg-red-500 inline-block"></span> Annulées : {stats?.totalWorkoutsCancelled ?? 0}</div>
                 </div>
                 <div className="space-y-1 text-sm md:text-base">
-                  <div className="flex justify-between"><span>Séries en cours</span><span className="text-orange-800 font-bold">{stats?.currentStreak || 0} jours</span></div>
+                  <div className="flex justify-between"><span>Séries en cours</span><span className="text-gray-800 dark:text-gray-200 font-bold">{stats?.currentStreak || 0} jours</span></div>
                   <div className="flex justify-between"><span>Séances/semaine</span><span>{stats?.averageWorkoutsPerWeek || 0}</span></div>
                   <div className="flex justify-between"><span>Temps total</span><span>{stats?.totalTime ? `${Math.floor(stats.totalTime / 60)}h${stats.totalTime % 60 ? ' ' + (stats.totalTime % 60) + 'min' : ''}` : '0h'}</span></div>
                 </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Mes tickets de support */}
               {/* Section tickets déplacée vers /notifications pour centralisation */}
@@ -911,15 +922,15 @@ export default function ProfilePage() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           >
             {/* Statistiques détaillées */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Statistiques d'entraînement</h3>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Statistiques d'entraînement</h3>
               
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-orange-50 rounded-lg group relative">
-                    <Trophy className="h-8 w-8 text-orange-800 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats?.totalWorkouts || 0}</p>
-                    <p className="text-sm text-gray-600">Séances totales</p>
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg group relative">
+                    <Trophy className="h-8 w-8 text-gray-800 dark:text-gray-200 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.totalWorkouts || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Séances totales</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Toutes les séances marquées comme &quot;Réalisé&quot; ou &quot;Terminé&quot;
                     </div>
@@ -927,8 +938,8 @@ export default function ProfilePage() {
                   
                   <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
                     <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats?.currentStreak || 0}</p>
-                    <p className="text-sm text-gray-600">Jours consécutifs</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.currentStreak || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Jours consécutifs</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Série actuelle de jours avec au moins une séance terminée
                     </div>
@@ -936,8 +947,8 @@ export default function ProfilePage() {
                   
                   <div className="text-center p-4 bg-green-50 rounded-lg group relative">
                     <Activity className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats?.averageWorkoutsPerWeek || 0}</p>
-                    <p className="text-sm text-gray-600">Séances/semaine</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.averageWorkoutsPerWeek || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Séances/semaine</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Moyenne des séances terminées par semaine
                     </div>
@@ -945,8 +956,8 @@ export default function ProfilePage() {
                   
                   <div className="text-center p-4 bg-purple-50 rounded-lg group relative">
                     <Target className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{userBadges?.length || 0}</p>
-                    <p className="text-sm text-gray-600">Badges gagnés</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userBadges?.length || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Badges gagnés</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Badges de réalisation obtenus automatiquement
                     </div>
@@ -954,40 +965,40 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="border-t pt-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Exercice préféré</h4>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Dumbbell className="h-6 w-6 text-orange-800" />
-                    <span className="font-medium text-gray-900">{stats?.favoriteExercise || 'Aucun exercice préféré'}</span>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Exercice préféré</h4>
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <Dumbbell className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{stats?.favoriteExercise || 'Aucun exercice préféré'}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Progression */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Progression</h3>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Progression</h3>
               
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Évolution du poids</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Évolution du poids</h4>
                   <div className="space-y-2">
                     {progressionStats ? (
                       <>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Début</span>
-                          <span className="font-medium text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-300">Début</span>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
                             {progressionStats.initial_weight ? `${progressionStats.initial_weight} kg` : 'Non renseigné'}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Actuel</span>
-                          <span className="font-medium text-orange-800">
+                          <span className="text-gray-600 dark:text-gray-300">Actuel</span>
+                          <span className="font-medium text-gray-800 dark:text-gray-200">
                             {progressionStats.current_weight ? `${progressionStats.current_weight} kg` : 'Non renseigné'}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Évolution</span>
-                          <span className={`font-medium ${progressionStats.weight_gain && progressionStats.weight_gain > 0 ? 'text-green-600' : progressionStats.weight_gain && progressionStats.weight_gain < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                          <span className="text-gray-600 dark:text-gray-300">Évolution</span>
+                          <span className={`font-medium ${progressionStats.weight_gain && progressionStats.weight_gain > 0 ? 'text-green-600' : progressionStats.weight_gain && progressionStats.weight_gain < 0 ? 'text-red-600' : 'text-gray-600 dark:text-gray-300'}`}>
                             {progressionStats.weight_gain ? `${progressionStats.weight_gain > 0 ? '+' : ''}${progressionStats.weight_gain} kg` : 'Aucune donnée'}
                           </span>
                         </div>
@@ -998,22 +1009,22 @@ export default function ProfilePage() {
                         )}
                       </>
                     ) : (
-                      <div className="text-sm text-gray-500">Chargement des données...</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Chargement des données...</div>
                     )}
                   </div>
                 </div>
                 
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Records personnels</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Records personnels</h4>
                   <div className="space-y-2">
                     {progressionLoading ? (
-                      <div className="text-sm text-gray-500">Chargement des records...</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Chargement des records...</div>
                     ) : personalRecords && personalRecords.length > 0 ? (
                       <>
                         {personalRecords.slice(0, 5).map((record, index) => (
                           <div key={index} className="flex justify-between text-sm">
-                            <span className="text-gray-600">{record.exercise_name}</span>
-                            <span className="font-medium text-gray-900">
+                            <span className="text-gray-600 dark:text-gray-300">{record.exercise_name}</span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
                               {record.max_weight ? `${record.max_weight} kg` : ''}
                               {record.max_weight && record.max_reps ? ' × ' : ''}
                               {record.max_reps ? `${record.max_reps} reps` : ''}
@@ -1021,13 +1032,13 @@ export default function ProfilePage() {
                           </div>
                         ))}
                         {personalRecords.length > 5 && (
-                          <div className="text-xs text-gray-500 mt-2">
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                             Et {personalRecords.length - 5} autres records...
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-sm text-gray-500 text-center py-4">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
                         <p>Aucun record personnel enregistré</p>
                         <p className="text-xs mt-1">Commencez à enregistrer vos performances dans la section &quot;Progression&quot; !</p>
                       </div>
@@ -1037,8 +1048,8 @@ export default function ProfilePage() {
               </div>
             </div>
             {/* Section Badges validés */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mt-8">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
                 <Award className="h-6 w-6 text-yellow-500" />
                 <span>Badges validés</span>
               </h2>
@@ -1058,12 +1069,12 @@ export default function ProfilePage() {
                         return unique;
                       }, [] as Achievement[])
                       .map(achievement => (
-                      <div key={achievement.id} className="text-center p-4 rounded-lg bg-orange-50 border border-orange-200">
+                      <div key={achievement.id} className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800">
                         <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl">{achievement.icon || '🏆'}</span>
-                        <h3 className="font-medium text-gray-900">{achievement.name}</h3>
-                        <p className="text-sm text-gray-600">{achievement.description}</p>
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">{achievement.name}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{achievement.description}</p>
                         {achievement.unlocked_at && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                             Débloqué le {new Date(achievement.unlocked_at).toLocaleDateString('fr-FR')}
                           </div>
                         )}
@@ -1072,9 +1083,9 @@ export default function ProfilePage() {
                     
                     {/* Affichage si aucun badge validé */}
                     {achievements.filter(achievement => achievement.status === 'Validé').length === 0 && (
-                      <div className="col-span-2 text-center py-8 text-gray-500">
+                      <div className="col-span-2 text-center py-8 text-gray-600 dark:text-gray-400">
                         <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                        <h3 className="font-medium text-gray-900 mb-2">Aucun badge validé</h3>
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Aucun badge validé</h3>
                         <p className="text-sm">Crée des objectifs dans la page Progression pour débloquer tes premiers badges !</p>
                       </div>
                     )}
@@ -1084,8 +1095,8 @@ export default function ProfilePage() {
             </div>
 
             {/* Section Badges de réalisation */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mt-8">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
                 <Star className="h-6 w-6 text-purple-500" />
                 <span>Badges de réalisation</span>
               </h2>
@@ -1097,8 +1108,8 @@ export default function ProfilePage() {
                         <div className="flex items-center space-x-3">
                           <div className="text-2xl">{badge.icon}</div>
                           <div>
-                            <h3 className="font-semibold text-gray-900">{badge.name}</h3>
-                            <p className="text-sm text-gray-600">{badge.description}</p>
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{badge.name}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">{badge.description}</p>
                             <p className="text-xs text-purple-600 mt-1">
                               Obtenu le {new Date(badge.earned_at).toLocaleDateString('fr-FR')}
                             </p>
@@ -1109,9 +1120,9 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">Aucun badge de réalisation pour le moment</p>
-                    <p className="text-sm text-gray-400 mt-2">Continue tes entraînements pour débloquer des badges !</p>
+                    <Star className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400">Aucun badge de réalisation pour le moment</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">Continue tes entraînements pour débloquer des badges !</p>
                   </div>
                 )}
               </div>
@@ -1126,53 +1137,53 @@ export default function ProfilePage() {
             className="space-y-6"
           >
             {/* Paramètres de notification */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Bell className="h-6 w-6 text-orange-800" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
+                <Bell className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Notifications</span>
               </h3>
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">Rappels d'entraînement</p>
-                    <p className="text-sm text-gray-600">Recevoir des notifications pour tes séances</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">Rappels d'entraînement</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Recevoir des notifications pour tes séances</p>
                   </div>
                   <button
-                    className={`w-12 h-6 rounded-full relative transition-colors ${notificationsEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${notificationsEnabled ? 'bg-orange-600' : 'bg-gray-300'}`}
                     onClick={handleToggleNotifications}
                     aria-pressed={notificationsEnabled}
                     type="button"
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
+                    <div className={`w-4 h-4 bg-white dark:bg-gray-900 rounded-full absolute top-1 transition-transform ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Actions améliorées */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Settings className="h-6 w-6 text-orange-800" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
+                <Settings className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Actions & Paramètres</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Colonne 1 : Compte & Données */}
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
                       <Shield className="h-5 w-5 text-blue-500" />
                       <span>Compte</span>
                     </h4>
                     <button 
               onClick={handleChangePassword} 
-              className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3 mb-2"
+              className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors flex items-center space-x-3 mb-2"
               aria-label="Modifier le mot de passe"
             >
-                      <Settings className="h-5 w-5 text-gray-400" />
+                      <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                       <div>
-                        <p className="font-medium text-gray-900">Changer le mot de passe</p>
-                        <p className="text-sm text-gray-600">Sécurise ton compte&nbsp;! (IronBuddy ne lit pas tes mots de passe, promis)</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">Changer le mot de passe</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Sécurise ton compte&nbsp;! (IronBuddy ne lit pas tes mots de passe, promis)</p>
                       </div>
                     </button>
                     <button 
@@ -1189,78 +1200,78 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
                       <Target className="h-5 w-5 text-green-500" />
                       <span>Données</span>
                     </h4>
-                    <button onClick={handleExportData} disabled={exporting} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-3" aria-label="Exporter mes données personnelles">
-                      <Download className="h-5 w-5 text-green-500" />
-                      <div>
-                        <p className="font-medium text-gray-900">Exporter mes données</p>
-                        <p className="text-sm text-gray-600">Télécharge ton historique (IronBuddy adore les stats&nbsp;!)</p>
-                        {exporting && <span className="text-xs text-orange-800">Export en cours...</span>}
+                    <Button variant="outline" onClick={handleExportData} disabled={exporting} className="w-full justify-start p-4 h-auto min-h-touch-44" aria-label="Exporter mes données personnelles">
+                      <Download className="h-5 w-5 text-green-500 mr-3" />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-900 dark:text-gray-100">Exporter mes données</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Télécharge ton historique (IronBuddy adore les stats&nbsp;!)</p>
+                        {exporting && <span className="text-xs text-gray-800 dark:text-gray-200">Export en cours...</span>}
                         {exportError && <span className="text-xs text-red-500">{exportError}</span>}
                       </div>
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 {/* Colonne 2 : Personnalisation & Support */}
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
                       <Camera className="h-5 w-5 text-purple-500" />
                       <span>Personnalisation</span>
                     </h4>
-                    <button onClick={handleChangeAvatar} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Modifier ma photo de profil">
-                      <Camera className="h-5 w-5 text-purple-400" />
-                      <div>
-                        <p className="font-medium text-gray-900">Changer mon avatar</p>
-                        <p className="text-sm text-gray-600">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
+                    <Button variant="outline" onClick={handleChangeAvatar} className="w-full justify-start p-4 h-auto mb-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 min-h-touch-44" aria-label="Modifier ma photo de profil">
+                      <Camera className="h-5 w-5 text-purple-400 mr-3" />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-900 dark:text-gray-100">Changer mon avatar</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
                       </div>
-                    </button>
-                    <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Accéder aux paramètres de la mascotte">
+                    </Button>
+                    <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:bg-blue-900/10 transition-colors flex items-center space-x-3 mb-2" aria-label="Accéder aux paramètres de la mascotte">
                       <Dumbbell className="h-5 w-5 text-orange-400" />
                       <div>
-                        <p className="font-medium text-gray-900">Choisir ma mascotte</p>
-                        <p className="text-sm text-gray-600">IronBuddy ou surprise du chef&nbsp;?</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">Choisir ma mascotte</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">IronBuddy ou surprise du chef&nbsp;?</p>
                       </div>
                     </button>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1 font-medium">Niveau de punchlines d'IronBuddy</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-1 font-medium">Niveau de punchlines d'IronBuddy</p>
                       <div className="flex gap-2">
                         <button
-                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'discret' ? 'bg-gray-200 border-orange-500' : 'bg-gray-50 border-gray-300'}`}
+                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'discret' ? 'bg-gray-200 dark:bg-gray-700 border-orange-600' : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'}`}
                           onClick={() => handleIronBuddyLevelChange('discret')}
                         >Discret</button>
                         <button
-                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'normal' ? 'bg-orange-100 border-orange-500' : 'bg-gray-50 border-gray-300'}`}
+                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'normal' ? 'bg-orange-100 border-orange-600' : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'}`}
                           onClick={() => handleIronBuddyLevelChange('normal')}
                         >Normal</button>
                         <button
-                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'ambianceur' ? 'bg-orange-500 text-white border-orange-700' : 'bg-gray-50 border-gray-300'}`}
+                          className={`px-3 py-1 rounded-lg font-semibold border ${ironBuddyLevel === 'ambianceur' ? 'bg-orange-600 text-white border-orange-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'}`}
                           onClick={() => handleIronBuddyLevelChange('ambianceur')}
                         >Ambianceur</button>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                      <HelpCircle className="h-5 w-5 text-gray-400" />
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
+                      <HelpCircle className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                       <span>Support</span>
                     </h4>
-                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
+                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
-                        <p className="font-medium text-gray-900">Aide & support</p>
-                        <p className="text-sm text-gray-600">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">Aide & support</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
-                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
+                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
                       <HelpCircle className="h-5 w-5 text-blue-400" />
                       <div>
-                        <p className="font-medium text-gray-900">FAQ</p>
-                        <p className="text-sm text-gray-600">Les questions que m'ême IronBuddy se pose parfois…</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">FAQ</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Les questions que m'ême IronBuddy se pose parfois…</p>
                       </div>
                     </button>
                   </div>
@@ -1269,16 +1280,16 @@ export default function ProfilePage() {
             </div>
 
             {/* Mascotte IronBuddy */}
-            <div ref={mascotSectionRef} className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <Dumbbell className="h-6 w-6 text-orange-800" />
+            <div ref={mascotSectionRef} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
+                <Dumbbell className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Mascotte IronBuddy</span>
               </h3>
               <div className="space-y-4">
                 {/* Option pour réactiver la mascotte */}
                 {typeof window !== 'undefined' && localStorage.getItem('hideMascot') === '1' ? (
                   <button
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                    className="px-4 py-2 bg-orange-600 dark:bg-blue-500 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
                     onClick={() => { localStorage.removeItem('hideMascot'); window.location.reload(); }}
                   >
                     Réactiver IronBuddy
@@ -1287,70 +1298,102 @@ export default function ProfilePage() {
                   <span className="text-green-700 font-semibold">IronBuddy est actif et prêt à motiver !</span>
                 )}
                 {/* Sélection de mascotte */}
-                <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                  <span className="font-bold text-orange-800">Choisir ma mascotte</span>
+                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <span className="font-bold text-gray-800 dark:text-gray-200">Choisir ma mascotte</span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
                     <button
-                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'ironbuddy' ? 'border-orange-600 bg-orange-100' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900'}`}
                       onClick={() => setSelectedMascot('ironbuddy')}
                     >
-                      <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 animate-bounce" />
+                      <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-gray-800 dark:text-gray-200 animate-bounce" />
                       <span className="mt-1 text-xs font-bold text-center">IronBuddy</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'cat' ? 'border-orange-600 bg-orange-100' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900'}`}
                       onClick={() => setSelectedMascot('cat')}
                     >
                       <Cat className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 animate-pulse" />
                       <span className="mt-1 text-xs font-bold text-center">Félix</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'bot' ? 'border-orange-600 bg-orange-100' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900'}`}
                       onClick={() => setSelectedMascot('bot')}
                     >
                       <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin-slow" />
                       <span className="mt-1 text-xs font-bold text-center">RoboCoach</span>
                     </button>
                     <button
-                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-500 bg-orange-100' : 'border-gray-200 bg-white'}`}
+                      className={`flex flex-col items-center px-2 sm:px-3 py-2 rounded-lg border-2 transition-all ${selectedMascot === 'star' ? 'border-orange-600 bg-orange-100' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900'}`}
                       onClick={() => setSelectedMascot('star')}
                     >
                       <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 animate-ping" />
                       <span className="mt-1 text-xs font-bold text-center">SuperStar</span>
                     </button>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">Ta mascotte te suivra partout dans l'app et t'encouragera à chaque étape !</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-2">Ta mascotte te suivra partout dans l'app et t'encouragera à chaque étape !</p>
                 </div>
               </div>
             </div>
           </motion.div>
         )}
       </div>
-      {/* Modale suppression compte */}
-      <Dialog open={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black opacity-30" />
-          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-red-600 mb-2 flex items-center"><X className="h-6 w-6 mr-2" /> Confirmation</DialogTitle>
-            <DialogDescription className="mb-4 text-gray-700">Es-tu sûr de vouloir supprimer ton compte&nbsp;? <br/>IronBuddy va devoir faire du cardio pour s'en remettre…</DialogDescription>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Annuler</button>
-              <button onClick={confirmDeleteAccount} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold">Oui, supprimer</button>
-            </div>
-          </div>
-        </div>
+      {/* Modal suppression compte - ShadCN UI + fond flou */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <X className="h-6 w-6" /> 
+              Confirmation de suppression
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 dark:text-gray-300">
+              Es-tu sûr de vouloir supprimer ton compte ?<br/>
+              IronBuddy va devoir faire du cardio pour s'en remettre…
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeleteModal(false)} 
+              className="min-h-[44px] flex-1"
+              aria-label="Annuler la suppression du compte"
+            >
+              Annuler
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDeleteAccount} 
+              className="min-h-[44px] flex-1"
+              aria-label="Confirmer la suppression définitive du compte"
+            >
+              Oui, supprimer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
-      {/* Modale avatar (placeholder) */}
-      <Dialog open={showAvatarModal} onClose={() => { setShowAvatarModal(false); setSelectedFile(null); }} className="fixed z-50 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black opacity-30" />
-          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-purple-600 mb-2 flex items-center"><Camera className="h-6 w-6 mr-2" /> Changer d'avatar</DialogTitle>
-            <DialogDescription className="mb-4 text-gray-700">Choisis une nouvelle photo de profil. IronBuddy validera le style !</DialogDescription>
-            <div className="text-xs text-gray-500 mb-2">Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)</div>
+      {/* Modal avatar - ShadCN UI + fond flou */}
+      <Dialog open={showAvatarModal} onOpenChange={(open) => { 
+        if (!open) { 
+          setShowAvatarModal(false); 
+          setSelectedFile(null); 
+        } 
+      }}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-purple-600 flex items-center gap-2">
+              <Camera className="h-6 w-6" /> 
+              Changer d'avatar
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 dark:text-gray-300">
+              Choisis une nouvelle photo de profil. IronBuddy validera le style !
+            </DialogDescription>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
+              Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)
+            </p>
+          </DialogHeader>
+          <div className="space-y-4">
             {selectedFile ? (
               <div className="flex flex-col items-center space-y-4">
-                <div className="relative w-48 h-48 bg-gray-100 rounded-lg">
+                <div className="relative w-48 h-48 bg-gray-100 dark:bg-gray-800 rounded-lg crop-container">
                   <Cropper
                     image={URL.createObjectURL(selectedFile)}
                     crop={crop}
@@ -1391,69 +1434,108 @@ export default function ProfilePage() {
                   step={0.01}
                   value={zoom}
                   onChange={e => setZoom(Number(e.target.value))}
-                  className="w-48 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label="Ajuster le niveau de zoom de la photo"
                 />
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     onClick={() => setSelectedFile(null)}
-                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold"
+                    variant="outline"
                     disabled={avatarUploading}
-                  >Annuler</button>
-                  <button
+                    className="flex-1 min-h-[44px]"
+                    aria-label="Annuler la sélection de photo"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
                     onClick={handleValidateCrop}
-                    className="px-4 py-2 rounded-lg bg-purple-600 text-white font-semibold"
+                    className="flex-1 min-h-[44px] bg-purple-600 hover:bg-purple-700"
                     disabled={avatarUploading}
-                  >Valider</button>
+                    aria-label="Valider et enregistrer la photo recadrée"
+                  >
+                    Valider
+                  </Button>
                 </div>
                 {avatarUploading && <div className="text-purple-500 text-sm">Upload en cours...</div>}
                 {avatarError && <div className="text-red-500 text-sm">{avatarError}</div>}
               </div>
             ) : (
-              <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700 mb-1">Depuis la galerie ou fichiers</span>
-                  <input
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="avatar-file-gallery" className="text-sm font-medium">
+                    Depuis la galerie ou fichiers
+                  </Label>
+                  <Input
+                    id="avatar-file-gallery"
                     type="file"
                     accept="image/*,.heic,.heif"
                     onChange={handleAvatarFileChange}
                     disabled={avatarUploading}
-                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300"
+                    aria-describedby="gallery-help"
                   />
-                </label>
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700 mb-1">Prendre une photo</span>
-                  <input
+                  <p id="gallery-help" className="text-xs text-gray-500 dark:text-gray-400">
+                    Formats supportés: JPG, PNG, HEIC, HEIF
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="avatar-file-camera" className="text-sm font-medium">
+                    Prendre une photo
+                  </Label>
+                  <Input
+                    id="avatar-file-camera"
                     type="file"
                     accept="image/*"
                     capture="environment"
                     onChange={handleAvatarFileChange}
                     disabled={avatarUploading}
-                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300"
+                    aria-describedby="camera-help"
                   />
-                </label>
+                  <p id="camera-help" className="text-xs text-gray-500 dark:text-gray-400">
+                    Utilisera l'appareil photo de votre appareil
+                  </p>
+                </div>
                 {avatarUploading && <div className="text-purple-500 text-sm">Upload en cours...</div>}
                 {avatarError && <div className="text-red-500 text-sm">{avatarError}</div>}
-              </form>
+              </div>
             )}
-            <div className="flex justify-end mt-4">
-              <button onClick={() => { setShowAvatarModal(false); setSelectedFile(null); }} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Fermer</button>
-            </div>
           </div>
-        </div>
+          <DialogFooter>
+            <Button 
+              onClick={() => { setShowAvatarModal(false); setSelectedFile(null); }} 
+              variant="outline"
+              className="min-h-[44px]"
+              aria-label="Fermer la modal de changement d'avatar"
+            >
+              Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
-      {/* Modale mascotte (placeholder) */}
-      <Dialog open={showMascotModal} onClose={() => setShowMascotModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black opacity-30" />
-          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10 relative">
-            <DialogTitle className="text-2xl font-bold text-orange-800 mb-2 flex items-center"><Dumbbell className="h-6 w-6 mr-2" /> Choisir ma mascotte</DialogTitle>
-            <DialogDescription className="mb-4 text-gray-700">Fonctionnalité à venir&nbsp;! IronBuddy révise son plus beau sourire…</DialogDescription>
-            <div className="flex justify-end">
-              <button onClick={() => setShowMascotModal(false)} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold">Fermer</button>
-            </div>
-          </div>
-        </div>
+      {/* Modal mascotte - ShadCN UI + fond flou */}
+      <Dialog open={showMascotModal} onOpenChange={setShowMascotModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <Dumbbell className="h-6 w-6" /> 
+              Choisir ma mascotte
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 dark:text-gray-300">
+              Fonctionnalité à venir ! IronBuddy révise son plus beau sourire…
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              onClick={() => setShowMascotModal(false)} 
+              variant="outline"
+              className="min-h-[44px]"
+              aria-label="Fermer la modal de sélection de mascotte"
+            >
+              Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   )

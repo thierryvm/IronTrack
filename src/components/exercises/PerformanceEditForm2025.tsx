@@ -6,10 +6,10 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Save, X, Dumbbell, Target, Activity, Calendar, AlertCircle } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'react-hot-toast'
-import { FormField2025 } from '@/components/ui/FormField2025'
-import { Input2025 } from '@/components/ui/Input2025'
-import { Button2025 } from '@/components/ui/Button2025'
-import { Textarea2025 } from '@/components/ui/Textarea2025'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 interface PerformanceEditForm2025Props {
   performanceId: string
@@ -53,6 +53,8 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
   const [saving, setSaving] = useState(false)
   const [performance, setPerformance] = useState<PerformanceData | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [originalPerformedAt, setOriginalPerformedAt] = useState<string | null>(null)
+  const [showDateWarning, setShowDateWarning] = useState(false)
 
   useEffect(() => {
     const fetchPerformance = async () => {
@@ -94,6 +96,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
         }
 
         setPerformance(formattedPerformance)
+        setOriginalPerformedAt(data.performed_at)
 
       } catch (error) {
         console.error('Erreur lors du chargement:', error)
@@ -109,6 +112,15 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
+
+    // Validation date - empêcher les dates futures
+    if (performance?.performed_at) {
+      const performanceDate = new Date(performance.performed_at)
+      const now = new Date()
+      if (performanceDate > now) {
+        newErrors.performed_at = 'La date ne peut pas être dans le futur'
+      }
+    }
 
     if (performance?.exercise_type === 'Musculation') {
       if (!performance.weight || performance.weight <= 0) {
@@ -148,7 +160,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
         updateData.reps = performance.reps
         updateData.set_number = performance.set_number
       } else if (performance.exercise_type === 'Cardio') {
-        updateData.duration = performance.duration
+        updateData.duration_seconds = performance.duration
         updateData.distance = performance.distance
         updateData.distance_unit = performance.distance_unit
         updateData.speed = performance.speed
@@ -186,11 +198,11 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full"
+          className="w-8 h-8 border-2 border-orange-600 border-t-transparent rounded-full"
         />
       </div>
     )
@@ -198,67 +210,69 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
 
   if (!performance) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Performance introuvable</h2>
-          <p className="text-gray-600 mb-4">La performance demandée n'existe pas ou a été supprimée.</p>
-          <Button2025 onClick={() => router.push('/exercises')}>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Performance introuvable</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">La performance demandée n'existe pas ou a été supprimée.</p>
+          <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
-          </Button2025>
+          </Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border-b border-gray-200 sticky top-0 z-10"
+        className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Button2025
+              <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleCancel}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 <ArrowLeft className="h-5 w-5" />
-              </Button2025>
+              </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   {performance.exercise_type === 'Musculation' ? (
-                    <Dumbbell className="h-5 w-5 text-orange-800" />
+                    <Dumbbell className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                   ) : (
-                    <Activity className="h-5 w-5 text-orange-800" />
+                    <Activity className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                   )}
                   Modifier la performance
                 </h1>
-                <p className="text-sm text-gray-500">{performance.exercise_name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{performance.exercise_name}</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button2025
+              <Button
                 variant="outline"
                 onClick={handleCancel}
                 disabled={saving}
-                icon={<X className="h-4 w-4" />}
+                className="hidden sm:flex items-center gap-2"
               >
+                <X className="h-6 w-6" />
                 Annuler
-              </Button2025>
-              <Button2025
+              </Button>
+              <Button
                 onClick={handleSave}
-                loading={saving}
-                icon={<Save className="h-4 w-4" />}
+                disabled={saving}
+                className="flex items-center gap-2"
               >
-                Enregistrer
-              </Button2025>
+                <Save className="h-6 w-6" />
+                {saving ? 'Enregistrement...' : 'Enregistrer'}
+              </Button>
             </div>
           </div>
         </div>
@@ -271,37 +285,57 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
         transition={{ delay: 0.1 }}
         className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
       >
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">
             
             {/* Date et temps */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-orange-800" />
+            <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 Date de la performance
               </h3>
               
-              <FormField2025 label="Date et heure">
-                <Input2025
+              <div className="space-y-2">
+                <Label htmlFor="performed_at">Date et heure</Label>
+                <Input
+                  id="performed_at"
                   type="datetime-local"
                   value={performance.performed_at ? new Date(performance.performed_at).toISOString().slice(0, 16) : ''}
-                  onChange={(e) => setPerformance({
-                    ...performance, 
-                    performed_at: new Date(e.target.value).toISOString()
-                  })}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value).toISOString()
+                    setPerformance({
+                      ...performance, 
+                      performed_at: newDate
+                    })
+                    
+                    // Avertissement si changement de date significatif
+                    if (originalPerformedAt && newDate !== originalPerformedAt) {
+                      const originalDate = new Date(originalPerformedAt)
+                      const newDateObj = new Date(newDate)
+                      const daysDiff = Math.abs((newDateObj.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24))
+                      
+                      if (daysDiff > 1) {
+                        setShowDateWarning(true)
+                      }
+                    }
+                  }}
+                  className={errors.performed_at ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                 />
-              </FormField2025>
+                {errors.performed_at && (
+                  <p className="text-sm text-red-500">{errors.performed_at}</p>
+                )}
+              </div>
             </div>
 
             {/* Métriques selon le type */}
             <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 {performance.exercise_type === 'Musculation' ? (
-                  <Dumbbell className="h-5 w-5 text-orange-800" />
+                  <Dumbbell className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 ) : (
-                  <Target className="h-5 w-5 text-orange-800" />
+                  <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 )}
                 Métriques de performance
               </h3>
@@ -309,12 +343,12 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
               {performance.exercise_type === 'Musculation' ? (
                 // Formulaire Musculation
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <FormField2025
-                    label="Poids (kg)"
-                    required
-                    error={errors.weight}
-                  >
-                    <Input2025
+                  <div className="space-y-2">
+                    <Label htmlFor="weight" className="text-sm font-medium">
+                      Poids (kg) <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="weight"
                       type="number"
                       min="0"
                       step="0.5"
@@ -324,16 +358,19 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         weight: Number(e.target.value)
                       })}
                       placeholder="60"
-                      isError={!!errors.weight}
+                      className={errors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                     />
-                  </FormField2025>
+                    {errors.weight && (
+                      <p className="text-sm text-red-500">{errors.weight}</p>
+                    )}
+                  </div>
 
-                  <FormField2025
-                    label="Répétitions"
-                    required
-                    error={errors.reps}
-                  >
-                    <Input2025
+                  <div className="space-y-2">
+                    <Label htmlFor="reps" className="text-sm font-medium">
+                      Répétitions <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="reps"
                       type="number"
                       min="1"
                       value={performance.reps || ''}
@@ -342,12 +379,17 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         reps: Number(e.target.value)
                       })}
                       placeholder="10"
-                      isError={!!errors.reps}
+                      className={errors.reps ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                     />
-                  </FormField2025>
+                    {errors.reps && (
+                      <p className="text-sm text-red-500">{errors.reps}</p>
+                    )}
+                  </div>
 
-                  <FormField2025 label="Nombre de séries">
-                    <Input2025
+                  <div className="space-y-2">
+                    <Label htmlFor="set_number" className="text-sm font-medium">Nombre de séries</Label>
+                    <Input
+                      id="set_number"
                       type="number"
                       min="1"
                       value={performance.set_number || ''}
@@ -357,19 +399,19 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                       })}
                       placeholder="3"
                     />
-                  </FormField2025>
+                  </div>
                 </div>
               ) : (
                 // Formulaire Cardio
                 <div className="space-y-6">
                   {/* Métriques de base */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField2025
-                      label="Durée (minutes)"
-                      required
-                      error={errors.duration}
-                    >
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="duration" className="text-sm font-medium">
+                        Durée (minutes) <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="duration"
                         type="number"
                         min="0"
                         step="0.1"
@@ -379,13 +421,18 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                           duration: Math.round(Number(e.target.value) * 60)
                         })}
                         placeholder="30"
-                        isError={!!errors.duration}
+                        className={errors.duration ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                       />
-                    </FormField2025>
+                      {errors.duration && (
+                        <p className="text-sm text-red-500">{errors.duration}</p>
+                      )}
+                    </div>
 
-                    <FormField2025 label="Distance">
+                    <div className="space-y-2">
+                      <Label htmlFor="distance" className="text-sm font-medium">Distance</Label>
                       <div className="flex gap-2">
-                        <Input2025
+                        <Input
+                          id="distance"
                           type="number"
                           min="0"
                           step="0.1"
@@ -403,20 +450,22 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                             ...performance, 
                             distance_unit: e.target.value
                           })}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
                         >
                           <option value="km">km</option>
                           <option value="m">m</option>
                           <option value="miles">miles</option>
                         </select>
                       </div>
-                    </FormField2025>
+                    </div>
                   </div>
 
                   {/* Métriques avancées */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <FormField2025 label="Vitesse (km/h)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="speed" className="text-sm font-medium">Vitesse (km/h)</Label>
+                      <Input
+                        id="speed"
                         type="number"
                         min="0"
                         step="0.1"
@@ -427,10 +476,12 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="12"
                       />
-                    </FormField2025>
+                    </div>
 
-                    <FormField2025 label="Calories">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="calories" className="text-sm font-medium">Calories</Label>
+                      <Input
+                        id="calories"
                         type="number"
                         min="0"
                         value={performance.calories || ''}
@@ -440,10 +491,12 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="300"
                       />
-                    </FormField2025>
+                    </div>
 
-                    <FormField2025 label="Fréquence cardiaque (BPM)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="heart_rate" className="text-sm font-medium">Fréquence cardiaque (BPM)</Label>
+                      <Input
+                        id="heart_rate"
                         type="number"
                         min="60"
                         max="200"
@@ -454,13 +507,15 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="150"
                       />
-                    </FormField2025>
+                    </div>
                   </div>
 
                   {/* Métriques spécialisées */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <FormField2025 label="Cadence rameur (SPM)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="stroke_rate" className="text-sm font-medium">Cadence rameur (SPM)</Label>
+                      <Input
+                        id="stroke_rate"
                         type="number"
                         min="16"
                         max="36"
@@ -471,10 +526,12 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="28"
                       />
-                    </FormField2025>
+                    </div>
 
-                    <FormField2025 label="Puissance (watts)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="watts" className="text-sm font-medium">Puissance (watts)</Label>
+                      <Input
+                        id="watts"
                         type="number"
                         min="50"
                         max="500"
@@ -485,12 +542,14 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="180"
                       />
-                    </FormField2025>
+                    </div>
 
-                    <FormField2025 label="Inclinaison (%)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="incline" className="text-sm font-medium">Inclinaison (%)</Label>
+                      <Input
+                        id="incline"
                         type="number"
-                        min="0"
+                        min="-15"
                         max="15"
                         step="0.1"
                         value={performance.incline || ''}
@@ -498,12 +557,14 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                           ...performance, 
                           incline: Number(e.target.value)
                         })}
-                        placeholder="3"
+                        placeholder="0"
                       />
-                    </FormField2025>
+                    </div>
 
-                    <FormField2025 label="Cadence vélo (RPM)">
-                      <Input2025
+                    <div className="space-y-2">
+                      <Label htmlFor="cadence" className="text-sm font-medium">Cadence vélo (RPM)</Label>
+                      <Input
+                        id="cadence"
                         type="number"
                         min="50"
                         max="120"
@@ -514,47 +575,75 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         })}
                         placeholder="85"
                       />
-                    </FormField2025>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Avertissement changement de date */}
+              {showDateWarning && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-amber-800">
+                        Attention : Changement de date détecté
+                      </h4>
+                      <p className="mt-1 text-sm text-amber-700">
+                        Modifier la date de cette performance peut affecter son classement dans l'historique. 
+                        Si cette performance devient la plus récente, elle s'affichera comme "dernière performance" 
+                        sur la carte de l'exercice, même si d'autres performances récentes sont meilleures.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowDateWarning(false)}
+                        className="mt-2 text-sm text-amber-800 underline hover:no-underline"
+                      >
+                        J'ai compris
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Notes */}
-              <FormField2025 label="Notes">
-                <Textarea2025
+              <div className="space-y-2">
+                <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
+                <Textarea
+                  id="notes"
                   value={performance.notes || ''}
                   onChange={(e) => setPerformance({
                     ...performance, 
                     notes: e.target.value
                   })}
                   placeholder="Notes sur cette performance, ressenti, observations..."
-                  autoResize
                   rows={3}
+                  className="resize-none"
                 />
-              </FormField2025>
+              </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-              <Button2025
+              <Button
                 variant="outline"
                 onClick={handleCancel}
                 disabled={saving}
-                fullWidth
-                className="sm:w-auto"
+                className="w-full sm:w-auto"
               >
                 Annuler
-              </Button2025>
-              <Button2025
+              </Button>
+              <Button
                 onClick={handleSave}
-                loading={saving}
-                fullWidth
-                className="sm:w-auto"
+                disabled={saving}
+                className="w-full sm:w-auto"
               >
                 {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
-              </Button2025>
+              </Button>
             </div>
           </div>
         </div>

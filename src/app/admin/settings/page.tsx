@@ -43,7 +43,7 @@ export default function AdminSettingsPage() {
             <p className="text-muted-foreground text-center">
               Vous n'avez pas les permissions nécessaires pour accéder aux paramètres administrateur.
             </p>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Debug: Rôle actuel = {user?.role || 'non défini'}
             </p>
           </CardContent>
@@ -93,12 +93,12 @@ export default function AdminSettingsPage() {
                 onClick={() => handleConfigAction()}
                 disabled={isLoading}
               >
-                <Activity className="h-4 w-4 mr-2" />
+                <Activity className="h-6 w-6 mr-2" />
                 Désactivé
               </Button>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -113,12 +113,12 @@ export default function AdminSettingsPage() {
                 onClick={() => handleConfigAction()}
                 disabled={isLoading}
               >
-                <RotateCcw className="h-4 w-4 mr-2" />
+                <RotateCcw className="h-6 w-6 mr-2" />
                 Vider
               </Button>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -152,12 +152,12 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -172,12 +172,12 @@ export default function AdminSettingsPage() {
                 onClick={() => handleConfigAction()}
                 disabled={isLoading}
               >
-                <Mail className="h-4 w-4 mr-2" />
+                <Mail className="h-6 w-6 mr-2" />
                 Configurer
               </Button>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -187,7 +187,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -211,12 +211,12 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -226,12 +226,12 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Requis</span>
               </div>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -269,12 +269,12 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Actif</span>
               </div>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -289,12 +289,12 @@ export default function AdminSettingsPage() {
                 onClick={() => handleConfigAction()}  
                 disabled={isLoading}
               >
-                <AlertTriangle className="h-4 w-4 mr-2" />
+                <AlertTriangle className="h-6 w-6 mr-2" />
                 Configurer
               </Button>
             </div>
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
             <div className="flex items-center justify-between">
               <div>
@@ -304,7 +304,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <span className="text-sm text-green-600">Actif</span>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function AdminSettingsPage() {
                 onClick={() => handleConfigAction()}
                 disabled={isLoading}
               >
-                <AlertTriangle className="h-4 w-4 mr-2" />
+                <AlertTriangle className="h-6 w-6 mr-2" />
                 Reset Configuration
               </Button>
             )}

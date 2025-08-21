@@ -16,10 +16,10 @@ function useAccessibilityFixes() {
       /* CORRECTIFS CONTRASTE WCAG 2.1 AA (4.5:1) */
       
       /* Texte gris SEULEMENT si pas de classe contexte */
-      .text-gray-500:not([class*="menu"]):not([class*="nav"]):not([class*="header"]) { 
+      .text-gray-600 dark:text-gray-400:not([class*="menu"]):not([class*="nav"]):not([class*="header"]) { 
         color: #6b7280 !important; 
       }
-      .text-gray-400:not([class*="menu"]):not([class*="nav"]):not([class*="header"]) { 
+      .text-gray-700 dark:text-gray-300:not([class*="menu"]):not([class*="nav"]):not([class*="header"]) { 
         color: #4b5563 !important; 
       }
       

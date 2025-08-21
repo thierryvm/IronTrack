@@ -49,8 +49,8 @@ export function UnifiedCard({
   }, [])
 
   const cardClasses = `
-    relative bg-white rounded-xl shadow-md border border-gray-100
-    ${hover ? 'hover:shadow-lg hover:border-orange-200 transition-all duration-300' : ''}
+    relative bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-100 dark:border-gray-700
+    ${hover ? 'hover:shadow-lg hover:border-orange-200 dark:border-orange-800 transition-all duration-300' : ''}
     ${gradient ? 'bg-gradient-to-br from-white to-gray-50' : ''}
     ${onCardClick ? 'cursor-pointer' : ''}
     ${className}
@@ -75,18 +75,18 @@ export function UnifiedCard({
               e.stopPropagation()
               setIsDropdownOpen(!isDropdownOpen)
             }}
-            className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
             aria-label="Actions"
             data-testid="card-menu-button"
           >
-            <MoreVertical className="h-4 w-4" />
+            <MoreVertical className="h-6 w-6" />
           </button>
           
           {/* Dropdown menu - Position absolue améliorée */}
           {isDropdownOpen && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50"
               data-testid="card-dropdown-menu"
             >
               {actions.map((action, index) => (
@@ -102,7 +102,7 @@ export function UnifiedCard({
                     transition-colors duration-150
                     ${action.danger 
                       ? 'text-red-600 hover:bg-red-50' 
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
                     }
                     ${index === 0 ? 'rounded-t-lg' : ''}
                     ${index === actions.length - 1 ? 'rounded-b-lg' : ''}
@@ -140,7 +140,7 @@ export function CardHeader({ title, subtitle, badge, icon, className = '' }: Car
     yellow: 'bg-yellow-100 text-yellow-700', 
     red: 'bg-red-100 text-red-700',
     blue: 'bg-blue-100 text-blue-700',
-    gray: 'bg-gray-100 text-gray-700'
+    gray: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
   }
 
   return (
@@ -152,11 +152,11 @@ export function CardHeader({ title, subtitle, badge, icon, className = '' }: Car
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-orange-800 transition-colors">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-orange-800 dark:text-orange-300 transition-colors">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{subtitle}</p>
           )}
         </div>
       </div>
@@ -187,7 +187,7 @@ export function CardActions({ actions, className = '' }: CardActionsProps) {
     primary: 'bg-orange-600 text-white hover:bg-orange-700',
     secondary: 'bg-gray-500 text-white hover:bg-gray-600',
     success: 'bg-green-500 text-white hover:bg-green-600',
-    danger: 'bg-red-500 text-white hover:bg-red-600'
+    danger: 'bg-red-500 text-white hover:bg-red-500'
   }
 
   return (

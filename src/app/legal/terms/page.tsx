@@ -13,26 +13,26 @@ export default function TermsOfService() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
         >
           {/* Bouton de retour */}
           <button
             onClick={() => router.back()}
-            className="flex items-center text-gray-600 hover:text-orange-800 transition-colors mb-6"
+            className="flex items-center text-gray-600 dark:text-gray-300 hover:text-orange-800 dark:text-orange-300 transition-colors mb-6"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             <span className="text-sm sm:text-base">Retour</span>
           </button>
 
           <div className="flex items-center mb-6 sm:mb-8">
-            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 mr-3" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Conditions d'Utilisation</h1>
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 dark:text-orange-300 mr-3" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Conditions d'Utilisation</h1>
           </div>
           
-          <div className="space-y-6 sm:space-y-8 text-gray-700 text-sm sm:text-base">
+          <div className="space-y-6 sm:space-y-8 text-gray-700 dark:text-gray-300 text-sm sm:text-base">
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">1. Informations générales</h2>
-              <div className="bg-orange-50 p-3 sm:p-4 rounded-lg">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">1. Informations générales</h2>
+              <div className="bg-orange-50 dark:bg-orange-900/20 p-3 sm:p-4 rounded-lg">
                 <p className="font-medium">Application : IronTrack</p>
                 <p>Service de coaching sportif personnel</p>
                 <p>Dernière mise à jour : {new Date().toLocaleDateString('fr-BE')}</p>
@@ -41,7 +41,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">2. Acceptation des conditions</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">2. Acceptation des conditions</h2>
               <p>
                 En utilisant l'application IronTrack, vous acceptez pleinement et sans réserve les présentes conditions d'utilisation.
                 Si vous n'acceptez pas ces conditions, vous devez cesser immédiatement d'utiliser l'application.
@@ -49,7 +49,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">3. Description du service</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">3. Description du service</h2>
               <p>
                 IronTrack est une application de coaching sportif personnel qui permet :
               </p>
@@ -63,10 +63,10 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">4. Inscription et compte utilisateur</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">4. Inscription et compte utilisateur</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Conditions d'inscription :</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Conditions d'inscription :</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>Être âgé d'au moins 16 ans</li>
                     <li>Fournir des informations exactes et complètes</li>
@@ -75,7 +75,7 @@ export default function TermsOfService() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Responsabilités :</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Responsabilités :</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>Vous êtes responsable de la sécurité de votre compte</li>
                     <li>Vous devez nous informer immédiatement de toute utilisation non autorisée</li>
@@ -86,7 +86,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">5. Utilisation autorisée</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">5. Utilisation autorisée</h2>
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
                   <div className="flex items-center mb-2">
@@ -117,7 +117,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">6. Avertissements santé</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">6. Avertissements santé</h2>
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4">
                 <div className="flex items-center mb-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
@@ -134,7 +134,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">7. Propriété intellectuelle</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">7. Propriété intellectuelle</h2>
               <p>
                 L'application IronTrack, son contenu, ses fonctionnalités et ses éléments graphiques sont protégés par le droit d'auteur.
                 Vous ne pouvez pas reproduire, distribuer ou créer des œuvres dérivées sans autorisation explicite.
@@ -142,7 +142,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">8. Disponibilité du service</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">8. Disponibilité du service</h2>
               <p>
                 Nous nous efforçons de maintenir l'application disponible 24h/24 et 7j/7, mais nous ne pouvons garantir une disponibilité absolue.
                 Des interruptions peuvent survenir pour :
@@ -156,7 +156,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">9. Limitation de responsabilité</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">9. Limitation de responsabilité</h2>
               <p>
                 Dans les limites autorisées par la loi belge, nous excluons toute responsabilité pour :
               </p>
@@ -169,21 +169,21 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">10. Résiliation</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">10. Résiliation</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Résiliation par l'utilisateur :</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Résiliation par l'utilisateur :</h3>
                   <p className="text-sm">Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l'application.</p>
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">Résiliation par IronTrack :</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Résiliation par IronTrack :</h3>
                   <p className="text-sm">Nous pouvons suspendre ou fermer votre compte en cas de violation des présentes conditions.</p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">11. Modifications des conditions</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">11. Modifications des conditions</h2>
               <p>
                 Nous nous réservons le droit de modifier ces conditions d'utilisation à tout moment.
                 Les modifications prennent effet dès leur publication dans l'application.
@@ -192,7 +192,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">12. Droit applicable et juridiction</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">12. Droit applicable et juridiction</h2>
               <p>
                 Ces conditions d'utilisation sont régies par le droit belge.
                 Tout litige relève de la compétence exclusive des tribunaux belges.
@@ -200,8 +200,8 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">13. Contact</h2>
-              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">13. Contact</h2>
+              <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
                 <p className="font-medium mb-2">Pour toute question concernant ces conditions :</p>
                 <p className="text-sm">contact@irontrack.app</p>
               </div>

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import Avatar from './Avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 // Types pour les props
 interface Session {
@@ -32,31 +35,8 @@ function formatDateTime(dateStr: string, timeStr: string) {
   return `${d} - ${t}`;
 }
 
-// Ajoute un composant Tooltip simple
-const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => {
-  const [show, setShow] = useState(false);
-  // Détection mobile simple
-  const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  if (isMobile) return <>{children}</>;
-  return (
-    <span
-      className="relative"
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
-      onFocus={() => setShow(true)}
-      onBlur={() => setShow(false)}
-      tabIndex={0}
-      style={{ outline: 'none' }}
-    >
-      {children}
-      {show && (
-        <div className="absolute z-50 left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap" style={{ minWidth: '120px' }}>
-          {text}
-        </div>
-      )}
-    </span>
-  );
-};
+// Migration ShadCN UI - Suppression composant Tooltip custom
+// Utilisation de Popover ShadCN UI à la place
 
 const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
   const [showPopover, setShowPopover] = useState(false);
@@ -66,11 +46,11 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   return (
-    <div className={`relative h-20 sm:h-24 p-1.5 sm:p-2 border rounded-lg bg-white flex flex-col overflow-hidden transition-all duration-200 ${
-      sessions.length > 0 ? 'border-orange-200 bg-orange-50/30' : 'border-gray-200 hover:border-gray-300'
+    <div className={`relative h-20 sm:h-24 p-1.5 sm:p-2 border rounded-lg bg-white dark:bg-gray-800 flex flex-col overflow-hidden transition-all duration-200 ${
+      sessions.length > 0 ? 'border-blue-200 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/10' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
     }`}>
       <div className={`text-sm font-semibold mb-1 ${
-        sessions.length > 0 ? 'text-orange-900' : 'text-gray-700'
+        sessions.length > 0 ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'
       }`}>{date}</div>
       
       <div className="flex-1 flex flex-col gap-1">
@@ -79,7 +59,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           <div className="space-y-1">
             {/* Première séance en détail */}
             <button
-              className="flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation w-full"
+              className="flex items-center px-3 py-2 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation w-full"
               style={{
                 background: sessions[0].color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
               }}
@@ -96,7 +76,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
               {sessions.slice(1, 5).map((session, idx) => (
                 <button
                   key={idx}
-                  className="w-6 h-6 min-w-[24px] min-h-[24px] rounded-full shadow-sm cursor-pointer hover:scale-110 transition-transform touch-manipulation flex items-center justify-center"
+                  className="w-6 h-11 min-w-[24px] min-h-[24px] rounded-full shadow-sm cursor-pointer hover:scale-110 transition-transform touch-manipulation flex items-center justify-center"
                   style={{
                     background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   }}
@@ -108,7 +88,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 />
               ))}
               {sessions.length > 5 && (
-                <span className="text-sm text-gray-500 ml-1 min-w-[20px] text-center">+{sessions.length - 5}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400 ml-1 min-w-[20px] text-center">+{sessions.length - 5}</span>
               )}
             </div>
           </div>
@@ -117,7 +97,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           sessions.slice(0, 2).map((session) => (
             <div key={session.id} className="flex items-center group">
               <button
-                className="flex-1 min-h-[32px] flex items-center px-2 py-1 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation"
+                className="flex-1 min-h-[32px] flex items-center px-3 py-2 text-xs text-white font-medium rounded-md shadow-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95 touch-manipulation"
                 style={{
                   background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)',
                   minWidth: 0,
@@ -139,14 +119,21 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
               >
                 {/* Avatar compact pour séances partagées */}
                 {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
-                  <Tooltip text={session.participants[0].name}>
-                    <Avatar
-                      src={session.participants[0].avatarUrl}
-                      name={session.participants[0].name}
-                      size={20}
-                      className="mr-1 border border-white shadow-sm bg-white"
-                    />
-                  </Tooltip>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="mr-1">
+                        <Avatar
+                          src={session.participants[0].avatarUrl}
+                          name={session.participants[0].name}
+                          size={20}
+                          className="border border-white dark:border-gray-600 shadow-sm"
+                        />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2">
+                      <p className="text-sm">{session.participants[0].name}</p>
+                    </PopoverContent>
+                  </Popover>
                 )}
                 <span className="truncate">
                   {session.name}
@@ -161,89 +148,64 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           ))
         )}
         
-        {/* Bouton pour voir toutes les séances si plus de 2 */}
+        {/* Bouton pour voir toutes les séances si plus de 2 - ShadCN Popover */}
         {sessions.length > 2 && (
-          <button
-            className="mt-1 py-1 text-xs text-orange-800 hover:text-orange-800 hover:bg-orange-100 rounded-md transition-colors focus:outline-none font-medium min-h-[44px] touch-manipulation"
-            onClick={() => setShowPopover(true)}
-            aria-label={`Voir toutes les ${sessions.length} séances du ${date}`}
-          >
-            Voir tout ({sessions.length})
-          </button>
+          <Popover open={showPopover} onOpenChange={setShowPopover}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-1 text-xs font-medium min-h-[44px] touch-manipulation w-full"
+                aria-label={`Voir toutes les ${sessions.length} séances du ${date}`}
+              >
+                Voir tout ({sessions.length})
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 max-w-[90vw] p-3 max-h-[80vh] overflow-y-auto">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Séances du {date}</h4>
+                <div className="space-y-2">
+                  {sessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="p-3 rounded-lg border bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-700"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
+                            <Avatar
+                              src={session.participants[0].avatarUrl}
+                              name={session.participants[0].name}
+                              size={24}
+                              className="border border-orange-300 dark:border-orange-600"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{session.name}</p>
+                            {session.time && (
+                              <p className="text-xs text-gray-600 dark:text-gray-400">{session.time}</p>
+                            )}
+                          </div>
+                        </div>
+                        {session.type && (
+                          <Badge variant="outline" className="text-xs">
+                            {session.type}
+                          </Badge>
+                        )}
+                      </div>
+                      {session.participants && session.participants.length > 0 && (
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          Partagée par {session.participants[0].name}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
-      {/* Popover pour afficher toutes les séances du jour */}
-      {showPopover && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setShowPopover(false)}>
-          <div 
-            className="w-80 max-w-[90vw] bg-white border border-gray-300 rounded-lg shadow-2xl p-3 overflow-y-auto max-h-[80vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-2 sticky top-0 bg-white z-10">
-              <span className="font-semibold text-sm">Séances du {date}</span>
-              <button 
-                className="text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors min-h-[44px] touch-manipulation" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowPopover(false);
-                }}
-                aria-label="Fermer la liste des séances"
-              >
-                ✕
-              </button>
-            </div>
-          <ul>
-            {sessions.map((session) => (
-              <li key={session.id} className="flex flex-col gap-1 p-2 border-b last:border-b-0">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="h-5 w-5 rounded-full flex-shrink-0"
-                    style={{ background: session.color || 'linear-gradient(90deg, #ff9800 0%, #ffb347 100%)' }}
-                  ></div>
-                  <span className="truncate text-sm font-medium">{session.name}</span>
-                  {session.time && (
-                    <span className="text-xs text-gray-500 ml-2">{session.time.slice(0,5)}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
-                  {session.type && (
-                    <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-semibold">{session.type}</span>
-                  )}
-                  {session.status && (
-                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">{session.status}</span>
-                  )}
-                  {session.duration && (
-                    <span className="flex items-center gap-1">
-                      <span>⏱</span>
-                      <span>{session.duration} min</span>
-                    </span>
-                  )}
-                </div>
-                {/* Affichage résumé partagé : avatar après le texte */}
-                {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-gray-500">Partagée par</span>
-                    <Tooltip text={session.participants[0].name}>
-                      <Avatar
-                        src={session.participants[0].avatarUrl}
-                        name={session.participants[0].name}
-                        size={20}
-                        className="border-2 border-white shadow-sm"
-                      />
-                    </Tooltip>
-                    <span className="text-xs text-gray-500">{session.participants[0].name}</span>
-                  </div>
-                )}
-                {/* Affichage date/heure formatée */}
-                {session.scheduled_date && (
-                  <div className="text-xs text-gray-500 mt-1">{formatDateTime(session.scheduled_date, session.time)}</div>
-                )}
-              </li>
-            ))}
-          </ul>
-          </div>
-        </div>
-      )}
       {/* Popover mobile pour détail séance */}
       {mobileSessionDetail && (
         <div 
@@ -263,14 +225,14 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
           }}
         >
           <div 
-            className="bg-white rounded-lg shadow-2xl p-4 w-80 max-w-full relative"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-2xl p-4 w-80 max-w-full relative"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: 'slide-up 0.3s ease-out'
             }}
           >
             <button 
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] touch-manipulation" 
+              className="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-700 dark:text-gray-300 p-1 rounded hover:bg-gray-100 dark:bg-gray-800 transition-colors min-h-[44px] min-w-[44px] touch-manipulation" 
               onClick={(e) => {
                 e.stopPropagation();
                 setMobileSessionDetail(null);
@@ -285,9 +247,9 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             </div>
             {/* Affichage date/heure formatée */}
             {mobileSessionDetail.scheduled_date && (
-              <div className="text-sm text-gray-600 mb-2">{formatDateTime(mobileSessionDetail.scheduled_date, mobileSessionDetail.time)}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">{formatDateTime(mobileSessionDetail.scheduled_date, mobileSessionDetail.time)}</div>
             )}
-            <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 mb-2">
               {mobileSessionDetail.type && (
                 <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-semibold">{mobileSessionDetail.type}</span>
               )}
@@ -304,16 +266,16 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             {/* Affichage résumé partagé : avatar après le texte */}
             {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs text-gray-500">Partagée par</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Partagée par</span>
                 <Tooltip text={mobileSessionDetail.participants[0].name}>
                   <Avatar
                     src={mobileSessionDetail.participants[0].avatarUrl}
                     name={mobileSessionDetail.participants[0].name}
                     size={24}
-                    className="border-2 border-white shadow-sm"
+                    className="border-2 border-white dark:border-gray-600 shadow-sm"
                   />
                 </Tooltip>
-                <span className="text-xs text-gray-500">{mobileSessionDetail.participants[0].name}</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">{mobileSessionDetail.participants[0].name}</span>
               </div>
             )}
           </div>

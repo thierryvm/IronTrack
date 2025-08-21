@@ -152,24 +152,24 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={handleClose} />
       
-      <div className="relative bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Shield className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 Changer d'email
               </h3>
-              <p className="text-sm text-gray-600">Processus sécurisé</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Processus sécurisé</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
@@ -186,17 +186,17 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email actuel
               </label>
-              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-300">
                 {currentEmail}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Mail className="inline h-4 w-4 mr-1" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Mail className="inline h-6 w-6 mr-1" />
                 Nouvel email
               </label>
               <input
@@ -204,14 +204,14 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
                 required
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="nouveau@email.com"
                 data-testid="new-email-input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Confirmer le nouvel email
               </label>
               <input
@@ -219,15 +219,15 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
                 required
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="nouveau@email.com"
                 data-testid="confirm-email-input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Lock className="inline h-4 w-4 mr-1" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Lock className="inline h-6 w-6 mr-1" />
                 Mot de passe actuel (sécurité)
               </label>
               <input
@@ -235,7 +235,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Votre mot de passe actuel"
                 data-testid="password-input"
               />
@@ -251,7 +251,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 rounded-lg font-medium transition-colors"
               >
                 Annuler
               </button>
@@ -273,10 +273,10 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 Vérification requise
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Un email de confirmation a été envoyé à :
               </p>
               <p className="font-medium text-blue-600 bg-blue-50 p-2 rounded-lg text-sm">
@@ -301,7 +301,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
               </button>
               <button
                 onClick={handleClose}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 rounded-lg font-medium transition-colors"
               >
                 Fermer
               </button>
@@ -316,10 +316,10 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 Email mis à jour !
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Votre email a été changé avec succès.
               </p>
             </div>

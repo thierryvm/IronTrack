@@ -47,18 +47,18 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-md w-full mx-4 shadow-2xl border border-gray-200">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl max-w-md w-full mx-4 shadow-2xl border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="text-2xl">{instructions.icon}</div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Problème de connexion Google
             </h2>
           </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 transition-colors"
             aria-label="Fermer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,10 +89,10 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
           {/* Instructions */}
           <div className="space-y-3">
-            <h3 className="font-medium text-gray-900">{instructions.title}</h3>
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">{instructions.title}</h3>
             <ol className="space-y-2">
               {instructions.steps.map((step, index) => (
-                <li key={index} className="flex items-start gap-3 text-sm text-gray-600">
+                <li key={index} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
                   <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
                     {index + 1}
                   </span>
@@ -115,7 +115,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
             
             <button
               onClick={handleCopyUrl}
-              className={`w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 ${
+              className={`w-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 ${
                 copySuccess ? 'bg-green-50 border-green-300 text-green-700' : ''
               }`}
             >
@@ -125,8 +125,8 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
           {/* Alternative auth */}
           {showAlternativeAuth && (
-            <div className="pt-4 border-t border-gray-100">
-              <p className="text-sm text-gray-600 text-center mb-3">
+            <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-3">
                 Ou connectez-vous autrement :
               </p>
               <div className="text-center">
@@ -142,11 +142,11 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
           {/* Debug info (only in development) */}
           {process.env.NODE_ENV === 'development' && (
-            <details className="pt-4 border-t border-gray-100">
-              <summary className="text-xs text-gray-500 cursor-pointer">
+            <details className="pt-4 border-t border-gray-100 dark:border-gray-700">
+              <summary className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
                 Infos de débogage
               </summary>
-              <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600 font-mono">
+              <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300 font-mono">
                 <div>Plateforme: {browserInfo.platform}</div>
                 <div>In-app: {browserInfo.isInAppBrowser ? 'Oui' : 'Non'}</div>
                 <div>Redirection possible: {browserInfo.canRedirectToSystemBrowser ? 'Oui' : 'Non'}</div>

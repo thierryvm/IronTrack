@@ -93,8 +93,8 @@ export default function SharedDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-800" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
       </div>
     )
   }
@@ -105,7 +105,7 @@ export default function SharedDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl p-6 mb-8">
@@ -113,12 +113,12 @@ export default function SharedDashboardPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-lg hover:bg-white dark:bg-gray-900/30 transition-colors"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="bg-white/20 rounded-full p-3">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-full p-3">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
@@ -139,31 +139,31 @@ export default function SharedDashboardPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 animate-pulse">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="h-12 bg-gray-200 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                 </div>
               </div>
             ))}
           </div>
         ) : partnerships.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center">
-            <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-              <Users className="h-8 w-8 text-gray-400" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-8 text-center">
+            <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+              <Users className="h-8 w-8 text-gray-700 dark:text-gray-300" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Aucun partenaire accepté
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Invitez des partenaires pour commencer à partager vos données.
             </p>
             <button
@@ -185,15 +185,15 @@ export default function SharedDashboardPage() {
                   key={partnership.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
                       {partnerName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{partnerName}</h3>
-                      <p className="text-sm text-gray-500">Partenaire depuis {new Date(partnership.created_at || Date.now()).toLocaleDateString('fr-FR')}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">{partnerName}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Partenaire depuis {new Date(partnership.created_at || Date.now()).toLocaleDateString('fr-FR')}</p>
                     </div>
                   </div>
                   
@@ -210,15 +210,15 @@ export default function SharedDashboardPage() {
                     {/* Workouts */}
                     <button
                       onClick={() => router.push('/calendar')}
-                      className="w-full flex items-center justify-between p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors"
+                      className="w-full flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 rounded-lg transition-colors"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="bg-orange-500 rounded-lg p-2">
-                          <Calendar className="h-4 w-4 text-white" />
+                        <div className="bg-orange-600 dark:bg-orange-500 rounded-lg p-2">
+                          <Calendar className="h-6 w-6 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Entraînements de {partnerName}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Entraînements de {partnerName}</span>
                       </div>
-                      <span className="text-orange-800 text-sm">Voir dans calendrier</span>
+                      <span className="text-orange-800 dark:text-orange-300 text-sm">Voir dans calendrier</span>
                     </button>
 
                     {/* Nutrition */}
@@ -228,9 +228,9 @@ export default function SharedDashboardPage() {
                     >
                       <div className="flex items-center space-x-3">
                         <div className="bg-green-500 rounded-lg p-2">
-                          <Apple className="h-4 w-4 text-white" />
+                          <Apple className="h-6 w-6 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Nutrition de {partnerName}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Nutrition de {partnerName}</span>
                       </div>
                       <span className="text-green-600 text-sm">Disponible</span>
                     </button>
@@ -243,39 +243,39 @@ export default function SharedDashboardPage() {
                     >
                       <div className="flex items-center space-x-3">
                         <div className="bg-blue-500 rounded-lg p-2">
-                          <TrendingUp className="h-4 w-4 text-white" />
+                          <TrendingUp className="h-6 w-6 text-white" />
                         </div>
-                        <span className="font-medium text-gray-900">Progrès de {partnerName}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Progrès de {partnerName}</span>
                       </div>
                       <span className="text-blue-600 text-sm">Bientôt</span>
                     </button>
                   </div>
 
                   {/* Section de partage mutuel */}
-                  <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center space-x-2 mb-3">
                       <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                       <span className="text-sm font-medium text-amber-800">Vos données partagées avec {partnerName}</span>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-2 text-xs mb-3">
-                      <div className="bg-orange-50 p-2 rounded text-center">
-                        <div className="text-orange-800 font-medium">Entraînements</div>
-                        <div className="text-orange-800">Activé</div>
+                      <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded text-center">
+                        <div className="text-orange-800 dark:text-orange-300 font-medium">Entraînements</div>
+                        <div className="text-orange-800 dark:text-orange-300">Activé</div>
                       </div>
                       <div className="bg-green-50 p-2 rounded text-center">
                         <div className="text-green-600 font-medium">Nutrition</div>
                         <div className="text-green-500">Activé</div>
                       </div>
-                      <div className="bg-gray-50 p-2 rounded text-center">
-                        <div className="text-gray-600 font-medium">Progrès</div>
-                        <div className="text-gray-500">Désactivé</div>
+                      <div className="bg-gray-50 dark:bg-gray-800 p-2 rounded text-center">
+                        <div className="text-gray-600 dark:text-gray-300 font-medium">Progrès</div>
+                        <div className="text-gray-600 dark:text-gray-400">Désactivé</div>
                       </div>
                     </div>
                     
                     <button
                       onClick={() => router.push(`/training-partners/${partnership.id}/settings`)}
-                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

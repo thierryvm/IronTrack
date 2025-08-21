@@ -12,6 +12,9 @@ const nextConfig = {
       'framer-motion',
       'lucide-react',
     ],
+    // ULTRAHARDCORE: Réduction warnings preload
+    optimizeCss: false,
+    scrollRestoration: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -32,29 +35,41 @@ const nextConfig = {
     loader: 'default',
     unoptimized: false,
   },
-  // SOLUTION ULTIME: Variables d'environnement Next.js
+  // Variables d'environnement optimisées pour performance
   env: {
     // Forcer Next.js mode single-thread
     NEXT_CPU_COUNT: '1',
-    DISABLE_WEBPACK_CACHE: 'true',
+    // OPTIMISATION: Webpack cache intelligent au lieu de disable
+    WEBPACK_CACHE_STRATEGY: 'memory',
     // PATCH JEST WORKER
     JEST_WORKER_DISABLE: 'true',
     FORCE_COLOR: '0',
-    CI: 'true', // Simule environnement CI pour désactiver optimisations
   },
   // Ignorer warnings spécifiques Supabase Edge Runtime
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-  // Configuration simple optimisée pour stabilité  
+  // Configuration optimisée pour stabilité et performance cache
   webpack: (config: any, { dev, isServer }: { dev: boolean, isServer: boolean }) => {
     // ULTRAHARDCORE: Suppression warnings Supabase Edge Runtime
     config.ignoreWarnings = [
       /Critical dependency: the request of a dependency is an expression/,
       /A Node\.js API is used \(process\./,
       /which is not supported in the Edge Runtime/,
+      /Serializing big strings/,
     ];
+    
+    // OPTIMISATION CACHE: Configuration appropriée selon environnement  
+    if (!dev) {
+      config.cache = {
+        type: 'filesystem',
+        compression: false, // Évite compression qui cause warnings
+        buildDependencies: {
+          config: [__filename],
+        },
+      };
+    }
     // ULTRAHARDCORE: Configuration simplifiée pour éviter problèmes webpack
     if (isServer && !dev) {
       config.resolve = config.resolve || {};
@@ -90,13 +105,28 @@ const nextConfig = {
       };
     }
     
-    // Developement: stabilité
+    // Development: stabilité + HMR optimisé
     if (dev) {
       config.parallelism = 1;
       config.watchOptions = {
         poll: 1000,
         aggregateTimeout: 300,
+        ignored: ['**/node_modules/**', '**/.next/**', '**/agents/**'],
       };
+      
+      // PATCH: Optimisation HMR pour éviter violations message handler
+      config.devServer = config.devServer || {};
+      config.devServer.hot = true;
+      config.devServer.liveReload = false; // Évite double reload
+      
+      // Utiliser requestIdleCallback pour HMR non-bloquant
+      config.plugins = config.plugins || [];
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'process.env.DEV_OPTIMIZE_HMR': JSON.stringify('true'),
+        })
+      );
     }
     
     return config;

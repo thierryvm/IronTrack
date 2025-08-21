@@ -86,7 +86,7 @@ export default function SimpleMealBuilder({
   return (
     <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Rechercher un aliment
             </label>
             <FoodSearchAutocomplete
@@ -105,30 +105,30 @@ export default function SimpleMealBuilder({
 
           {selectedFood && (
             <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">{selectedFood.name}</h3>
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{selectedFood.name}</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Calories:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Calories:</span>
                     <span className="ml-2 font-medium">{selectedFood.calories} kcal</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Protéines:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Protéines:</span>
                     <span className="ml-2 font-medium">{selectedFood.protein}g</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Glucides:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Glucides:</span>
                     <span className="ml-2 font-medium">{selectedFood.carbs}g</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Lipides:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Lipides:</span>
                     <span className="ml-2 font-medium">{selectedFood.fat}g</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Quantité
                 </label>
                 <div className="flex space-x-2">
@@ -137,12 +137,12 @@ export default function SimpleMealBuilder({
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
                     min="1"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
                   />
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
                   >
                     <option value="g">g</option>
                     <option value="kg">kg</option>
@@ -154,7 +154,7 @@ export default function SimpleMealBuilder({
                 </div>
               </div>
 
-              <div className="p-4 bg-orange-50 rounded-lg">
+              <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <h4 className="font-medium text-orange-900 mb-2">
                   Valeurs nutritionnelles pour {quantity}{unit}
                 </h4>
@@ -184,16 +184,16 @@ export default function SimpleMealBuilder({
         <button
           onClick={handleSave}
           disabled={!selectedFood || saving}
-          className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+          className="px-6 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
         >
           {saving ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
               <span>Sauvegarde...</span>
             </>
           ) : (
             <>
-              <Save className="h-4 w-4" />
+              <Save className="h-6 w-6" />
               <span>Ajouter le repas</span>
             </>
           )}

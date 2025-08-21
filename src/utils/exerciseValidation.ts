@@ -16,6 +16,8 @@ export interface ExerciseUpdateData {
   difficulty: number
   description?: string | null
   image_url?: string | null
+  default_strength_metrics?: any
+  default_cardio_metrics?: any
 }
 
 export interface ValidationResult<T = unknown> {
@@ -24,11 +26,11 @@ export interface ValidationResult<T = unknown> {
   errors: string[]
 }
 
-// Constantes de validation
+// Constantes de validation - Groupes musculaires réels depuis BDD
 const VALID_MUSCLE_GROUPS = [
-  'Pectoraux', 'Dos', 'Épaules', 'Biceps', 'Triceps', 
-  'Jambes', 'Abdominaux', 'Cardio', 'Corps entier', 
-  'Avant-bras', 'Mollets', 'Fessiers'
+  'Abdominaux', 'Avant-bras', 'Biceps', 'Dos', 'Épaules', 
+  'Fessiers', 'Ischio-jambiers', 'Jambes', 'Mollets', 
+  'Obliques', 'Pectoraux', 'Quadriceps', 'Trapèzes', 'Triceps'
 ] as const
 
 const VALID_EXERCISE_TYPES = ['Musculation', 'Cardio'] as const
@@ -371,6 +373,15 @@ export function validateExerciseUpdateData(data: unknown): ValidationResult<Exer
     validatedData.image_url = validateImageUrl(input.image_url)
   } catch (error) {
     errors.push((error as Error).message)
+  }
+
+  // Validation métriques par défaut (optionnelles)
+  if (input.default_strength_metrics !== undefined) {
+    validatedData.default_strength_metrics = input.default_strength_metrics
+  }
+  
+  if (input.default_cardio_metrics !== undefined) {
+    validatedData.default_cardio_metrics = input.default_cardio_metrics
   }
 
   if (errors.length > 0) {

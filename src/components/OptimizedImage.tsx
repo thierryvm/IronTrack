@@ -39,7 +39,7 @@ export default function OptimizedImage({
   if (error) {
     return (
       <div className={`bg-gray-200 dark:bg-gray-800 flex items-center justify-center ${className}`}>
-        <span className="text-gray-500 text-sm">Image non disponible</span>
+        <span className="text-gray-600 dark:text-gray-400 text-sm">Image non disponible</span>
       </div>
     )
   }

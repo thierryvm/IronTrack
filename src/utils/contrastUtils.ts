@@ -18,13 +18,13 @@ export const CONTRAST_RATIOS = {
 // Couleurs de base sécurisées (déjà testées)
 export const SAFE_COLORS = {
   // Texte sur blanc (ratios vérifiés)
-  TEXT_PRIMARY: 'text-gray-900',      // Ratio: ~15.3 (AAA)
-  TEXT_SECONDARY: 'text-gray-700',    // Ratio: ~9.4 (AAA)
-  TEXT_MUTED: 'text-gray-600',        // Ratio: ~7.2 (AAA)
+  TEXT_PRIMARY: 'text-gray-900 dark:text-gray-100',      // Ratio: ~15.3 (AAA)
+  TEXT_SECONDARY: 'text-gray-700 dark:text-gray-300',    // Ratio: ~9.4 (AAA)
+  TEXT_MUTED: 'text-gray-600 dark:text-gray-400',        // Ratio: ~7.2 (AAA)
   TEXT_PLACEHOLDER: 'text-gray-500',  // Ratio: ~5.4 (AA pour texte large)
   
   // Accent orange (corrigé après audit)  
-  TEXT_ORANGE: 'text-orange-800',     // Ratio: ~5.1 (AA conforme)
+  TEXT_ORANGE: 'text-orange-800 dark:text-orange-300',     // Ratio: ~5.1 (AA conforme)
   BG_ORANGE: 'bg-orange-600',         // Ratio avec blanc: ~3.1 (AA large)
   BORDER_ORANGE: 'border-orange-700', // Ratio: ~4.2 (proche AA)
   
@@ -56,12 +56,12 @@ export const SAFE_COLOR_COMBINATIONS = {
   
   // Boutons secondaires
   SECONDARY_BUTTON: {
-    bg: 'bg-gray-200',
-    text: 'text-gray-900',
-    border: 'border-gray-300', 
+    bg: 'bg-gray-200 dark:bg-gray-700',
+    text: 'text-gray-900 dark:text-gray-100',
+    border: 'border-gray-300 dark:border-gray-600', 
     hover: {
       bg: 'hover:bg-gray-300',
-      text: 'hover:text-gray-900',
+      text: 'hover:text-gray-900 dark:text-gray-100',
       border: 'hover:border-gray-400'
     }
   },
@@ -166,12 +166,12 @@ export const createSafeTextClass = (
     },
     'gray-100': {
       primary: SAFE_COLORS.TEXT_PRIMARY,
-      secondary: 'text-gray-800', // Plus foncé sur gray-100
+      secondary: 'text-gray-800 dark:text-gray-200', // Plus foncé sur gray-100
       muted: SAFE_COLORS.TEXT_SECONDARY
     },
     'orange-50': {
       primary: 'text-orange-900', // Très foncé sur orange-50
-      secondary: 'text-orange-800',
+      secondary: 'text-orange-800 dark:text-orange-300',
       muted: 'text-orange-700'
     },
     colored: {
@@ -202,9 +202,9 @@ export const createSafeButtonClass = (
     
     secondary: `${SAFE_COLOR_COMBINATIONS.SECONDARY_BUTTON.bg} ${SAFE_COLOR_COMBINATIONS.SECONDARY_BUTTON.text} ${SAFE_COLOR_COMBINATIONS.SECONDARY_BUTTON.border} ${SAFE_COLOR_COMBINATIONS.SECONDARY_BUTTON.hover.bg}`,
     
-    outline: `bg-transparent border-2 border-orange-700 text-orange-800 hover:bg-orange-50 hover:text-orange-900`,
+    outline: `bg-transparent border-2 border-orange-700 text-orange-800 dark:text-orange-300 hover:bg-orange-50 dark:bg-orange-900/20 hover:text-orange-900`,
     
-    ghost: `bg-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900`
+    ghost: `bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-gray-100`
   }
   
   return `${sizeClasses[size]} ${variantClasses[variant]} font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2`
@@ -224,7 +224,7 @@ export const createSafeStatusClass = (
       
     error: style === 'subtle' ?
       `${SAFE_COLOR_COMBINATIONS.ERROR.bg} ${SAFE_COLOR_COMBINATIONS.ERROR.text} ${SAFE_COLOR_COMBINATIONS.ERROR.border}` :
-      `bg-red-600 text-white border-red-600`,
+      `bg-red-500 text-white border-red-500`,
       
     warning: style === 'subtle' ?
       `${SAFE_COLOR_COMBINATIONS.WARNING.bg} ${SAFE_COLOR_COMBINATIONS.WARNING.text} ${SAFE_COLOR_COMBINATIONS.WARNING.border}` :
@@ -250,14 +250,14 @@ export const validateContrastInDev = (
   
   // Mappage approximatif des classes Tailwind vers couleurs hex
   const colorMap: Record<string, string> = {
-    'text-gray-900': '#111827',
-    'text-gray-800': '#1f2937', 
-    'text-gray-700': '#374151',
-    'text-gray-600': '#4b5563',
-    'text-orange-800': '#9a3412',
-    'bg-white': '#ffffff',
-    'bg-gray-50': '#f9fafb',
-    'bg-orange-50': '#fff7ed'
+    'text-gray-900 dark:text-gray-100': '#111827',
+    'text-gray-800 dark:text-gray-200': '#1f2937', 
+    'text-gray-700 dark:text-gray-300': '#374151',
+    'text-gray-600 dark:text-gray-400': '#4b5563',
+    'text-orange-800 dark:text-orange-300': '#9a3412',
+    'bg-white dark:bg-gray-900': '#ffffff',
+    'bg-gray-50 dark:bg-gray-800': '#f9fafb',
+    'bg-orange-50 dark:bg-orange-900/20': '#fff7ed'
     // Ajouter plus de mappages si nécessaire
   }
   

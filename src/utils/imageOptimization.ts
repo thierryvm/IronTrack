@@ -15,10 +15,11 @@ export const IMAGE_OPTIMIZATION_CONFIG = {
     { width: 1200, height: 900, suffix: 'lg', quality: 85 },  // Desktop
   ],
   
-  // Formats de sortie modernes
+  // Formats de sortie modernes (priorité WebP > AVIF > JPEG)
   OUTPUT_FORMATS: [
-    { format: 'webp', quality: 80, fallback: true },    // Moderne
-    { format: 'jpeg', quality: 85, fallback: false },   // Compatibilité
+    { format: 'webp', quality: 80, fallback: true },    // Moderne, excellent support
+    { format: 'avif', quality: 75, fallback: true },    // Ultra-moderne (Chrome 85+)
+    { format: 'jpeg', quality: 85, fallback: false },   // Compatibilité universelle
   ],
   
   // Limites qualité/performance
@@ -29,6 +30,28 @@ export const IMAGE_OPTIMIZATION_CONFIG = {
   // Canvas limits pour sécurité
   MAX_CANVAS_SIZE: 16777216,  // 4096x4096 max pour éviter crash
 } as const
+
+/**
+ * Détecte le meilleur format d'image supporté par le navigateur
+ */
+function detectBestImageFormat(): { mimeType: string; extension: string; quality: number } {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1
+  canvas.height = 1
+  
+  // Test support AVIF (Ultra-moderne, Chrome 85+)
+  if (canvas.toDataURL('image/avif').indexOf('data:image/avif') === 0) {
+    return { mimeType: 'image/avif', extension: '.avif', quality: 0.75 }
+  }
+  
+  // Test support WebP (Moderne, excellent support)
+  if (canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0) {
+    return { mimeType: 'image/webp', extension: '.webp', quality: 0.80 }
+  }
+  
+  // Fallback JPEG (Compatibilité universelle)
+  return { mimeType: 'image/jpeg', extension: '.jpg', quality: 0.85 }
+}
 
 /**
  * Interface résultat optimisation
@@ -134,6 +157,10 @@ export async function optimizeImage(file: File): Promise<OptimizedImageResult> {
             optimizedDimensions.height
           )
           
+          // Détecter le meilleur format supporté
+          const bestFormat = detectBestImageFormat()
+          console.log(`[OPTIMIZATION] Format sélectionné: ${bestFormat.mimeType} (qualité: ${Math.round(bestFormat.quality * 100)}%)`)
+          
           // Convertir en blob optimisé
           canvas.toBlob(
             (blob) => {
@@ -142,12 +169,12 @@ export async function optimizeImage(file: File): Promise<OptimizedImageResult> {
                 return
               }
               
-              // Créer fichier optimisé
+              // Créer fichier optimisé avec le meilleur format
               const optimizedFile = new File(
                 [blob],
-                file.name.replace(/\.(jpe?g|png|webp)$/i, '.jpg'),
+                file.name.replace(/\.(jpe?g|png|webp|avif|heic)$/i, bestFormat.extension),
                 {
-                  type: 'image/jpeg',
+                  type: bestFormat.mimeType,
                   lastModified: Date.now()
                 }
               )
@@ -156,13 +183,7 @@ export async function optimizeImage(file: File): Promise<OptimizedImageResult> {
               const compressionRatio = (originalSize - optimizedSize) / originalSize
               const processingTime = performance.now() - startTime
               
-              // Log performances
-              console.log(`[OPTIMIZATION] ${file.name}:`, {
-                original: `${(originalSize / 1024).toFixed(0)}KB`,
-                optimized: `${(optimizedSize / 1024).toFixed(0)}KB`,
-                compression: `${(compressionRatio * 100).toFixed(1)}%`,
-                time: `${processingTime.toFixed(0)}ms`
-              })
+              // Performances logging désactivé pour production
               
               resolve({
                 success: true,
@@ -174,13 +195,13 @@ export async function optimizeImage(file: File): Promise<OptimizedImageResult> {
                   compressionRatio,
                   originalDimensions,
                   optimizedDimensions,
-                  format: 'image/jpeg',
+                  format: bestFormat.mimeType,
                   processingTime
                 }
               })
             },
-            'image/jpeg',
-            IMAGE_OPTIMIZATION_CONFIG.DEFAULT_QUALITY / 100
+            bestFormat.mimeType,
+            bestFormat.quality
           )
           
         } catch (error) {
@@ -225,17 +246,17 @@ export async function optimizeImageSafe(file: File): Promise<File> {
   try {
     // Pas d'optimisation si déjà petit (< 500KB)
     if (file.size < 500 * 1024) {
-      console.log(`[OPTIMIZATION] Fichier déjà optimisé: ${file.name} (${(file.size / 1024).toFixed(0)}KB)`)
+      // Fichier déjà optimisé
       return file
     }
     
     const result = await optimizeImage(file)
     
     if (result.success && result.metadata.compressionRatio > 0.1) {
-      console.log(`[OPTIMIZATION] Succès: ${result.metadata.compressionRatio * 100}% compression`)
+      // Compression réussie
       return result.optimizedFile
     } else {
-      console.log(`[OPTIMIZATION] Pas d'amélioration significative, fichier original conservé`)
+      // Pas d'amélioration significative
       return file
     }
     
@@ -256,10 +277,7 @@ export function shouldOptimizeImage(file: File): boolean {
     file.name.toLowerCase().includes('dsc_') || // Photos reflex
     file.type === 'image/png'   // PNG souvent non optimisé
   
-  console.log(`[OPTIMIZATION] ${file.name} needs optimization:`, needsOptimization, {
-    size: `${(file.size / 1024).toFixed(0)}KB`,
-    type: file.type
-  })
+  // Analyse optimisation silencieuse
   
   return needsOptimization
 }

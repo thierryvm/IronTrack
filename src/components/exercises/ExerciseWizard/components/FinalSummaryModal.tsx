@@ -36,7 +36,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-auto"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -46,25 +46,25 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                   <CheckCircle className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     Exercice sauvegardé !
                   </h2>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Votre exercice a été sauvegardé avec succès
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
 
             {/* Récapitulatif de l'exercice */}
-            <div className="bg-orange-50 rounded-xl p-6 mb-6 border border-orange-200">
-              <h3 className="text-lg font-semibold text-orange-800 mb-4">{exercise.name}</h3>
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6 mb-6 border border-orange-200 dark:border-orange-800">
+              <h3 className="text-lg font-semibold text-orange-800 dark:text-orange-300 mb-4">{exercise.name}</h3>
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2 text-orange-700">
@@ -107,7 +107,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
               </div>
               
               {'description' in exercise && exercise.description && (
-                <div className="mt-4 p-3 bg-white rounded-lg border border-orange-200">
+                <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg border border-orange-200 dark:border-orange-800">
                   <div className="flex items-start gap-2 text-orange-700">
                     <span className="font-medium">📝</span>
                     <span className="italic">{exercise.description}</span>
@@ -232,7 +232,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                 </div>
                 
                 {performance.notes && (
-                  <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg border border-blue-200">
                     <div className="flex items-start gap-2 text-blue-700">
                       <span className="font-medium">💭</span>
                       <span className="italic">{performance.notes}</span>
@@ -245,7 +245,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
             {/* Actions */}
             <div className="space-y-4">
               <div className="text-center">
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   Votre exercice a été créé avec succès ! Vous pouvez maintenant ajouter des performances depuis la page des exercices.
                 </p>
               </div>
@@ -258,7 +258,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                   className="w-full bg-green-500 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-gray-700"></div>
                   ) : (
                     <CheckCircle className="w-5 h-5" />
                   )}

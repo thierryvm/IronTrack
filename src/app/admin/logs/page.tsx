@@ -17,6 +17,10 @@ import {
   Calendar
 } from 'lucide-react'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface AdminLog {
   id: string
@@ -127,121 +131,135 @@ export default function AdminLogsPage() {
   }
 
   const getActionIcon = (action: string) => {
-    if (action.includes('unauthorized') || action.includes('failed')) return <AlertTriangle className="h-4 w-4" />
-    if (action.includes('access') || action.includes('view')) return <Eye className="h-4 w-4" />
-    if (action.includes('success')) return <CheckCircle className="h-4 w-4" />
-    return <Activity className="h-4 w-4" />
+    if (action.includes('unauthorized') || action.includes('failed')) return <AlertTriangle className="h-6 w-6" />
+    if (action.includes('access') || action.includes('view')) return <Eye className="h-6 w-6" />
+    if (action.includes('success')) return <CheckCircle className="h-6 w-6" />
+    return <Activity className="h-6 w-6" />
   }
 
   const totalPages = Math.ceil(totalLogs / LOGS_PER_PAGE)
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-purple-100 rounded-xl">
                 <Activity className="h-8 w-8 text-purple-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Logs Système</h1>
-                <p className="text-gray-600">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Logs Système</h1>
+                <p className="text-gray-600 dark:text-gray-300">
                   Monitoring des actions administratives
                 </p>
               </div>
             </div>
             
-            <button
+            <Button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center space-x-2 bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white px-4 py-2 rounded-lg transition-colors"
+              className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white"
             >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span>Actualiser</span>
-            </button>
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Actualiser
+            </Button>
           </div>
         </div>
 
         {/* Filtres optimisés */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Calendar className="h-4 w-4 inline mr-1" />
+              <Label htmlFor="date-range-filter" className="text-sm font-medium mb-2 flex items-center">
+                <Calendar className="h-4 w-4 mr-1" />
                 Période
-              </label>
-              <select
+              </Label>
+              <Select
                 value={filters.date_range}
-                onChange={(e) => handleFilterChange({ date_range: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onValueChange={(value) => handleFilterChange({ date_range: value })}
               >
-                <option value="1h">Dernière heure</option>
-                <option value="24h">24 dernières heures</option>
-                <option value="7d">7 derniers jours</option>
-                <option value="30d">30 derniers jours</option>
-              </select>
+                <SelectTrigger id="date-range-filter" className="w-full">
+                  <SelectValue placeholder="Sélectionner une période" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1h">Dernière heure</SelectItem>
+                  <SelectItem value="24h">24 dernières heures</SelectItem>
+                  <SelectItem value="7d">7 derniers jours</SelectItem>
+                  <SelectItem value="30d">30 derniers jours</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Filter className="h-4 w-4 inline mr-1" />
+              <Label htmlFor="action-filter" className="text-sm font-medium mb-2 flex items-center">
+                <Filter className="h-4 w-4 mr-1" />
                 Type d'action
-              </label>
-              <select
+              </Label>
+              <Select
                 value={filters.action}
-                onChange={(e) => handleFilterChange({ action: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onValueChange={(value) => handleFilterChange({ action: value })}
               >
-                <option value="">Toutes les actions</option>
-                <option value="admin_access">Accès admin</option>
-                <option value="view_admin_logs">Consultation logs</option>
-                <option value="unauthorized_admin_access_attempt">Accès non autorisé</option>
-                <option value="user_management">Gestion utilisateurs</option>
-              </select>
+                <SelectTrigger id="action-filter" className="w-full">
+                  <SelectValue placeholder="Toutes les actions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Toutes les actions</SelectItem>
+                  <SelectItem value="admin_access">Accès admin</SelectItem>
+                  <SelectItem value="view_admin_logs">Consultation logs</SelectItem>
+                  <SelectItem value="unauthorized_admin_access_attempt">Accès non autorisé</SelectItem>
+                  <SelectItem value="user_management">Gestion utilisateurs</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Shield className="h-4 w-4 inline mr-1" />
+              <Label htmlFor="target-filter" className="text-sm font-medium mb-2 flex items-center">
+                <Shield className="h-4 w-4 mr-1" />
                 Cible
-              </label>
-              <select
+              </Label>
+              <Select
                 value={filters.target_type}
-                onChange={(e) => handleFilterChange({ target_type: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onValueChange={(value) => handleFilterChange({ target_type: value })}
               >
-                <option value="">Tous les types</option>
-                <option value="admin_panel">Interface admin</option>
-                <option value="user_account">Comptes utilisateurs</option>
-                <option value="admin_logs">Logs système</option>
-                <option value="admin_api">APIs admin</option>
-              </select>
+                <SelectTrigger id="target-filter" className="w-full">
+                  <SelectValue placeholder="Tous les types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Tous les types</SelectItem>
+                  <SelectItem value="admin_panel">Interface admin</SelectItem>
+                  <SelectItem value="user_account">Comptes utilisateurs</SelectItem>
+                  <SelectItem value="admin_logs">Logs système</SelectItem>
+                  <SelectItem value="admin_api">APIs admin</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Search className="h-4 w-4 inline mr-1" />
+              <Label htmlFor="search-filter" className="text-sm font-medium mb-2 flex items-center">
+                <Search className="h-4 w-4 mr-1" />
                 Recherche
-              </label>
-              <input
+              </Label>
+              <Input
+                id="search-filter"
                 type="text"
                 value={filters.search}
                 onChange={(e) => handleFilterChange({ search: e.target.value })}
                 placeholder="Rechercher une action..."
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="focus:ring-2 focus:ring-purple-500"
+                aria-label="Rechercher dans les logs par action ou détails"
               />
             </div>
           </div>
 
           {/* Statistiques rapides */}
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
               <span>
                 <strong>{totalLogs.toLocaleString('fr-FR')}</strong> logs trouvés
                 {totalLogs >= MAX_LOGS_TOTAL && (
-                  <span className="text-orange-800 ml-2">
+                  <span className="text-orange-800 dark:text-orange-300 ml-2">
                     (limité à {MAX_LOGS_TOTAL.toLocaleString('fr-FR')} pour les performances)
                   </span>
                 )}
@@ -252,83 +270,83 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Liste des logs avec pagination */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
               <RefreshCw className="h-8 w-8 text-purple-500 animate-spin mx-auto mb-4" />
-              <p className="text-gray-600">Chargement des logs...</p>
+              <p className="text-gray-600 dark:text-gray-300">Chargement des logs...</p>
             </div>
           ) : logs.length === 0 ? (
             <div className="p-8 text-center">
-              <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Aucun log trouvé pour cette période.</p>
+              <Activity className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Aucun log trouvé pour cette période.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Action
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Cible
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Admin
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Détails
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 divide-y divide-gray-200">
                   {logs.map((log) => (
                     <motion.tr
                       key={log.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="hover:bg-gray-50"
+                      className="hover:bg-gray-50 dark:bg-gray-800"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
                           <div className={`p-2 rounded-lg ${getActionColor(log.action)}`}>
                             {getActionIcon(log.action)}
                           </div>
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {log.action.replace(/_/g, ' ')}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         {log.target_type.replace(/_/g, ' ')}
                         {log.target_id && (
-                          <div className="text-xs text-gray-400 mt-1">
+                          <div className="text-xs text-gray-700 dark:text-gray-300 mt-1">
                             ID: {log.target_id.slice(0, 8)}...
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                        <span className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded text-xs">
                           {log.admin_id.slice(0, 8)}...
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         <div className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="h-5 w-5" />
                           <span>{new Date(log.created_at).toLocaleString('fr-FR')}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs">
                         {log.details && Object.keys(log.details).length > 0 && (
                           <details className="cursor-pointer">
                             <summary className="text-purple-600 hover:text-purple-700">
                               Voir détails
                             </summary>
-                            <pre className="mt-2 text-xs bg-gray-50 p-2 rounded overflow-x-auto">
+                            <pre className="mt-2 text-xs bg-gray-50 dark:bg-gray-800 p-2 rounded overflow-x-auto">
                               {JSON.stringify(log.details, null, 2)}
                             </pre>
                           </details>
@@ -343,33 +361,35 @@ export default function AdminLogsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   Affichage de {(currentPage - 1) * LOGS_PER_PAGE + 1} à {Math.min(currentPage * LOGS_PER_PAGE, totalLogs)} sur {totalLogs.toLocaleString('fr-FR')}
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button
+                  <Button
+                    variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
-                    className="flex items-center px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4 mr-1" />
                     Précédent
-                  </button>
+                  </Button>
                   
-                  <span className="text-sm text-gray-600 px-3">
+                  <span className="text-sm text-gray-600 dark:text-gray-300 px-3">
                     {currentPage} / {totalPages}
                   </span>
                   
-                  <button
+                  <Button
+                    variant="outline"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
-                    className="flex items-center px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center"
                   >
                     Suivant
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
                 </div>
               </div>
             </div>

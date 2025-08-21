@@ -102,15 +102,15 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <Clock className="h-4 w-4 text-blue-500" />
+        return <Clock className="h-6 w-6 text-blue-500" />
       case 'in_progress':
-        return <AlertTriangle className="h-4 w-4 text-orange-800" />
+        return <AlertTriangle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
       case 'resolved':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="h-6 w-6 text-green-500" />
       case 'closed':
-        return <CheckCircle className="h-4 w-4 text-gray-500" />
+        return <CheckCircle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
       default:
-        return <MessageCircle className="h-4 w-4 text-gray-400" />
+        return <MessageCircle className="h-6 w-6 text-gray-700 dark:text-gray-300" />
     }
   }
 
@@ -134,13 +134,13 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       case 'open':
         return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'in_progress':
-        return 'bg-orange-100 text-orange-800 border-orange-300'
+        return 'bg-orange-100 text-orange-800 dark:text-orange-300 border-orange-300'
       case 'resolved':
         return 'bg-green-100 text-green-800 border-green-300'
       case 'closed':
-        return 'bg-gray-100 text-gray-800 border-gray-300'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
     }
   }
 
@@ -149,11 +149,11 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       case 'high':
         return 'text-red-600'
       case 'medium':
-        return 'text-orange-800'
+        return 'text-orange-800 dark:text-orange-300'
       case 'low':
         return 'text-green-600'
       default:
-        return 'text-gray-600'
+        return 'text-gray-600 dark:text-gray-300'
     }
   }
 
@@ -170,14 +170,14 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
   if (loading) {
     return (
-      <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
+      <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
-          <MessageCircle className="h-6 w-6 text-orange-800" />
-          <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
+          <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-          <span className="ml-3 text-gray-600">Chargement de vos tickets...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+          <span className="ml-3 text-gray-600 dark:text-gray-300">Chargement de vos tickets...</span>
         </div>
       </div>
     )
@@ -185,33 +185,33 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
   if (error) {
     return (
-      <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
+      <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
-          <MessageCircle className="h-6 w-6 text-orange-800" />
-          <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
+          <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
         </div>
         <div className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-3" />
           <p className="text-red-600 font-medium mb-2">Erreur de chargement</p>
-          <p className="text-gray-600 text-sm">{error}</p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
+    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
       {/* En-tête */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <MessageCircle className="h-6 w-6 text-orange-800" />
-          <h3 className="text-lg font-bold text-gray-900">Mes tickets de support</h3>
+          <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
         </div>
         <Link
           href="/support/contact"
-          className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm min-h-[44px] touch-manipulation"
+          className="inline-flex items-center gap-2 bg-orange-600 dark:bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm min-h-[44px] touch-manipulation"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-6 w-6" />
           Nouveau ticket
         </Link>
       </div>
@@ -219,17 +219,17 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       {/* Liste des tickets */}
       {tickets.length === 0 ? (
         <div className="text-center py-8">
-          <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 font-medium mb-2">Aucun ticket de support</p>
-          <p className="text-gray-500 text-sm mb-4">
+          <MessageCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">Aucun ticket de support</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
             Vous n&apos;avez pas encore créé de ticket de support. 
             Notre équipe est là pour vous aider !
           </p>
           <Link
             href="/support/contact"
-            className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors min-h-[44px] touch-manipulation"
+            className="inline-flex items-center gap-2 bg-orange-600 dark:bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors min-h-[44px] touch-manipulation"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-6 w-6" />
             Créer mon premier ticket
           </Link>
         </div>
@@ -242,14 +242,14 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow touch-manipulation"
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow touch-manipulation"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 truncate">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                       {ticket.title}
                     </h4>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
                       {ticket.description}
                     </p>
                   </div>
@@ -261,21 +261,21 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
-                      <Tag className="h-3 w-3" />
+                      <Tag className="h-5 w-5" />
                       <span className="capitalize">{ticket.category}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <AlertTriangle className={`h-3 w-3 ${getPriorityColor(ticket.priority)}`} />
+                      <AlertTriangle className={`h-5 w-5 ${getPriorityColor(ticket.priority)}`} />
                       <span className={`capitalize ${getPriorityColor(ticket.priority)}`}>
                         {ticket.priority === 'high' ? 'Haute' : ticket.priority === 'medium' ? 'Moyenne' : 'Basse'}
                       </span>
                     </div>
                     {ticket.response_count > 0 && (
                       <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3 text-blue-500" />
+                        <Mail className="h-5 w-5 text-blue-500" />
                         <span className="text-blue-600">
                           {ticket.response_count} réponse{ticket.response_count > 1 ? 's' : ''}
                         </span>
@@ -283,18 +283,18 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                     )}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
+                    <Calendar className="h-5 w-5" />
                     <span>{formatDate(ticket.created_at)}</span>
                   </div>
                 </div>
 
                 {/* Action pour voir les détails */}
-                <div className="mt-3 pt-3 border-t border-gray-100">
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <Link 
                     href={`/support/tickets/${ticket.id}`}
-                    className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start hover:bg-orange-50 rounded transition-colors"
+                    className="text-orange-800 dark:text-orange-300 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start hover:bg-orange-50 dark:bg-orange-900/20 rounded transition-colors"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-6 w-6" />
                     Voir les détails et réponses
                   </Link>
                 </div>
@@ -303,23 +303,23 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           </AnimatePresence>
 
           {/* Footer avec lien vers support */}
-          <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-600 mb-3">
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
               Besoin d&apos;aide supplémentaire ? Consultez notre documentation ou contactez l&apos;équipe.
             </p>
             <div className="flex justify-center gap-4">
               <Link
                 href="/support"
-                className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
+                className="text-orange-800 dark:text-orange-300 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-6 w-6" />
                 Centre de support
               </Link>
               <Link
                 href="/faq"
-                className="text-orange-800 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
+                className="text-orange-800 dark:text-orange-300 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-6 w-6" />
                 FAQ
               </Link>
             </div>

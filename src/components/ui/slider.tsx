@@ -31,7 +31,7 @@ export function Slider({
         step={step}
         value={value[0] || min}
         onChange={handleChange}
-        className="relative flex-1 cursor-pointer appearance-none bg-transparent focus:outline-none disabled:pointer-events-none disabled:opacity-50 h-5 w-full rounded-lg bg-gray-200 slider-thumb"
+        className="relative flex-1 cursor-pointer appearance-none bg-transparent focus:outline-none disabled:pointer-events-none disabled:opacity-50 h-5 w-full rounded-lg bg-gray-200 dark:bg-gray-700 slider-thumb"
         {...props}
       />
       <style jsx>{`

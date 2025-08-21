@@ -69,16 +69,16 @@ export function OnboardingFlow({ onComplete, initialData = {} }: OnboardingFlowP
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4">
               <span className="text-2xl">🎯</span>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Bienvenue sur IronTrack !
             </CardTitle>
-            <CardDescription className="text-gray-600 text-lg">
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-lg">
               Personnalisons votre expérience en 4 étapes
             </CardDescription>
           </div>
           
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-500 font-medium">
+            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
               Étape {currentStep} sur {totalSteps}
             </div>
             <div className="text-sm text-blue-600 font-semibold">
@@ -130,13 +130,13 @@ export function OnboardingFlow({ onComplete, initialData = {} }: OnboardingFlowP
               disabled={currentStep === 1}
               className="flex items-center gap-2 px-6 py-3"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-6 w-6" />
               Précédent
             </Button>
             
             <div className="flex items-center gap-2">
               {!isStepComplete(currentStep) && (
-                <span className="text-sm text-gray-500 hidden sm:block">
+                <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
                   Veuillez faire votre choix pour continuer
                 </span>
               )}
@@ -153,7 +153,7 @@ export function OnboardingFlow({ onComplete, initialData = {} }: OnboardingFlowP
                 ) : (
                   <>
                     <span>Suivant</span>
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-6 w-6" />
                   </>
                 )}
               </Button>

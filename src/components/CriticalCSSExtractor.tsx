@@ -30,21 +30,21 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 .hidden{display:none}
 
 /* COULEURS SYSTÈME - Minimal palette */
-.bg-white{background-color:#fff}
-.bg-gray-50{background-color:#f9fafb}
-.bg-gray-100{background-color:#f3f4f6}
+.bg-white dark:bg-gray-900{background-color:#fff}
+.bg-gray-50 dark:bg-gray-800{background-color:#f9fafb}
+.bg-gray-100 dark:bg-gray-800{background-color:#f3f4f6}
 .bg-gray-900{background-color:#111827}
 .bg-orange-600{background-color:#ea580c}
 .text-white{color:#fff}
-.text-gray-900{color:#111827}
-.text-gray-600{color:#4b5563}
+.text-gray-900 dark:text-gray-100{color:#111827}
+.text-gray-600 dark:text-gray-300{color:#4b5563}
 
 /* HEADER CRITIQUE */
 .sticky{position:sticky}
 .top-0{top:0}
 .z-40{z-index:40}
 .border-b{border-bottom-width:1px}
-.border-gray-200{border-color:#e5e7eb}
+.border-gray-200 dark:border-gray-600{border-color:#e5e7eb}
 .backdrop-blur{backdrop-filter:blur(8px)}
 
 /* BOUTONS CRITIQUES - UX prioritaire */
@@ -90,7 +90,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 /* DARK MODE - Système préférence uniquement */
 @media (prefers-color-scheme:dark){
   body{background:#111827;color:white}
-  .bg-white{background:#1f2937}
+  .bg-white dark:bg-gray-900{background:#1f2937}
   .card{background:#1f2937;color:white}
   .form-input{background:#374151;border-color:#4b5563;color:white}
 }

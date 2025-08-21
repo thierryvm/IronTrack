@@ -3,6 +3,9 @@
 import { motion } from 'framer-motion'
 import { Plus, Eye, Trash2, Target, Dumbbell, TrendingUp, Calendar, Heart, Zap, Activity, Users, Bike, Footprints } from 'lucide-react'
 import Image from 'next/image'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 interface Performance {
   weight?: number
@@ -18,6 +21,10 @@ interface Performance {
   resistance?: number
   calories?: number
   speed?: number
+  running?: {
+    speed?: number
+    distance?: number
+  }
   performed_at: string
 }
 
@@ -56,9 +63,12 @@ export function ExerciseCard2025({
   testId
 }: ExerciseCard2025Props) {
 
+
   // Format intelligent des performances selon type d'exercice
   const formatPerformance = (): string => {
     if (!lastPerformance) return 'Aucune performance enregistrée'
+
+
 
     if (exercise.exercise_type === 'Musculation') {
       const parts = []
@@ -67,34 +77,72 @@ export function ExerciseCard2025({
       if (lastPerformance.sets) parts.push(`${lastPerformance.sets} sets`)
       return parts.join(' × ') || 'Performance musculation'
     } else {
-      // Cardio - Format adaptatif selon type d'exercice
+      // Cardio - Format adaptatif selon type d'exercice avec priorisation intelligente
       const parts = []
-      const isRowing = exercise.name.toLowerCase().includes('rameur')
+      const isRowing = (exercise.name || '').toLowerCase().includes('rameur')
+      const isRunning = (exercise.name || '').toLowerCase().includes('run') || 
+                       (exercise.name || '').toLowerCase().includes('course') ||
+                       (exercise.name || '').toLowerCase().includes('marche') ||
+                       (exercise.equipment || '').toLowerCase().includes('tapis')
       
+      // Métriques prioritaires selon le type d'exercice
       if (lastPerformance.distance) {
-        // Adapter unité selon type d'exercice
-        if (isRowing && lastPerformance.distance >= 100) {
+        // Adapter unité selon type d'exercice et données stockées
+        if (isRowing) {
+          // Rameur → afficher en mètres (ex: 2000m, 5000m)
           parts.push(`${lastPerformance.distance}m`)
         } else {
-          parts.push(`${lastPerformance.distance}km`)
+          // Course/vélo → vérifier si données en mètres ou km
+          const distance = lastPerformance.distance
+          if (distance > 100) {
+            // Probablement en mètres si > 100, convertir en km
+            parts.push(`${(distance / 1000).toFixed(1).replace('.0', '')}km`)
+          } else {
+            // Probablement déjà en km si ≤ 100
+            parts.push(`${distance}km`)
+          }
         }
       }
       
-      if (lastPerformance.duration) {
-        const minutes = Math.floor(lastPerformance.duration / 60)
-        const seconds = lastPerformance.duration % 60
-        parts.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+      // Pour la course : prioriser vitesse et BPM avec structure correcte
+      if (isRunning) {
+        // Vitesse peut être dans running.speed ou speed direct (compatibilité)
+        const speed = lastPerformance.running?.speed || lastPerformance.speed
+        if (speed) parts.push(`${speed} km/h`)
+        
+        // Heart rate directement disponible
+        if (lastPerformance.heart_rate) parts.push(`${lastPerformance.heart_rate} BPM`)
+        
+        // Durée
+        if (lastPerformance.duration) {
+          const minutes = Math.floor(lastPerformance.duration / 60)
+          const seconds = lastPerformance.duration % 60
+          parts.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+        }
+      } else {
+        // Autres cardio : ordre standard
+        if (lastPerformance.duration) {
+          const minutes = Math.floor(lastPerformance.duration / 60)
+          const seconds = lastPerformance.duration % 60
+          parts.push(`${minutes}:${seconds.toString().padStart(2, '0')}`)
+        }
+        
+        // Métriques spécialisées selon équipement
+        if (lastPerformance.stroke_rate) parts.push(`${lastPerformance.stroke_rate} SPM`)
+        if (lastPerformance.watts) parts.push(`${lastPerformance.watts}W`)
+        if (lastPerformance.speed) parts.push(`${lastPerformance.speed} km/h`)
+        if (lastPerformance.heart_rate) parts.push(`${lastPerformance.heart_rate} BPM`)
+        if (lastPerformance.cadence) parts.push(`${lastPerformance.cadence} RPM`)
+        if (lastPerformance.resistance) parts.push(`Niv.${lastPerformance.resistance}`)
+        if (lastPerformance.incline && lastPerformance.incline !== 0) {
+          const inclineText = lastPerformance.incline > 0 ? `+${lastPerformance.incline}%` : `${lastPerformance.incline}%`
+          parts.push(inclineText)
+        }
       }
       
-      // Métriques spécialisées selon équipement
-      if (lastPerformance.stroke_rate) parts.push(`${lastPerformance.stroke_rate} SPM`)
-      if (lastPerformance.watts) parts.push(`${lastPerformance.watts}W`)
-      if (lastPerformance.speed) parts.push(`${lastPerformance.speed} km/h`)
-      if (lastPerformance.incline) parts.push(`${lastPerformance.incline}%`)
-      if (lastPerformance.cadence) parts.push(`${lastPerformance.cadence} RPM`)
-      if (lastPerformance.resistance) parts.push(`Niv.${lastPerformance.resistance}`)
-      
-      return parts.slice(0, 4).join(' • ') || 'Performance cardio'
+      // Augmenter la limite d'affichage pour la course
+      const maxDisplayItems = isRunning ? 4 : 3
+      return parts.slice(0, maxDisplayItems).join(' • ') || 'Performance cardio'
     }
   }
 
@@ -126,7 +174,7 @@ export function ExerciseCard2025({
   // Fonction pour obtenir la difficulté normalisée
   const getDifficultyDisplay = (difficulty: string | number | null | undefined) => {
     if (!difficulty && difficulty !== 0) {
-      return { text: 'Non défini', class: 'bg-gray-100 text-gray-700' }
+      return { text: 'Non défini', class: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' }
     }
     
     const diffStr = String(difficulty).trim()
@@ -139,7 +187,7 @@ export function ExerciseCard2025({
     
     // Fallback: afficher la valeur brute avec style neutre
     console.warn(`🚨 Difficulté non reconnue: "${diffStr}" pour "${exercise.name}"`)
-    return { text: diffStr, class: 'bg-gray-100 text-gray-700' }
+    return { text: diffStr, class: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' }
   }
   
   const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(exercise.difficulty)
@@ -167,7 +215,7 @@ export function ExerciseCard2025({
           iconColor: 'text-green-500'
         }
       }
-      if (equipment.includes('tapis') || exerciseName.includes('course')) {
+      if (equipment.includes('tapis') || exerciseName.includes('course') || exerciseName.includes('marche') || exerciseName.includes('running')) {
         return {
           icon: Footprints,
           gradient: 'from-purple-100 to-purple-200',
@@ -187,7 +235,7 @@ export function ExerciseCard2025({
       return {
         icon: Dumbbell,
         gradient: 'from-orange-100 to-orange-200',
-        iconColor: 'text-orange-800'
+        iconColor: 'text-orange-800 dark:text-orange-300'
       }
     }
     if (muscleGroup.includes('dos') || muscleGroup.includes('dorsal')) {
@@ -223,15 +271,15 @@ export function ExerciseCard2025({
     return {
       icon: Dumbbell,
       gradient: 'from-gray-100 to-gray-200',
-      iconColor: 'text-gray-500'
+      iconColor: 'text-gray-600 dark:text-gray-400'
     }
   }
 
   const placeholderConfig = getPlaceholderConfig()
 
-  // Classes selon variante
+  // Classes selon variante pour Card ShadCN UI
   const getCardClasses = () => {
-    const base = 'bg-white rounded-xl shadow-md hover:shadow-lg border border-gray-100 hover:border-orange-200 transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
+    const base = 'hover:shadow-lg border-gray-200 dark:border-gray-600 hover:border-orange-200 dark:hover:border-orange-600 transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
     
     switch (variant) {
       case 'compact':
@@ -243,16 +291,17 @@ export function ExerciseCard2025({
     }
   }
 
-
   return (
     <motion.div
       data-testid={testId}
-      className={`${getCardClasses()} ${className}`}
+      className={className}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Image héro avec badge difficulté */}
-      <div className="relative h-48 w-full">
+      <Card className={getCardClasses()}>
+        <CardContent className="p-0">
+          {/* Image héro avec badge difficulté */}
+          <div className="relative h-48 w-full">
         {exercise.image_url ? (
           <Image
             src={exercise.image_url}
@@ -283,43 +332,43 @@ export function ExerciseCard2025({
       <div className="p-6 flex flex-col flex-1">
         {/* Header avec titre et métadonnées */}
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-800 transition-colors mb-2 line-clamp-2">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors mb-2 line-clamp-2">
             {exercise.name}
           </h3>
-          <div className="flex items-center space-x-4 text-sm text-gray-500">
+          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
             {/* CORRIGÉ: Icône muscle group seulement si data disponible */}
             {exercise.muscle_group && (
               <div className="flex items-center space-x-1">
-                <Target className="h-4 w-4 flex-shrink-0" />
+                <Target className="h-6 w-6 flex-shrink-0" />
                 <span className="truncate">{exercise.muscle_group}</span>
               </div>
             )}
             {/* CORRIGÉ: Icône équipement seulement si data disponible */}
             {exercise.equipment && (
               <div className="flex items-center space-x-1">
-                <Dumbbell className="h-4 w-4 flex-shrink-0" />
+                <Dumbbell className="h-6 w-6 flex-shrink-0" />
                 <span className="truncate">{exercise.equipment}</span>
               </div>
             )}
             {/* CORRIGÉ: Fallback si pas de métadonnées */}
             {!exercise.muscle_group && !exercise.equipment && (
-              <span className="text-gray-400 italic">Métadonnées à compléter</span>
+              <span className="text-gray-700 dark:text-gray-300 italic">Métadonnées à compléter</span>
             )}
           </div>
         </div>
 
         {/* Section performance avec design amélioré */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg flex-1">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg flex-1">
           <div className="flex items-center space-x-2 text-sm mb-2">
-            <TrendingUp className="h-4 w-4 text-orange-800 flex-shrink-0" />
-            <span className="text-gray-600 font-medium">Dernière performance</span>
+            <TrendingUp className="h-6 w-6 text-orange-800 dark:text-orange-300 flex-shrink-0" />
+            <span className="text-gray-600 dark:text-gray-300 font-medium">Dernière performance</span>
           </div>
-          <p className="text-base font-semibold text-gray-900 mb-1 line-clamp-2">
+          <p className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
             {formatPerformance()}
           </p>
           {lastPerformance && (
-            <p className="text-xs text-gray-500 flex items-center">
-              <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+            <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center">
+              <Calendar className="h-5 w-5 mr-1 flex-shrink-0" />
               {new Date(lastPerformance.performed_at).toLocaleDateString('fr-FR')}
             </p>
           )}
@@ -333,10 +382,10 @@ export function ExerciseCard2025({
               e.stopPropagation()
               onAddPerformance(exercise.id)
             }}
-            className="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 
+            className="flex-1 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 
                        text-white font-semibold py-3 px-4 rounded-lg 
-                       hover:from-orange-600 hover:to-orange-700 
-                       focus:from-orange-600 focus:to-orange-700
+                       hover:from-orange-600 hover:to-red-600 
+                       focus:from-orange-600 focus:to-red-600
                        transition-all duration-200 
                        flex items-center justify-center gap-2
                        shadow-md hover:shadow-lg
@@ -354,16 +403,16 @@ export function ExerciseCard2025({
               e.stopPropagation()
               onViewDetails(exercise.id)
             }}
-            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 
-                       focus:bg-gray-200
-                       text-gray-700 rounded-lg font-medium 
+            className="px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
+                       focus:bg-gray-200 dark:focus:bg-gray-600
+                       text-gray-700 dark:text-gray-200 rounded-lg font-medium 
                        transition-colors duration-200 
                        flex items-center gap-2
                        focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
             aria-label={`Voir les détails de ${exercise.name}`}
             data-testid="view-details-btn"
           >
-            <Eye className="h-4 w-4 flex-shrink-0" />
+            <Eye className="h-6 w-6 flex-shrink-0" />
             <span className="hidden sm:inline">Détails</span>
           </button>
 
@@ -376,18 +425,20 @@ export function ExerciseCard2025({
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 
-                         focus:text-red-500 focus:bg-red-50
+              className="p-3 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 
+                         focus:text-red-500 dark:focus:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20
                          rounded-lg transition-all duration-200
                          focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
               aria-label={`Supprimer ${exercise.name}`}
               data-testid="delete-button"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-6 w-6" />
             </motion.button>
           )}
         </div>
       </div>
+        </CardContent>
+      </Card>
     </motion.div>
   )
 }

@@ -43,13 +43,13 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Sparkles className="w-8 h-8 text-orange-800" />
+            <Sparkles className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Suggestions pour toi
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           {getPersonalizedMessage()}
         </p>
       </motion.div>
@@ -77,14 +77,14 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
           // Skeleton loading
           <>
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-6 border border-gray-200 rounded-xl animate-pulse">
+              <div key={i} className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl animate-pulse">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                   </div>
-                  <div className="w-20 h-8 bg-gray-200 rounded"></div>
+                  <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 </div>
               </div>
             ))}
@@ -103,18 +103,18 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-8 px-4 border border-gray-200 rounded-xl bg-gray-50"
+            className="text-center py-8 px-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800"
           >
-            <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <Target className="w-12 h-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
               Aucune suggestion disponible
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Nous n'avons pas trouvé de suggestions pour ce type d'exercice.
             </p>
             <button
               onClick={onCreateCustom}
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              className="px-4 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               Créer un exercice personnalisé
             </button>
@@ -132,18 +132,18 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={onCreateCustom}
-          className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl
-                     hover:border-orange-400 hover:bg-orange-50 transition-all duration-200
+          className="w-full p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl
+                     hover:border-orange-400 hover:bg-orange-50 dark:bg-orange-900/20 transition-all duration-200
                      flex items-center justify-center gap-3 group"
         >
-          <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-orange-100 transition-colors">
-            <Plus className="w-6 h-6 text-gray-600 group-hover:text-orange-800" />
+          <div className="p-2 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg group-hover:bg-orange-100 transition-colors">
+            <Plus className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300" />
           </div>
           <div className="text-left">
-            <h3 className="font-semibold text-gray-900 group-hover:text-orange-800 transition-colors">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors">
               Créer un exercice personnalisé
             </h3>
-            <p className="text-sm text-gray-600 group-hover:text-orange-800 transition-colors">
+            <p className="text-sm text-gray-600 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300 transition-colors">
               Aucune suggestion ne te convient ? Crée ton propre exercice
             </p>
           </div>

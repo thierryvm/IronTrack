@@ -7,10 +7,11 @@ import { SupportTicketCategory, CreateTicketRequest } from '@/types/support'
 import { useSupport } from '@/hooks/useSupport'
 import { SecureFileUpload } from './SecureFileUpload'
 import { SecureAttachment } from '@/utils/fileUpload'
-import { FormField2025 } from '@/components/ui/FormField2025'
-import { Input2025 } from '@/components/ui/Input2025'
-import { Button2025 } from '@/components/ui/Button2025'
-import { Textarea2025 } from '@/components/ui/Textarea2025'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+// Form components non utilisés dans cette version simplifiée
 
 interface SupportTicketForm2025Props {
   onSuccess?: () => void
@@ -147,11 +148,11 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
         green: 'border-green-500 bg-green-100 text-green-700',
         blue: 'border-blue-500 bg-blue-100 text-blue-700',
         purple: 'border-purple-500 bg-purple-100 text-purple-700',
-        orange: 'border-orange-500 bg-orange-100 text-orange-700',
+        orange: 'border-orange-600 bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300',
         yellow: 'border-yellow-500 bg-yellow-100 text-yellow-700'
       }[config.color]
     }
-    return 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+    return 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
   }
 
   if (showSuccess) {
@@ -160,7 +161,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className={`bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center ${className}`}
+        className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-8 text-center ${className}`}
       >
         <motion.div
           initial={{ scale: 0 }}
@@ -170,8 +171,8 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
         >
           <CheckCircle className="h-10 w-10 text-green-500" />
         </motion.div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3">Ticket envoyé avec succès !</h3>
-        <p className="text-gray-600 mb-6 leading-relaxed">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Ticket envoyé avec succès !</h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
           Votre demande a été envoyée à notre équipe de support. 
           Nous vous répondrons dans les plus brefs délais.
         </p>
@@ -189,17 +190,17 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ${className}`}
+      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 overflow-hidden ${className}`}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-50 to-red-50 border-b border-gray-200 p-6">
+      <div className="bg-gradient-to-r from-orange-50 to-red-50 border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center space-x-3">
           <div className="p-3 bg-orange-100 rounded-xl">
-            <MessageSquare className="h-6 w-6 text-orange-800" />
+            <MessageSquare className="h-6 w-6 text-orange-800 dark:text-orange-300" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Contacter le Support</h2>
-            <p className="text-gray-600">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Contacter le Support</h2>
+            <p className="text-gray-600 dark:text-gray-300">
               Décrivez votre problème ou demande, notre équipe vous répondra rapidement
             </p>
           </div>
@@ -211,11 +212,11 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Sélection de catégorie */}
           <div>
-            <FormField2025 
-              label="Type de demande" 
-              required
-              helpText="Sélectionnez la catégorie qui correspond le mieux à votre demande"
-            >
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-sm font-medium">
+                Type de demande <span className="text-red-500">*</span>
+              </Label>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Sélectionnez la catégorie qui correspond le mieux à votre demande</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(Object.entries(categoryConfig) as [SupportTicketCategory, typeof categoryConfig[SupportTicketCategory]][]).map(([category, config]) => {
                   const Icon = config.icon
@@ -242,47 +243,51 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
                   )
                 })}
               </div>
-            </FormField2025>
+            </div>
           </div>
 
           {/* Titre */}
-          <FormField2025
-            label="Titre de votre demande"
-            required
-            error={errors.title}
-            helpText={`${title.length}/200 caractères`}
-          >
-            <Input2025
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-sm font-medium">
+              Titre de votre demande <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
               placeholder="Décrivez brièvement votre problème..."
-              isError={!!errors.title}
+              className={errors.title ? "border-red-500" : ""}
             />
-          </FormField2025>
+            <div className="flex justify-between text-xs">
+              <span className="text-red-500">{errors.title}</span>
+              <span className="text-gray-600 dark:text-gray-400">{title.length}/200 caractères</span>
+            </div>
+          </div>
 
           {/* Description */}
-          <FormField2025
-            label="Description détaillée"
-            required
-            error={errors.description}
-            helpText={`${description.length} caractères - Plus vous donnez d'informations, plus nous pourrons vous aider efficacement`}
-          >
-            <Textarea2025
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-sm font-medium">
+              Description détaillée <span className="text-red-500">*</span>
+            </Label>
+            <Textarea
+              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={6}
               placeholder="Décrivez votre problème en détail..."
-              isError={!!errors.description}
-              autoResize
+              className={errors.description ? "border-red-500 resize-y" : "resize-y"}
             />
-          </FormField2025>
+            <div className="flex justify-between text-xs">
+              <span className="text-red-500">{errors.description}</span>
+              <span className="text-gray-600 dark:text-gray-400">{description.length} caractères - Plus vous donnez d'informations, plus nous pourrons vous aider efficacement</span>
+            </div>
+          </div>
 
           {/* Upload d'images */}
-          <FormField2025
-            label="Images et captures d'écran"
-            helpText="Ajoutez des captures d'écran pour nous aider à mieux comprendre votre problème (optionnel)"
-          >
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Images et captures d'écran</Label>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Ajoutez des captures d'écran pour nous aider à mieux comprendre votre problème (optionnel)</p>
             <div className="space-y-4">
               <SecureFileUpload
                 onUploadComplete={(newAttachments) => {
@@ -295,8 +300,8 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
               {/* Liste des fichiers attachés */}
               {attachments.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-gray-900 flex items-center space-x-2">
-                    <Paperclip className="h-4 w-4" />
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center space-x-2">
+                    <Paperclip className="h-6 w-6" />
                     <span>Fichiers attachés ({attachments.length})</span>
                   </h4>
                   <div className="space-y-2">
@@ -306,39 +311,39 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
+                        className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700"
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <Paperclip className="h-4 w-4 text-green-600" />
+                            <Paperclip className="h-6 w-6 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
                               {attachment.originalName}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
                               {(attachment.size / 1024 / 1024).toFixed(1)}MB • {attachment.type}
                             </p>
                           </div>
                         </div>
-                        <Button2025
+                        <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => {
                             setAttachments(prev => prev.filter(a => a.id !== attachment.id))
                           }}
-                          className="text-gray-400 hover:text-red-500"
+                          className="text-gray-700 dark:text-gray-300 hover:text-red-500"
                           aria-label="Supprimer fichier"
                         >
-                          <Send className="h-4 w-4 rotate-45" />
-                        </Button2025>
+                          <Send className="h-6 w-6 rotate-45" />
+                        </Button>
                       </motion.div>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-          </FormField2025>
+          </div>
 
           {/* Informations automatiques */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -371,16 +376,16 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-        <Button2025
+      <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        <Button
           onClick={handleSubmit}
           loading={loading}
           disabled={!title.trim() || !description.trim()}
           fullWidth
-          icon={!loading ? <Send className="h-4 w-4" /> : undefined}
+          icon={!loading ? <Send className="h-6 w-6" /> : undefined}
         >
           {loading ? 'Envoi en cours...' : 'Envoyer la demande'}
-        </Button2025>
+        </Button>
       </div>
     </motion.div>
   )

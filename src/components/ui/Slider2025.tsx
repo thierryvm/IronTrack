@@ -81,7 +81,7 @@ const Slider2025 = React.forwardRef<HTMLDivElement, Slider2025Props>(
           onMouseDown={handleMouseDown}
         >
           {/* Track */}
-          <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-2 bg-gray-200 rounded-full">
+          <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
             {/* Progress */}
             <motion.div
               initial={{ width: '0%' }}
@@ -105,7 +105,7 @@ const Slider2025 = React.forwardRef<HTMLDivElement, Slider2025Props>(
           <motion.div
             ref={thumbRef}
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-orange-500 rounded-full shadow-lg cursor-grab',
+              'absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white dark:bg-gray-900 border-2 border-orange-600 rounded-full shadow-lg cursor-grab',
               'transition-all duration-200 hover:scale-110 active:cursor-grabbing',
               isDragging && 'scale-125 shadow-xl ring-4 ring-orange-200'
             )}
@@ -117,7 +117,7 @@ const Slider2025 = React.forwardRef<HTMLDivElement, Slider2025Props>(
             }}
           >
             {/* Inner dot */}
-            <div className="absolute inset-2 bg-orange-500 rounded-full" />
+            <div className="absolute inset-2 bg-orange-600 dark:bg-orange-500 rounded-full" />
           </motion.div>
 
           {/* Value tooltip when dragging */}
@@ -137,7 +137,7 @@ const Slider2025 = React.forwardRef<HTMLDivElement, Slider2025Props>(
 
         {/* Labels */}
         {labels && labels.length > 0 && (
-          <div className="flex justify-between text-xs text-gray-500 px-1">
+          <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-1">
             {labels.map((label, index) => (
               <span key={index} className="text-center">
                 {label}

@@ -16,25 +16,25 @@ const TypeCard: React.FC<TypeCardProps> = ({
     onClick={onClick}
     className={`flex items-center space-x-4 p-6 rounded-xl border-2 transition-all duration-200 text-left w-full ${
       selected
-        ? 'border-orange-500 bg-orange-50 shadow-lg'
-        : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50'
+        ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20 shadow-lg'
+        : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 hover:border-orange-300 hover:bg-orange-50 dark:bg-orange-900/20'
     }`}
   >
     <div className={`p-3 rounded-lg ${
-      selected ? 'bg-orange-500' : 'bg-gray-100'
+      selected ? 'bg-orange-600' : 'bg-gray-100 dark:bg-gray-800'
     }`}>
       <Icon className={`h-8 w-8 ${
-        selected ? 'text-white' : 'text-gray-600'
+        selected ? 'text-white' : 'text-gray-600 dark:text-gray-300'
       }`} />
     </div>
     <div className="flex-1">
       <h3 className={`text-lg font-semibold mb-1 ${
-        selected ? 'text-orange-800' : 'text-gray-900'
+        selected ? 'text-orange-800 dark:text-orange-300' : 'text-gray-900 dark:text-gray-100'
       }`}>
         {title}
       </h3>
       <p className={`text-sm ${
-        selected ? 'text-orange-800' : 'text-gray-600'
+        selected ? 'text-orange-800 dark:text-orange-300' : 'text-gray-600 dark:text-gray-300'
       }`}>
         {description}
       </p>
@@ -43,7 +43,7 @@ const TypeCard: React.FC<TypeCardProps> = ({
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        className="text-orange-800"
+        className="text-orange-800 dark:text-orange-300"
       >
         <Target className="w-6 h-6" />
       </motion.div>
@@ -102,13 +102,13 @@ export const TypeSelection: React.FC<TypeSelectionProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Zap className="w-8 h-8 text-orange-800" />
+            <Zap className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Quel type d'exercice aujourd'hui ?
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           Choisis le type d'entraînement qui correspond à tes objectifs
         </p>
       </motion.div>

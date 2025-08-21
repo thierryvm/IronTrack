@@ -26,7 +26,7 @@ const FormField: React.FC<FormFieldProps> = ({
   options 
 }) => (
   <div className="space-y-2">
-    <label className="block text-sm font-medium text-gray-700">
+    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
       {label}
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
@@ -35,7 +35,7 @@ const FormField: React.FC<FormFieldProps> = ({
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 transition-colors"
       >
         {options?.map(option => (
           <option key={option.value} value={option.value}>
@@ -50,7 +50,7 @@ const FormField: React.FC<FormFieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 transition-colors"
       />
     )}
   </div>
@@ -258,7 +258,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       case 'Avancé': return 'bg-red-100 text-red-800 border-red-300'
       case 'Expert': return 'bg-purple-100 text-purple-800 border-purple-300'
       case 'Élite': return 'bg-black text-white border-black'
-      default: return 'bg-gray-100 text-gray-800 border-gray-300'
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
     }
   }
 
@@ -275,7 +275,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
   const getCompletionColor = (score: number) => {
     if (score >= 95) return 'text-green-600'
     if (score >= 80) return 'text-blue-600'
-    if (score >= 60) return 'text-orange-800'
+    if (score >= 60) return 'text-orange-800 dark:text-orange-300'
     return 'text-red-600'
   }
 
@@ -288,18 +288,18 @@ export const CustomForm: React.FC<CustomFormProps> = ({
       >
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-orange-100 rounded-full">
-            <Settings className="w-8 h-8 text-orange-800" />
+            <Settings className="w-8 h-8 text-orange-800 dark:text-orange-300" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Personnalise ton exercice
         </h2>
-        <p className="text-gray-600 text-lg mb-3">
+        <p className="text-gray-600 dark:text-gray-300 text-lg mb-3">
           Crée un exercice {exerciseType.toLowerCase()} adapté à tes besoins
         </p>
         
         {/* Indicateur de complétion */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-full border">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-full border">
           <div className="w-2 h-2 rounded-full bg-gray-300"></div>
           <span className={`text-sm font-medium ${getCompletionColor(completionScore)}`}>
             Profil exercice: {completionScore}% complet
@@ -378,7 +378,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
             Difficulté <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -390,7 +390,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
                 className={`p-3 rounded-lg border-2 font-medium transition-all duration-200 ${
                   formData.difficulty === difficulty
                     ? getDifficultyColor(difficulty)
-                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
                 }`}
               >
                 {difficulty}
@@ -407,7 +407,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
               transition={{ delay: 0.5 }}
               className="space-y-4"
             >
-              <h4 className="text-lg font-medium text-gray-900 border-b pb-2">Valeurs recommandées par défaut</h4>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 border-b pb-2">Valeurs recommandées par défaut</h4>
               
               {/* Première ligne: Poids et Répétitions */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -466,7 +466,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
             onChange={(value) => setFormData({...formData, description: value as string})}
             placeholder="Décris brièvement l'exercice..."
           />
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
             Une courte description aidera à identifier rapidement l'exercice
           </div>
         </motion.div>
@@ -477,7 +477,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           transition={{ delay: 0.65 }}
         >
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Instructions détaillées (optionnel)
             </label>
             <textarea
@@ -485,10 +485,10 @@ export const CustomForm: React.FC<CustomFormProps> = ({
               onChange={(e) => setFormData({...formData, instructions: e.target.value})}
               placeholder="Décris la technique d'exécution, les points clés, les muscles sollicités..."
               rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 transition-colors resize-none"
               maxLength={500}
             />
-            <div className="flex justify-between text-xs text-gray-500">
+            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
               <span>Ces instructions aideront les utilisateurs à bien exécuter l'exercice</span>
               <span>{(formData.instructions || '').length}/500</span>
             </div>
@@ -517,7 +517,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           <button
             type="button"
             onClick={onCancel || onBack}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
             {onCancel ? 'Annuler' : 'Retour'}
@@ -548,7 +548,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? 'Validation...' : 'Continuer'}
                 <ArrowRight className="w-5 h-5" />
@@ -558,7 +558,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? 'Validation...' : 'Continuer'}
               <ArrowRight className="w-5 h-5" />

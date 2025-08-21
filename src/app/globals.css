@@ -17,6 +17,9 @@ body {
   position: relative;
   /* Padding en bas pour compenser la navigation mobile fixe */
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  
+  /* OPTIMISATION TOUCH EVENTS - Réduire les violations non-passive */
+  touch-action: pan-y pinch-zoom;
 }
 
 /* 🔧 CORRECTION: Espace pour navigation mobile en bas - uniquement sur mobile */
@@ -504,4 +507,32 @@ input[type="submit"] {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* OPTIMISATIONS TOUCH EVENTS - Performance mobile */
+.touch-optimized {
+  touch-action: manipulation;
+}
+
+.swipe-container {
+  touch-action: pan-x;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.calendar-swipe {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optimiser les NumberWheel pour éviter les event listeners non-passifs */
+.number-wheel {
+  touch-action: none; /* Nécessaire pour preventDefault() dans les gestures */
+}
+
+/* Optimiser les composants avec react-easy-crop */
+.crop-container {
+  touch-action: none;
 }

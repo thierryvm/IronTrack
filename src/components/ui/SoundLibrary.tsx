@@ -145,20 +145,20 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
-        <span className="block text-sm font-medium text-gray-700">Bibliothèque de sons</span>
+        <span className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bibliothèque de sons</span>
         <div className="flex gap-2">
           <button
             onClick={handleUploadClick}
-            className="flex items-center gap-2 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="flex items-center gap-2 px-3 py-2 bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
             disabled={uploading}
           >
-            <Plus className="h-4 w-4" /> {uploading ? 'Upload...' : 'Ajouter un son'}
+            <Plus className="h-6 w-6" /> {uploading ? 'Upload...' : 'Ajouter un son'}
           </button>
           <button
             onClick={() => setShowAddExternal(v => !v)}
             className="flex items-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
           >
-            <Plus className="h-4 w-4" /> Lien externe
+            <Plus className="h-6 w-6" /> Lien externe
           </button>
         </div>
         <input
@@ -188,19 +188,19 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
           />
           <button
             onClick={handleAddExternal}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded font-semibold"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded font-semibold"
           >Ajouter</button>
           <button
             onClick={() => { setShowAddExternal(false); setExternalUrl(''); setExternalName(''); setExternalError(null); }}
-            className="text-gray-500 hover:text-gray-700 text-xs ml-2"
+            className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 text-xs ml-2"
           >Annuler</button>
           {externalError && <span className="text-xs text-red-500 ml-2">{externalError}</span>}
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {sounds.length === 0 && <div className="text-xs text-gray-500 col-span-full">Aucun son enregistré.</div>}
+        {sounds.length === 0 && <div className="text-xs text-gray-600 dark:text-gray-400 col-span-full">Aucun son enregistré.</div>}
         {sounds.map(sound => (
-          <div key={sound.id} className={`flex flex-col gap-2 p-4 rounded-xl shadow-sm border border-[#E5E7EB] bg-[#F6F8FA] hover:shadow-md transition ${selectedSoundId === sound.id ? 'border-orange-500 bg-orange-100' : ''}`}
+          <div key={sound.id} className={`flex flex-col gap-2 p-4 rounded-xl shadow-sm border border-[#E5E7EB] bg-[#F6F8FA] hover:shadow-md transition ${selectedSoundId === sound.id ? 'border-orange-600 bg-orange-100' : ''}`}
             style={{minWidth:0}}>
             <div className="flex flex-col gap-1 w-full">
               {renamingId === sound.id ? (
@@ -208,7 +208,7 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
                   <input
                     value={newName || sound.name}
                     onChange={e => setNewName(e.target.value)}
-                    className="border rounded-lg px-3 py-2 text-base w-full bg-white focus:ring-2 focus:ring-orange-400 text-gray-900"
+                    className="border rounded-lg px-3 py-2 text-base w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-orange-400 text-gray-900 dark:text-gray-100"
                     style={{fontSize:'1rem'}}
                     placeholder="Nouveau nom du son"
                     onFocus={e => e.target.select()}
@@ -217,12 +217,12 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
                   />
                   <div className="flex flex-row justify-center gap-4 mt-1">
                     <button onClick={() => handleRename(sound)} className="text-green-600 text-xl" title="Valider" style={{padding:'0 6px'}}><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
-                    <button onClick={() => { setRenamingId(null); setNewName(''); }} className="text-gray-400 text-xl" title="Annuler" style={{padding:'0 6px'}}><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    <button onClick={() => { setRenamingId(null); setNewName(''); }} className="text-gray-700 dark:text-gray-300 text-xl" title="Annuler" style={{padding:'0 6px'}}><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                   </div>
                 </div>
               ) : (
                 <>
-                  <span className="block text-base font-semibold text-gray-900 truncate mb-0.5">{sound.name}</span>
+                  <span className="block text-base font-semibold text-gray-900 dark:text-gray-100 truncate mb-0.5">{sound.name}</span>
                 </>
               )}
             </div>
@@ -230,10 +230,10 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
               <button onClick={() => handlePlay(sound)} className="text-blue-500 hover:text-blue-700 bg-blue-50 rounded-full p-3 shadow flex-shrink-0" title="Écouter" aria-label="Écouter le son" style={{minWidth:40, minHeight:40}}>
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
               </button>
-              <button onClick={() => { setRenamingId(sound.id); setNewName(sound.name); }} className="text-yellow-500 hover:text-yellow-600 bg-white border border-yellow-200 rounded-full p-3 shadow flex-shrink-0" title="Renommer" aria-label="Renommer le son" style={{minWidth:40, minHeight:40}}>
+              <button onClick={() => { setRenamingId(sound.id); setNewName(sound.name); }} className="text-yellow-500 hover:text-yellow-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-yellow-200 rounded-full p-3 shadow flex-shrink-0" title="Renommer" aria-label="Renommer le son" style={{minWidth:40, minHeight:40}}>
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
               </button>
-              <button onClick={() => handleDelete(sound)} className="text-red-500 hover:text-red-700 bg-white border border-red-200 rounded-full p-3 shadow flex-shrink-0" title="Supprimer" style={{minWidth:40, minHeight:40}}>
+              <button onClick={() => handleDelete(sound)} className="text-red-500 hover:text-red-700 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-red-200 rounded-full p-3 shadow flex-shrink-0" title="Supprimer" style={{minWidth:40, minHeight:40}}>
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
               </button>
               {playingId === sound.id && <span className="text-xs text-green-600 ml-2">Lecture...</span>}

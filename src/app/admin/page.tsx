@@ -22,6 +22,9 @@ import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { AdminStats } from '@/hooks/useAdminAuth'
 import { createClient } from '@/utils/supabase/client'
 
+// MIGRATION SHADCN/UI ADMIN - 100% COMPLET
+import { Button } from '@/components/ui/button'
+
 interface QuickAction {
   title: string
   description: string
@@ -205,7 +208,7 @@ export default function AdminDashboard() {
 
   const getActionColor = (color: string) => {
     const colors = {
-      orange: 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100',
+      orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 hover:bg-orange-100',
       blue: 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
       green: 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100',
       purple: 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100',
@@ -218,14 +221,14 @@ export default function AdminDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <Clock className="h-4 w-4 text-orange-800" />
+        return <Clock className="h-6 w-6 text-orange-800 dark:text-orange-300" />
       case 'in_progress':
-        return <Activity className="h-4 w-4 text-blue-500" />
+        return <Activity className="h-6 w-6 text-blue-500" />
       case 'resolved':
       case 'closed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="h-6 w-6 text-green-500" />
       default:
-        return <AlertTriangle className="h-4 w-4 text-gray-500" />
+        return <AlertTriangle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
     }
   }
 
@@ -247,41 +250,41 @@ export default function AdminDashboard() {
         {/* Header Skeleton - Dimensions fixes */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between min-h-[80px] animate-pulse">
           <div className="flex-1">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
-            <div className="h-4 bg-gray-200 rounded w-1/2" />
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           </div>
           <div className="mt-3 sm:mt-0 flex items-center space-x-3">
-            <div className="h-8 w-20 bg-gray-200 rounded-full" />
-            <div className="h-10 w-24 bg-gray-200 rounded-lg" />
+            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-full" />
+            <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg" />
           </div>
         </div>
         
         {/* Stats Skeleton - Dimensions exactes */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
+            <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
               <div className="flex items-center justify-between mb-2 sm:mb-4">
-                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-200 rounded-lg" />
-                <div className="w-4 h-4 bg-gray-200 rounded" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
               </div>
-              <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2 mb-1" />
+              <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-1" />
               <div className="h-6 sm:h-8 bg-gray-300 rounded w-1/3 mb-1" />
-              <div className="h-3 bg-gray-200 rounded w-2/3" />
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
             </div>
           ))}
         </div>
         
         {/* Actions Skeleton - Dimensions fixes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[200px] animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px] animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="p-4 border-2 border-gray-100 rounded-xl min-h-[100px]">
+              <div key={i} className="p-4 border-2 border-gray-100 dark:border-gray-700 rounded-xl min-h-[100px]">
                 <div className="flex items-center mb-3">
-                  <div className="w-5 h-5 bg-gray-200 rounded mr-2" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded mr-2" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
                 </div>
-                <div className="h-3 bg-gray-200 rounded w-full" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
               </div>
             ))}
           </div>
@@ -289,33 +292,33 @@ export default function AdminDashboard() {
         
         {/* Grid Sections Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px] animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="p-3 border border-gray-100 rounded-lg min-h-[80px]">
+                <div key={i} className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg min-h-[80px]">
                   <div className="flex justify-between mb-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    <div className="w-4 h-4 bg-gray-200 rounded" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
                   </div>
                   <div className="flex justify-between">
-                    <div className="h-3 bg-gray-200 rounded w-1/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
                   </div>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px] animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg min-h-[70px]">
+                <div key={i} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[70px]">
                   <div className="w-2 h-2 bg-gray-300 rounded-full mt-2" />
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-1" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-1" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
                   </div>
                 </div>
               ))}
@@ -333,31 +336,32 @@ export default function AdminDashboard() {
       {/* Header avec refresh */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 truncate">
             Dashboard {user?.role === 'super_admin' ? 'Super Admin' : 
                       user?.role === 'admin' ? 'Admin' : 
                       user?.role === 'moderator' ? 'Modérateur' : 'Admin'}
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 truncate">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 truncate">
             Bonjour {user?.email.split('@')[0]} 👋
           </p>
         </div>
         
         <div className="mt-3 sm:mt-0 flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
-          <div className="flex items-center text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-            <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded-full">
+            <Shield className="h-5 w-5 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden xs:inline">{user?.role.replace('_', ' ').toUpperCase()}</span>
             <span className="xs:hidden">{user?.role === 'super_admin' ? 'S.ADM' : user?.role === 'admin' ? 'ADM' : 'MOD'}</span>
           </div>
           
-          <button
+          <Button
             onClick={handleManualRefresh}
             disabled={refreshing}
-            className="flex items-center px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+            variant="outline"
+            className="flex items-center px-3 py-2 text-sm min-h-[44px]"
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''} ${refreshing ? '' : 'sm:mr-2'}`} />
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline ml-2">Actualiser</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -402,7 +406,7 @@ export default function AdminDashboard() {
             <div key={stat.title}>
               <Link href={stat.href}>
                 <div 
-                  className="bg-white p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer min-h-[120px]"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 cursor-pointer min-h-[120px]"
                   style={{ minHeight: '120px' }}
                 >
                   <div className="flex items-center justify-between mb-2 sm:mb-4">
@@ -412,24 +416,24 @@ export default function AdminDashboard() {
                       stat.color === 'green' ? 'bg-green-100' :
                       'bg-purple-100'
                     }`}>
-                      <Icon className={`h-4 w-4 sm:h-6 sm:w-6 ${
-                        stat.color === 'orange' ? 'text-orange-800' :
+                      <Icon className={`h-6 w-6 sm:h-6 sm:w-6 ${
+                        stat.color === 'orange' ? 'text-orange-800 dark:text-orange-300' :
                         stat.color === 'blue' ? 'text-blue-600' :
                         stat.color === 'green' ? 'text-green-600' :
                         'text-purple-600'
                       }`} />
                     </div>
-                    <Eye className="h-4 w-4 text-gray-400" />
+                    <Eye className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                   </div>
                   
                   <div>
-                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 truncate">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 truncate">
                       {stat.title}
                     </h3>
-                    <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                       {stat.value.toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                       {stat.change}
                     </p>
                   </div>
@@ -441,8 +445,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Actions rapides - Dimensions fixes */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[200px]" style={{ minHeight: '200px' }}>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px]" style={{ minHeight: '200px' }}>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />
           Actions Rapides
         </h2>
@@ -471,15 +475,15 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tickets récents - Dimensions fixes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
               Tickets Récents
             </h2>
             <Link 
               href="/admin/tickets"
-              className="text-sm text-orange-800 hover:text-orange-700 font-medium"
+              className="text-sm text-orange-800 dark:text-orange-300 hover:text-orange-700 font-medium"
             >
               Voir tous
             </Link>
@@ -487,25 +491,25 @@ export default function AdminDashboard() {
           
           <div className="space-y-3">
             {recentTickets.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm text-center py-4">
                 Aucun ticket récent
               </p>
             ) : (
               recentTickets.map((ticket) => (
                 <div key={String(ticket.id || '')} className="cursor-pointer" onClick={() => router.push('/admin/tickets')}>
-                  <div className="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">
                           {getCategoryEmoji(String(ticket.category || 'help'))}
                         </span>
-                        <h4 className="font-medium text-gray-900 text-sm truncate max-w-[200px]">
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate max-w-[200px]">
                           {String(ticket.title || 'Sans titre')}
                         </h4>
                       </div>
                       {getStatusIcon(String(ticket.status || 'open'))}
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                       <span className="capitalize">{String(ticket.category || 'general')}</span>
                       <span>{new Date(String(ticket.created_at || new Date().toISOString())).toLocaleDateString('fr-FR')}</span>
                     </div>
@@ -517,9 +521,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Activité récente - Dimensions fixes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <Activity className="h-5 w-5 mr-2" />
               Activité Récente
               <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -528,9 +532,9 @@ export default function AdminDashboard() {
             </h2>
             <Link 
               href="/admin/logs"
-              className="text-sm text-orange-800 hover:text-orange-700 font-medium flex items-center space-x-1"
+              className="text-sm text-orange-800 dark:text-orange-300 hover:text-orange-700 font-medium flex items-center space-x-1"
             >
-              <Eye className="h-3 w-3" />
+              <Eye className="h-5 w-5" />
               <span>Logs complets</span>
             </Link>
           </div>
@@ -538,34 +542,34 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             {!hasPermission('admin') ? (
               <div className="text-center py-6">
-                <Shield className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Permissions administrateur requises</p>
+                <Shield className="h-8 w-8 text-gray-700 dark:text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Permissions administrateur requises</p>
               </div>
             ) : recentActivity.length === 0 ? (
               <div className="text-center py-6">
-                <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Aucune activité dans la dernière heure</p>
-                <p className="text-gray-400 text-xs mt-1">
+                <Clock className="h-8 w-8 text-gray-700 dark:text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Aucune activité dans la dernière heure</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs mt-1">
                   Consultez les logs complets pour plus d'historique
                 </p>
               </div>
             ) : (
               <>
                 {recentActivity.slice(0, 3).map((activity) => ( // LIMITÉ à 3 au lieu de tous
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg min-h-[70px]" style={{ minHeight: '70px' }}>
-                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[70px]" style={{ minHeight: '70px' }}>
+                    <div className="w-2 h-2 bg-orange-600 dark:bg-orange-500 rounded-full mt-2 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
                         <span className="font-medium">{activity.admin_email}</span>
                         {' '}
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {activity.action.replace(/_/g, ' ')}
                         </span>
                         {activity.target_type && (
-                          <span className="text-gray-500"> • {activity.target_type.replace(/_/g, ' ')}</span>
+                          <span className="text-gray-600 dark:text-gray-400"> • {activity.target_type.replace(/_/g, ' ')}</span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         {new Date(activity.created_at).toLocaleString('fr-FR')}
                       </p>
                     </div>
@@ -577,7 +581,7 @@ export default function AdminDashboard() {
                   <div className="text-center pt-2">
                     <Link 
                       href="/admin/logs"
-                      className="text-xs text-orange-800 hover:text-orange-700 font-medium"
+                      className="text-xs text-orange-800 dark:text-orange-300 hover:text-orange-700 font-medium"
                     >
                       +{recentActivity.length - 3} activités supplémentaires → Voir tous les logs
                     </Link>
