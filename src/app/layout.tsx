@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "./hmr-optimization";
+// HMR optimization disabled in production
 import ClientProviders from "@/components/ClientProviders";
 import VercelProviders from "@/components/VercelProviders";
 import ConditionalHeader from "@/components/layout/ConditionalHeader";
