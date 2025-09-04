@@ -670,7 +670,8 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 variant="orange"
                 onClick={handleSave}
                 disabled={saving}
-                className="sm:w-auto order-1 sm:order-2"
+                fullWidth
+                className="!bg-orange-600 !hover:bg-orange-700 !text-white sm:w-auto order-1 sm:order-2"
               >
                 {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
               </Button>

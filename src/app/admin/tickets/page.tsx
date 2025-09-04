@@ -86,7 +86,7 @@ export default function AdminTicketsPage() {
   )
 
   // Charger les tickets - Version finale sans dépendances problématiques  
-  const loadTickets = async (skipLogging = false) => {
+  const loadTickets = useCallback(async (skipLogging = false) => {
     setLoading(true)
     try {
       const allTickets = await getAllTickets()
@@ -102,7 +102,7 @@ export default function AdminTicketsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [getAllTickets, throttledLogAdminAction])
 
   // Chargement initial au mount - une seule fois avec protection useRef
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function AdminTicketsPage() {
     return () => {
       initialized.current = false
     }
-  }, [loadTickets]) // Dependencies corrigées
+  }, []) // Pas de dépendances pour éviter la boucle infinie
 
   // Filtrer et trier les tickets
   const filteredAndSortedTickets = tickets

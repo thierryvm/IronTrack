@@ -159,7 +159,7 @@ export async function optimizeImage(file: File): Promise<OptimizedImageResult> {
           
           // Détecter le meilleur format supporté
           const bestFormat = detectBestImageFormat()
-          console.log(`[OPTIMIZATION] Format sélectionné: ${bestFormat.mimeType} (qualité: ${Math.round(bestFormat.quality * 100)}%)`)
+          // console.log(`[OPTIMIZATION] Format sélectionné: ${bestFormat.mimeType} (qualité: ${Math.round(bestFormat.quality * 100)}%)`)
           
           // Convertir en blob optimisé
           canvas.toBlob(

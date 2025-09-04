@@ -80,10 +80,6 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     // Pas de listener resize pour éviter les changements intempestifs
   }, [])
 
-  // Debug: log currentPhoto changes
-  useEffect(() => {
-    console.log('🖼️ currentPhoto changed:', currentPhoto)
-  }, [currentPhoto])
 
   const resetUploadState = useCallback(() => {
     setUploadState({
@@ -260,23 +256,21 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
 
       {/* Zone d'upload ou photo actuelle */}
       {currentPhoto ? (
-        <div className="relative group">
+        <div className="relative group max-w-sm mx-auto">
           <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-transparent">
             <Image
               src={currentPhoto}
               alt="Photo de l'exercice"
               fill
+              priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover object-top"
               onError={(e) => {
-                console.error('Erreur chargement image:', currentPhoto, e)
-                // Ajouter une classe d'erreur pour debug
+                // Silent error handling - just style the broken image
                 e.currentTarget.style.backgroundColor = '#ef4444'
                 e.currentTarget.style.color = 'white'
               }}
-              onLoad={() => {
-                console.log('Image chargée avec succès:', currentPhoto)
-              }}
+              onLoad={() => {}}
             />
             
             {/* Overlay avec actions */}
@@ -532,6 +526,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onCropComplete={handleCropComplete}
           onCancel={handleCropCancel}
           aspectRatio={4/3}
+          freeMode={true}
         />
       )}
     </div>

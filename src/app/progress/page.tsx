@@ -603,7 +603,6 @@ export default function ProgressPage() {
           if (deleteError) {
             console.error('❌ Erreur suppression logs orphelins:', deleteError)
           } else {
-            console.log('✅ Supprimé', orphanedIds.length, 'logs orphelins:', orphanedIds)
             // Recharger les données après suppression
             setTimeout(() => window.location.reload(), 1000)
             return
