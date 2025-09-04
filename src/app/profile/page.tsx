@@ -255,7 +255,6 @@ export default function ProfilePage() {
     if (urlParams.get('refresh') || urlParams.get('onboarding')) {
       // Attendre un peu puis forcer le rechargement complet
       setTimeout(async () => {
-        console.log('🔄 Rechargement forcé du profil après onboarding/refresh');
         await loadProfileData();
       }, 300);
     }

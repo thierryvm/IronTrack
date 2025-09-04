@@ -4,7 +4,6 @@ import { ExerciseCreationWizard } from '@/components/exercises/ExerciseCreation'
 import { Exercise } from '@/types/exercise'
 import { Performance } from '@/types/performance'
 import { createClient } from '@/utils/supabase/client'
-// Note: Remplacé toast par console.log temporairement
 
 interface PerformanceMetrics {
   // Musculation
@@ -120,7 +119,7 @@ export default function NewExercisePage() {
         }
       }
 
-      console.log(
+      toast.success(
         data.performance 
           ? `Exercice "${data.exercise.name}" créé avec première performance !`
           : `Exercice "${data.exercise.name}" créé avec succès !`

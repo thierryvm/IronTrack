@@ -18,6 +18,13 @@ interface CropState {
   rotation: number
 }
 
+interface CropArea {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export function ImageCropper({ 
   imageUrl, 
   onCropComplete, 
@@ -25,15 +32,17 @@ export function ImageCropper({
   aspectRatio = 4/3,
   className = "" 
 }: ImageCropperProps) {
-  const [cropState, setCropState] = useState<CropState>({
-    x: 0,
-    y: 0,
-    scale: 1,
-    rotation: 0
+  const [cropArea, setCropArea] = useState<CropArea>({
+    x: 50,
+    y: 50,
+    width: 200,
+    height: 200 / aspectRatio
   })
-  
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [scale, setScale] = useState(1)
+  const [rotation, setRotation] = useState(0)
+  const [freeMode, setFreeMode] = useState(false)
+  const [isDragging, setIsDragging] = useState<string | null>(null)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0, cropWidth: 0, cropHeight: 0 })
   const [imageNaturalSize, setImageNaturalSize] = useState({ width: 0, height: 0 })
   
   const containerRef = useRef<HTMLDivElement>(null)
@@ -49,66 +58,150 @@ export function ImageCropper({
     img.src = imageUrl
   }, [imageUrl])
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    setIsDragging(true)
+  // Handle mouse/touch events for crop area manipulation
+  const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
+    e.preventDefault()
+    setIsDragging(handle)
     setDragStart({
-      x: e.clientX - cropState.x,
-      y: e.clientY - cropState.y
+      x: e.clientX,
+      y: e.clientY,
+      cropX: cropArea.x,
+      cropY: cropArea.y,
+      cropWidth: cropArea.width,
+      cropHeight: cropArea.height
     })
-  }, [cropState.x, cropState.y])
+  }, [cropArea])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging) return
-    
-    setCropState(prev => ({
-      ...prev,
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    }))
-  }, [isDragging, dragStart])
+    if (!isDragging || !containerRef.current) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const deltaX = e.clientX - dragStart.x
+    const deltaY = e.clientY - dragStart.y
+
+    let newCropArea = { ...cropArea }
+
+    switch (isDragging) {
+      case 'move':
+        newCropArea.x = Math.max(0, Math.min(rect.width - cropArea.width, dragStart.cropX + deltaX))
+        newCropArea.y = Math.max(0, Math.min(rect.height - cropArea.height, dragStart.cropY + deltaY))
+        break
+      case 'nw':
+        newCropArea.x = Math.max(0, dragStart.cropX + deltaX)
+        newCropArea.y = Math.max(0, dragStart.cropY + deltaY)
+        newCropArea.width = dragStart.cropWidth - deltaX
+        newCropArea.height = dragStart.cropHeight - deltaY
+        break
+      case 'ne':
+        newCropArea.y = Math.max(0, dragStart.cropY + deltaY)
+        newCropArea.width = dragStart.cropWidth + deltaX
+        newCropArea.height = dragStart.cropHeight - deltaY
+        break
+      case 'sw':
+        newCropArea.x = Math.max(0, dragStart.cropX + deltaX)
+        newCropArea.width = dragStart.cropWidth - deltaX
+        newCropArea.height = dragStart.cropHeight + deltaY
+        break
+      case 'se':
+        newCropArea.width = dragStart.cropWidth + deltaX
+        newCropArea.height = dragStart.cropHeight + deltaY
+        break
+    }
+
+    // Maintain aspect ratio if not in free mode
+    if (!freeMode && (isDragging.includes('n') || isDragging.includes('s') || isDragging.includes('e') || isDragging.includes('w'))) {
+      if (isDragging.includes('e') || isDragging.includes('w')) {
+        newCropArea.height = newCropArea.width / aspectRatio
+      } else {
+        newCropArea.width = newCropArea.height * aspectRatio
+      }
+    }
+
+    // Ensure minimum size
+    newCropArea.width = Math.max(50, newCropArea.width)
+    newCropArea.height = Math.max(50, newCropArea.height)
+
+    // Ensure crop area stays within bounds
+    newCropArea.x = Math.max(0, Math.min(rect.width - newCropArea.width, newCropArea.x))
+    newCropArea.y = Math.max(0, Math.min(rect.height - newCropArea.height, newCropArea.y))
+
+    setCropArea(newCropArea)
+  }, [isDragging, dragStart, cropArea, aspectRatio, freeMode])
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
+    setIsDragging(null)
   }, [])
 
   // Touch events for mobile
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: React.TouchEvent, handle: string) => {
     e.preventDefault()
     const touch = e.touches[0]
-    setIsDragging(true)
+    setIsDragging(handle)
     setDragStart({
-      x: touch.clientX - cropState.x,
-      y: touch.clientY - cropState.y
+      x: touch.clientX,
+      y: touch.clientY,
+      cropX: cropArea.x,
+      cropY: cropArea.y,
+      cropWidth: cropArea.width,
+      cropHeight: cropArea.height
     })
-  }, [cropState.x, cropState.y])
+  }, [cropArea])
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging) return
+    if (!isDragging || !containerRef.current) return
     e.preventDefault()
     
     const touch = e.touches[0]
-    setCropState(prev => ({
-      ...prev,
-      x: touch.clientX - dragStart.x,
-      y: touch.clientY - dragStart.y
-    }))
-  }, [isDragging, dragStart])
+    const rect = containerRef.current.getBoundingClientRect()
+    const deltaX = touch.clientX - dragStart.x
+    const deltaY = touch.clientY - dragStart.y
+
+    let newCropArea = { ...cropArea }
+
+    switch (isDragging) {
+      case 'move':
+        newCropArea.x = Math.max(0, Math.min(rect.width - cropArea.width, dragStart.cropX + deltaX))
+        newCropArea.y = Math.max(0, Math.min(rect.height - cropArea.height, dragStart.cropY + deltaY))
+        break
+      case 'se':
+        newCropArea.width = dragStart.cropWidth + deltaX
+        newCropArea.height = freeMode ? dragStart.cropHeight + deltaY : (dragStart.cropWidth + deltaX) / aspectRatio
+        break
+    }
+
+    // Ensure minimum size and bounds
+    newCropArea.width = Math.max(50, Math.min(rect.width - newCropArea.x, newCropArea.width))
+    newCropArea.height = Math.max(50, Math.min(rect.height - newCropArea.y, newCropArea.height))
+
+    setCropArea(newCropArea)
+  }, [isDragging, dragStart, cropArea, aspectRatio, freeMode])
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault()
-    setIsDragging(false)
+    setIsDragging(null)
   }, [])
 
   const handleScaleChange = useCallback((value: number[]) => {
-    setCropState(prev => ({ ...prev, scale: value[0] }))
+    setScale(value[0])
   }, [])
 
   const handleRotationChange = useCallback((value: number[]) => {
-    setCropState(prev => ({ ...prev, rotation: value[0] }))
+    setRotation(value[0])
   }, [])
 
   const resetCrop = useCallback(() => {
-    setCropState({ x: 0, y: 0, scale: 1, rotation: 0 })
+    setCropArea({
+      x: 50,
+      y: 50,
+      width: 200,
+      height: 200 / aspectRatio
+    })
+    setScale(1)
+    setRotation(0)
+  }, [aspectRatio])
+
+  const toggleFreeMode = useCallback(() => {
+    setFreeMode(prev => !prev)
   }, [])
 
   const generateCroppedImage = useCallback(async () => {
@@ -141,8 +234,8 @@ export function ImageCropper({
         
         // Move to center for rotation
         ctx.translate(cropWidth / 2, cropHeight / 2)
-        ctx.rotate((cropState.rotation * Math.PI) / 180)
-        ctx.scale(cropState.scale, cropState.scale)
+        ctx.rotate((rotation * Math.PI) / 180)
+        ctx.scale(scale, scale)
         
         // Calculate image size to fill container
         const imgAspect = tempImg.width / tempImg.height
@@ -151,19 +244,19 @@ export function ImageCropper({
         let drawWidth, drawHeight
         if (imgAspect > containerAspect) {
           // Image is wider - fit to height
-          drawHeight = cropHeight / cropState.scale
+          drawHeight = cropHeight / scale
           drawWidth = drawHeight * imgAspect
         } else {
           // Image is taller - fit to width
-          drawWidth = cropWidth / cropState.scale
+          drawWidth = cropWidth / scale
           drawHeight = drawWidth / imgAspect
         }
         
         // Draw image centered, adjusted by crop position
         ctx.drawImage(
           tempImg,
-          -drawWidth / 2 + cropState.x / cropState.scale,
-          -drawHeight / 2 + cropState.y / cropState.scale,
+          -drawWidth / 2 + 0 / scale,
+          -drawHeight / 2 + 0 / scale,
           drawWidth,
           drawHeight
         )
@@ -182,7 +275,7 @@ export function ImageCropper({
         }
       }, 'image/jpeg', 0.9)
     })
-  }, [cropState, onCropComplete])
+  }, [cropArea, scale, rotation, onCropComplete])
 
   return (
     <div className={`fixed inset-0 bg-black/90 z-50 flex flex-col ${className}`}>
@@ -221,13 +314,9 @@ export function ImageCropper({
             minWidth: '320px',
             minHeight: '240px'
           }}
-          onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         >
           <img
             ref={imageRef}
@@ -236,7 +325,7 @@ export function ImageCropper({
             className="absolute"
             crossOrigin="anonymous"
             style={{
-              transform: `translate(${cropState.x}px, ${cropState.y}px) scale(${cropState.scale}) rotate(${cropState.rotation}deg)`,
+              transform: `scale(${scale}) rotate(${rotation}deg)`,
               transformOrigin: 'center center',
               width: '100%',
               height: '100%',
@@ -247,29 +336,108 @@ export function ImageCropper({
             draggable={false}
           />
           
-          {/* Crop overlay lines */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Rule of thirds grid */}
-            <div className="absolute top-1/3 left-0 right-0 h-px bg-white/30" />
-            <div className="absolute top-2/3 left-0 right-0 h-px bg-white/30" />
-            <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/30" />
-            <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/30" />
+          {/* Dark overlay with cutout */}
+          <div className="absolute inset-0">
+            {/* Top overlay */}
+            <div 
+              className="absolute bg-gray-900/60 dark:bg-black/50"
+              style={{
+                left: 0,
+                top: 0,
+                width: '100%',
+                height: cropArea.y
+              }}
+            />
+            {/* Bottom overlay */}
+            <div 
+              className="absolute bg-gray-900/60 dark:bg-black/50"
+              style={{
+                left: 0,
+                top: cropArea.y + cropArea.height,
+                width: '100%',
+                height: `calc(100% - ${cropArea.y + cropArea.height}px)`
+              }}
+            />
+            {/* Left overlay */}
+            <div 
+              className="absolute bg-gray-900/60 dark:bg-black/50"
+              style={{
+                left: 0,
+                top: cropArea.y,
+                width: cropArea.x,
+                height: cropArea.height
+              }}
+            />
+            {/* Right overlay */}
+            <div 
+              className="absolute bg-gray-900/60 dark:bg-black/50"
+              style={{
+                left: cropArea.x + cropArea.width,
+                top: cropArea.y,
+                width: `calc(100% - ${cropArea.x + cropArea.width}px)`,
+                height: cropArea.height
+              }}
+            />
+            
+            {/* Crop selection area */}
+            <div
+              className="absolute border-2 border-orange-500 bg-transparent cursor-move"
+              style={{
+                left: cropArea.x,
+                top: cropArea.y,
+                width: cropArea.width,
+                height: cropArea.height
+              }}
+              onMouseDown={(e) => handleMouseDown(e, 'move')}
+              onTouchStart={(e) => handleTouchStart(e, 'move')}
+            >
+              {/* Rule of thirds grid inside crop area */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/3 left-0 right-0 h-px bg-white/30" />
+                <div className="absolute top-2/3 left-0 right-0 h-px bg-white/30" />
+                <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/30" />
+                <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/30" />
+              </div>
+
+              {/* Resize handles */}
+              {/* Corner handles */}
+              <div
+                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-nw-resize -top-2 -left-2"
+                onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'nw')}}
+                onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'nw')}}
+              />
+              <div
+                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-ne-resize -top-2 -right-2"
+                onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'ne')}}
+                onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'ne')}}
+              />
+              <div
+                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-sw-resize -bottom-2 -left-2"
+                onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'sw')}}
+                onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'sw')}}
+              />
+              <div
+                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-se-resize -bottom-2 -right-2"
+                onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'se')}}
+                onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'se')}}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Controls */}
       <div className="bg-gray-900 p-4 space-y-4">
-        <div className="grid grid-cols-1 gap-6 text-white sm:grid-cols-3 sm:gap-4">
-          {/* Scale Control */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 gap-4 text-white sm:grid-cols-4 sm:gap-4">
+          {/* Zoom Control */}
+          <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-2">
+            <div className="flex items-center gap-2 justify-center">
               <ZoomOut className="h-4 w-4" />
               <span className="text-sm font-medium">Zoom</span>
               <ZoomIn className="h-4 w-4" />
             </div>
             <Slider
-              value={[cropState.scale]}
+              value={[scale]}
               onValueChange={handleScaleChange}
               min={0.1}
               max={3}
@@ -277,18 +445,18 @@ export function ImageCropper({
               className="w-full"
             />
             <div className="text-xs text-gray-400 text-center">
-              {Math.round(cropState.scale * 100)}%
+              {Math.round(scale * 100)}%
             </div>
           </div>
 
           {/* Rotation Control */}
-          <div className="space-y-2">
+          <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-2">
             <div className="flex items-center gap-2 justify-center">
               <RotateCcw className="h-4 w-4" />
               <span className="text-sm font-medium">Rotation</span>
             </div>
             <Slider
-              value={[cropState.rotation]}
+              value={[rotation]}
               onValueChange={handleRotationChange}
               min={-180}
               max={180}
@@ -296,26 +464,44 @@ export function ImageCropper({
               className="w-full"
             />
             <div className="text-xs text-gray-400 text-center">
-              {cropState.rotation}°
+              {rotation}°
+            </div>
+          </div>
+
+          {/* Proportions Control */}
+          <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-2">
+            <div className="flex items-center gap-2 justify-center">
+              <span className="text-sm font-medium">Proportions</span>
+            </div>
+            <Button
+              variant="overlay"
+              size="sm"
+              onClick={toggleFreeMode}
+              className="w-full"
+            >
+              {freeMode ? 'Libre' : 'Contraint'}
+            </Button>
+            <div className="text-xs text-gray-400 text-center">
+              {freeMode ? 'Libre' : `${aspectRatio.toFixed(1)}:1`}
             </div>
           </div>
 
           {/* Reset Control */}
-          <div className="space-y-2">
+          <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-2">
             <div className="flex items-center gap-2 justify-center">
               <Move className="h-4 w-4" />
               <span className="text-sm font-medium">Position</span>
             </div>
             <Button
-              variant="outline"
+              variant="overlay"
               size="sm"
               onClick={resetCrop}
-              className="w-full bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+              className="w-full"
             >
               Réinitialiser
             </Button>
             <div className="text-xs text-gray-400 text-center">
-              X: {Math.round(cropState.x)}, Y: {Math.round(cropState.y)}
+              X: {Math.round(cropArea.x)}, Y: {Math.round(cropArea.y)}
             </div>
           </div>
         </div>
@@ -323,19 +509,19 @@ export function ImageCropper({
         {/* Mobile Quick Controls */}
         <div className="flex justify-center gap-3 sm:hidden">
           <button
-            onClick={() => setCropState(prev => ({ ...prev, scale: Math.max(0.1, prev.scale - 0.2) }))}
+            onClick={() => setScale(prev => Math.max(0.1, prev - 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
             🔍➖ Zoom -
           </button>
           <button
-            onClick={() => setCropState(prev => ({ ...prev, scale: Math.min(3, prev.scale + 0.2) }))}
+            onClick={() => setScale(prev => Math.min(3, prev + 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
             🔍➕ Zoom +
           </button>
           <button
-            onClick={() => setCropState(prev => ({ ...prev, rotation: prev.rotation - 15 }))}
+            onClick={() => setRotation(prev => prev - 15)}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
             ↻ -15°
