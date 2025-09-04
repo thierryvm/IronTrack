@@ -76,7 +76,7 @@ export function ExperienceSelection({ value, onChange }: ExperienceSelectionProp
                     <CardDescription className="text-gray-700 dark:text-gray-300 mt-1">
                       {exp.description}
                     </CardDescription>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-safe-muted mt-1">
                       {exp.details}
                     </div>
                   </div>

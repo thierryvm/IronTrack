@@ -121,7 +121,7 @@ function ResetPasswordForm() {
           className="w-full max-w-md"
         >
           {/* Carte glassmorphism */}
-          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 rounded-2xl border border-white dark:border-gray-700/20 shadow-2xl overflow-hidden">
+          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /10 rounded-2xl border border-white dark:border-gray-700/20 shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent" />
             
             <div className="relative z-10 p-8">
@@ -140,7 +140,7 @@ function ResetPasswordForm() {
                     <Dumbbell className="w-8 h-8 text-white" />
                   </motion.div>
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white to-orange-100 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">
                   IronTrack
                 </h1>
                 <motion.p 
@@ -174,7 +174,7 @@ function ResetPasswordForm() {
                           type={showPassword ? 'text' : 'password'}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full px-4 py-3 pr-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 border border-white dark:border-gray-700/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+                          className="w-full px-4 py-3 pr-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                           placeholder="Au moins 8 caractères"
                           required
                           minLength={8}
@@ -200,7 +200,7 @@ function ResetPasswordForm() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`w-full px-4 py-3 bg-white dark:bg-gray-900/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
+                        className={`w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
                           confirmPassword && password !== confirmPassword
                             ? 'border-red-400/60 bg-red-500/10 focus:ring-red-400/50 focus:border-red-400/50'
                             : 'border-white dark:border-gray-700/20 focus:ring-orange-400/50 focus:border-orange-400/50'

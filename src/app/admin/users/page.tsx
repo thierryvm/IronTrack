@@ -248,10 +248,10 @@ export default function AdminUsersPage() {
   // Fonctions d'affichage
   const getRoleIcon = (role: string) => {
     const icons = {
-      'super_admin': <Crown className="h-6 w-6 text-purple-500" />,
-      'admin': <Shield className="h-6 w-6 text-red-500" />,
+      'super_admin': <Crown className="h-6 w-6 text-safe-primary" />,
+      'admin': <Shield className="h-6 w-6 text-safe-error" />,
       'moderator': <UserCheck className="h-6 w-6 text-orange-800 dark:text-orange-300" />,
-      'user': <User className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+      'user': <User className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
     }
     return icons[role as keyof typeof icons] || icons.user
   }
@@ -278,12 +278,12 @@ export default function AdminUsersPage() {
 
   const getStatusIcon = (user: AdminUser) => {
     if (user.is_banned) {
-      return <UserX className="h-6 w-6 text-red-500" />
+      return <UserX className="h-6 w-6 text-safe-error" />
     }
     if (!user.is_onboarding_complete) {
       return <Clock className="h-6 w-6 text-orange-800 dark:text-orange-300" />
     }
-    return <CheckCircle className="h-6 w-6 text-green-500" />
+    return <CheckCircle className="h-6 w-6 text-safe-success" />
   }
 
   const getStatusLabel = (user: AdminUser) => {
@@ -325,11 +325,11 @@ export default function AdminUsersPage() {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <div className="flex items-center space-x-2">
-          <AlertTriangle className="h-5 w-5 text-red-500" />
+          <AlertTriangle className="h-5 w-5 text-safe-error" />
           <p className="text-red-700">{error}</p>
           <button
             onClick={clearError}
-            className="ml-auto text-red-500 hover:text-red-700"
+            className="ml-auto text-safe-error hover:text-red-700"
           >
             <XCircle className="h-6 w-6" />
           </button>
@@ -341,7 +341,7 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3">
@@ -465,12 +465,12 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Liste des utilisateurs */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md overflow-hidden">
         {filteredAndSortedUsers.length === 0 ? (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucun utilisateur trouvé</h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-safe-muted">
               {filters.role !== 'all' || filters.status !== 'all' || filters.search 
                 ? 'Essayez de modifier vos filtres'
                 : 'Les utilisateurs apparaîtront ici'}
@@ -552,7 +552,7 @@ export default function AdminUsersPage() {
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {formatUserName(user)}
                           </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[200px]">
+                          <div className="text-xs text-gray-600 dark:text-safe-muted truncate max-w-[200px]">
                             {user.email}
                           </div>
                         </div>
@@ -584,7 +584,7 @@ export default function AdminUsersPage() {
                           <div className="text-sm text-gray-900 dark:text-gray-100">
                             {new Date(user.created_at).toLocaleDateString('fr-FR')}
                           </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                          <div className="text-xs text-gray-600 dark:text-safe-muted">
                             {new Date(user.created_at).toLocaleTimeString('fr-FR', { 
                               hour: '2-digit', 
                               minute: '2-digit' 
@@ -599,7 +599,7 @@ export default function AdminUsersPage() {
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user.total_workouts}
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">séances</div>
+                        <div className="text-xs text-gray-600 dark:text-safe-muted">séances</div>
                         {user.last_workout && (
                           <div className="text-xs text-gray-700 dark:text-gray-300 mt-1">
                             Dernier: {new Date(user.last_workout).toLocaleDateString('fr-FR')}
@@ -616,7 +616,7 @@ export default function AdminUsersPage() {
                             setSelectedUser(user)
                             setShowDetails(true)
                           }}
-                          className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-info hover:bg-blue-50 rounded-lg transition-colors"
                           title="Voir les détails"
                         >
                           <Eye className="h-6 w-6" />
@@ -648,8 +648,8 @@ export default function AdminUsersPage() {
                               }}
                               className={`p-2 rounded-lg transition-colors ${
                                 !user.is_banned
-                                  ? 'text-gray-700 dark:text-gray-300 hover:text-red-500 hover:bg-red-50'
-                                  : 'text-gray-700 dark:text-gray-300 hover:text-green-500 hover:bg-green-50'
+                                  ? 'text-gray-700 dark:text-gray-300 hover:text-safe-error hover:bg-red-50'
+                                  : 'text-gray-700 dark:text-gray-300 hover:text-safe-success hover:bg-green-50'
                               }`}
                               title={!user.is_banned ? 'Bannir' : 'Débannir'}
                             >
@@ -663,7 +663,7 @@ export default function AdminUsersPage() {
                                   setSelectedUser(user)
                                   setShowDeleteModal(true)
                                 }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-error hover:bg-red-50 rounded-lg transition-colors"
                                 title="Supprimer l'utilisateur"
                               >
                                 <Trash2 className="h-6 w-6" />
@@ -697,7 +697,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-16 lg:top-16 lg:bottom-16 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col"
+              className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-16 lg:top-16 lg:bottom-16 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl overflow-hidden flex flex-col"
             >
               {/* En-tête du modal */}
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
@@ -734,7 +734,7 @@ export default function AdminUsersPage() {
                     onClick={() => setShowDetails(false)}
                     className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors ml-4"
                   >
-                    <XCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                    <XCircle className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
                   </button>
                 </div>
               </div>
@@ -747,15 +747,15 @@ export default function AdminUsersPage() {
                     <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Informations</h3>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">ID:</span>
+                        <span className="text-sm text-gray-600 dark:text-safe-muted">ID:</span>
                         <span className="text-sm font-mono text-gray-900 dark:text-gray-100">{selectedUser.id.slice(0, 8)}...</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Statut:</span>
+                        <span className="text-sm text-gray-600 dark:text-safe-muted">Statut:</span>
                         <span className="text-sm text-gray-900 dark:text-gray-100">{getStatusLabel(selectedUser)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Inscription:</span>
+                        <span className="text-sm text-gray-600 dark:text-safe-muted">Inscription:</span>
                         <span className="text-sm text-gray-900 dark:text-gray-100">
                           {new Date(selectedUser.created_at).toLocaleDateString('fr-FR')}
                         </span>
@@ -805,7 +805,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6"
+              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl p-6"
             >
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Modifier le rôle</h3>
@@ -868,7 +868,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6"
+              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl p-6"
             >
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -951,7 +951,7 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6"
+              className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl p-6"
             >
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-red-900 mb-2">Supprimer l'utilisateur</h3>

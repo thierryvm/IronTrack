@@ -1,8 +1,8 @@
 'use client'
 
 import { ReactNode, useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { MoreVertical } from 'lucide-react'
+import { MotionWrapper } from '@/components/ui/MotionWrapper'
 
 interface DropdownAction {
   label: string
@@ -57,7 +57,7 @@ export function UnifiedCard({
   `.trim()
 
   return (
-    <motion.div
+    <MotionWrapper
       data-testid={testId}
       className={cardClasses}
       onClick={onCardClick}
@@ -86,7 +86,7 @@ export function UnifiedCard({
           {isDropdownOpen && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50"
               data-testid="card-dropdown-menu"
             >
               {actions.map((action, index) => (
@@ -118,7 +118,7 @@ export function UnifiedCard({
           )}
         </div>
       )}
-    </motion.div>
+    </MotionWrapper>
   )
 }
 

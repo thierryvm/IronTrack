@@ -205,28 +205,28 @@ export function ExerciseCard2025({
         return {
           icon: Activity,
           gradient: 'from-blue-100 to-blue-200',
-          iconColor: 'text-blue-500'
+          iconColor: 'text-safe-info'
         }
       }
       if (equipment.includes('vélo') || equipment.includes('bike')) {
         return {
           icon: Bike,
           gradient: 'from-green-100 to-green-200',
-          iconColor: 'text-green-500'
+          iconColor: 'text-safe-success'
         }
       }
       if (equipment.includes('tapis') || exerciseName.includes('course') || exerciseName.includes('marche') || exerciseName.includes('running')) {
         return {
           icon: Footprints,
           gradient: 'from-purple-100 to-purple-200',
-          iconColor: 'text-purple-500'
+          iconColor: 'text-safe-primary'
         }
       }
       // Cardio général
       return {
         icon: Heart,
         gradient: 'from-red-100 to-red-200',
-        iconColor: 'text-red-500'
+        iconColor: 'text-safe-error'
       }
     }
 
@@ -271,7 +271,7 @@ export function ExerciseCard2025({
     return {
       icon: Dumbbell,
       gradient: 'from-gray-100 to-gray-200',
-      iconColor: 'text-gray-600 dark:text-gray-400'
+      iconColor: 'text-gray-600 dark:text-safe-muted'
     }
   }
 
@@ -308,7 +308,7 @@ export function ExerciseCard2025({
             alt={`Photo de ${exercise.name}`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
+            className="object-cover object-center"
             loading={priority ? "eager" : "lazy"}
             quality={priority ? 90 : 60}
             placeholder="blur"
@@ -335,7 +335,7 @@ export function ExerciseCard2025({
           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors mb-2 line-clamp-2">
             {exercise.name}
           </h3>
-          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-safe-muted">
             {/* CORRIGÉ: Icône muscle group seulement si data disponible */}
             {exercise.muscle_group && (
               <div className="flex items-center space-x-1">
@@ -367,7 +367,7 @@ export function ExerciseCard2025({
             {formatPerformance()}
           </p>
           {lastPerformance && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center">
+            <p className="text-xs text-gray-600 dark:text-safe-muted flex items-center">
               <Calendar className="h-5 w-5 mr-1 flex-shrink-0" />
               {new Date(lastPerformance.performed_at).toLocaleDateString('fr-FR')}
             </p>
@@ -425,8 +425,8 @@ export function ExerciseCard2025({
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="p-3 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 
-                         focus:text-red-500 dark:focus:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20
+              className="p-3 text-gray-600 dark:text-gray-300 hover:text-safe-error dark:hover:text-safe-error hover:bg-red-50 dark:hover:bg-red-900/20 
+                         focus:text-safe-error dark:focus:text-safe-error focus:bg-red-50 dark:focus:bg-red-900/20
                          rounded-lg transition-all duration-200
                          focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
               aria-label={`Supprimer ${exercise.name}`}

@@ -64,7 +64,7 @@ export default function NutritionCharts({ macroData, weeklyData, showWeekly }: N
 
   if (macroData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-600 dark:text-gray-400">
+      <div className="flex items-center justify-center h-64 text-gray-600 dark:text-safe-muted">
         Aucune donnée nutritionnelle à afficher
       </div>
     )

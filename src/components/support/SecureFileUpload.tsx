@@ -267,7 +267,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
               ou <span className="text-orange-800 dark:text-orange-300 font-medium">cliquez pour sélectionner</span>
             </p>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-safe-muted">
               PNG, JPEG, GIF • Max {maxFiles} fichiers • 5MB chacun
             </p>
           </div>
@@ -316,7 +316,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <Image className="h-6 w-6 text-gray-600 dark:text-gray-400" aria-label="Icône fichier" />
+                    <Image className="h-6 w-6 text-gray-600 dark:text-safe-muted" aria-label="Icône fichier" />
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
                       {progress.fileName}
                     </span>
@@ -324,13 +324,13 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
                   
                   <div className="flex items-center space-x-2">
                     {progress.status === 'uploading' && (
-                      <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+                      <Loader2 className="h-6 w-6 text-safe-info animate-spin" />
                     )}
                     {progress.status === 'success' && (
-                      <CheckCircle className="h-6 w-6 text-green-500" />
+                      <CheckCircle className="h-6 w-6 text-safe-success" />
                     )}
                     {progress.status === 'error' && (
-                      <AlertTriangle className="h-6 w-6 text-red-500" />
+                      <AlertTriangle className="h-6 w-6 text-safe-error" />
                     )}
                     
                     <button
@@ -378,7 +378,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
       {/* Informations de sécurité */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start space-x-3">
-          <Shield className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+          <Shield className="h-5 w-5 text-safe-info flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="text-sm font-semibold text-blue-900 mb-2">
               🔒 Sécurité des fichiers

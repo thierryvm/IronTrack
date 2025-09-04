@@ -136,7 +136,7 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
                      hover:border-orange-400 hover:bg-orange-50 dark:bg-orange-900/20 transition-all duration-200
                      flex items-center justify-center gap-3 group"
         >
-          <div className="p-2 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg group-hover:bg-orange-100 transition-colors">
+          <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg group-hover:bg-orange-100 transition-colors">
             <Plus className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300" />
           </div>
           <div className="text-left">

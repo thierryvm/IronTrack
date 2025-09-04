@@ -255,10 +255,10 @@ export default function FAQPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-purple-100 rounded-xl">
-              <HelpCircle className="h-8 w-8 text-purple-500" />
+              <HelpCircle className="h-8 w-8 text-safe-primary" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Questions Fréquentes (FAQ)</h1>
@@ -268,7 +268,7 @@ export default function FAQPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-5 w-5 text-gray-700 dark:text-gray-300" />
             <input
@@ -284,7 +284,7 @@ export default function FAQPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Categories Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-4">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Catégories</h3>
               <nav className="space-y-2">
                 {categories.map((category) => {
@@ -323,12 +323,12 @@ export default function FAQPage() {
 
           {/* FAQ Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   {selectedCategory === 'all' ? 'Toutes les questions' : categories.find(c => c.id === selectedCategory)?.label}
                 </h2>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-gray-600 dark:text-safe-muted">
                   {filteredFAQ.length} question{filteredFAQ.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -336,7 +336,7 @@ export default function FAQPage() {
               {filteredFAQ.length === 0 ? (
                 <div className="text-center py-8">
                   <HelpCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-gray-600 dark:text-safe-muted mb-4">
                     {searchQuery ? 'Aucune question trouvée pour votre recherche' : 'Aucune question dans cette catégorie'}
                   </p>
                   {searchQuery && (
@@ -371,9 +371,9 @@ export default function FAQPage() {
                             {item.question}
                           </span>
                           {isOpen ? (
-                            <ChevronUp className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                            <ChevronUp className="h-5 w-5 text-gray-600 dark:text-safe-muted flex-shrink-0" aria-hidden="true" />
                           ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
+                            <ChevronDown className="h-5 w-5 text-gray-600 dark:text-safe-muted flex-shrink-0" aria-hidden="true" />
                           )}
                         </button>
                         {isOpen && (
@@ -407,7 +407,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
               >
                 Guide Complet
               </Link>

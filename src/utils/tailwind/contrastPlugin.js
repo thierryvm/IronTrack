@@ -56,8 +56,7 @@ const contrastPlugin = plugin(function({ addUtilities, theme }) {
         borderColor: theme('colors.orange.700')
       },
       '&:focus': {
-        outline: 'none',
-        boxShadow: `0 0 0 2px ${theme('colors.orange.500')}`
+        outline: 'none'
       }
     },
     
@@ -77,8 +76,7 @@ const contrastPlugin = plugin(function({ addUtilities, theme }) {
         backgroundColor: theme('colors.gray.300')
       },
       '&:focus': {
-        outline: 'none',
-        boxShadow: `0 0 0 2px ${theme('colors.gray.500')}`
+        outline: 'none'
       }
     }
   }

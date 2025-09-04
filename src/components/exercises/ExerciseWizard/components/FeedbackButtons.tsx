@@ -24,7 +24,7 @@ export const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      <span className="text-xs text-gray-600 dark:text-gray-400 mr-1">Utile ?</span>
+      <span className="text-xs text-gray-600 dark:text-safe-muted mr-1">Utile ?</span>
       
       <motion.button
         whileHover={{ scale: 1.1 }}
@@ -34,7 +34,7 @@ export const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
         className={`p-1.5 rounded-full transition-all duration-200 ${
           currentFeedback === 'helpful'
             ? 'bg-green-100 text-green-600 border border-green-200'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-green-50 hover:text-green-500'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-green-50 hover:text-safe-success'
         } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         title="Cette suggestion m'aide"
       >
@@ -49,7 +49,7 @@ export const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
         className={`p-1.5 rounded-full transition-all duration-200 ${
           currentFeedback === 'not_helpful'
             ? 'bg-red-100 text-red-600 border border-red-200'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-500'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-safe-error'
         } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         title="Cette suggestion ne m'aide pas"
       >

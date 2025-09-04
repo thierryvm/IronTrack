@@ -45,7 +45,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
       transition={{ delay, duration: 0.3 }}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4 cursor-pointer
                  hover:border-orange-300 hover:shadow-lg transition-all duration-200
                  group"
       onClick={onSelect}
@@ -56,7 +56,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
             {suggestion.type === 'Musculation' ? (
               <Dumbbell className="w-4 h-4 text-orange-800 dark:text-orange-300" />
             ) : (
-              <Clock className="w-4 h-4 text-blue-500" />
+              <Clock className="w-4 h-4 text-safe-info" />
             )}
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors">
               {suggestion.name}

@@ -223,12 +223,12 @@ export default function AdminDashboard() {
       case 'open':
         return <Clock className="h-6 w-6 text-orange-800 dark:text-orange-300" />
       case 'in_progress':
-        return <Activity className="h-6 w-6 text-blue-500" />
+        return <Activity className="h-6 w-6 text-safe-info" />
       case 'resolved':
       case 'closed':
-        return <CheckCircle className="h-6 w-6 text-green-500" />
+        return <CheckCircle className="h-6 w-6 text-safe-success" />
       default:
-        return <AlertTriangle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+        return <AlertTriangle className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
     }
   }
 
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
         {/* Stats Skeleton - Dimensions exactes */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
+            <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
               <div className="flex items-center justify-between mb-2 sm:mb-4">
                 <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-lg" />
                 <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
         </div>
         
         {/* Actions Skeleton - Dimensions fixes */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px] animate-pulse">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px] animate-pulse">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
         
         {/* Grid Sections Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
             <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
@@ -310,7 +310,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px] animate-pulse">
             <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
         </div>
         
         <div className="mt-3 sm:mt-0 flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
-          <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded-full">
+          <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-safe-muted bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded-full">
             <Shield className="h-5 w-5 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden xs:inline">{user?.role.replace('_', ' ').toUpperCase()}</span>
             <span className="xs:hidden">{user?.role === 'super_admin' ? 'S.ADM' : user?.role === 'admin' ? 'ADM' : 'MOD'}</span>
@@ -406,7 +406,7 @@ export default function AdminDashboard() {
             <div key={stat.title}>
               <Link href={stat.href}>
                 <div 
-                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 cursor-pointer min-h-[120px]"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  p-3 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 cursor-pointer min-h-[120px]"
                   style={{ minHeight: '120px' }}
                 >
                   <div className="flex items-center justify-between mb-2 sm:mb-4">
@@ -433,7 +433,7 @@ export default function AdminDashboard() {
                     <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                       {stat.value.toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                    <p className="text-xs text-gray-600 dark:text-safe-muted truncate">
                       {stat.change}
                     </p>
                   </div>
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Actions rapides - Dimensions fixes */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px]" style={{ minHeight: '200px' }}>
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[200px]" style={{ minHeight: '200px' }}>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />
           Actions Rapides
@@ -475,7 +475,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tickets récents - Dimensions fixes */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -491,7 +491,7 @@ export default function AdminDashboard() {
           
           <div className="space-y-3">
             {recentTickets.length === 0 ? (
-              <p className="text-gray-600 dark:text-gray-400 text-sm text-center py-4">
+              <p className="text-gray-600 dark:text-safe-muted text-sm text-center py-4">
                 Aucun ticket récent
               </p>
             ) : (
@@ -509,7 +509,7 @@ export default function AdminDashboard() {
                       </div>
                       {getStatusIcon(String(ticket.status || 'open'))}
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-safe-muted">
                       <span className="capitalize">{String(ticket.category || 'general')}</span>
                       <span>{new Date(String(ticket.created_at || new Date().toISOString())).toLocaleDateString('fr-FR')}</span>
                     </div>
@@ -521,7 +521,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Activité récente - Dimensions fixes */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 min-h-[300px]" style={{ minHeight: '300px' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <Activity className="h-5 w-5 mr-2" />
@@ -543,12 +543,12 @@ export default function AdminDashboard() {
             {!hasPermission('admin') ? (
               <div className="text-center py-6">
                 <Shield className="h-8 w-8 text-gray-700 dark:text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Permissions administrateur requises</p>
+                <p className="text-gray-600 dark:text-safe-muted text-sm">Permissions administrateur requises</p>
               </div>
             ) : recentActivity.length === 0 ? (
               <div className="text-center py-6">
                 <Clock className="h-8 w-8 text-gray-700 dark:text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Aucune activité dans la dernière heure</p>
+                <p className="text-gray-600 dark:text-safe-muted text-sm">Aucune activité dans la dernière heure</p>
                 <p className="text-gray-700 dark:text-gray-300 text-xs mt-1">
                   Consultez les logs complets pour plus d'historique
                 </p>
@@ -566,10 +566,10 @@ export default function AdminDashboard() {
                           {activity.action.replace(/_/g, ' ')}
                         </span>
                         {activity.target_type && (
-                          <span className="text-gray-600 dark:text-gray-400"> • {activity.target_type.replace(/_/g, ' ')}</span>
+                          <span className="text-gray-600 dark:text-safe-muted"> • {activity.target_type.replace(/_/g, ' ')}</span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                         {new Date(activity.created_at).toLocaleString('fr-FR')}
                       </p>
                     </div>

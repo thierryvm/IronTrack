@@ -279,9 +279,9 @@ export default function AdminExportsPage() {
   if (!hasPermission('admin') && !hasPermission('super_admin')) {
     return (
       <div className="text-center py-12">
-        <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+        <AlertCircle className="h-12 w-12 text-safe-error mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Accès Refusé</h3>
-        <p className="text-gray-600 dark:text-gray-400">Seuls les administrateurs peuvent exporter des données.</p>
+        <p className="text-gray-600 dark:text-safe-muted">Seuls les administrateurs peuvent exporter des données.</p>
       </div>
     )
   }
@@ -289,10 +289,10 @@ export default function AdminExportsPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-3 mb-4">
           <div className="p-2 bg-blue-100 rounded-lg">
-            <Download className="h-6 w-6 text-blue-500" />
+            <Download className="h-6 w-6 text-safe-info" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Export de Données</h1>
@@ -317,7 +317,7 @@ export default function AdminExportsPage() {
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
-                  <Users className="h-8 w-8 text-blue-500" />
+                  <Users className="h-8 w-8 text-safe-info" />
                   <div>
                     <div className="text-2xl font-bold text-blue-600">{stats.users}</div>
                     <div className="text-sm text-blue-700">Utilisateurs avec rôles</div>
@@ -328,7 +328,7 @@ export default function AdminExportsPage() {
             <Card className="bg-green-50 border-green-200">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
-                  <Database className="h-8 w-8 text-green-500" />
+                  <Database className="h-8 w-8 text-safe-success" />
                   <div>
                     <div className="text-2xl font-bold text-green-600">{stats.performance_logs}</div>
                     <div className="text-sm text-green-700">Logs de performance</div>
@@ -470,12 +470,12 @@ export default function AdminExportsPage() {
                 className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-safe-success" />
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {item.filename}
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                    <div className="text-xs text-gray-600 dark:text-safe-muted">
                       {item.count} enregistrement{item.count !== 1 ? 's' : ''} • 
                       {new Date(item.created_at).toLocaleString('fr-FR')}
                     </div>

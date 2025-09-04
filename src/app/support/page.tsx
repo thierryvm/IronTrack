@@ -11,10 +11,10 @@ export default function SupportPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-blue-100 rounded-xl">
-              <HelpCircle className="h-8 w-8 text-blue-500" />
+              <HelpCircle className="h-8 w-8 text-safe-info" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Aide & Support</h1>
@@ -26,7 +26,7 @@ export default function SupportPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-4">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Sections</h3>
               <nav className="space-y-2">
                 {[
@@ -61,7 +61,7 @@ export default function SupportPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               
               {/* Training Partners Guide */}
               {activeSection === 'partners' && (
@@ -83,17 +83,17 @@ export default function SupportPage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <UserPlus className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                          <UserPlus className="h-8 w-8 text-safe-success mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Inviter</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Envoyez des invitations à vos amis</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                          <Users className="h-8 w-8 text-safe-info mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Partager</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Partagez vos séances d'entraînement</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <Settings className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+                          <Settings className="h-8 w-8 text-safe-primary mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Contrôler</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Gérez vos paramètres de partage</p>
                         </div>
@@ -118,7 +118,7 @@ export default function SupportPage() {
                       <div className="space-y-4">
                         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                           <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
-                            <Search className="h-6 w-6 text-blue-500 mr-2" />
+                            <Search className="h-6 w-6 text-safe-info mr-2" />
                             Onglet &quot;Rechercher&quot;
                           </h4>
                           <ol className="list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-300 text-sm">
@@ -152,7 +152,7 @@ export default function SupportPage() {
                         <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
                           <h4 className="font-medium text-blue-900 mb-2">Invitations Envoyées</h4>
                           <ul className="space-y-1 text-blue-800 text-sm">
-                            <li>• Statut <Clock className="h-5 w-5 inline text-yellow-500" /> <strong>&quot;En attente&quot;</strong></li>
+                            <li>• Statut <Clock className="h-5 w-5 inline text-safe-warning" /> <strong>&quot;En attente&quot;</strong></li>
                             <li>• Vous pouvez annuler avec <X className="h-5 w-5 inline text-red-600" /></li>
                             <li>• Notification quand acceptée</li>
                           </ul>
@@ -168,7 +168,7 @@ export default function SupportPage() {
                           <h4 className="font-medium text-orange-900 mb-2">Dans le Calendrier</h4>
                           <ol className="list-decimal list-inside space-y-1 text-orange-800 dark:text-orange-300 text-sm">
                             <li>Allez dans <strong>&quot;Calendrier&quot;</strong></li>
-                            <li>Cliquez sur le bouton <Users className="h-5 w-5 inline text-blue-500" /> <strong>&quot;Partenaires&quot;</strong> en haut</li>
+                            <li>Cliquez sur le bouton <Users className="h-5 w-5 inline text-safe-info" /> <strong>&quot;Partenaires&quot;</strong> en haut</li>
                             <li>Les séances de vos partenaires apparaissent avec leurs avatars</li>
                             <li>Distinction visuelle : vos séances vs celles des partenaires</li>
                           </ol>
@@ -191,8 +191,8 @@ export default function SupportPage() {
                             <div>
                               <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">Actions disponibles :</p>
                               <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                                <li>• <Settings className="h-5 w-5 inline text-gray-600 dark:text-gray-400" /> Paramètres de partage</li>
-                                <li>• <X className="h-5 w-5 inline text-red-500" /> Supprimer le partenariat</li>
+                                <li>• <Settings className="h-5 w-5 inline text-gray-600 dark:text-safe-muted" /> Paramètres de partage</li>
+                                <li>• <X className="h-5 w-5 inline text-safe-error" /> Supprimer le partenariat</li>
                                 <li>• Voir la date de connexion</li>
                               </ul>
                             </div>
@@ -348,17 +348,17 @@ export default function SupportPage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <Target className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                          <Target className="h-8 w-8 text-safe-success mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Objectifs</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Définissez vos challenges</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <TrendingUp className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                          <TrendingUp className="h-8 w-8 text-safe-info mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Performances</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Suivez vos résultats</p>
                         </div>
                         <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <Award className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                          <Award className="h-8 w-8 text-safe-warning mx-auto mb-2" />
                           <h4 className="font-medium text-gray-900 dark:text-gray-100">Badges</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300">Débloquez des récompenses</p>
                         </div>
@@ -713,7 +713,7 @@ export default function SupportPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+        <div className="mt-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Actions Rapides</h3>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             
@@ -745,36 +745,36 @@ export default function SupportPage() {
               href="/faq" 
               className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors group"
             >
-              <HelpCircle className="h-6 w-6 text-blue-500" />
+              <HelpCircle className="h-6 w-6 text-safe-info" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">FAQ</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Questions fréquentes</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-blue-500" />
+              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-safe-info" />
             </Link>
 
             <Link 
               href="/progress" 
               className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors group"
             >
-              <TrendingUp className="h-6 w-6 text-purple-500" />
+              <TrendingUp className="h-6 w-6 text-safe-primary" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">Progression</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Objectifs & badges</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-purple-500" />
+              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-safe-primary" />
             </Link>
 
             <Link 
               href="/profile" 
               className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-green-50 hover:border-green-200 transition-colors group"
             >
-              <Settings className="h-6 w-6 text-green-500" />
+              <Settings className="h-6 w-6 text-safe-success" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">Paramètres</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Gérer votre profil</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-green-500" />
+              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-safe-success" />
             </Link>
 
             <Link 

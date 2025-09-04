@@ -37,7 +37,7 @@ export function FormField({
     <div className={cn('space-y-1.5', className)} {...props}>
       <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-safe-error ml-1">*</span>}
       </Label>
       
       <div className="relative">
@@ -45,7 +45,7 @@ export function FormField({
       </div>
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+        <p className="text-sm text-red-600 dark:text-safe-error mt-1" role="alert">
           {error}
         </p>
       )}
@@ -69,7 +69,7 @@ export const FORM_FIELD_CLASSES = {
   base: "h-10 px-3 py-2",
   
   // Typography cohérente avec le design de référence
-  text: "text-base placeholder:text-gray-600 dark:text-gray-400",
+  text: "text-base placeholder:text-gray-600 dark:text-safe-muted",
   
   // États interactifs - focus orange matching screenshot
   focus: "focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-600",

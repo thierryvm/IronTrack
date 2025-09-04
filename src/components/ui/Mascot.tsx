@@ -261,8 +261,8 @@ export default function Mascot({ message, type = 'motivation', show = false, onC
 
             {/* Boutons interactifs */}
             <div className="flex gap-2 mb-2 max-sm:gap-1">
-              <button onClick={handleJoke} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
-              <button onClick={handleAdvice} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
+              <button onClick={handleJoke} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Blague</button>
+              <button onClick={handleAdvice} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-2 py-2 rounded hover:bg-orange-100 text-xs font-bold max-sm:px-3 max-sm:py-0.5 max-sm:text-[11px]">Conseil</button>
             </div>
 
             {/* Boutons fermer/masquer */}
@@ -354,7 +354,7 @@ export function MascotGlobal() {
     <ClientOnly>
       {minimized ? (
         <div className="fixed bottom-20 right-4 z-[60] cursor-pointer md:bottom-4" onClick={handleRestore} title="Afficher la mascotte">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-full shadow-2xl p-3 flex items-center justify-center border-2 border-orange-400 hover:scale-110 transition-transform">
             <Dumbbell className="h-6 w-6 text-orange-800 dark:text-orange-300" />
           </div>
         </div>

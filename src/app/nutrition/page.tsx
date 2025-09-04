@@ -17,14 +17,14 @@ import { Label } from '@/components/ui/label'
 const RecipeLibrary = dynamic(() => import('@/components/nutrition/RecipeLibrary'), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-96 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-gray-400">Chargement de la bibliothèque...</span>
+    <span className="text-gray-600 dark:text-safe-muted">Chargement de la bibliothèque...</span>
   </div>
 })
 
 const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMealModal'), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-gray-400">Chargement du modal...</span>
+    <span className="text-gray-600 dark:text-safe-muted">Chargement du modal...</span>
   </div>
 })
 
@@ -32,7 +32,7 @@ const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMea
 const NutritionCharts = dynamic(() => import('@/components/nutrition/NutritionCharts'), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-gray-400">Chargement des graphiques...</span>
+    <span className="text-gray-600 dark:text-safe-muted">Chargement des graphiques...</span>
   </div>
 })
 
@@ -369,7 +369,7 @@ export default function NutritionPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Protéines</h3>
-                <p className="text-3xl font-bold text-blue-500">{Math.round(todayNutrition.protein * 10) / 10}</p>
+                <p className="text-3xl font-bold text-safe-info">{Math.round(todayNutrition.protein * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.protein}g</p>
               </div>
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
@@ -390,7 +390,7 @@ export default function NutritionPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Glucides</h3>
-                <p className="text-3xl font-bold text-green-500">{Math.round(todayNutrition.carbs * 10) / 10}</p>
+                <p className="text-3xl font-bold text-safe-success">{Math.round(todayNutrition.carbs * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.carbs}g</p>
               </div>
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -411,7 +411,7 @@ export default function NutritionPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Lipides</h3>
-                <p className="text-3xl font-bold text-yellow-500">{Math.round(todayNutrition.fat * 10) / 10}</p>
+                <p className="text-3xl font-bold text-safe-warning">{Math.round(todayNutrition.fat * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.fat}g</p>
               </div>
               <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -454,14 +454,14 @@ export default function NutritionPage() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Évolution hebdomadaire</h3>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-gray-600 dark:text-safe-muted">
                     {weeklyData.reduce((total, day) => total + day.mealsCount, 0)} repas cette semaine
                   </div>
                 </div>
                 
                 <NutritionCharts macroData={[]} weeklyData={weeklyData} showWeekly={true} />
                 
-                <div className="mt-4 text-xs text-gray-600 dark:text-gray-400 text-center">
+                <div className="mt-4 text-xs text-gray-600 dark:text-safe-muted text-center">
                   💡 Ce graphique montre vos apports nutritionnels de la semaine. Les jours avec plus de repas indiquent une meilleure régularité.
                 </div>
               </CardContent>
@@ -480,7 +480,7 @@ export default function NutritionPage() {
             <div className="flex items-center space-x-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Repas du jour</h2>
               <div className="flex items-center space-x-2">
-                <Calendar className="h-6 w-6 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                <Calendar className="h-6 w-6 text-gray-600 dark:text-safe-muted" aria-hidden="true" />
                 <Label htmlFor="nutrition-date" className="sr-only">
                   Sélectionner la date pour voir les repas
                 </Label>
@@ -545,7 +545,7 @@ export default function NutritionPage() {
                           <div className="flex items-center space-x-3">
                             <div className="text-right">
                               <div className="font-medium text-orange-800 dark:text-orange-300">{Math.round(meal.calories)} kcal</div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                              <div className="text-xs text-gray-600 dark:text-safe-muted">
                                 P: {Math.round(meal.protein * 10) / 10}g • 
                                 G: {Math.round(meal.carbs * 10) / 10}g • 
                                 L: {Math.round(meal.fat * 10) / 10}g
@@ -555,7 +555,7 @@ export default function NutritionPage() {
                               onClick={() => deleteMeal(meal.id)}
                               variant="ghost"
                               size="sm"
-                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                              className="p-1.5 text-safe-error hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                               title="Supprimer ce repas"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -565,7 +565,7 @@ export default function NutritionPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                    <div className="text-center py-8 text-gray-600 dark:text-safe-muted">
                       <div className="text-4xl mb-2">🍽️</div>
                       <p className="text-sm">Aucun repas pour {mealType.name.toLowerCase()}</p>
                       <p className="text-xs mt-1">Cliquez sur &quot;Ajouter&quot; pour commencer</p>

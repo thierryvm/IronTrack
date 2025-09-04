@@ -64,7 +64,7 @@ export function OnboardingWrapper({ onComplete }: OnboardingWrapperProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       {isReturningUser ? (
         <div className="w-full max-w-2xl">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl p-8 text-center mb-6">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl p-8 text-center mb-6">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mb-4">
               <span className="text-2xl">👋</span>
             </div>

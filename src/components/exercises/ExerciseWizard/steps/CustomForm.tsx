@@ -28,7 +28,7 @@ const FormField: React.FC<FormFieldProps> = ({
   <div className="space-y-2">
     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
       {label}
-      {required && <span className="text-red-500 ml-1">*</span>}
+      {required && <span className="text-safe-error ml-1">*</span>}
     </label>
     {type === 'select' ? (
       <select
@@ -304,7 +304,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           <span className={`text-sm font-medium ${getCompletionColor(completionScore)}`}>
             Profil exercice: {completionScore}% complet
           </span>
-          {completionScore >= 95 && <span className="text-green-500">✨</span>}
+          {completionScore >= 95 && <span className="text-safe-success">✨</span>}
         </div>
       </motion.div>
 
@@ -379,7 +379,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           transition={{ delay: 0.4 }}
         >
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-            Difficulté <span className="text-red-500">*</span>
+            Difficulté <span className="text-safe-error">*</span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {difficulties.map(difficulty => (
@@ -466,7 +466,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
             onChange={(value) => setFormData({...formData, description: value as string})}
             placeholder="Décris brièvement l'exercice..."
           />
-          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
             Une courte description aidera à identifier rapidement l'exercice
           </div>
         </motion.div>
@@ -488,7 +488,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 transition-colors resize-none"
               maxLength={500}
             />
-            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex justify-between text-xs text-gray-600 dark:text-safe-muted">
               <span>Ces instructions aideront les utilisateurs à bien exécuter l'exercice</span>
               <span>{(formData.instructions || '').length}/500</span>
             </div>

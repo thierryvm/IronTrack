@@ -152,7 +152,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={handleClose} />
       
-      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -169,7 +169,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail }: EmailChangeM
             onClick={handleClose}
             className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <X className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
           </button>
         </div>
 

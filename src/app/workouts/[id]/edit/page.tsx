@@ -115,12 +115,12 @@ export default function EditWorkoutPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center space-x-2 text-orange-800 dark:text-orange-300 hover:text-orange-800 dark:text-orange-300 font-semibold mb-4"
+          className="flex items-center space-x-2 text-orange-800 dark:text-orange-300 hover:text-orange-900 dark:hover:text-orange-200 font-semibold mb-4"
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Retour</span>
@@ -203,7 +203,7 @@ export default function EditWorkoutPage() {
         </div>
         <div>
           <Label htmlFor="workout-duration" className="block font-medium mb-2">
-            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-600 dark:text-gray-400">(optionnel pour les jours de repos)</span>}
+            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-600 dark:text-safe-muted">(optionnel pour les jours de repos)</span>}
           </Label>
           <Input
             id="workout-duration"

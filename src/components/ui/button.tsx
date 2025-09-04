@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
+// MotionWrapper supprimé pour éviter erreurs Framer Motion
 
 import { cn } from "@/lib/utils"
 
@@ -11,20 +11,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Bouton principal - Style IronTrack (comme page d'accueil)
-        default: "bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white hover:from-orange-600 hover:to-red-600 focus:from-orange-600 focus:to-red-600 shadow-md hover:shadow-lg",
-        // Bouton secondaire
-        secondary: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 focus:bg-gray-200 dark:bg-gray-700",
-        // Bouton danger
-        destructive: "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-md hover:shadow-lg",
-        // Bouton contour
-        outline: "border border-gray-300 dark:border-gray-600 bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 hover:border-gray-400",
-        // Bouton ghost
-        ghost: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-gray-100",
-        // Bouton succès
-        success: "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg",
-        // Bouton lien
-        link: "text-orange-800 dark:text-orange-300 underline-offset-4 hover:underline",
+        // BOUTON PRIMAIRE - Actions principales (WCAG AAA)
+        default: "bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-900 dark:hover:bg-slate-600 shadow-md hover:shadow-lg",
+        // BOUTON SECONDAIRE - Actions secondaires (WCAG AAA)
+        secondary: "bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm hover:shadow-md",
+        // BOUTON DANGER
+        destructive: "bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600 shadow-md hover:shadow-lg",
+        // BOUTON OUTLINE - Sur fonds colorés (WCAG AA)
+        outline: "bg-white/10 text-white border border-white/30 backdrop-blur-sm hover:bg-white/20 hover:border-white/40 shadow-sm hover:shadow-md",
+        // BOUTON GHOST
+        ghost: "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100",
+        // BOUTON SUCCÈS
+        success: "bg-green-600 dark:bg-green-700 text-white hover:bg-green-700 dark:hover:bg-green-600 shadow-md hover:shadow-lg",
+        // BOUTON ORANGE - Actions principales IronTrack
+        orange: "bg-orange-600 dark:bg-orange-600 text-white hover:bg-orange-700 dark:hover:bg-orange-700 shadow-md hover:shadow-lg",
+        // BOUTON LIEN
+        link: "text-slate-800 dark:text-slate-300 underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-10 px-3 py-2 text-xs",     // 40px minimum
@@ -56,33 +58,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
     
     return (
-      <motion.div
-        whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
-        whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
-        className={fullWidth ? 'w-full' : 'w-auto'}
+      <Comp
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          fullWidth && 'w-full'
+        )}
+        ref={ref}
+        disabled={disabled || loading}
+        {...props}
       >
-        <Comp
-          className={cn(
-            buttonVariants({ variant, size, className }),
-            fullWidth && 'w-full'
-          )}
-          ref={ref}
-          disabled={disabled || loading}
-          {...props}
-        >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              {children && <span>Chargement...</span>}
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              {icon && <span className="flex-shrink-0">{icon}</span>}
-              {children}
-            </span>
-          )}
-        </Comp>
-      </motion.div>
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            {children && <span>Chargement...</span>}
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            {icon && <span className="flex-shrink-0">{icon}</span>}
+            {children}
+          </span>
+        )}
+      </Comp>
     )
   }
 )

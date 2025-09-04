@@ -454,7 +454,7 @@ export default function TrainingPartnersPage() {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <a 
                       href="/support" 
-                      className="flex-1 sm:flex-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
+                      className="flex-1 sm:flex-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-blue-600 dark:text-safe-info px-6 py-3 rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
                     >
                       Guide complet
                     </a>
@@ -566,7 +566,7 @@ export default function TrainingPartnersPage() {
                             />
                             <div>
                               <p className="font-medium text-gray-900 dark:text-gray-100">{getDisplayName(partner)}</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                              <p className="text-sm text-gray-600 dark:text-safe-muted">
                                 Partenaires depuis {new Date(partnership.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -585,7 +585,7 @@ export default function TrainingPartnersPage() {
                               onClick={() => handlePartnership(partnership.id, 'remove')}
                               variant="ghost"
                               size="sm"
-                              className="p-2 text-red-400 hover:text-red-600"
+                              className="p-2 text-safe-error hover:text-red-600"
                               title="Supprimer le partenariat"
                             >
                               <Trash2 className="h-5 w-5" />
@@ -608,7 +608,7 @@ export default function TrainingPartnersPage() {
                     Invitations Reçues ({pendingInvitations.length})
                   </h2>
                   {pendingInvitations.length === 0 ? (
-                    <p className="text-gray-600 dark:text-gray-400 py-4">Aucune invitation en attente</p>
+                    <p className="text-gray-600 dark:text-safe-muted py-4">Aucune invitation en attente</p>
                   ) : (
                     <div className="space-y-4">
                       {pendingInvitations.map((invitation) => (
@@ -626,7 +626,7 @@ export default function TrainingPartnersPage() {
                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                   {getDisplayName(invitation.requester)}
                                 </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-gray-600 dark:text-safe-muted">
                                   Invitation envoyée le {new Date(invitation.created_at).toLocaleDateString()}
                                 </p>
                                 {invitation.message && (
@@ -639,7 +639,7 @@ export default function TrainingPartnersPage() {
                             <div className="flex items-center space-x-2">
                               <Button
                                 onClick={() => handlePartnership(invitation.id, 'accept')}
-                                className="bg-green-500 hover:bg-green-600 text-white min-h-[44px]"
+                                className="bg-orange-600 hover:bg-orange-700 text-white min-h-[44px]"
                                 aria-label={`Accepter l'invitation de ${getDisplayName(invitation.requester)}`}
                               >
                                 <Check className="h-4 w-4 mr-1" />
@@ -668,7 +668,7 @@ export default function TrainingPartnersPage() {
                     Invitations Envoyées ({sentInvitations.length})
                   </h2>
                   {sentInvitations.length === 0 ? (
-                    <p className="text-gray-600 dark:text-gray-400 py-4">Aucune invitation envoyée</p>
+                    <p className="text-gray-600 dark:text-safe-muted py-4">Aucune invitation envoyée</p>
                   ) : (
                     <div className="space-y-4">
                       {sentInvitations.map((invitation) => (
@@ -686,7 +686,7 @@ export default function TrainingPartnersPage() {
                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                   {getDisplayName(invitation.partner)}
                                 </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-1">
+                                <p className="text-sm text-gray-600 dark:text-safe-muted flex items-center space-x-1">
                                   <Clock className="h-6 w-6" />
                                   <span>En attente depuis le {new Date(invitation.created_at).toLocaleDateString()}</span>
                                 </p>
@@ -696,7 +696,7 @@ export default function TrainingPartnersPage() {
                               onClick={() => handlePartnership(invitation.id, 'cancel')}
                               variant="ghost"
                               size="sm"
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50 min-h-[44px] min-w-[44px]"
+                              className="text-safe-error hover:text-red-700 hover:bg-red-50 min-h-[44px] min-w-[44px]"
                               aria-label={`Annuler l'invitation envoyée à ${getDisplayName(invitation.partner)}`}
                             >
                               <X className="h-5 w-5" />
@@ -744,11 +744,11 @@ export default function TrainingPartnersPage() {
                         aria-describedby="search-help"
                         aria-label="Rechercher des partenaires par email ou pseudo"
                       />
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-safe-muted" />
                     </div>
                   </div>
                   <Alert id="search-help" className="mt-2 bg-blue-50/80 border-blue-200">
-                    <Info className="h-5 w-5 text-blue-500" />
+                    <Info className="h-5 w-5 text-safe-info" />
                     <AlertDescription className="text-blue-700">
                       <p className="font-medium mb-1">Recherche sécurisée :</p>
                       <ul className="list-disc list-inside space-y-1 text-xs">
@@ -780,7 +780,7 @@ export default function TrainingPartnersPage() {
                           />
                           <div>
                             <p className="font-medium text-gray-900 dark:text-gray-100">{user.displayName}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                            <p className="text-sm text-gray-600 dark:text-safe-muted">{user.email}</p>
                             {user.pseudo && user.pseudo !== user.displayName && (
                               <p className="text-xs text-blue-600">Pseudo: {user.pseudo}</p>
                             )}
@@ -822,7 +822,7 @@ export default function TrainingPartnersPage() {
                 )}
 
                 {searchQuery.length >= 2 && !searchLoading && searchResults.length === 0 && (
-                  <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+                  <p className="text-gray-600 dark:text-safe-muted text-center py-8">
                     Aucun utilisateur trouvé pour &ldquo;{searchQuery}&rdquo;
                   </p>
                 )}

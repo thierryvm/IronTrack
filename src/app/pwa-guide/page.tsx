@@ -307,22 +307,22 @@ export default function PWAGuidePage() {
 
   const benefits = [
     {
-      icon: <Zap className="h-6 w-6 text-yellow-500" />,
+      icon: <Zap className="h-6 w-6 text-safe-warning" />,
       title: 'Performance Optimale',
       description: 'Chargement instantané et expérience fluide comme une app native'
     },
     {
-      icon: <Wifi className="h-6 w-6 text-blue-500" />,
+      icon: <Wifi className="h-6 w-6 text-safe-info" />,
       title: 'Fonctionnement Hors-ligne',
       description: 'Consultez vos données même sans connexion internet'
     },
     {
-      icon: <Bell className="h-6 w-6 text-green-500" />,
+      icon: <Bell className="h-6 w-6 text-safe-success" />,
       title: 'Notifications Push',
       description: 'Recevez des rappels d\'entraînement directement sur votre appareil'
     },
     {
-      icon: <Home className="h-6 w-6 text-purple-500" />,
+      icon: <Home className="h-6 w-6 text-safe-primary" />,
       title: 'Accès Rapide',
       description: 'Icône sur votre écran d\'accueil pour un lancement en un tap'
     }
@@ -339,7 +339,7 @@ export default function PWAGuidePage() {
             className="text-center"
           >
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-xl backdrop-blur-sm">
+              <div className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-xl backdrop-blur-sm">
                 <Download className="h-8 w-8" />
               </div>
             </div>
@@ -372,7 +372,7 @@ export default function PWAGuidePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center mb-4">
                   {benefit.icon}
@@ -424,7 +424,7 @@ export default function PWAGuidePage() {
           key={selectedDevice}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 sm:p-8"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 sm:p-8"
         >
           <div className="flex items-center mb-6">
             <div className={`p-3 rounded-lg bg-gradient-to-r ${selectedGuide.color} text-white mr-4`}>
@@ -485,7 +485,7 @@ export default function PWAGuidePage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
+                      className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-t border-gray-200 dark:border-gray-700"
                     >
                       <div className="flex items-start">
                         <div className="p-2 bg-orange-100 rounded-lg mr-4 flex-shrink-0">
@@ -540,7 +540,7 @@ export default function PWAGuidePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors inline-flex items-center justify-center"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors inline-flex items-center justify-center"
               >
                 <Home className="h-5 w-5 mr-2" />
                 Retour à l'accueil

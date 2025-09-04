@@ -137,7 +137,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-8 text-center ${className}`}
       >
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Send className="h-8 w-8 text-green-500" />
+          <Send className="h-8 w-8 text-safe-success" />
         </div>
         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Ticket envoyé avec succès !</h3>
         <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -208,7 +208,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             placeholder="Décrivez brièvement votre problème..."
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{title.length}/200 caractères</p>
+          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{title.length}/200 caractères</p>
         </div>
 
         {/* Description */}
@@ -225,7 +225,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             placeholder="Décrivez votre problème en détail. Plus vous donnez d'informations, plus nous pourrons vous aider efficacement..."
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
           />
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{description.length} caractères</p>
+          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{description.length} caractères</p>
         </div>
 
         {/* Upload d'images */}
@@ -262,7 +262,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
                           {attachment.originalName}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                        <p className="text-xs text-gray-600 dark:text-safe-muted">
                           {(attachment.size / 1024 / 1024).toFixed(1)}MB • {attachment.type}
                         </p>
                       </div>
@@ -272,7 +272,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                       onClick={() => {
                         setAttachments(prev => prev.filter(a => a.id !== attachment.id))
                       }}
-                      className="text-gray-700 dark:text-gray-300 hover:text-red-500 p-1"
+                      className="text-gray-700 dark:text-gray-300 hover:text-safe-error p-1"
                       aria-label="Supprimer fichier"
                     >
                       <Send className="h-6 w-6 rotate-45" />
@@ -287,7 +287,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         {/* Informations automatiques */}
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <div className="flex items-start space-x-2">
-            <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+            <Info className="h-5 w-5 text-safe-info flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Informations techniques automatiques</p>
               <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -302,7 +302,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">
             <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-safe-error" />
               <p className="text-red-800 text-sm">{error}</p>
             </div>
           </div>

@@ -94,7 +94,7 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="170"
               />
-              <span className="text-gray-600 dark:text-gray-400 font-medium">cm</span>
+              <span className="text-gray-600 dark:text-safe-muted font-medium">cm</span>
             </div>
           </CardContent>
         </Card>
@@ -120,7 +120,7 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="70"
               />
-              <span className="text-gray-600 dark:text-gray-400 font-medium">kg</span>
+              <span className="text-gray-600 dark:text-safe-muted font-medium">kg</span>
             </div>
           </CardContent>
         </Card>
@@ -145,7 +145,7 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="25"
               />
-              <span className="text-gray-600 dark:text-gray-400 font-medium">ans</span>
+              <span className="text-gray-600 dark:text-safe-muted font-medium">ans</span>
             </div>
           </CardContent>
         </Card>
@@ -172,9 +172,9 @@ export function PhysicalInfoSelection({ value, onChange }: PhysicalInfoSelection
                   className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="75"
                 />
-                <span className="text-gray-600 dark:text-gray-400 font-medium">kg</span>
+                <span className="text-gray-600 dark:text-safe-muted font-medium">kg</span>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+              <p className="text-xs text-gray-600 dark:text-safe-muted">
                 Votre poids au début de votre parcours fitness
               </p>
             </div>

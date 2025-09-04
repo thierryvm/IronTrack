@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
         >
           {/* Bouton de retour */}
           <button

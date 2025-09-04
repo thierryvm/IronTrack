@@ -61,7 +61,7 @@ export default function UnifiedMealModal({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+          className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -74,7 +74,7 @@ export default function UnifiedMealModal({
                 onClick={handleClose}
                 className="p-1 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                <X className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
               </button>
             </div>
             
@@ -313,7 +313,7 @@ function ManualMealForm({
           placeholder="Ex: Salade de poulet"
           maxLength={100}
         />
-        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+        {errors.name && <p className="text-safe-error text-xs mt-1">{errors.name}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -345,7 +345,7 @@ function ManualMealForm({
               <option value="cuillère">cuillère</option>
             </select>
           </div>
-          {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
+          {errors.quantity && <p className="text-safe-error text-xs mt-1">{errors.quantity}</p>}
         </div>
 
         <div>
@@ -363,7 +363,7 @@ function ManualMealForm({
             max="5000"
             step="0.1"
           />
-          {errors.calories && <p className="text-red-500 text-xs mt-1">{errors.calories}</p>}
+          {errors.calories && <p className="text-safe-error text-xs mt-1">{errors.calories}</p>}
         </div>
       </div>
 
@@ -383,7 +383,7 @@ function ManualMealForm({
             max="500"
             step="0.1"
           />
-          {errors.protein && <p className="text-red-500 text-xs mt-1">{errors.protein}</p>}
+          {errors.protein && <p className="text-safe-error text-xs mt-1">{errors.protein}</p>}
         </div>
 
         <div>
@@ -401,7 +401,7 @@ function ManualMealForm({
             max="500"
             step="0.1"
           />
-          {errors.carbs && <p className="text-red-500 text-xs mt-1">{errors.carbs}</p>}
+          {errors.carbs && <p className="text-safe-error text-xs mt-1">{errors.carbs}</p>}
         </div>
 
         <div>
@@ -419,7 +419,7 @@ function ManualMealForm({
             max="200"
             step="0.1"
           />
-          {errors.fat && <p className="text-red-500 text-xs mt-1">{errors.fat}</p>}
+          {errors.fat && <p className="text-safe-error text-xs mt-1">{errors.fat}</p>}
         </div>
       </div>
 
@@ -616,11 +616,11 @@ function MultiIngredientMealBuilder({
                     min="1"
                     max="10000"
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">g</span>
+                  <span className="text-sm text-gray-600 dark:text-safe-muted">g</span>
                   <button
                     type="button"
                     onClick={() => removeIngredient(ingredient.id)}
-                    className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                    className="p-1 text-safe-error hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
                     <Trash2 className="h-6 w-6" />
                   </button>

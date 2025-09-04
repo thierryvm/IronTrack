@@ -230,7 +230,7 @@ export function PerformanceDisplay({
   if (metrics.length === 0) {
     return (
       <div 
-        className={`text-gray-600 dark:text-gray-400 italic ${getVariantClasses()} ${className}`}
+        className={`text-gray-600 dark:text-safe-muted italic ${getVariantClasses()} ${className}`}
         data-testid={testId}
       >
         Aucune métrique enregistrée
@@ -281,7 +281,7 @@ export function PerformanceDisplay({
       {(variant === 'card' || variant === 'detailed') && (
         <div className="mt-3 space-y-2">
           {showDate && (
-            <div className="flex items-center space-x-2 text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-xs text-gray-600 dark:text-safe-muted">
               <Calendar className="h-5 w-5 flex-shrink-0" />
               <span>{formatDate(performance.performed_at)}</span>
             </div>
@@ -297,7 +297,7 @@ export function PerformanceDisplay({
 
       {/* Date inline pour variante standard */}
       {variant === 'inline' && showDate && (
-        <div className="flex items-center space-x-1 text-xs text-gray-600 dark:text-gray-400 mt-1">
+        <div className="flex items-center space-x-1 text-xs text-gray-600 dark:text-safe-muted mt-1">
           <Calendar className="h-5 w-5 flex-shrink-0" />
           <span>{formatDate(performance.performed_at)}</span>
         </div>

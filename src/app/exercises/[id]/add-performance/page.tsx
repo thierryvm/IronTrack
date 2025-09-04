@@ -154,7 +154,7 @@ export default function AddPerformancePage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <div className="text-red-500 mb-4 font-medium">Erreur: {error}</div>
+          <div className="text-safe-error mb-4 font-medium">Erreur: {error}</div>
           <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
           </Button>
@@ -186,7 +186,7 @@ export default function AddPerformancePage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
+        className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -208,7 +208,7 @@ export default function AddPerformancePage() {
                   )}
                   Nouvelle performance
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{exercise.name}</p>
+                <p className="text-sm text-gray-600 dark:text-safe-muted">{exercise.name}</p>
               </div>
             </div>
           </div>

@@ -261,7 +261,7 @@ export default function ExercisesPageOptimized() {
               <p className="text-white/90 max-sm:text-sm">Gestion et suivi de vos exercices ({totalCount} total)</p>
             </div>
             <div className="flex items-center space-x-3">
-              <Button asChild className="bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 text-white">
+              <Button asChild variant="outline">
                 <Link href="/exercises/new" className="flex items-center space-x-2 max-sm:px-3 max-sm:py-2 max-sm:text-sm">
                   <Plus className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
                   <span>Nouvel exercice</span>
@@ -289,7 +289,7 @@ export default function ExercisesPageOptimized() {
                   placeholder="Rechercher un exercice..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-orange-500 dark:focus:border-orange-400"
+                  className="w-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:focus:border-orange-400"
                   aria-label="Rechercher un exercice par nom, groupe musculaire ou équipement"
                 />
               </div>
@@ -299,9 +299,9 @@ export default function ExercisesPageOptimized() {
                 <Button
                   key={group}
                   onClick={() => setSelectedMuscleGroup(group)}
-                  variant={selectedMuscleGroup === group ? "default" : "outline"}
+                  variant={selectedMuscleGroup === group ? "default" : "secondary"}
                   size="sm"
-                  className={selectedMuscleGroup === group ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+                  className={selectedMuscleGroup === group ? "bg-orange-600 hover:bg-orange-700 text-white" : "border-orange-200 text-orange-700 hover:bg-orange-50"}
                   aria-pressed={selectedMuscleGroup === group}
                   aria-label={`Filtrer par ${group}${selectedMuscleGroup === group ? ' (actif)' : ''}`}
                 >
@@ -397,7 +397,7 @@ export default function ExercisesPageOptimized() {
             </Button>
             <Button
               onClick={cancelDeleteExercise}
-              variant="outline"
+              variant="secondary"
               className="flex-1"
             >
               Annuler

@@ -41,7 +41,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
@@ -82,7 +82,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {hasExactMatch && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <Check className="w-4 h-4 text-red-500" />
+                    <Check className="w-4 h-4 text-safe-error" />
                     Correspondance exacte
                   </h3>
                   {duplicateResult.exactMatches.map((exercise) => (
@@ -155,7 +155,7 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
               {duplicateResult.suggestions.renameOptions.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <Edit3 className="w-4 h-4 text-green-500" />
+                    <Edit3 className="w-4 h-4 text-safe-success" />
                     Suggestions de noms alternatifs
                   </h3>
                   <div className="grid gap-2">

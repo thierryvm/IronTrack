@@ -230,7 +230,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Résultats de recherche */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {results.map((food, index) => (
               <button
                 key={`${food.id}-${index}-${food.name}`}
@@ -265,7 +265,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
                     </h4>
                     
                     {food.brand && (
-                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-1">
+                      <p className="text-xs text-gray-600 dark:text-safe-muted truncate mt-1">
                         {food.brand}
                       </p>
                     )}
@@ -286,7 +286,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
             
             {/* Footer avec attribution OpenFoodFacts */}
             <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-xs text-gray-600 dark:text-safe-muted text-center">
                 Données fournies par{' '}
                 <a 
                   href="https://world.openfoodfacts.org" 
@@ -303,7 +303,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Message aucun résultat */}
       {isOpen && !isLoading && results.length === 0 && query.length >= 2 && (
-        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 text-center text-gray-600 dark:text-gray-400">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 text-center text-gray-600 dark:text-safe-muted">
           <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
           <p className="text-sm">Aucun aliment trouvé pour &quot;{query}&quot;</p>
           <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">

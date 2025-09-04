@@ -169,7 +169,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
         >
-          <CheckCircle className="h-10 w-10 text-green-500" />
+          <CheckCircle className="h-10 w-10 text-safe-success" />
         </motion.div>
         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Ticket envoyé avec succès !</h3>
         <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -214,9 +214,9 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
           <div>
             <div className="space-y-2">
               <Label htmlFor="category" className="text-sm font-medium">
-                Type de demande <span className="text-red-500">*</span>
+                Type de demande <span className="text-safe-error">*</span>
               </Label>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Sélectionnez la catégorie qui correspond le mieux à votre demande</p>
+              <p className="text-xs text-gray-600 dark:text-safe-muted">Sélectionnez la catégorie qui correspond le mieux à votre demande</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(Object.entries(categoryConfig) as [SupportTicketCategory, typeof categoryConfig[SupportTicketCategory]][]).map(([category, config]) => {
                   const Icon = config.icon
@@ -249,7 +249,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
           {/* Titre */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-sm font-medium">
-              Titre de votre demande <span className="text-red-500">*</span>
+              Titre de votre demande <span className="text-safe-error">*</span>
             </Label>
             <Input
               id="title"
@@ -260,15 +260,15 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
               className={errors.title ? "border-red-500" : ""}
             />
             <div className="flex justify-between text-xs">
-              <span className="text-red-500">{errors.title}</span>
-              <span className="text-gray-600 dark:text-gray-400">{title.length}/200 caractères</span>
+              <span className="text-safe-error">{errors.title}</span>
+              <span className="text-gray-600 dark:text-safe-muted">{title.length}/200 caractères</span>
             </div>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description détaillée <span className="text-red-500">*</span>
+              Description détaillée <span className="text-safe-error">*</span>
             </Label>
             <Textarea
               id="description"
@@ -279,15 +279,15 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
               className={errors.description ? "border-red-500 resize-y" : "resize-y"}
             />
             <div className="flex justify-between text-xs">
-              <span className="text-red-500">{errors.description}</span>
-              <span className="text-gray-600 dark:text-gray-400">{description.length} caractères - Plus vous donnez d'informations, plus nous pourrons vous aider efficacement</span>
+              <span className="text-safe-error">{errors.description}</span>
+              <span className="text-gray-600 dark:text-safe-muted">{description.length} caractères - Plus vous donnez d'informations, plus nous pourrons vous aider efficacement</span>
             </div>
           </div>
 
           {/* Upload d'images */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Images et captures d'écran</Label>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Ajoutez des captures d'écran pour nous aider à mieux comprendre votre problème (optionnel)</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted">Ajoutez des captures d'écran pour nous aider à mieux comprendre votre problème (optionnel)</p>
             <div className="space-y-4">
               <SecureFileUpload
                 onUploadComplete={(newAttachments) => {
@@ -321,7 +321,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
                               {attachment.originalName}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                            <p className="text-xs text-gray-600 dark:text-safe-muted">
                               {(attachment.size / 1024 / 1024).toFixed(1)}MB • {attachment.type}
                             </p>
                           </div>
@@ -332,7 +332,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
                           onClick={() => {
                             setAttachments(prev => prev.filter(a => a.id !== attachment.id))
                           }}
-                          className="text-gray-700 dark:text-gray-300 hover:text-red-500"
+                          className="text-gray-700 dark:text-gray-300 hover:text-safe-error"
                           aria-label="Supprimer fichier"
                         >
                           <Send className="h-6 w-6 rotate-45" />
@@ -348,7 +348,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
           {/* Informations automatiques */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <div className="flex items-start space-x-3">
-              <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <Info className="h-5 w-5 text-safe-info flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-blue-900 mb-1">Informations techniques automatiques</p>
                 <p className="text-xs text-blue-700 leading-relaxed">
@@ -367,7 +367,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
               className="bg-red-50 border border-red-200 rounded-xl p-4"
             >
               <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-safe-error flex-shrink-0" />
                 <p className="text-red-800 text-sm font-medium">{error}</p>
               </div>
             </motion.div>

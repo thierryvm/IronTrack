@@ -151,7 +151,7 @@ export function ExerciseDefaultMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Heart className="w-5 h-5 text-blue-500" />
+              <Heart className="w-5 h-5 text-safe-info" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques par défaut - Rameur</h4>
             </div>
             
@@ -218,7 +218,7 @@ export function ExerciseDefaultMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-5 h-5 text-green-500" />
+              <Zap className="w-5 h-5 text-safe-success" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques par défaut - Course</h4>
             </div>
             
@@ -292,7 +292,7 @@ export function ExerciseDefaultMetricsForm({
                   className="text-center text-lg font-semibold"
                   placeholder="0.0"
                 />
-                <p className="text-xs text-gray-600 dark:text-gray-400">Pour tapis de course uniquement</p>
+                <p className="text-xs text-gray-600 dark:text-safe-muted">Pour tapis de course uniquement</p>
               </div>
             </div>
           </motion.div>
@@ -306,7 +306,7 @@ export function ExerciseDefaultMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Activity className="w-5 h-5 text-purple-500" />
+              <Activity className="w-5 h-5 text-safe-primary" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques par défaut - Vélo</h4>
             </div>
             
@@ -377,7 +377,7 @@ export function ExerciseDefaultMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Heart className="w-5 h-5 text-red-500" />
+              <Heart className="w-5 h-5 text-safe-error" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques par défaut - Cardio général</h4>
             </div>
             

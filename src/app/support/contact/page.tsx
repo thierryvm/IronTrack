@@ -36,14 +36,14 @@ function ContactSupportPageContent() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <Clock className="h-6 w-6 text-blue-500" />
+        return <Clock className="h-6 w-6 text-safe-info" />
       case 'in_progress':
         return <AlertCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
       case 'resolved':
       case 'closed':
-        return <CheckCircle className="h-6 w-6 text-green-500" />
+        return <CheckCircle className="h-6 w-6 text-safe-success" />
       default:
-        return <Clock className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+        return <Clock className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
     }
   }
 
@@ -74,7 +74,7 @@ function ContactSupportPageContent() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header avec navigation */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link 
@@ -116,7 +116,7 @@ function ContactSupportPageContent() {
                 initialCategory={initialCategory}
               />
             ) : (
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Vos demandes récentes</h2>
                 
                 {loadingTickets ? (
@@ -127,7 +127,7 @@ function ContactSupportPageContent() {
                 ) : userTickets.length === 0 ? (
                   <div className="text-center py-8">
                     <MessageSquare className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-600 dark:text-gray-400">Aucune demande trouvée.</p>
+                    <p className="text-gray-600 dark:text-safe-muted">Aucune demande trouvée.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -136,7 +136,7 @@ function ContactSupportPageContent() {
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{ticket.title}</h3>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-safe-muted">
                               <span>{getCategoryLabel(ticket.category)}</span>
                               <span>•</span>
                               <span>{new Date(ticket.created_at).toLocaleDateString('fr-FR')}</span>
@@ -161,7 +161,7 @@ function ContactSupportPageContent() {
           {/* Sidebar avec informations */}
           <div className="space-y-6">
             {/* Temps de réponse */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">⏱️ Temps de réponse</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -195,7 +195,7 @@ function ContactSupportPageContent() {
             </div>
 
             {/* Ressources alternatives */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">📚 Ressources utiles</h3>
               <div className="space-y-3">
                 <Link 

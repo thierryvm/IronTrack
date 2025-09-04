@@ -3,12 +3,27 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowLeft } from 'lucide-react'
 import { useWizardState } from './hooks/useWizardState'
 import { useAnalytics } from '@/hooks/useAnalytics'
-// import { ProgressIndicator } from './components/ProgressIndicator' // Composant disponible si nécessaire
 import { TypeSelection } from './steps/TypeSelection'
 import { SuggestionsList } from './steps/SuggestionsList'
 import { CustomForm } from './steps/CustomForm'
 import { PerformanceInput } from './steps/PerformanceInput'
 import { ExerciseSuggestion, CustomExercise, ExercisePerformance } from '@/types/exercise-wizard'
+
+// ✅ SÉCURITÉ : Sanitisation des erreurs et validation
+const sanitizeErrorMessage = (error: string | null | undefined): string => {
+  if (!error) return ''
+  
+  // Supprimer les informations sensibles
+  return error
+    .replace(/password|token|key|secret|api/gi, '[REDACTED]')
+    .replace(/\b\d{4,}\b/g, '[NUMBERS]')
+    .slice(0, 200) // Limiter la longueur
+}
+
+const sanitizeClassName = (className: string): string => {
+  // Validation basique pour éviter l'injection de classes malveillantes
+  return className.replace(/[<>"']/g, '').slice(0, 200)
+}
 
 interface ExerciseWizardProps {
   onClose?: () => void
@@ -41,6 +56,10 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
   const { trackWizardStep, trackWizardAbandon, trackWizardComplete, trackSuggestionSelected } = useAnalytics()
   const startTimeRef = useRef<number>(Date.now())
   const previousStepRef = useRef<number>(state.currentStep)
+  
+  // ✅ ACCESSIBILITÉ : Références pour la gestion du focus
+  const modalRef = useRef<HTMLDivElement>(null)
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null)
 
   // Noms des étapes pour le tracking
   const getStepName = useCallback((step: number) => {
@@ -67,6 +86,37 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
       previousStepRef.current = state.currentStep
     }
   }, [state.currentStep, trackWizardStep, getStepName])
+
+  // ✅ ACCESSIBILITÉ : Gestion du focus à l'ouverture
+  useEffect(() => {
+    // Sauvegarder l'élément actuellement focusé
+    const activeElement = document.activeElement as HTMLElement
+    if (activeElement && activeElement !== document.body) {
+      previouslyFocusedElement.current = activeElement
+    }
+    
+    // Focus sur le modal après un court délai
+    const timer = setTimeout(() => {
+      if (modalRef.current) {
+        modalRef.current.focus()
+      }
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  // ✅ ACCESSIBILITÉ : Gestion de la touche Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        e.preventDefault()
+        handleClose()
+      }
+    }
+    
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   // Tracker l'abandon si fermeture
   useEffect(() => {
@@ -116,6 +166,16 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
     if (!state.isComplete) {
       trackWizardAbandon(state.currentStep, getStepName(state.currentStep))
     }
+    
+    // ✅ ACCESSIBILITÉ : Restaurer le focus précédent
+    if (previouslyFocusedElement.current && document.contains(previouslyFocusedElement.current)) {
+      try {
+        previouslyFocusedElement.current.focus()
+      } catch (error) {
+        console.warn('Failed to restore focus:', error)
+      }
+    }
+    
     onClose?.()
   }
 
@@ -186,39 +246,64 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
     ? state.currentStep - 1 
     : state.currentStep
 
+  // ✅ SÉCURITÉ : Sanitisation des données affichées
+  const sanitizedError = sanitizeErrorMessage(error)
+  const safeClassName = sanitizeClassName(className)
+
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-gray-800 ${className}`}>
+    <div 
+      ref={modalRef}
+      className={`min-h-screen bg-gray-50 dark:bg-gray-800 ${safeClassName}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wizard-title"
+      aria-describedby="wizard-description"
+      tabIndex={-1}
+    >
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="max-w-4xl mx-auto">
           {/* Première ligne: Boutons de navigation + Titre sur la même ligne */}
           <div className="flex items-center justify-between mb-3">
             <button
               onClick={state.currentStep > 0 ? prevStep : handleClose}
-              className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
-              title={state.currentStep > 0 ? "Étape précédente" : "Retour"}
+              className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label={state.currentStep > 0 ? "Retourner à l'étape précédente" : "Fermer et retourner à la liste des exercices"}
+              type="button"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" aria-hidden="true" />
             </button>
             
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h1 
+              id="wizard-title"
+              className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            >
               {isEditMode && initialData ? `Modifier ${initialData.name}` : 'Nouveau exercice'}
             </h1>
             
             {onClose && (
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
-                title="Annuler"
+                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Annuler et fermer la création d'exercice"
+                type="button"
               >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <X className="w-5 h-5 text-gray-600 dark:text-safe-muted" aria-hidden="true" />
               </button>
             )}
           </div>
           
           {/* Deuxième ligne: Indicateur d'étape centré */}
           <div className="flex justify-center">
-            <div className="flex items-center gap-2">
+            <div 
+              className="flex items-center gap-2"
+              role="progressbar"
+              aria-valuenow={currentStepForProgress + 1}
+              aria-valuemin={1}
+              aria-valuemax={totalSteps}
+              aria-label={`Étape ${currentStepForProgress + 1} sur ${totalSteps}`}
+              id="wizard-description"
+            >
               {Array.from({ length: totalSteps }, (_, i) => (
                 <motion.div
                   key={i}
@@ -235,6 +320,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
                     backgroundColor: i <= currentStepForProgress ? '#f97316' : i < currentStepForProgress ? '#fed7aa' : '#d1d5db'
                   }}
                   transition={{ duration: 0.3 }}
+                  aria-hidden="true"
                 />
               ))}
             </div>
@@ -244,21 +330,25 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
 
       <div className="py-8 px-4">
 
-        {/* Affichage des erreurs */}
-        {error && (
+        {/* ✅ SÉCURITÉ : Affichage sécurisé des erreurs */}
+        {sanitizedError && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto mb-6"
           >
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div 
+              className="bg-red-50 border border-red-200 rounded-lg p-4"
+              role="alert"
+              aria-live="assertive"
+            >
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <X className="w-3 h-3 text-white" />
+                  <X className="w-3 h-3 text-white" aria-hidden="true" />
                 </div>
                 <h4 className="font-semibold text-red-800">Erreur</h4>
               </div>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <p className="text-sm text-red-700 mt-1">{sanitizedError}</p>
             </div>
           </motion.div>
         )}
@@ -282,9 +372,9 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
           >
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-8 max-w-sm mx-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-8 max-w-sm mx-4">
               <div className="flex items-center gap-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
                 <div>

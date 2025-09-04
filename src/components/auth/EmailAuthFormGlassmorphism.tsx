@@ -132,7 +132,7 @@ export default function EmailAuthFormGlassmorphism({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 border border-white dark:border-gray-700/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
               placeholder="ton-email@exemple.com"
               required
               autoComplete={isSignUp ? 'email' : 'username'}
@@ -161,7 +161,7 @@ export default function EmailAuthFormGlassmorphism({
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 border border-white dark:border-gray-700/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+                  className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
                   placeholder={isSignUp ? 'Un mot de passe sécurisé (min. 8 caractères)' : 'Ton mot de passe'}
                   required
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
@@ -202,10 +202,10 @@ export default function EmailAuthFormGlassmorphism({
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-12 pr-12 py-3 bg-white dark:bg-gray-900/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
+                  className={`w-full pl-12 pr-12 py-3 bg-white/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
                     confirmPassword && password !== confirmPassword
                       ? 'border-red-400/60 bg-red-500/10 focus:ring-red-400/50 focus:border-red-400/50'
-                      : 'border-white dark:border-gray-700/20 focus:ring-orange-400/50 focus:border-orange-400/50'
+                      : 'border-white/20 focus:ring-orange-400/50 focus:border-orange-400/50'
                   }`}
                   placeholder="Répète ton mot de passe"
                   required
@@ -243,12 +243,12 @@ export default function EmailAuthFormGlassmorphism({
         <motion.button
           type="submit"
           disabled={isLoading || (isSignUp && password !== confirmPassword)}
-          className="w-full bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg backdrop-blur-md"
+          className="w-full bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg backdrop-blur-md"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white dark:border-gray-700/30 border-t-white rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <span>{getButtonText()}</span>
           )}

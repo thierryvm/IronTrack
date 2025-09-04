@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import InAppBrowserWarning from '@/components/auth/InAppBrowserWarning'
-import EmailAuthForm from '@/components/auth/EmailAuthForm'
+import EmailAuthFormGlassmorphism from '@/components/auth/EmailAuthFormGlassmorphism'
 import { Dumbbell } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -71,7 +71,7 @@ export default function AuthPage() {
           className="w-full max-w-md"
         >
           {/* Carte glassmorphism */}
-          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 rounded-2xl border border-white dark:border-gray-700/20 shadow-2xl overflow-hidden">
+          <div className="relative backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent" />
             
             <div className="relative z-10 p-8">
@@ -90,7 +90,7 @@ export default function AuthPage() {
                     <Dumbbell className="w-8 h-8 text-white" />
                   </motion.div>
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white to-orange-100 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold mb-2 text-white">
                   IronTrack
                 </h1>
                 <motion.p 
@@ -129,7 +129,7 @@ export default function AuthPage() {
                     type="button"
                     onClick={() => handleSocialLogin('google')}
                     variant="outline"
-                    className="w-full bg-white/10 dark:bg-gray-900/20 backdrop-blur-md border border-white/30 dark:border-gray-700/30 text-white font-semibold py-4 px-6 transition-all duration-300 shadow-lg min-h-[44px]"
+                    className="w-full bg-white/10 backdrop-blur-md border border-white/30 text-white font-semibold py-4 px-6 transition-all duration-300 shadow-lg min-h-[44px] hover:bg-white/20"
                   >
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -150,21 +150,21 @@ export default function AuthPage() {
                 transition={{ delay: 0.4 }}
               >
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white dark:border-gray-700/30"></div>
+                  <div className="w-full border-t border-white/30"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/10 backdrop-blur-md text-white/80 rounded-full">ou</span>
+                  <span className="px-4 bg-white/10 backdrop-blur-md text-white/80 rounded-full border border-white/20">ou</span>
                 </div>
               </motion.div>
 
               {/* Formulaire unifié */}
               <div className="mt-4">
-                <EmailAuthForm showGoogleOption={false} />
+                <EmailAuthFormGlassmorphism showGoogleOption={false} />
               </div>
 
               {/* Liens RGPD et légaux */}
               <motion.div 
-                className="mt-8 pt-6 border-t border-white dark:border-gray-700/20"
+                className="mt-8 pt-6 border-t border-white/20"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}

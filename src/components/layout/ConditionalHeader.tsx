@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Header from './Header'
 
-export function ConditionalHeader() {
+export default function ConditionalHeader() {
   const pathname = usePathname()
   
   // Pages où le header doit être masqué

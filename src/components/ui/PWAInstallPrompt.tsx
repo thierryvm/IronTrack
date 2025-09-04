@@ -114,7 +114,7 @@ export default function PWAInstallPrompt() {
           exit={{ opacity: 0, y: 100 }}
           className="fixed bottom-4 left-4 right-4 z-50 max-w-sm mx-auto"
         >
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center">
                 <div className="p-2 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 rounded-lg mr-3">
@@ -161,7 +161,7 @@ export default function PWAInstallPrompt() {
               </Link>
             </div>
             
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-2 text-center">
               ⚡ Accès rapide • 🔔 Notifications • 📱 Mode hors-ligne
             </p>
           </div>

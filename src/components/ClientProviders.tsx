@@ -1,16 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { ReactNode } from 'react'
-
-// Lazy loading pour composants clients
-const ThemeProvider = dynamic(() => import("@/components/ui/ThemeProvider").then(mod => ({ default: mod.ThemeProvider })), {
-  ssr: false
-});
-
-const RegisterSW = dynamic(() => import("@/components/register-sw"), {
-  ssr: false
-});
+import ThemeProvider from '@/components/ui/ThemeProvider'
+import RegisterSW from '@/components/register-sw'
 
 // ExtensionErrorShield supprimé - maintenant géré directement dans layout.tsx head
 

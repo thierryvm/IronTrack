@@ -132,7 +132,7 @@ export default function NewWorkoutPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-lg p-8 w-full max-w-lg space-y-6"
       >
         <div className="flex items-center space-x-3 mb-6">
           <Calendar className="h-8 w-8 text-orange-800 dark:text-orange-300" />
@@ -144,7 +144,12 @@ export default function NewWorkoutPage() {
         </div>
         <div>
           <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Date</label>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500" />
+          <input 
+            type="date" 
+            value={date} 
+            onChange={e => setDate(e.target.value)} 
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500 dark:bg-gray-800 dark:text-gray-100" 
+          />
         </div>
         <div>
           <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Type de séance</label>
@@ -178,13 +183,13 @@ export default function NewWorkoutPage() {
             type="time"
             value={startTime}
             onChange={e => setStartTime(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500 dark:bg-gray-800 dark:text-gray-100"
             placeholder="Ex: 18:00"
           />
         </div>
         <div>
           <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
-            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-600 dark:text-gray-400">(optionnel pour les jours de repos)</span>}
+            Durée (minutes) {type === 'Repos' && <span className="text-sm text-gray-600 dark:text-safe-muted">(optionnel pour les jours de repos)</span>}
           </label>
           <input
             type="number"
@@ -203,7 +208,8 @@ export default function NewWorkoutPage() {
         <Button 
           type="submit" 
           disabled={loading} 
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white min-h-[44px]"
+          variant="orange"
+          className="w-full min-h-[44px]"
           aria-label="Enregistrer la nouvelle séance d'entraînement"
         >
           <Save className="h-5 w-5 mr-2" />
@@ -211,9 +217,9 @@ export default function NewWorkoutPage() {
         </Button>
         <Button
           type="button"
-          variant="outline"
+          variant="secondary"
           onClick={() => router.back()}
-          className="w-full mt-2 min-h-[44px]"
+          className="w-full mt-2 min-h-[44px] border-gray-300 text-gray-700 hover:bg-gray-50"
           aria-label="Revenir à la page précédente"
         >
           Annuler

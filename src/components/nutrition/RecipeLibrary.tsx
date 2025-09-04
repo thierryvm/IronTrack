@@ -239,7 +239,7 @@ export default function RecipeLibrary({
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Mes Recettes</h2>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-600 dark:text-safe-muted">
                 {filteredRecipes.length} recette{filteredRecipes.length > 1 ? 's' : ''}
               </div>
               <button
@@ -327,14 +327,14 @@ export default function RecipeLibrary({
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-12">
-              <AlertTriangle className="h-8 w-8 text-red-500" />
+              <AlertTriangle className="h-8 w-8 text-safe-error" />
               <span className="ml-3 text-red-600">{error}</span>
             </div>
           ) : filteredRecipes.length === 0 ? (
             <div className="text-center py-12">
               <ChefHat className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucune recette trouvée</h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-safe-muted">
                 {searchQuery || selectedTags.length > 0 || showFavoritesOnly
                   ? 'Essayez de modifier vos filtres de recherche'
                   : 'Créez votre première recette avec le constructeur de repas'}
@@ -350,7 +350,7 @@ export default function RecipeLibrary({
                     key={recipe.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
@@ -368,7 +368,7 @@ export default function RecipeLibrary({
                           onClick={() => toggleFavorite(recipe.id)}
                           className={`p-1 rounded-full transition-colors ${
                             recipe.is_favorite 
-                              ? 'text-red-500 hover:bg-red-50' 
+                              ? 'text-safe-error hover:bg-red-50' 
                               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800'
                           }`}
                         >
@@ -377,7 +377,7 @@ export default function RecipeLibrary({
                       </div>
 
                       {/* Infos générales */}
-                      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-3">
+                      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-safe-muted mb-3">
                         <div className="flex items-center space-x-1">
                           <Users className="h-6 w-6" />
                           <span>{recipe.servings} portion{recipe.servings > 1 ? 's' : ''}</span>
@@ -392,19 +392,19 @@ export default function RecipeLibrary({
                       <div className="grid grid-cols-4 gap-1 text-xs">
                         <div className="text-center">
                           <div className="font-medium text-orange-800 dark:text-orange-300">{nutrition.calories}</div>
-                          <div className="text-gray-600 dark:text-gray-400">cal</div>
+                          <div className="text-gray-600 dark:text-safe-muted">cal</div>
                         </div>
                         <div className="text-center">
                           <div className="font-medium text-blue-600">{nutrition.protein}g</div>
-                          <div className="text-gray-600 dark:text-gray-400">prot</div>
+                          <div className="text-gray-600 dark:text-safe-muted">prot</div>
                         </div>
                         <div className="text-center">
                           <div className="font-medium text-green-600">{nutrition.carbs}g</div>
-                          <div className="text-gray-600 dark:text-gray-400">glu</div>
+                          <div className="text-gray-600 dark:text-safe-muted">glu</div>
                         </div>
                         <div className="text-center">
                           <div className="font-medium text-yellow-600">{nutrition.fat}g</div>
-                          <div className="text-gray-600 dark:text-gray-400">lip</div>
+                          <div className="text-gray-600 dark:text-safe-muted">lip</div>
                         </div>
                       </div>
 
@@ -484,7 +484,7 @@ export default function RecipeLibrary({
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -499,7 +499,7 @@ export default function RecipeLibrary({
                       onClick={() => setSelectedRecipe(null)}
                       className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
                     >
-                      <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                      <X className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
                     </button>
                   </div>
                 </div>

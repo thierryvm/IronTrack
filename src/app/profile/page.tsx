@@ -751,7 +751,7 @@ export default function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-2 mb-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-2 mb-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200"
         >
           <div className="flex space-x-0.5 min-w-[300px] md:min-w-0 w-full flex-nowrap">
             {tabs.map(tab => {
@@ -785,7 +785,7 @@ export default function ProfilePage() {
             {/* Informations principales */}
             <div className="lg:col-span-2 space-y-4 md:space-y-6">
               {/* Photo de profil et infos de base */}
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                   {/* Avatar Section */}
                   <div className="flex flex-col items-center space-y-4">
@@ -807,7 +807,7 @@ export default function ProfilePage() {
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-touch-44 min-w-touch-44"
+                        className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-touch-44 min-w-touch-44"
                         onClick={handleChangeAvatar}
                         title="Changer l'avatar"
                       >
@@ -922,7 +922,7 @@ export default function ProfilePage() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           >
             {/* Statistiques détaillées */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Statistiques d'entraînement</h3>
               
               <div className="space-y-6">
@@ -937,7 +937,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
-                    <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                    <Calendar className="h-8 w-8 text-safe-info mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.currentStreak || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Jours consécutifs</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -946,7 +946,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-green-50 rounded-lg group relative">
-                    <Activity className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                    <Activity className="h-8 w-8 text-safe-success mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.averageWorkoutsPerWeek || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Séances/semaine</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -955,7 +955,7 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="text-center p-4 bg-purple-50 rounded-lg group relative">
-                    <Target className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+                    <Target className="h-8 w-8 text-safe-primary mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userBadges?.length || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Badges gagnés</p>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -975,7 +975,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Progression */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Progression</h3>
               
               <div className="space-y-6">
@@ -1009,7 +1009,7 @@ export default function ProfilePage() {
                         )}
                       </>
                     ) : (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Chargement des données...</div>
+                      <div className="text-sm text-gray-600 dark:text-safe-muted">Chargement des données...</div>
                     )}
                   </div>
                 </div>
@@ -1018,7 +1018,7 @@ export default function ProfilePage() {
                   <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Records personnels</h4>
                   <div className="space-y-2">
                     {progressionLoading ? (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Chargement des records...</div>
+                      <div className="text-sm text-gray-600 dark:text-safe-muted">Chargement des records...</div>
                     ) : personalRecords && personalRecords.length > 0 ? (
                       <>
                         {personalRecords.slice(0, 5).map((record, index) => (
@@ -1032,13 +1032,13 @@ export default function ProfilePage() {
                           </div>
                         ))}
                         {personalRecords.length > 5 && (
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                          <div className="text-xs text-gray-600 dark:text-safe-muted mt-2">
                             Et {personalRecords.length - 5} autres records...
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
+                      <div className="text-sm text-gray-600 dark:text-safe-muted text-center py-4">
                         <p>Aucun record personnel enregistré</p>
                         <p className="text-xs mt-1">Commencez à enregistrer vos performances dans la section &quot;Progression&quot; !</p>
                       </div>
@@ -1048,9 +1048,9 @@ export default function ProfilePage() {
               </div>
             </div>
             {/* Section Badges validés */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mt-8">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mt-8">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
-                <Award className="h-6 w-6 text-yellow-500" />
+                <Award className="h-6 w-6 text-safe-warning" />
                 <span>Badges validés</span>
               </h2>
               <div className="space-y-6">
@@ -1074,7 +1074,7 @@ export default function ProfilePage() {
                         <h3 className="font-medium text-gray-900 dark:text-gray-100">{achievement.name}</h3>
                         <p className="text-sm text-gray-600 dark:text-gray-300">{achievement.description}</p>
                         {achievement.unlocked_at && (
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                             Débloqué le {new Date(achievement.unlocked_at).toLocaleDateString('fr-FR')}
                           </div>
                         )}
@@ -1083,7 +1083,7 @@ export default function ProfilePage() {
                     
                     {/* Affichage si aucun badge validé */}
                     {achievements.filter(achievement => achievement.status === 'Validé').length === 0 && (
-                      <div className="col-span-2 text-center py-8 text-gray-600 dark:text-gray-400">
+                      <div className="col-span-2 text-center py-8 text-gray-600 dark:text-safe-muted">
                         <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                         <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Aucun badge validé</h3>
                         <p className="text-sm">Crée des objectifs dans la page Progression pour débloquer tes premiers badges !</p>
@@ -1095,9 +1095,9 @@ export default function ProfilePage() {
             </div>
 
             {/* Section Badges de réalisation */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 mt-8">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mt-8">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
-                <Star className="h-6 w-6 text-purple-500" />
+                <Star className="h-6 w-6 text-safe-primary" />
                 <span>Badges de réalisation</span>
               </h2>
               <div className="space-y-6">
@@ -1121,7 +1121,7 @@ export default function ProfilePage() {
                 ) : (
                   <div className="text-center py-8">
                     <Star className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-600 dark:text-gray-400">Aucun badge de réalisation pour le moment</p>
+                    <p className="text-gray-600 dark:text-safe-muted">Aucun badge de réalisation pour le moment</p>
                     <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">Continue tes entraînements pour débloquer des badges !</p>
                   </div>
                 )}
@@ -1137,7 +1137,7 @@ export default function ProfilePage() {
             className="space-y-6"
           >
             {/* Paramètres de notification */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
                 <Bell className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Notifications</span>
@@ -1162,7 +1162,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Actions améliorées */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
                 <Settings className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Actions & Paramètres</span>
@@ -1172,7 +1172,7 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
-                      <Shield className="h-5 w-5 text-blue-500" />
+                      <Shield className="h-5 w-5 text-safe-info" />
                       <span>Compte</span>
                     </h4>
                     <button 
@@ -1192,25 +1192,25 @@ export default function ProfilePage() {
                       aria-label="Supprimer définitivement mon compte utilisateur"
                       type="button"
                     >
-                      <X className="h-5 w-5 text-red-500" aria-hidden="true" />
+                      <X className="h-5 w-5 text-safe-error" aria-hidden="true" />
                       <div>
                         <p className="font-medium text-red-700">Supprimer mon compte</p>
-                        <p className="text-sm text-red-500">Action irréversible&nbsp;! IronBuddy va pleurer… 😢</p>
+                        <p className="text-sm text-safe-error">Action irréversible&nbsp;! IronBuddy va pleurer… 😢</p>
                       </div>
                     </button>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
-                      <Target className="h-5 w-5 text-green-500" />
+                      <Target className="h-5 w-5 text-safe-success" />
                       <span>Données</span>
                     </h4>
-                    <Button variant="outline" onClick={handleExportData} disabled={exporting} className="w-full justify-start p-4 h-auto min-h-touch-44" aria-label="Exporter mes données personnelles">
-                      <Download className="h-5 w-5 text-green-500 mr-3" />
+                    <Button variant="secondary" onClick={handleExportData} disabled={exporting} className="w-full justify-start p-4 h-auto min-h-touch-44" aria-label="Exporter mes données personnelles">
+                      <Download className="h-5 w-5 text-safe-success mr-3" />
                       <div className="text-left">
                         <p className="font-medium text-gray-900 dark:text-gray-100">Exporter mes données</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Télécharge ton historique (IronBuddy adore les stats&nbsp;!)</p>
                         {exporting && <span className="text-xs text-gray-800 dark:text-gray-200">Export en cours...</span>}
-                        {exportError && <span className="text-xs text-red-500">{exportError}</span>}
+                        {exportError && <span className="text-xs text-safe-error">{exportError}</span>}
                       </div>
                     </Button>
                   </div>
@@ -1219,11 +1219,11 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center space-x-2">
-                      <Camera className="h-5 w-5 text-purple-500" />
+                      <Camera className="h-5 w-5 text-safe-primary" />
                       <span>Personnalisation</span>
                     </h4>
-                    <Button variant="outline" onClick={handleChangeAvatar} className="w-full justify-start p-4 h-auto mb-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 min-h-touch-44" aria-label="Modifier ma photo de profil">
-                      <Camera className="h-5 w-5 text-purple-400 mr-3" />
+                    <Button variant="secondary" onClick={handleChangeAvatar} className="w-full justify-start p-4 h-auto mb-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 min-h-touch-44" aria-label="Modifier ma photo de profil">
+                      <Camera className="h-5 w-5 text-safe-primary mr-3" />
                       <div className="text-left">
                         <p className="font-medium text-gray-900 dark:text-gray-100">Changer mon avatar</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
@@ -1252,7 +1252,7 @@ export default function ProfilePage() {
                           onClick={() => handleIronBuddyLevelChange('ambianceur')}
                         >Ambianceur</button>
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
+                      <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">IronBuddy s'adapte à ton humeur&nbsp;!</p>
                     </div>
                   </div>
                   <div>
@@ -1261,14 +1261,14 @@ export default function ProfilePage() {
                       <span>Support</span>
                     </h4>
                     <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
-                      <HelpCircle className="h-5 w-5 text-blue-400" />
+                      <HelpCircle className="h-5 w-5 text-safe-info" />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">Aide & support</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
                     <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
-                      <HelpCircle className="h-5 w-5 text-blue-400" />
+                      <HelpCircle className="h-5 w-5 text-safe-info" />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">FAQ</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Les questions que m'ême IronBuddy se pose parfois…</p>
@@ -1280,7 +1280,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Mascotte IronBuddy */}
-            <div ref={mascotSectionRef} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div ref={mascotSectionRef} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
                 <Dumbbell className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                 <span>Mascotte IronBuddy</span>
@@ -1352,7 +1352,7 @@ export default function ProfilePage() {
           </DialogHeader>
           <DialogFooter className="flex gap-2">
             <Button 
-              variant="outline" 
+              variant="secondary" 
               onClick={() => setShowDeleteModal(false)} 
               className="min-h-[44px] flex-1"
               aria-label="Annuler la suppression du compte"
@@ -1386,7 +1386,7 @@ export default function ProfilePage() {
             <DialogDescription className="text-gray-700 dark:text-gray-300">
               Choisis une nouvelle photo de profil. IronBuddy validera le style !
             </DialogDescription>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-safe-muted">
               Ta photo ne sera utilisée que pour ton profil IronTrack. Elle n'est jamais partagée sans ton accord. (RGPD friendly !)
             </p>
           </DialogHeader>
@@ -1456,8 +1456,8 @@ export default function ProfilePage() {
                     Valider
                   </Button>
                 </div>
-                {avatarUploading && <div className="text-purple-500 text-sm">Upload en cours...</div>}
-                {avatarError && <div className="text-red-500 text-sm">{avatarError}</div>}
+                {avatarUploading && <div className="text-safe-primary text-sm">Upload en cours...</div>}
+                {avatarError && <div className="text-safe-error text-sm">{avatarError}</div>}
               </div>
             ) : (
               <div className="space-y-4">
@@ -1474,7 +1474,7 @@ export default function ProfilePage() {
                     className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300"
                     aria-describedby="gallery-help"
                   />
-                  <p id="gallery-help" className="text-xs text-gray-500 dark:text-gray-400">
+                  <p id="gallery-help" className="text-xs text-safe-muted dark:text-safe-muted">
                     Formats supportés: JPG, PNG, HEIC, HEIF
                   </p>
                 </div>
@@ -1492,12 +1492,12 @@ export default function ProfilePage() {
                     className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300"
                     aria-describedby="camera-help"
                   />
-                  <p id="camera-help" className="text-xs text-gray-500 dark:text-gray-400">
+                  <p id="camera-help" className="text-xs text-safe-muted dark:text-safe-muted">
                     Utilisera l'appareil photo de votre appareil
                   </p>
                 </div>
-                {avatarUploading && <div className="text-purple-500 text-sm">Upload en cours...</div>}
-                {avatarError && <div className="text-red-500 text-sm">{avatarError}</div>}
+                {avatarUploading && <div className="text-safe-primary text-sm">Upload en cours...</div>}
+                {avatarError && <div className="text-safe-error text-sm">{avatarError}</div>}
               </div>
             )}
           </div>

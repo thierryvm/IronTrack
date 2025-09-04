@@ -11,10 +11,12 @@ import {
   Loader2,
   Shield,
   Smartphone,
-  Zap
+  Zap,
+  Crop
 } from 'lucide-react'
 import Image from 'next/image'
 import { uploadExercisePhoto, SecureAttachment } from '@/utils/fileUpload'
+import { ImageCropper } from '@/components/ui/ImageCropper'
 
 interface ExercisePhotoUploadProps {
   onPhotoUploaded: (attachment: SecureAttachment) => void
@@ -47,6 +49,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     success: false
   })
   const [isDragging, setIsDragging] = useState(false)
+  const [showCropper, setShowCropper] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
 
@@ -76,6 +79,11 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     checkMobile()
     // Pas de listener resize pour éviter les changements intempestifs
   }, [])
+
+  // Debug: log currentPhoto changes
+  useEffect(() => {
+    console.log('🖼️ currentPhoto changed:', currentPhoto)
+  }, [currentPhoto])
 
   const resetUploadState = useCallback(() => {
     setUploadState({
@@ -116,8 +124,14 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         
         onPhotoUploaded(result.attachment)
         
-        // Auto-reset après succès
-        setTimeout(resetUploadState, 2000)
+        // Auto-reset après succès (mais seulement le message, pas la photo)
+        setTimeout(() => {
+          setUploadState(prev => ({
+            ...prev,
+            success: false,
+            error: null
+          }))
+        }, 2000)
       } else {
         throw new Error(result.error || 'Upload failed')
       }
@@ -201,6 +215,36 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     resetUploadState()
   }
 
+  const handleCropComplete = async (croppedImageUrl: string) => {
+    try {
+      // Convert the cropped image blob URL to a File object
+      const response = await fetch(croppedImageUrl)
+      const blob = await response.blob()
+      const file = new File([blob], 'cropped-exercise-photo.jpg', { type: 'image/jpeg' })
+      
+      // Upload the cropped image
+      await handleFileUpload(file)
+      
+      // Close the cropper
+      setShowCropper(false)
+      
+      // Clean up the blob URL
+      URL.revokeObjectURL(croppedImageUrl)
+    } catch (error) {
+      console.error('Erreur lors du traitement de l\'image croppée:', error)
+      setUploadState({
+        isUploading: false,
+        progress: 0,
+        error: 'Erreur lors du traitement de l\'image',
+        success: false
+      })
+    }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropper(false)
+  }
+
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between mb-2">
@@ -208,7 +252,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           <Camera className="h-6 w-6 mr-2" />
           Photo de l&apos;exercice
         </h4>
-        <div className="flex items-center text-xs text-gray-600 dark:text-gray-400">
+        <div className="flex items-center text-xs text-gray-600 dark:text-safe-muted">
           <Smartphone className="h-5 w-5 mr-1" />
           Support HEIC (iPhone)
         </div>
@@ -217,18 +261,27 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       {/* Zone d'upload ou photo actuelle */}
       {currentPhoto ? (
         <div className="relative group">
-          <div className="relative w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 dark:bg-gray-800">
+          <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-transparent">
             <Image
               src={currentPhoto}
               alt="Photo de l'exercice"
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
+              className="object-cover object-top"
+              onError={(e) => {
+                console.error('Erreur chargement image:', currentPhoto, e)
+                // Ajouter une classe d'erreur pour debug
+                e.currentTarget.style.backgroundColor = '#ef4444'
+                e.currentTarget.style.color = 'white'
+              }}
+              onLoad={() => {
+                console.log('Image chargée avec succès:', currentPhoto)
+              }}
             />
             
             {/* Overlay avec actions */}
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 flex items-center justify-center">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-wrap gap-2 justify-center">
                 {isMobile ? (
                   <>
                     <button
@@ -241,22 +294,40 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     </button>
                     <button
                       onClick={openFileDialog}
-                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-gray-900 dark:text-gray-100 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
                       <ImageIcon className="h-6 w-6 mr-1" />
                       Photos
                     </button>
+                    <button
+                      onClick={() => setShowCropper(true)}
+                      className="bg-blue-500 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-blue-600 flex items-center min-h-[44px] touch-manipulation"
+                      disabled={disabled || uploadState.isUploading}
+                    >
+                      <Crop className="h-6 w-6 mr-1" />
+                      Recadrer
+                    </button>
                   </>
                 ) : (
-                  <button
-                    onClick={openFileDialog}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
-                    disabled={disabled || uploadState.isUploading}
-                  >
-                    <Camera className="h-6 w-6 mr-2" />
-                    Changer
-                  </button>
+                  <>
+                    <button
+                      onClick={openFileDialog}
+                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-gray-900 dark:text-gray-100 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
+                      disabled={disabled || uploadState.isUploading}
+                    >
+                      <Camera className="h-6 w-6 mr-2" />
+                      Changer
+                    </button>
+                    <button
+                      onClick={() => setShowCropper(true)}
+                      className="bg-blue-500 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-blue-600 flex items-center min-h-[44px] touch-manipulation"
+                      disabled={disabled || uploadState.isUploading}
+                    >
+                      <Crop className="h-6 w-6 mr-2" />
+                      Recadrer
+                    </button>
+                  </>
                 )}
                 <button
                   onClick={removePhoto}
@@ -334,7 +405,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-center">
               {uploadState.isUploading ? (
-                <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
+                <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-safe-info animate-spin" />
               ) : (
                 <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`} />
               )}
@@ -363,7 +434,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                       : <>Glissez votre photo ici ou <span className="text-orange-800 dark:text-orange-300 font-medium">cliquez pour sélectionner</span></>
                     }
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-safe-muted">
                     PNG, JPEG, GIF, HEIC, WebP, AVIF • Max 8MB • Sécurisé OWASP
                   </p>
                 </>
@@ -400,7 +471,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
             className="bg-red-50 border border-red-200 rounded-lg p-3"
           >
             <div className="flex items-center">
-              <AlertTriangle className="h-6 w-6 text-red-500 mr-2" />
+              <AlertTriangle className="h-6 w-6 text-safe-error mr-2" />
               <p className="text-sm text-red-800">{uploadState.error}</p>
             </div>
           </motion.div>
@@ -414,7 +485,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
             className="bg-green-50 border border-green-200 rounded-lg p-3"
           >
             <div className="flex items-center">
-              <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
+              <CheckCircle className="h-6 w-6 text-safe-success mr-2" />
               <p className="text-sm text-green-800">Photo uploadée avec succès !</p>
             </div>
           </motion.div>
@@ -425,7 +496,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
       <div className="space-y-3">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-start space-x-2">
-            <Smartphone className="h-6 w-6 text-blue-500 flex-shrink-0 mt-0.5" />
+            <Smartphone className="h-6 w-6 text-safe-info flex-shrink-0 mt-0.5" />
             <div>
               <h5 className="text-sm font-medium text-blue-900 mb-1">
                 📱 Compatible iPhone/iPad - HEIC vers JPEG
@@ -440,7 +511,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           <div className="flex items-start space-x-2">
-            <Zap className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
+            <Zap className="h-6 w-6 text-safe-success flex-shrink-0 mt-0.5" />
             <div>
               <h5 className="text-sm font-medium text-green-900 mb-1">
                 ⚡ Optimisation automatique pour performances
@@ -453,6 +524,16 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Image Cropper Modal */}
+      {showCropper && currentPhoto && (
+        <ImageCropper
+          imageUrl={currentPhoto}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={4/3}
+        />
+      )}
     </div>
   )
 }

@@ -180,7 +180,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-4">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="h-8 w-8 text-red-500" />
+            <AlertTriangle className="h-8 w-8 text-safe-error" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Accès Non Autorisé</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -210,7 +210,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header Mobile avec support safe areas iPhone */}
-      <div className="lg:hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between header-mobile-ios">
+      <div className="lg:hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between header-mobile-ios">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -237,15 +237,15 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <ChevronDown className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <ChevronDown className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
             </button>
             
             {userMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
               >
                   <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.email}</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
+                    <p className="text-xs text-gray-600 dark:text-safe-muted capitalize">
                       {user?.role.replace('_', ' ')}
                     </p>
                   </div>
@@ -307,13 +307,13 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
               </div>
               <div className="ml-3 flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{user?.email}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
+                <p className="text-xs text-gray-600 dark:text-safe-muted capitalize">
                   {user?.role.replace('_', ' ')}
                 </p>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors"
+                className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-error transition-colors"
                 title="Se déconnecter"
               >
                 <LogOut className="h-6 w-6" />
@@ -331,7 +331,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             />
             
             <div
-              className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 flex flex-col"
+              className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-r border-gray-200 dark:border-gray-700 z-50 flex flex-col"
             >
                 <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center space-x-2">

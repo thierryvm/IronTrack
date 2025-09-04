@@ -73,7 +73,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -91,7 +91,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 onClick={onClose}
                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <X className="w-4 h-4 text-gray-600 dark:text-safe-muted" />
               </button>
             </div>
 

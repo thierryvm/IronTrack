@@ -91,7 +91,7 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
           <div className="font-bold text-gray-800 dark:text-gray-200 text-sm break-all">
             {profile.email}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Modification sécurisée disponible</div>
+          <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">Modification sécurisée disponible</div>
           </CardContent>
         </Card>
 

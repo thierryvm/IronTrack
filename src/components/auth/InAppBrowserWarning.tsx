@@ -47,7 +47,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl max-w-md w-full mx-4 shadow-2xl border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl max-w-md w-full mx-4 shadow-2xl border border-gray-200 dark:border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
           {/* Debug info (only in development) */}
           {process.env.NODE_ENV === 'development' && (
             <details className="pt-4 border-t border-gray-100 dark:border-gray-700">
-              <summary className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+              <summary className="text-xs text-gray-600 dark:text-safe-muted cursor-pointer">
                 Infos de débogage
               </summary>
               <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300 font-mono">

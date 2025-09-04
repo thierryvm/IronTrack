@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useInAppBrowserAuth } from '@/hooks/useInAppBrowserAuth';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { InputGlassmorphism } from '@/components/ui/input-glassmorphism';
+import { AuthLabel } from '@/components/auth/AuthLabel';
 
 interface EmailAuthFormProps {
   showGoogleOption?: boolean;
@@ -94,7 +94,7 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
           >
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-200 flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <p id="email-error" className="text-red-100 text-sm font-medium">{error}</p>
+              <p id="email-error" className="text-red-700 dark:text-red-100 text-sm font-medium">{error}</p>
             </div>
           </motion.div>
         )}
@@ -107,51 +107,49 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
           >
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" />
-              <p className="text-green-200 text-sm">{success}</p>
+              <p className="text-green-700 dark:text-green-200 text-sm">{success}</p>
             </div>
           </motion.div>
         )}
+
 
         {/* Formulaire */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-white/90">
+            <AuthLabel htmlFor="email">
               Adresse email
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/10 dark:bg-gray-900/20 border border-white/30 dark:border-gray-700/30 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
-                placeholder="ton-email@exemple.com"
-                required
-                autoComplete={isSignUp ? 'email' : 'username'}
-                aria-describedby={error ? "email-error" : undefined}
-                aria-invalid={!!error}
-              />
-            </div>
+            </AuthLabel>
+            <InputGlassmorphism
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              icon={<Mail />}
+              placeholder="ton-email@exemple.com"
+              required
+              autoComplete={isSignUp ? 'email' : 'username'}
+              aria-describedby={error ? "email-error" : undefined}
+              aria-invalid={!!error}
+            />
           </div>
 
           {/* Mot de passe */}
           {!showForgotPassword && (
             <div>
-              <Label htmlFor="password" className="text-sm font-medium text-white/90">
+              <AuthLabel htmlFor="password">
                 Mot de passe
-              </Label>
+              </AuthLabel>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
-                <Input
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
+                <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-white/10 dark:bg-gray-900/20 border border-white/30 dark:border-gray-700/30 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl bg-background/10 dark:bg-white/10 backdrop-blur-md border border-foreground/20 text-foreground placeholder:text-muted-foreground focus:bg-background/20 dark:focus:bg-white/15 focus:border-foreground/30 focus:outline-none transition-all"
                   placeholder={isSignUp ? 'Un mot de passe sécurisé (min. 8 caractères)' : 'Ton mot de passe'}
                   required
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
@@ -162,14 +160,14 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 text-white/80 hover:text-white hover:bg-white/10 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent/50 focus:ring-2 focus:ring-orange-500 transition-colors z-10"
                   aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
               {isSignUp && (
-                <p className="text-xs text-white/90 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Le mot de passe doit contenir au moins 8 caractères
                 </p>
               )}
@@ -179,21 +177,21 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
           {/* Confirmation du mot de passe */}
           {isSignUp && !showForgotPassword && (
             <div>
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-white/90">
+              <AuthLabel htmlFor="confirmPassword">
                 Confirmer le mot de passe
-              </Label>
+              </AuthLabel>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
-                <Input
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
+                <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
+                  className={`w-full pl-12 pr-12 py-3 rounded-xl backdrop-blur-md border transition-all focus:outline-none ${
                     confirmPassword && password !== confirmPassword
-                      ? 'border-red-400/60 bg-red-500/15 focus:ring-red-400/50 focus:border-red-400/50'
-                      : 'bg-white/10 dark:bg-gray-900/20 border-white/30 dark:border-gray-700/30 focus:ring-orange-400/50 focus:border-orange-400/50'
+                      ? 'bg-destructive/20 border-destructive/40 text-destructive-foreground placeholder:text-destructive/70'
+                      : 'bg-background/10 dark:bg-white/10 border-foreground/20 text-foreground placeholder:text-muted-foreground focus:bg-background/20 dark:focus:bg-white/15 focus:border-foreground/30'
                   }`}
                   placeholder="Répète ton mot de passe"
                   required
@@ -204,16 +202,16 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 text-white/80 hover:text-white hover:bg-white/10 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent/50 focus:ring-2 focus:ring-orange-500 transition-colors z-10"
                   aria-label={showConfirmPassword ? "Masquer la confirmation du mot de passe" : "Afficher la confirmation du mot de passe"}
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-red-300 mt-1 flex items-center gap-1">
+                <p className="text-xs text-red-700 dark:text-red-300 mt-1 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />
-                  🔄 Les mots de passe ne correspondent pas
+                  Les mots de passe ne correspondent pas
                 </p>
               )}
             </div>
@@ -260,7 +258,7 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
                 <Button
                   variant="ghost"
                   onClick={() => switchMode('forgot')}
-                  className="text-white/90 hover:text-white font-medium w-full transition-colors h-auto p-2 hover:bg-white/10"
+                  className="text-muted-foreground hover:text-foreground font-medium w-full transition-colors h-auto p-2 hover:bg-accent"
                 >
                   🔑 Mot de passe oublié ?
                 </Button>

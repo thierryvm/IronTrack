@@ -193,12 +193,12 @@ export default function AdminTicketsPage() {
   // Fonctions d'affichage
   const getStatusIcon = (status: SupportTicketStatus) => {
     const icons = {
-      'pending': <Clock className="h-6 w-6 text-yellow-500" />,
-      'open': <Clock className="h-6 w-6 text-blue-500" />,
+      'pending': <Clock className="h-6 w-6 text-safe-warning" />,
+      'open': <Clock className="h-6 w-6 text-safe-info" />,
       'in_progress': <AlertTriangle className="h-6 w-6 text-orange-800 dark:text-orange-300" />,
-      'waiting_user': <MessageCircle className="h-6 w-6 text-purple-500" />,
-      'resolved': <CheckCircle className="h-6 w-6 text-green-500" />,
-      'closed': <XCircle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+      'waiting_user': <MessageCircle className="h-6 w-6 text-safe-primary" />,
+      'resolved': <CheckCircle className="h-6 w-6 text-safe-success" />,
+      'closed': <XCircle className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
     }
     return icons[status] || icons.open
   }
@@ -261,7 +261,7 @@ export default function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3">
@@ -385,12 +385,12 @@ export default function AdminTicketsPage() {
       </div>
 
       {/* Liste des tickets */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md overflow-hidden">
           {filteredAndSortedTickets.length === 0 ? (
           <div className="text-center py-12">
             <MessageSquare className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucun ticket trouvé</h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-safe-muted">
               {filters.status !== 'all' || filters.category !== 'all' || filters.search 
                 ? 'Essayez de modifier vos filtres'
                 : 'Les tickets de support apparaîtront ici'}
@@ -402,7 +402,7 @@ export default function AdminTicketsPage() {
               {/* En-têtes de tableau */}
               <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('created_at')}
                       className="flex items-center space-x-1 hover:text-gray-700 dark:text-gray-300"
@@ -411,10 +411,10 @@ export default function AdminTicketsPage() {
                       <ArrowUpDown className="h-5 w-5" />
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     Ticket
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('status')}
                       className="flex items-center space-x-1 hover:text-gray-700 dark:text-gray-300"
@@ -423,7 +423,7 @@ export default function AdminTicketsPage() {
                       <ArrowUpDown className="h-5 w-5" />
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('priority')}
                       className="flex items-center space-x-1 hover:text-gray-700 dark:text-gray-300"
@@ -432,17 +432,17 @@ export default function AdminTicketsPage() {
                       <ArrowUpDown className="h-5 w-5" />
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     Utilisateur
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 dark:text-safe-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
 
               {/* Corps du tableau */}
-              <tbody className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  divide-y divide-gray-200">
                 {filteredAndSortedTickets.map((ticket) => (
                   <tr 
                     key={ticket.id} 
@@ -460,7 +460,7 @@ export default function AdminTicketsPage() {
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {new Date(ticket.created_at).toLocaleDateString('fr-FR')}
                           </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                          <div className="text-xs text-gray-600 dark:text-safe-muted">
                             {new Date(ticket.created_at).toLocaleTimeString('fr-FR', { 
                               hour: '2-digit', 
                               minute: '2-digit' 
@@ -481,7 +481,7 @@ export default function AdminTicketsPage() {
                             <Paperclip className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                        <div className="text-xs text-gray-600 dark:text-safe-muted">
                           {getCategoryLabel(ticket.category)}
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">
@@ -516,7 +516,7 @@ export default function AdminTicketsPage() {
                             {ticket.profiles?.email || ticket.user_email || 'Email non disponible'}
                           </div>
                           {(ticket.profiles?.full_name || ticket.user_metadata?.name) && (
-                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                            <div className="text-xs text-gray-600 dark:text-safe-muted">
                               {ticket.profiles?.full_name || ticket.user_metadata?.name}
                             </div>
                           )}
@@ -535,7 +535,7 @@ export default function AdminTicketsPage() {
                             setSelectedTicket(ticket)
                             setShowDetails(true)
                           }}
-                          className="p-2 h-auto hover:text-blue-500 hover:bg-blue-50"
+                          className="p-2 h-auto hover:text-safe-info hover:bg-blue-50"
                           title="Voir les détails"
                         >
                           <Eye className="h-4 w-4" />
@@ -564,7 +564,7 @@ export default function AdminTicketsPage() {
                               e.stopPropagation()
                               handleStatusChange(ticket.id, 'resolved')
                             }}
-                            className="p-2 h-auto hover:text-green-500 hover:bg-green-50"
+                            className="p-2 h-auto hover:text-safe-success hover:bg-green-50"
                             title="Marquer comme résolu"
                           >
                             <CheckCircle2 className="h-4 w-4" />
@@ -596,7 +596,7 @@ export default function AdminTicketsPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-x-16 lg:top-12 lg:bottom-12 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col"
+              className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-x-16 lg:top-12 lg:bottom-12 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl overflow-hidden flex flex-col"
             >
               {/* En-tête du modal */}
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
@@ -668,7 +668,7 @@ export default function AdminTicketsPage() {
                                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                     {attachment.originalName || 'Fichier joint'}
                                   </p>
-                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  <p className="text-xs text-gray-600 dark:text-safe-muted">
                                     {attachment.type} • {Math.round(attachment.size / 1024)} KB
                                   </p>
                                 </div>
@@ -677,7 +677,7 @@ export default function AdminTicketsPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => window.open(attachment.url, '_blank')}
-                                className="p-2 h-auto hover:text-blue-500 hover:bg-blue-50"
+                                className="p-2 h-auto hover:text-safe-info hover:bg-blue-50"
                                 title="Télécharger"
                               >
                                 <Download className="h-4 w-4" />
@@ -711,7 +711,7 @@ export default function AdminTicketsPage() {
 
                     {/* Actions de modération */}
                     {hasPermission('moderator') && (
-                      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Actions</h3>
                         <div className="space-y-2">
                           {/* Changer le statut */}
@@ -766,19 +766,19 @@ export default function AdminTicketsPage() {
                       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Informations</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Créé le:</span>
+                          <span className="text-gray-600 dark:text-safe-muted">Créé le:</span>
                           <span className="text-gray-900 dark:text-gray-100">
                             {new Date(selectedTicket.created_at).toLocaleDateString('fr-FR')}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Dernière MAJ:</span>
+                          <span className="text-gray-600 dark:text-safe-muted">Dernière MAJ:</span>
                           <span className="text-gray-900 dark:text-gray-100">
                             {new Date(selectedTicket.updated_at).toLocaleDateString('fr-FR')}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">ID Ticket:</span>
+                          <span className="text-gray-600 dark:text-safe-muted">ID Ticket:</span>
                           <span className="text-gray-900 dark:text-gray-100 font-mono text-xs">
                             {selectedTicket.id.slice(0, 8)}...
                           </span>

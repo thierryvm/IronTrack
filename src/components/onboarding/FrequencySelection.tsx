@@ -138,7 +138,7 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
                 className="w-full"
               />
               
-              <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex justify-between text-xs text-gray-600 dark:text-safe-muted">
                 <span>30min</span>
                 <span>45min</span>
                 <span>1h</span>

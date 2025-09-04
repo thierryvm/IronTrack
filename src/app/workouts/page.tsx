@@ -67,7 +67,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
 
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+            <Calendar className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
             <span className="text-sm text-gray-600 dark:text-gray-300">
               {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
                 weekday: 'long',
@@ -80,14 +80,14 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
 
           {workout.start_time && (
             <div className="flex items-center space-x-2">
-              <Clock className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <Clock className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
               <span className="text-sm text-gray-600 dark:text-gray-300">{workout.start_time}</span>
             </div>
           )}
 
           {workout.duration && (
             <div className="flex items-center space-x-2">
-              <Target className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <Target className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
               <span className="text-sm text-gray-600 dark:text-gray-300">{workout.duration} minutes</span>
             </div>
           )}
@@ -114,12 +114,12 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
                 onStatusChange(workout.id, 'Réalisé')
                 onClose()
               }}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-white"
             >
               ✅ Marquer comme réalisé
             </Button>
           )}
-          <Button asChild variant="outline" size="sm" className="flex-1">
+          <Button asChild variant="secondary" size="sm" className="flex-1">
             <Link href={`/workouts/${workout.id}/edit`}>
               ✏️ Modifier
             </Link>
@@ -247,8 +247,8 @@ export default function WorkoutsPage() {
               <h1 className="text-3xl font-bold">Mes Séances</h1>
               <p className="text-white/90">Organise et suis tes entraînements</p>
             </div>
-            <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
-              <Link href="/workouts/new">
+            <Button asChild variant="outline">
+              <Link href="/workouts/new" className="flex items-center space-x-2">
                 <Plus className="h-5 w-5" />
                 <span>Nouvelle séance</span>
               </Link>
@@ -263,7 +263,7 @@ export default function WorkoutsPage() {
           <CardContent className="pt-6">
             <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <Filter className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
               <span className="font-medium text-gray-700 dark:text-gray-300">Filtres :</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -275,9 +275,9 @@ export default function WorkoutsPage() {
                 <Button
                   key={filter.value}
                   onClick={() => setFilterStatus(filter.value)}
-                  variant={filterStatus === filter.value ? "default" : "outline"}
+                  variant={filterStatus === filter.value ? "default" : "secondary"}
                   size="sm"
-                  className={filterStatus === filter.value ? "bg-orange-600 hover:bg-orange-700 text-white" : ""}
+                  className={filterStatus === filter.value ? "bg-orange-600 hover:bg-orange-700 text-white" : "border-orange-200 text-orange-700 hover:bg-orange-50"}
                 >
                   {filter.icon} {filter.label}
                 </Button>
@@ -290,7 +290,7 @@ export default function WorkoutsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Chargement de tes séances...</p>
+            <p className="mt-4 text-gray-600 dark:text-safe-muted">Chargement de tes séances...</p>
           </div>
         ) : (
           <>
@@ -330,7 +330,7 @@ export default function WorkoutsPage() {
                           </div>
                           <div>
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">{workout.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{workoutType.name}</p>
+                            <p className="text-sm text-gray-600 dark:text-safe-muted">{workoutType.name}</p>
                           </div>
                         </div>
                       </div>
@@ -399,7 +399,7 @@ export default function WorkoutsPage() {
                             e.stopPropagation();
                             changeWorkoutStatus(workout.id, 'Réalisé');
                           }}
-                          className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
+                          className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white"
                           size="sm"
                         >
                           ✅ Marquer comme réalisé
@@ -416,7 +416,7 @@ export default function WorkoutsPage() {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🏋️</div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Aucune séance trouvée</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">Commence par créer ta première séance d'entraînement !</p>
+                <p className="text-gray-600 dark:text-safe-muted mb-6">Commence par créer ta première séance d'entraînement !</p>
                 <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
                   <Link href="/workouts/new">
                     <Plus className="h-5 w-5" />

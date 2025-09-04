@@ -75,7 +75,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         </button>
       </div>
       
-      <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
+      <div className="text-xs text-gray-600 dark:text-safe-muted text-center">
         {min} - {max} {label?.toLowerCase() || ''}
       </div>
     </div>
