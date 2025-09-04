@@ -2,38 +2,56 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Head from 'next/head'
-import { motion, PanInfo } from 'framer-motion'
-import dynamic from 'next/dynamic'
 
-// PERFORMANCE CRITICAL: Import sélectif icônes essentielles seulement  
+// Import statique pour éviter les erreurs webpack
 import { 
   ChevronLeft, 
   ChevronRight, 
   Calendar as CalendarIcon,
-  CheckCircle
+  CheckCircle,
+  Plus,
+  Clock,
+  Dumbbell,
+  Target,
+  Info,
+  Activity,
+  Waves,
+  Zap,
+  Flower,
+  Smile,
+  Menu,
+  List,
+  X
 } from 'lucide-react'
+
+// TEMPORAIRE: Composant Users statique pour éviter l'hydration
+const UsersIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="lucide lucide-users"
+    aria-hidden="true"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="m22 21-2-2"></path>
+    <path d="m16 8 2-2"></path>
+    <circle cx="18" cy="6" r="3"></circle>
+  </svg>
+)
 
 // MIGRATION SHADCN/UI CALENDAR
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-
-// ULTRAHARDCORE: Lazy load icônes secondaires (-100KB+ bundle)
-const Plus = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Plus })), { ssr: false })
-const Clock = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Clock })), { ssr: false })
-const Users = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Users })), { ssr: false })
-const Dumbbell = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Dumbbell })), { ssr: false })
-const Target = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Target })), { ssr: false })
-const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })), { ssr: false })
-const Activity = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Activity })), { ssr: false })
-const Waves = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Waves })), { ssr: false })
-const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })), { ssr: false })
-const Flower = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Flower })), { ssr: false })
-const Smile = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Smile })), { ssr: false })
-const Menu = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Menu })), { ssr: false })
-const List = dynamic(() => import('lucide-react').then(mod => ({ default: mod.List })), { ssr: false })
-const X = dynamic(() => import('lucide-react').then(mod => ({ default: mod.X })), { ssr: false })
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import CalendarDayCell from '@/components/ui/CalendarDayCell';
@@ -68,7 +86,7 @@ const workoutTypes = [
   { name: 'Musculation', color: 'bg-orange-600', icon: Dumbbell },
   { name: 'Cardio', color: 'bg-blue-500', icon: Clock },
   { name: 'Étirement', color: 'bg-green-500', icon: Target },
-  { name: 'Cours collectif', color: 'bg-purple-500', icon: Users },
+  { name: 'Cours collectif', color: 'bg-purple-500', icon: UsersIcon },
   { name: 'Gainage', color: 'bg-yellow-500', icon: Activity },
   { name: 'Natation', color: 'bg-cyan-500', icon: Waves },
   { name: 'Crossfit', color: 'bg-red-500', icon: Zap },
@@ -122,16 +140,6 @@ function formatDateToYMD(date: Date): string {
 
 export default function CalendarPage() {
   const router = useRouter();
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.replace('/auth');
-      }
-    };
-    checkAuth();
-  }, [router]);
   
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -145,6 +153,70 @@ export default function CalendarPage() {
   // État pour la navigation swipe
   const [isSwipeTransition, setIsSwipeTransition] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+
+  // Fonctions de navigation swipe (Apple pattern)
+  const handleSwipeNavigation = useCallback((direction: 'left' | 'right') => {
+    if (isSwipeTransition) return
+    
+    setIsSwipeTransition(true)
+    const newDate = new Date(currentDate)
+    
+    if (direction === 'left') {
+      // Swipe gauche = mois suivant (comme Apple Calendar)
+      newDate.setMonth(newDate.getMonth() + 1)
+    } else {
+      // Swipe droite = mois précédent
+      newDate.setMonth(newDate.getMonth() - 1)
+    }
+    
+    setCurrentDate(newDate)
+    
+    // Réactiver swipe après animation
+    setTimeout(() => setIsSwipeTransition(false), 300)
+  }, [currentDate, isSwipeTransition])
+
+  // Gestion des événements tactiles sans Framer Motion
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    if (calendarRef.current) {
+      calendarRef.current.dataset.startX = touch.clientX.toString()
+      calendarRef.current.dataset.startY = touch.clientY.toString()
+      calendarRef.current.dataset.startTime = Date.now().toString()
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!calendarRef.current || isSwipeTransition) return
+    
+    const touch = e.changedTouches[0]
+    const startX = parseFloat(calendarRef.current.dataset.startX || '0')
+    const startY = parseFloat(calendarRef.current.dataset.startY || '0')
+    const startTime = parseInt(calendarRef.current.dataset.startTime || '0')
+    
+    const deltaX = touch.clientX - startX
+    const deltaY = touch.clientY - startY
+    const deltaTime = Date.now() - startTime
+    
+    const swipeThreshold = 50 // Distance minimale pour déclencher swipe
+    const maxTime = 300 // Temps maximum pour un swipe
+    
+    // Détection swipe horizontal uniquement
+    if (Math.abs(deltaX) > Math.abs(deltaY) && 
+        Math.abs(deltaX) > swipeThreshold && 
+        deltaTime < maxTime) {
+      
+      if (deltaX > 0) {
+        handleSwipeNavigation('right') // Swipe vers droite = mois précédent
+      } else {
+        handleSwipeNavigation('left')  // Swipe vers gauche = mois suivant
+      }
+    }
+    
+    // Nettoyer les données
+    delete calendarRef.current.dataset.startX
+    delete calendarRef.current.dataset.startY
+    delete calendarRef.current.dataset.startTime
+  }, [handleSwipeNavigation, isSwipeTransition])
 
   // Charger les séances personnelles
   const loadWorkouts = useCallback(async () => {
@@ -229,6 +301,16 @@ export default function CalendarPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/auth');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -299,50 +381,13 @@ export default function CalendarPage() {
   }
 
   const getWorkoutsForDate = (date: Date) => {
-    const selected = toDDMMYYYY(date);
-    return workouts.filter(workout => toDDMMYYYY(workout.scheduled_date) === selected);
+    const selected = formatDateToYMD(date);
+    return workouts.filter(workout => workout.scheduled_date === selected);
   }
-
-
 
   const getTypeColor = (type: string) => {
     const workoutType = workoutTypes.find(wt => wt.name === type)
     return workoutType?.color || 'bg-gray-500'
-  }
-
-  // Système de couleurs modernes inspiré Apple/Fitness
-  const getModernTypeColor = (type: string) => {
-    const modernColors: Record<string, string> = {
-      'Musculation': 'linear-gradient(135deg, #FF6B35, #F7931E)', // Orange dynamique
-      'Cardio': 'linear-gradient(135deg, #4FC3F7, #29B6F6)',      // Bleu ciel
-      'Étirement': 'linear-gradient(135deg, #81C784, #66BB6A)',   // Vert nature
-      'Repos': 'linear-gradient(135deg, #90A4AE, #78909C)',       // Gris relaxant
-      'Cours collectif': 'linear-gradient(135deg, #BA68C8, #AB47BC)', // Violet énergique
-      'Gainage': 'linear-gradient(135deg, #FFB74D, #FFA726)',     // Orange chaud
-      'Natation': 'linear-gradient(135deg, #4DD0E1, #26C6DA)',    // Cyan aquatique
-      'Crossfit': 'linear-gradient(135deg, #E57373, #EF5350)',    // Rouge intense
-      'Yoga': 'linear-gradient(135deg, #AED581, #9CCC65)',        // Vert zen
-      'Pilates': 'linear-gradient(135deg, #F48FB1, #EC407A)'      // Rose doux
-    }
-    return modernColors[type] || modernColors['Musculation']
-  }
-
-  const getPartnerTypeColor = (type: string) => {
-    const colorMap: Record<string, string> = {
-      'bg-orange-600': 'linear-gradient(135deg, #e65100, #ff6f00)', // Musculation - orange foncé
-      'bg-blue-500': 'linear-gradient(135deg, #0d47a1, #1976d2)',   // Cardio - bleu foncé
-      'bg-green-500': 'linear-gradient(135deg, #1b5e20, #388e3c)',  // Étirement - vert foncé
-      'bg-purple-500': 'linear-gradient(135deg, #4a148c, #7b1fa2)', // Cours collectif - violet foncé
-      'bg-yellow-500': 'linear-gradient(135deg, #f57f17, #fbc02d)', // Gainage - jaune foncé
-      'bg-cyan-500': 'linear-gradient(135deg, #006064, #00acc1)',   // Natation - cyan foncé
-      'bg-red-500': 'linear-gradient(135deg, #b71c1c, #d32f2f)',    // Crossfit - rouge foncé
-      'bg-pink-500': 'linear-gradient(135deg, #880e4f, #c2185b)',   // Yoga - rose foncé
-      'bg-indigo-500': 'linear-gradient(135deg, #1a237e, #3f51b5)', // Pilates - indigo foncé
-      'bg-gray-500': 'linear-gradient(135deg, #424242, #616161)'    // Repos - gris foncé
-    }
-    
-    const baseColor = getTypeColor(type)
-    return colorMap[baseColor] || 'linear-gradient(135deg, #424242, #616161)'
   }
 
   const formatDate = (date: Date) => {
@@ -366,60 +411,6 @@ export default function CalendarPage() {
   const days = getDaysInMonth(currentDate)
   const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
 
-  // Fonctions de navigation swipe (Apple pattern)
-  const handleSwipeNavigation = useCallback((direction: 'left' | 'right') => {
-    if (isSwipeTransition) return
-    
-    setIsSwipeTransition(true)
-    const newDate = new Date(currentDate)
-    
-    if (direction === 'left') {
-      // Swipe gauche = mois suivant (comme Apple Calendar)
-      newDate.setMonth(newDate.getMonth() + 1)
-    } else {
-      // Swipe droite = mois précédent
-      newDate.setMonth(newDate.getMonth() - 1)
-    }
-    
-    setCurrentDate(newDate)
-    
-    // Réactiver swipe après animation
-    setTimeout(() => setIsSwipeTransition(false), 300)
-  }, [currentDate, isSwipeTransition])
-
-  const handlePanEnd = useCallback((_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const swipeThreshold = 50 // Distance minimale pour déclencher swipe
-    const velocityThreshold = 500 // Vélocité minimale
-    
-    const { offset, velocity } = info
-    
-    // Détection swipe horizontal uniquement
-    if (Math.abs(offset.x) > Math.abs(offset.y) && 
-        (Math.abs(offset.x) > swipeThreshold || Math.abs(velocity.x) > velocityThreshold)) {
-      
-      if (offset.x > 0) {
-        handleSwipeNavigation('right') // Swipe vers droite
-      } else {
-        handleSwipeNavigation('left')  // Swipe vers gauche
-      }
-    }
-  }, [handleSwipeNavigation])
-
-  // Calculs statistiques avancés pour le mois courant
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  const workoutsMonth = workouts.filter(w => {
-    const d = new Date(w.scheduled_date);
-    return d.getFullYear() === year && d.getMonth() === month;
-  });
-  const totalSeances = workoutsMonth.length;
-  const totalDurees = workoutsMonth.reduce((acc, w) => acc + (w.duration || 0), 0);
-  const moyenneDuree = totalSeances > 0 ? Math.round(totalDurees / totalSeances) : 0;
-  const maxDuree = Math.max(...workoutsMonth.map(w => w.duration || 0), 0);
-  const durationsWithValue = workoutsMonth.map(w => w.duration || 0).filter(x => x > 0);
-  const minDuree = durationsWithValue.length > 0 ? Math.min(...durationsWithValue) : 0;
-  const seanceMax = workoutsMonth.find(w => (w.duration || 0) === maxDuree);
-  const seanceMin = workoutsMonth.find(w => (w.duration || 0) === minDuree && (w.duration || 0) > 0);
   // Fonction pour corriger automatiquement le type basé sur le nom
   const getCorrectType = (workout: Workout): string => {
     const name = workout.name.toLowerCase();
@@ -434,35 +425,6 @@ export default function CalendarPage() {
     if (name.includes('repos') || name.includes('rest')) return 'Repos';
     return workout.type; // Garder le type original si aucune correspondance
   };
-
-  const repartitionTypes = workoutTypes.map(type => ({
-    name: type.name,
-    count: workoutsMonth.filter(w => getCorrectType(w) === type.name).length
-  }));
-  
-  
-  // Calcul des séances terminées (incluant celles avec dates passées)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Réinitialiser à minuit pour une comparaison correcte
-  const seancesTerminees = workoutsMonth.filter(w => {
-    const workoutDate = new Date(w.scheduled_date);
-    workoutDate.setHours(0, 0, 0, 0);
-    return w.status === 'Terminé' || w.status === 'Réalisé' || (workoutDate < today && (w.status === 'Planifié' || w.status === 'Planifie'));
-  }).length;
-  
-  // Calcul des séances planifiées (futures uniquement)
-  const seancesPlanifiees = workoutsMonth.filter(w => {
-    const workoutDate = new Date(w.scheduled_date);
-    workoutDate.setHours(0, 0, 0, 0);
-    return (w.status === 'Planifié' || w.status === 'Planifie') && workoutDate >= today;
-  }).length;
-  
-  // Temps total des séances terminées ou passées
-  const tempsTotal = workoutsMonth.filter(w => {
-    const workoutDate = new Date(w.scheduled_date);
-    workoutDate.setHours(0, 0, 0, 0);
-    return w.status === 'Terminé' || w.status === 'Réalisé' || (workoutDate < today && (w.status === 'Planifié' || w.status === 'Planifie'));
-  }).reduce((total, w) => total + (w.duration || 0), 0);
 
   return (
     <>
@@ -484,9 +446,6 @@ export default function CalendarPage() {
               <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              
-              {/* Bouton remplacé par les tabs sur mobile - gardons uniquement pour cohérence visuelle */}
-              
               <Button
                 onClick={() => {
                   if (partnersWorkouts.length === 0) {
@@ -496,18 +455,14 @@ export default function CalendarPage() {
                   }
                 }}
                 variant="outline"
-                className={`flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation transition-all duration-200 ${
-                  showPartnersWorkouts 
-                    ? 'bg-white/20 border-white/40 text-white hover:bg-white/30 shadow-lg' 
-                    : 'bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm'
-                }`}
+                className="flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
                 title={
                   partnersWorkouts.length === 0 
                     ? 'Aucune séance partagée disponible - Gérer mes partenaires' 
                     : (showPartnersWorkouts ? 'Masquer les séances des partenaires' : 'Afficher les séances des partenaires')
                 }
               >
-                <Users className="h-6 w-6" />
+                <span className="text-sm font-bold">👥</span>
                 <span className="hidden sm:inline">Partenaires</span>
                 <span className="sm:hidden">Part.</span>
                 {partnersWorkouts.length > 0 ? (
@@ -536,11 +491,7 @@ export default function CalendarPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-8">
           {/* Calendrier et Vue Liste */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="xl:col-span-2"
-          >
+          <div className="xl:col-span-2">
             <Card className="p-3 sm:p-6">
               {/* ShadCN UI Tabs Component - 3 onglets sur mobile */}
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'calendar' | 'list' | 'stats')} className="w-full">
@@ -562,32 +513,29 @@ export default function CalendarPage() {
                 
                 <TabsContent value="calendar" className="m-0">
                   {/* Vue Calendrier */}
-                  {/* Navigation du calendrier améliorée */}
+                  {/* Navigation du calendrier */}
                   <div className="flex items-center justify-between mb-4 sm:mb-6">
-                    <motion.div whileTap={{ scale: 0.95 }}>
+                    <div>
                       <Button
-                        onClick={() => !isSwipeTransition && handleSwipeNavigation('right')}
+                        onClick={() => {
+                          const newDate = new Date(currentDate);
+                          newDate.setMonth(newDate.getMonth() - 1);
+                          setCurrentDate(newDate);
+                        }}
                         variant="ghost"
                         size="sm"
                         className="p-3 touch-manipulation"
-                        disabled={isSwipeTransition}
                       >
                         <ChevronLeft className="h-5 w-5" />
                       </Button>
-                    </motion.div>
+                    </div>
                     
-                    <motion.h2 
-                      key={monthName}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize"
-                    >
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
                       {monthName}
-                    </motion.h2>
+                    </h2>
                     
                     <div className="flex items-center gap-2">
-                      <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }}>
+                      <div>
                         <Button
                           onClick={() => setCurrentDate(new Date())}
                           className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white text-sm font-semibold shadow-md hover:shadow-lg touch-manipulation"
@@ -595,35 +543,36 @@ export default function CalendarPage() {
                           <span className="hidden sm:inline">Aujourd'hui</span>
                           <span className="sm:hidden">Auj.</span>
                         </Button>
-                      </motion.div>
+                      </div>
                       
-                      <motion.div whileTap={{ scale: 0.95 }}>
+                      <div>
                         <Button
-                          onClick={() => !isSwipeTransition && handleSwipeNavigation('left')}
+                          onClick={() => {
+                            const newDate = new Date(currentDate);
+                            newDate.setMonth(newDate.getMonth() + 1);
+                            setCurrentDate(newDate);
+                          }}
                           variant="ghost"
                           size="sm"
                           className="p-3 touch-manipulation"
-                          disabled={isSwipeTransition}
                         >
                           <ChevronRight className="h-5 w-5" />
                         </Button>
-                      </motion.div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Grille du calendrier avec navigation swipe */}
-                  <motion.div 
+                  {/* Grille du calendrier */}
+                  <div 
                     ref={calendarRef}
-                    className="grid grid-cols-7 gap-1 calendar-swipe"
-                    onPanEnd={handlePanEnd}
-                    dragConstraints={false}
-                    dragElastic={0}
-                    dragMomentum={false}
-                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                    className="grid grid-cols-7 gap-1 calendar-swipe touch-pan-y"
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    style={{ touchAction: 'pan-y pinch-zoom' }}
                   >
                     {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
                     {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                      <div key={day} className="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                      <div key={day} className="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-300">
                         {day}
                       </div>
                     ))}
@@ -633,11 +582,10 @@ export default function CalendarPage() {
                       let sessions: CalendarSession[] = [];
                       const dayYMD = formatDateToYMD(day.date);
                       
-                      // Séances personnelles avec couleurs modernes
+                      // Séances personnelles
                       const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
                       const personalSessions = workoutsForDate.map(w => {
                         const correctedType = getCorrectType(w);
-                        const modernColor = getModernTypeColor(correctedType);
                         
                         return {
                           id: String(w.id),
@@ -650,7 +598,6 @@ export default function CalendarPage() {
                           scheduled_date: w.scheduled_date,
                           time: (w as { time?: string }).time || '',
                           exercises: w.exercises || [],
-                          color: modernColor, // Nouvelle couleur moderne Apple-style
                         };
                       });
 
@@ -667,12 +614,9 @@ export default function CalendarPage() {
                           };
                           const correctedType = getCorrectType(pw);
                           
-                          // Couleur différente pour les séances partagées (dégradé plus sombre)
-                          const partnerColor = getPartnerTypeColor(correctedType);
-                          
                           return {
                             id: `partner-${pw.id}`,
-                            name: `👥 ${pw.name}`, // Préfixe pour identifier visuellement
+                            name: `👥 ${pw.name}`,
                             type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
                             status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
                             duration: pw.duration,
@@ -681,7 +625,6 @@ export default function CalendarPage() {
                             scheduled_date: pw.scheduled_date,
                             time: pw.start_time || '',
                             exercises: [],
-                            color: partnerColor, // Couleur personnalisée pour les séances partagées
                           };
                         });
                       }
@@ -721,277 +664,128 @@ export default function CalendarPage() {
                       );
                       return cell;
                     })}
-                  </motion.div>
-                  
-                  {/* Indicateur swipe pour mobile */}
-                  <div className="block sm:hidden mt-4 text-center">
-                    <p className="text-xs text-gray-700 dark:text-gray-300 flex items-center justify-center gap-2">
-                      <span>←</span>
-                      <span>Glissez pour naviguer</span>
-                      <span>→</span>
-                    </p>
                   </div>
                 </TabsContent>
                 
                 <TabsContent value="list" className="m-0">
-                  {/* Vue liste */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Vue agenda</h2>
-                    <div className="flex items-center gap-2">
+                  {/* Vue liste des séances */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Séances planifiées</h3>
                       <Button
-                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                        variant="ghost"
+                        onClick={() => router.push('/workouts/new')}
                         size="sm"
-                        className="p-3 min-h-[44px] touch-manipulation"
-                        aria-label="Mois précédent"
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
                       >
-                        <ChevronLeft className="h-5 w-5" />
-                      </Button>
-                      <span className="text-lg font-medium capitalize px-4">{monthName}</span>
-                      <Button
-                        onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                        variant="ghost"
-                        size="sm"
-                        className="p-3 min-h-[44px] touch-manipulation"
-                        aria-label="Mois suivant"
-                      >
-                        <ChevronRight className="h-5 w-5" />
+                        <Plus className="h-4 w-4 mr-1" />
+                        Nouvelle séance
                       </Button>
                     </div>
-                  </div>
-                  
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
-                    {(() => {
-                      // Récupérer toutes les séances du mois avec dates (personnelles + partenaires si affichage activé)
-                      const allWorkouts = showPartnersWorkouts 
-                        ? [...workouts, ...partnersWorkouts]
-                        : workouts;
-                        
-                      const monthWorkouts = allWorkouts.filter(w => {
-                        const date = new Date(w.scheduled_date);
-                        return date.getFullYear() === currentDate.getFullYear() && 
-                               date.getMonth() === currentDate.getMonth();
-                      }).sort((a, b) => {
-                        const dateA = new Date(a.scheduled_date);
-                        const dateB = new Date(b.scheduled_date);
-                        if (dateA.getTime() !== dateB.getTime()) {
-                          return dateA.getTime() - dateB.getTime();
-                        }
-                        // Si même jour, trier par heure si disponible
-                        const timeA = (a as { time?: string }).time || '';
-                        const timeB = (b as { time?: string }).time || '';
-                        return timeA.localeCompare(timeB);
-                      });
-                      
-                      if (monthWorkouts.length === 0) {
-                        return (
-                          <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-                            <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                            <p className="text-lg font-medium">Aucune séance planifiée</p>
-                            <p className="text-sm">Commence par ajouter une séance !</p>
-                          </div>
-                        );
-                      }
-                      
-                      return monthWorkouts.map(workout => {
-                        const date = new Date(workout.scheduled_date);
-                        const correctedType = getCorrectType(workout);
-                        const typeObj = workoutTypes.find(t => t.name === correctedType);
-                        const Icon = typeObj?.icon;
-                        
-                        // Vérifier si c'est une séance de partenaire
-                        const isPartnerWorkout = partnersWorkouts.some(pw => pw.id === workout.id);
-                        
-                        return (
-                          <div key={workout.id} className={`rounded-lg p-4 border-l-4 ${
-                            isPartnerWorkout 
-                              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-600' 
-                              : 'bg-gray-50 dark:bg-gray-800 border-orange-600'
-                          }`}>
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center gap-3">
-                                {Icon && <Icon className="h-5 w-5 text-orange-800 dark:text-orange-300" />}
-                                <div>
-                                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                                    {isPartnerWorkout && <span className="text-blue-600 text-xs font-normal mr-2">[Partenaire]</span>}
-                                    {workout.name}
-                                  </h3>
-                                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                                    {date.toLocaleDateString('fr-FR', { 
-                                      weekday: 'long', 
-                                      day: 'numeric', 
-                                      month: 'long' 
-                                    })}
-                                    {(workout as { time?: string }).time && ` à ${(workout as { time?: string }).time?.slice(0,5)}`}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge className={`text-white ${getTypeColor(correctedType)}`}>
-                                  {correctedType}
-                                </Badge>
-                                {workout.duration && (
-                                  <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                                    <Clock className="h-6 w-6" />
-                                    {workout.duration}min
-                                  </span>
-                                )}
-                              </div>
+                    
+                    {workouts.length === 0 ? (
+                      <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+                        <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium">Aucune séance planifiée</p>
+                        <p className="text-sm">Créez votre première séance pour commencer</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {workouts
+                          .filter(workout => new Date(workout.scheduled_date) >= new Date())
+                          .slice(0, 10)
+                          .map(workout => (
+                          <div key={workout.id} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div className={`w-3 h-3 rounded-full ${getTypeColor(getCorrectType(workout))}`}></div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 dark:text-gray-100">{workout.name}</h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
+                                  weekday: 'long',
+                                  day: 'numeric',
+                                  month: 'long'
+                                })}
+                                {workout.start_time && ` • ${workout.start_time}`}
+                                {workout.duration && ` • ${workout.duration} min`}
+                              </p>
                             </div>
-                            {workout.exercises && workout.exercises.length > 0 && (
-                              <div className="text-sm text-gray-600 dark:text-gray-300">
-                                <strong>Exercices :</strong> {workout.exercises.slice(0, 3).join(', ')}
-                                {workout.exercises.length > 3 && ` +${workout.exercises.length - 3} autres`}
-                              </div>
-                            )}
+                            <Badge className={`text-white ${getTypeColor(getCorrectType(workout))}`}>
+                              {getCorrectType(workout)}
+                            </Badge>
                           </div>
-                        );
-                      });
-                    })()}
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
                 </TabsContent>
                 
-                {/* Nouveau TabsContent pour les Stats (mobile/tablette uniquement) */}
                 <TabsContent value="stats" className="m-0 xl:hidden">
-                  <div className="space-y-6">
-                    {/* Date sélectionnée */}
-                    {selectedDate && (
-                      <Card className="p-4">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
-                          {formatDate(selectedDate)}
-                        </h3>
-                        <div className="space-y-3">
-                          {(() => {
-                            let sessions: CalendarSession[] = [];
-                            const dayYMD = formatDateToYMD(selectedDate);
-                            
-                            // Séances personnelles
-                            const personalSessions = getWorkoutsForDate(selectedDate).map(workout => ({
-                              id: `perso-${String(workout.id)}`,
-                              name: workout.name,
-                              type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                              status: workout.status,
-                              duration: workout.duration,
-                              isShared: false,
-                              participants: [],
-                              scheduled_date: workout.scheduled_date,
-                              time: (workout as { time?: string }).time || '',
-                              exercises: workout.exercises || [],
-                            }));
-
-                            // Séances des partenaires (si activées)
-                            let partnerSessions: CalendarSession[] = [];
-                            if (showPartnersWorkouts) {
-                              const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
-                              partnerSessions = partnersForDate.map(pw => {
-                                const partner = pw.profiles;
-                                const participant = {
-                                  id: partner?.id || '',
-                                  name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
-                                  avatarUrl: partner?.avatar_url || '/default-avatar.png',
-                                };
-                                const correctedType = getCorrectType(pw);
-                                
-                                return {
-                                  id: `partner-${pw.id}`,
-                                  name: `👥 ${pw.name}`,
-                                  type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                                  status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
-                                  duration: pw.duration,
-                                  isShared: true,
-                                  participants: [participant],
-                                  scheduled_date: pw.scheduled_date,
-                                  time: pw.start_time || '',
-                                  exercises: [],
-                                };
-                              });
-                            }
-
-                            sessions = [...personalSessions, ...partnerSessions];
-                            
-                            // Trier par heure si disponible
-                            sessions.sort((a, b) => {
-                              if (a.time && b.time) {
-                                return a.time.localeCompare(b.time);
-                              }
-                              return 0;
-                            });
-                            
-                            if (sessions.length === 0) {
-                              return (
-                                <div className="text-center py-6 text-gray-600 dark:text-gray-400">
-                                  <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-700 dark:text-gray-300" />
-                                  <p>Aucune séance planifiée</p>
-                                </div>
-                              );
-                            }
-                            return sessions.map(item => (
-                              <div key={item.id} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg flex flex-col gap-1">
-                                <div className="flex items-center justify-between mb-1">
-                                  <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                                    {item.name}
-                                    {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
-                                  </h4>
-                                  <div className={`w-3 h-3 rounded-full ${getTypeColor(item.type)}`} title={`Type: ${item.type}`} />
-                                </div>
-                                <Badge className={`text-white ${getTypeColor(item.type)}`}>{item.type}</Badge>
-                                {item.duration && (
-                                  <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
-                                    <Clock className="h-5 w-5" />
-                                    <span>{item.duration} min</span>
-                                  </span>
-                                )}
-                                {item.time && (
-                                  <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
-                                    <Clock className="h-5 w-5" />
-                                    <span>{item.time}</span>
-                                  </span>
-                                )}
-                              </div>
-                            ));
-                          })()}
-                        </div>
-                        <Button
-                          onClick={() => router.push('/workouts/new')}
-                          className="w-full mt-4 bg-orange-600 dark:bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
-                        >
-                          <Plus className="h-5 w-5" />
-                          <span>Ajouter une séance</span>
-                        </Button>
-                      </Card>
-                    )}
-
-                    {/* Statistiques du mois */}
-                    <Card className="p-4">
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                        <CalendarIcon className="h-5 w-5 text-orange-800 dark:text-orange-300" /> Ce mois
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-orange-800 dark:text-orange-300" />
-                            <span className="text-gray-700 dark:text-gray-300">Temps total</span>
-                          </div>
-                          <span className="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full">
-                            {tempsTotal} min
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
+                  {/* Vue stats simplifiée */}
+                  <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+                    <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p className="text-lg font-medium">Statistiques</p>
+                    <p className="text-sm">Fonctionnalité disponible prochainement</p>
                   </div>
                 </TabsContent>
               </Tabs>
             </Card>
-          </motion.div>
+          </div>
 
-          {/* Panneau latéral - Visible sur desktop, caché sur mobile */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="hidden xl:block space-y-6"
-          >
+          {/* Panneau latéral simple */}
+          <div className="space-y-6">
+            {/* Statistiques mensuelles */}
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
+              <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Statistiques {monthName}
+              </h3>
+              <div className="space-y-4">
+                {(() => {
+                  const currentMonthWorkouts = workouts.filter(workout => {
+                    const workoutDate = new Date(workout.scheduled_date);
+                    return workoutDate.getMonth() === currentDate.getMonth() && 
+                           workoutDate.getFullYear() === currentDate.getFullYear();
+                  });
+                  
+                  const completedWorkouts = currentMonthWorkouts.filter(w => w.status === 'Terminé' || w.status === 'Réalisé').length;
+                  const plannedWorkouts = currentMonthWorkouts.filter(w => w.status === 'Planifié' || w.status === 'Planifie').length;
+                  
+                  const typeStats = workoutTypes.map(type => ({
+                    ...type,
+                    count: currentMonthWorkouts.filter(w => getCorrectType(w) === type.name).length
+                  })).filter(type => type.count > 0);
+
+                  return (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{completedWorkouts}</div>
+                          <div className="text-xs text-green-700 dark:text-green-300">Terminées</div>
+                        </div>
+                        <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{plannedWorkouts}</div>
+                          <div className="text-xs text-orange-700 dark:text-orange-300">Planifiées</div>
+                        </div>
+                      </div>
+                      
+                      {typeStats.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Types d'entraînements</h4>
+                          {typeStats.slice(0, 3).map(type => (
+                            <div key={type.name} className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <div className={`w-3 h-3 rounded-full ${type.color}`}></div>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{type.name}</span>
+                              </div>
+                              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{type.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+
             {/* Date sélectionnée */}
             {selectedDate && (
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
@@ -1000,102 +794,29 @@ export default function CalendarPage() {
                 </h3>
                 <div className="space-y-3">
                   {(() => {
-                    let sessions: CalendarSession[] = [];
-                    const dayYMD = formatDateToYMD(selectedDate);
+                    const workoutsForDate = getWorkoutsForDate(selectedDate);
                     
-                    // Séances personnelles
-                    const personalSessions = getWorkoutsForDate(selectedDate).map(workout => ({
-                      id: `perso-${String(workout.id)}`,
-                      name: workout.name,
-                      type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                      status: workout.status,
-                      duration: workout.duration,
-                      isShared: false,
-                      participants: [],
-                      scheduled_date: workout.scheduled_date,
-                      time: (workout as { time?: string }).time || '',
-                      exercises: workout.exercises || [],
-                    }));
-
-                    // Séances des partenaires (si activées)
-                    let partnerSessions: CalendarSession[] = [];
-                    if (showPartnersWorkouts) {
-                      const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
-                      partnerSessions = partnersForDate.map(pw => {
-                        const partner = pw.profiles;
-                        const participant = {
-                          id: partner?.id || '',
-                          name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
-                          avatarUrl: partner?.avatar_url || '/default-avatar.png',
-                        };
-                        const correctedType = getCorrectType(pw);
-                        
-                        return {
-                          id: `partner-${pw.id}`,
-                          name: `👥 ${pw.name}`,
-                          type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                          status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
-                          duration: pw.duration,
-                          isShared: true,
-                          participants: [participant],
-                          scheduled_date: pw.scheduled_date,
-                          time: pw.start_time || '',
-                          exercises: [],
-                        };
-                      });
-                    }
-
-                    sessions = [...personalSessions, ...partnerSessions];
-                    
-                    // Trier par heure si disponible
-                    sessions.sort((a, b) => {
-                      if (a.time && b.time) {
-                        return a.time.localeCompare(b.time);
-                      }
-                      return 0;
-                    });
-                    
-                    if (sessions.length === 0) {
+                    if (workoutsForDate.length === 0) {
                       return (
                         <div className="text-center py-6 text-gray-600 dark:text-gray-400">
-                          <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-700 dark:text-gray-300" />
+                          <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                           <p>Aucune séance planifiée</p>
                         </div>
                       );
                     }
-                    return sessions.map(item => (
-                      <div key={item.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex flex-col gap-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            {item.name}
-                            {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
-                          </h4>
-                          <div className={`w-3 h-3 rounded-full ${getTypeColor(item.type)}`} title={`Type: ${item.type}`} />
-                        </div>
-                        <Badge className={`text-white ${getTypeColor(item.type)}`}>{item.type}</Badge>
-                        {item.duration && (
-                          <span className="flex items-center space-x-1">
-                            <Clock className="h-5 w-5" />
-                            <span>{item.duration} min</span>
+                    return workoutsForDate.map(workout => (
+                      <div key={workout.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex flex-col gap-1">
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                          {workout.name}
+                        </h4>
+                        <Badge className={`text-white ${getTypeColor(getCorrectType(workout))}`}>
+                          {getCorrectType(workout)}
+                        </Badge>
+                        {workout.duration && (
+                          <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
+                            <Clock className="h-4 w-4" />
+                            <span>{workout.duration} min</span>
                           </span>
-                        )}
-                        {item.time && (
-                          <span className="flex items-center space-x-1">
-                            <Clock className="h-5 w-5" />
-                            <span>{item.time}</span>
-                          </span>
-                        )}
-                        {item.participants && item.participants.length > 0 && item.participants[0] && (
-                          <span className="ml-2 text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                            <span className="text-blue-600">👥</span>
-                            Partagée avec {item.participants.map(p => p.name || 'Utilisateur IronTrack').join(', ')}
-                          </span>
-                        )}
-                        {item.exercises && item.exercises.length > 0 && (
-                          <div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                            {item.exercises.slice(0, 2).join(', ')}
-                            {item.exercises.length > 2 && ` +${item.exercises.length - 2}`}
-                          </div>
                         )}
                       </div>
                     ));
@@ -1105,386 +826,14 @@ export default function CalendarPage() {
                   onClick={() => router.push('/workouts/new')}
                   className="w-full mt-4 bg-orange-600 dark:bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                 >
-                  <Plus className="h-6 w-6" />
+                  <Plus className="h-5 w-5" />
                   <span>Ajouter une séance</span>
                 </button>
               </div>
             )}
-
-            {/* Statistiques du mois */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
-              <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-orange-800 dark:text-orange-300" /> Ce mois
-                <div className="group relative">
-                  <Info className="h-6 w-6 text-gray-700 dark:text-gray-300 cursor-help" />
-                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    Statistiques basées sur vos séances du mois courant
-                  </div>
-                </div>
-              </h3>
-              <div className="space-y-5">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Séances terminées</span>
-                  <div className="group relative">
-                    <Info className="h-5 w-5 text-gray-700 dark:text-gray-300 cursor-help" />
-                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      Séances terminées + séances passées
-                    </div>
-                  </div>
-                  <span className="ml-auto bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {seancesTerminees}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Target className="h-6 w-6 text-blue-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Séances planifiées</span>
-                  <div className="group relative">
-                    <Info className="h-5 w-5 text-gray-700 dark:text-gray-300 cursor-help" />
-                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      Séances futures à venir
-                    </div>
-                  </div>
-                  <span className="ml-auto bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {seancesPlanifiees}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-orange-800 dark:text-orange-300" />
-                  <span className="text-gray-700 dark:text-gray-300">Temps total</span>
-                  <div className="group relative">
-                    <Info className="h-5 w-5 text-gray-700 dark:text-gray-300 cursor-help" />
-                    <div className="absolute bottom-5 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      Durée des séances effectuées
-                    </div>
-                  </div>
-                  <span className="ml-auto bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full text-lg shadow">
-                    {tempsTotal} min
-                  </span>
-                </div>
-                <hr className="my-2" />
-                <div className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-1">Statistiques avancées</div>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Total séances</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">{totalSeances}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Durée moyenne</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">{moyenneDuree} min</span>
-                  </div>
-                  <div className="flex flex-col col-span-2">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Séance la plus longue</span>
-                    <span className="font-bold text-orange-700 text-base">{maxDuree > 0 && seanceMax ? `${seanceMax.name} (${maxDuree} min)` : '-'}</span>
-                  </div>
-                  <div className="flex flex-col col-span-2">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Séance la plus courte</span>
-                    <span className="font-bold text-orange-700 text-base">{minDuree > 0 && seanceMin ? `${seanceMin.name} (${minDuree} min)` : '-'}</span>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <span className="font-semibold">Répartition par type :</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {repartitionTypes.map(type => {
-                      const typeObj = workoutTypes.find(t => t.name === type.name)
-                      const Icon = typeObj?.icon
-                      return (
-                        <span key={type.name} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold shadow ${typeObj?.color} bg-opacity-20 text-gray-800 dark:text-gray-200`}>
-                          {Icon && <Icon className="h-6 w-6 mr-1" />} {type.name} : {type.count}
-                        </span>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Aide partage */}
-            {partnersWorkouts.length === 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 lg:p-6">
-                <h3 className="text-base lg:text-lg font-bold text-blue-900 mb-4 flex items-center gap-2">
-                  <Info className="h-4 lg:h-5 w-4 lg:w-5" />
-                  Séances partagées
-                </h3>
-                <div className="space-y-3 text-sm text-blue-800">
-                  <p>
-                    <strong>Aucune séance partagée disponible.</strong>
-                  </p>
-                  <div className="space-y-2">
-                    <p>Pour voir les séances de tes partenaires :</p>
-                    <ul className="ml-4 space-y-1">
-                      <li>• Assure-toi d'avoir des partenaires acceptés</li>
-                      <li>• Vérifie que tes partenaires ont activé le partage des entraînements</li>
-                      <li>• Demande-leur de configurer leurs paramètres de partage</li>
-                    </ul>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      onClick={() => router.push('/training-partners')}
-                      className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors min-h-[44px] touch-manipulation"
-                    >
-                      Gérer mes partenaires
-                    </button>
-                    <button
-                      onClick={() => router.push('/shared/dashboard')}
-                      className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors min-h-[44px] touch-manipulation"
-                    >
-                      Dashboard partage
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Légende */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
-              <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Légende</h3>
-              
-              <div className="space-y-2">
-                {workoutTypes.map(type => {
-                  const Icon = type.icon
-                  return (
-                    <div key={type.name} className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${type.color}`} />
-                      <Icon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{type.name}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-
-      {/* Sidebar Mobile/Tablette Modal/Drawer */}
-      {showMobileSidebar && (
-        <div className="fixed inset-0 z-50 xl:hidden">
-          {/* Overlay */}
-          <button 
-            className="absolute inset-0 bg-black/50 touch-manipulation" 
-            onClick={() => setShowMobileSidebar(false)}
-            aria-label="Fermer le panneau"
-          />
-          
-          {/* Drawer */}
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 20 }}
-            className="absolute right-0 top-0 h-full w-80 max-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-xl overflow-y-auto"
-          >
-            {/* Header */}
-            <div className="sticky top-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 border-b p-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Statistiques</h2>
-              <button
-                onClick={() => setShowMobileSidebar(false)}
-                className="p-3 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors min-h-[44px] touch-manipulation"
-                aria-label="Fermer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            {/* Contenu */}
-            <div className="p-4 space-y-6">
-              {/* Date sélectionnée */}
-              {selectedDate && (
-                <Card className="p-4">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    {formatDate(selectedDate)}
-                  </h3>
-                  <div className="space-y-3">
-                    {(() => {
-                      let sessions: CalendarSession[] = [];
-                      const dayYMD = formatDateToYMD(selectedDate);
-                      
-                      // Séances personnelles
-                      const personalSessions = getWorkoutsForDate(selectedDate).map(workout => ({
-                        id: `perso-${String(workout.id)}`,
-                        name: workout.name,
-                        type: getCorrectType(workout) as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                        status: workout.status,
-                        duration: workout.duration,
-                        isShared: false,
-                        participants: [],
-                        scheduled_date: workout.scheduled_date,
-                        time: (workout as { time?: string }).time || '',
-                        exercises: workout.exercises || [],
-                      }));
-
-                      // Séances des partenaires (si activées)
-                      let partnerSessions: CalendarSession[] = [];
-                      if (showPartnersWorkouts) {
-                        const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
-                        partnerSessions = partnersForDate.map(pw => {
-                          const partner = pw.profiles;
-                          const participant = {
-                            id: partner?.id || '',
-                            name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) || 'Partenaire',
-                            avatarUrl: partner?.avatar_url || '/default-avatar.png',
-                          };
-                          const correctedType = getCorrectType(pw);
-                          
-                          return {
-                            id: `partner-${pw.id}`,
-                            name: `👥 ${pw.name}`,
-                            type: (['Musculation', 'Cardio', 'Étirement', 'Repos', 'Cours collectif', 'Gainage', 'Natation', 'Crossfit', 'Yoga', 'Pilates'].includes(correctedType) ? correctedType : 'Musculation') as 'Musculation' | 'Cardio' | 'Étirement' | 'Repos' | 'Cours collectif' | 'Gainage' | 'Natation' | 'Crossfit' | 'Yoga' | 'Pilates',
-                            status: pw.status as 'Planifié' | 'Planifie' | 'Terminé' | 'Réalisé' | 'Annulé',
-                            duration: pw.duration,
-                            isShared: true,
-                            participants: [participant],
-                            scheduled_date: pw.scheduled_date,
-                            time: pw.start_time || '',
-                            exercises: [],
-                          };
-                        });
-                      }
-
-                      sessions = [...personalSessions, ...partnerSessions];
-                      
-                      // Trier par heure si disponible
-                      sessions.sort((a, b) => {
-                        if (a.time && b.time) {
-                          return a.time.localeCompare(b.time);
-                        }
-                        return 0;
-                      });
-                      
-                      if (sessions.length === 0) {
-                        return (
-                          <div className="text-center py-6 text-gray-600 dark:text-gray-400">
-                            <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-700 dark:text-gray-300" />
-                            <p>Aucune séance planifiée</p>
-                          </div>
-                        );
-                      }
-                      return sessions.map(item => (
-                        <div key={item.id} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg flex flex-col gap-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                              {item.name}
-                              {item.isShared && <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold ml-2">👥 Partagée</span>}
-                            </h4>
-                            <div className={`w-3 h-3 rounded-full ${getTypeColor(item.type)}`} title={`Type: ${item.type}`} />
-                          </div>
-                          <Badge className={`text-white ${getTypeColor(item.type)}`}>{item.type}</Badge>
-                          {item.duration && (
-                            <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
-                              <Clock className="h-5 w-5" />
-                              <span>{item.duration} min</span>
-                            </span>
-                          )}
-                          {item.time && (
-                            <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
-                              <Clock className="h-5 w-5" />
-                              <span>{item.time}</span>
-                            </span>
-                          )}
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowMobileSidebar(false);
-                      router.push('/workouts/new');
-                    }}
-                    className="w-full mt-4 bg-orange-600 dark:bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
-                  >
-                    <Plus className="h-5 w-5" />
-                    <span>Ajouter une séance</span>
-                  </button>
-                </Card>
-              )}
-
-              {/* Statistiques du mois */}
-              <Card className="p-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 text-orange-800 dark:text-orange-300" /> Ce mois
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="text-gray-700 dark:text-gray-300">Terminées</span>
-                    </div>
-                    <span className="bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full">
-                      {seancesTerminees}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Target className="h-5 w-5 text-blue-500" />
-                      <span className="text-gray-700 dark:text-gray-300">Planifiées</span>
-                    </div>
-                    <span className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full">
-                      {seancesPlanifiees}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-orange-800 dark:text-orange-300" />
-                      <span className="text-gray-700 dark:text-gray-300">Temps total</span>
-                    </div>
-                    <span className="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full">
-                      {tempsTotal} min
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Statistiques avancées */}
-                <div className="mt-4">
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Statistiques avancées</h4>
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3 rounded">
-                      <span className="text-xs text-gray-600 dark:text-gray-400 block">Total séances</span>
-                      <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">{totalSeances}</span>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3 rounded">
-                      <span className="text-xs text-gray-600 dark:text-gray-400 block">Durée moyenne</span>
-                      <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">{moyenneDuree} min</span>
-                    </div>
-                  </div>
-                  
-                  {maxDuree > 0 && seanceMax && (
-                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3 rounded mb-2">
-                      <span className="text-xs text-gray-600 dark:text-gray-400 block">Séance la plus longue</span>
-                      <span className="font-bold text-orange-700 text-sm">{seanceMax.name} ({maxDuree} min)</span>
-                    </div>
-                  )}
-                  
-                  {minDuree > 0 && seanceMin && (
-                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3 rounded mb-3">
-                      <span className="text-xs text-gray-600 dark:text-gray-400 block">Séance la plus courte</span>
-                      <span className="font-bold text-orange-700 text-sm">{seanceMin.name} ({minDuree} min)</span>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Répartition par type en version compacte */}
-                <div className="mt-4">
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Types d'exercices</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {repartitionTypes.filter(type => type.count > 0).map(type => {
-                      const typeObj = workoutTypes.find(t => t.name === type.name)
-                      const Icon = typeObj?.icon
-                      return (
-                        <div key={type.name} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded">
-                          {Icon && <Icon className="h-6 w-6 text-gray-600 dark:text-gray-300" />}
-                          <span className="text-sm">{type.name}</span>
-                          <span className="ml-auto font-bold text-orange-800 dark:text-orange-300">{type.count}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </motion.div>
-        </div>
-      )}
       </div>
     </>
   )

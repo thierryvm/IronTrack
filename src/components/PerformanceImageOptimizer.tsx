@@ -61,7 +61,7 @@ export function OptimizedImage({
       {/* Erreur fallback */}
       {hasError && !fallbackSrc && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 flex items-center justify-center">
-          <div className="text-gray-600 dark:text-gray-400 text-sm text-center">
+          <div className="text-gray-600 dark:text-safe-muted text-sm text-center">
             <div className="mb-2">📷</div>
             Image non disponible
           </div>
@@ -116,7 +116,7 @@ export function OptimizedAvatar({
           fallbackSrc="/default-avatar.svg"
         />
       ) : (
-        <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 dark:text-gray-400">
+        <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 dark:text-safe-muted">
           <span className="text-sm font-semibold">
             {alt.charAt(0).toUpperCase()}
           </span>

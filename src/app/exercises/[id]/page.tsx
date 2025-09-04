@@ -146,7 +146,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Exercise Info */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             {exercise.name}
           </h1>
@@ -182,7 +182,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Recent Performances */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Performances récentes
@@ -230,7 +230,7 @@ export default function ExerciseDetailPage() {
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span className="text-xs text-gray-600 dark:text-safe-muted">
                     {new Date(performance.date).toLocaleDateString('fr-FR', {
                       day: 'numeric',
                       month: 'short',

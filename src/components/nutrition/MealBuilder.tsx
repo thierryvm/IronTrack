@@ -440,7 +440,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     </div>
                     <button
                       onClick={() => removeIngredient(ingredient.id)}
-                      className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      className="p-1 text-safe-error hover:bg-red-50 rounded transition-colors"
                     >
                       <LucideX className="h-6 w-6" />
                     </button>
@@ -451,7 +451,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             
             {errors.ingredients && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center space-x-2">
-                <AlertTriangle className="h-6 w-6 text-red-500 flex-shrink-0" />
+                <AlertTriangle className="h-6 w-6 text-safe-error flex-shrink-0" />
                 <span className="text-red-700 text-sm">{errors.ingredients}</span>
               </div>
             )}
@@ -476,7 +476,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   <div key={ingredient.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
                       <h5 className="font-medium text-gray-900 dark:text-gray-100">{ingredient.food.name}</h5>
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-sm text-gray-600 dark:text-safe-muted">
                         {ingredient.calculatedNutrition.calories} cal
                       </span>
                     </div>
@@ -551,7 +551,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             
             {errors.quantities && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center space-x-2">
-                <AlertTriangle className="h-6 w-6 text-red-500 flex-shrink-0" />
+                <AlertTriangle className="h-6 w-6 text-safe-error flex-shrink-0" />
                 <span className="text-red-700 text-sm">{errors.quantities}</span>
               </div>
             )}
@@ -584,7 +584,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   maxLength={100}
                 />
                 {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  <p className="text-safe-error text-sm mt-1">{errors.name}</p>
                 )}
               </div>
               
@@ -604,7 +604,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     }`}
                   />
                   {errors.servings && (
-                    <p className="text-red-500 text-sm mt-1">{errors.servings}</p>
+                    <p className="text-safe-error text-sm mt-1">{errors.servings}</p>
                   )}
                 </div>
                 
@@ -654,11 +654,11 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag) => (
                         <div key={tag} className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full">
-                          <Tag className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <Tag className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
                           <span className="text-sm text-gray-700 dark:text-gray-300">{tag}</span>
                           <button
                             onClick={() => removeTag(tag)}
-                            className="text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors"
+                            className="text-gray-700 dark:text-gray-300 hover:text-safe-error transition-colors"
                           >
                             <LucideX className="h-5 w-5" />
                           </button>
@@ -680,7 +680,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     {totalNutrition.calories}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">calories</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.calories / servings)} cal/portion
                   </div>
                 </div>
@@ -690,7 +690,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     {Math.round(totalNutrition.protein * 10) / 10}g
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">protéines</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.protein / servings * 10) / 10}g/portion
                   </div>
                 </div>
@@ -700,7 +700,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     {Math.round(totalNutrition.carbs * 10) / 10}g
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">glucides</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.carbs / servings * 10) / 10}g/portion
                   </div>
                 </div>
@@ -710,7 +710,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     {Math.round(totalNutrition.fat * 10) / 10}g
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">lipides</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.fat / servings * 10) / 10}g/portion
                   </div>
                 </div>
@@ -758,7 +758,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             onClick={onCancel}
             className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
           >
-            <LucideX className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <LucideX className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
           </button>
         </div>
         

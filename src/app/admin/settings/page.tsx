@@ -43,7 +43,7 @@ export default function AdminSettingsPage() {
             <p className="text-muted-foreground text-center">
               Vous n'avez pas les permissions nécessaires pour accéder aux paramètres administrateur.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-sm text-gray-600 dark:text-safe-muted mt-2">
               Debug: Rôle actuel = {user?.role || 'non défini'}
             </p>
           </CardContent>
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Activé</span>
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Requis</span>
               </div>
             </div>
@@ -269,7 +269,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Actif</span>
               </div>
             </div>
@@ -304,7 +304,7 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-safe-success" />
                 <span className="text-sm text-green-600">Actif</span>
               </div>
             </div>

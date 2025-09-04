@@ -90,10 +90,10 @@ function TypeCard({ option, selected, onSelect }: TypeCardProps) {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className={color === 'orange' ? 'text-orange-800 dark:text-orange-300' : 'text-red-500'}
+          className={color === 'orange' ? 'text-orange-800 dark:text-orange-300' : 'text-safe-error'}
         >
           <div className="w-6 h-6 bg-current rounded-full flex items-center justify-center">
-            <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full" />
+            <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-full" />
           </div>
         </motion.div>
       )}

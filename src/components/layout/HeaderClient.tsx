@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { createClient } from '@/utils/supabase/client'
 
 // Import des icônes critiques uniquement
@@ -25,11 +24,8 @@ import {
   Activity
 } from 'lucide-react'
 
-// Lazy load du ThemeToggle (non-critique)
-const ThemeToggle = dynamic(() => import('@/components/ui/ThemeToggle'), { 
-  ssr: false,
-  loading: () => <div className="w-8 h-8 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
-})
+// Import statique pour éviter les bailouts SSR
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // Import direct du hook (correction erreur hooks React)
 import { useAdminRole } from '@/hooks/useAdminRole'
@@ -38,6 +34,14 @@ export default function HeaderClient() {
   // États de menu désactivés - UI simplifiée mobile 2025
   const pathname = usePathname()
   const router = useRouter()
+  
+  // Ne pas rendre le header sur les pages auth (évite le preload inutile)
+  if (pathname?.startsWith('/auth')) {
+    return null
+  }
+  
+  // Éviter le preload sur les pages auth
+  const shouldPreloadLogo = pathname === '/' || pathname === '/dashboard'
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const [userInitials, setUserInitials] = useState('')
@@ -294,7 +298,7 @@ export default function HeaderClient() {
                   alt="IronTrack Logo" 
                   width={40}
                   height={40}
-                  priority
+                  priority={shouldPreloadLogo}
                   className="h-full w-full object-contain"
                   sizes="40px"
                   quality={95}
@@ -331,7 +335,7 @@ export default function HeaderClient() {
                   <div className="relative" data-notification-dropdown>
                     <button
                       onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                      className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-0"
+                      className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none"
                       aria-label={`Notifications ${notificationCount > 0 ? `(${notificationCount} nouvelles)` : ''}`}
                       aria-expanded={isNotificationOpen}
                     >
@@ -360,18 +364,18 @@ export default function HeaderClient() {
                                     onClick={() => setIsNotificationOpen(false)}
                                   >
                                     <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                    <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                                   </Link>
                                 ) : (
                                   <div className="p-4">
                                     <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                    <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                                   </div>
                                 )}
                               </div>
                             ))
                           ) : (
-                            <div className="p-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                            <div className="p-4 text-center text-sm text-gray-600 dark:text-safe-muted">
                               Aucune notification
                             </div>
                           )}
@@ -380,7 +384,7 @@ export default function HeaderClient() {
                         <div className="p-3 border-t border-gray-200 dark:border-gray-600">
                           <Link
                             href="/notifications"
-                            className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
+                            className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-safe-muted dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
                             onClick={() => setIsNotificationOpen(false)}
                             >
                               Voir mes notifications
@@ -412,7 +416,7 @@ export default function HeaderClient() {
                           {userInitials}
                         </div>
                       )}
-                      <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                      <ChevronDown className="w-4 h-4 text-gray-600 dark:text-safe-muted" />
                     </button>
                     
                     {/* Dropdown profil desktop */}
@@ -457,7 +461,7 @@ export default function HeaderClient() {
                           <hr className="my-2 border-gray-200 dark:border-gray-600" />
                           <button
                             onClick={handleLogout}
-                            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-safe-error dark:hover:bg-red-900/20 rounded-md transition-colors"
                           >
                             <LogOut className="w-4 h-4" />
                             <span>Se déconnecter</span>
@@ -497,7 +501,7 @@ export default function HeaderClient() {
                 alt="IronTrack Logo" 
                 width={32}
                 height={32}
-                priority
+                priority={pathname === '/' || pathname === '/dashboard'}
                 className="h-full w-full object-contain"
                 sizes="32px"
                 quality={95}
@@ -515,7 +519,7 @@ export default function HeaderClient() {
                 {/* Notifications mobile */}
                 <button
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                  className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none"
                   aria-label={`Notifications${notificationCount > 0 ? ` (${notificationCount} non lues)` : ''}`}
                 >
                   <Bell className="w-5 h-5" />
@@ -579,7 +583,7 @@ export default function HeaderClient() {
                             )}
                             <div>
                               <h3 className="text-base font-semibold text-gray-900 dark:text-white">{userEmail}</h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">Votre profil</p>
+                              <p className="text-sm text-gray-600 dark:text-safe-muted">Votre profil</p>
                             </div>
                           </div>
                         </div>
@@ -601,7 +605,7 @@ export default function HeaderClient() {
                               handleLogout()
                               setIsProfileDropdownOpen(false)
                             }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:text-safe-error dark:hover:bg-red-900/20 transition-colors"
                           >
                             <LogOut className="w-5 h-5" />
                             <span>Se déconnecter</span>
@@ -645,18 +649,18 @@ export default function HeaderClient() {
                           onClick={() => setIsNotificationOpen(false)}
                         >
                           <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                         </Link>
                       ) : (
                         <div className="p-4">
                           <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-sm text-gray-600 dark:text-gray-400">
+                  <div className="p-8 text-center text-sm text-gray-600 dark:text-safe-muted">
                     Aucune notification
                   </div>
                 )}
@@ -665,7 +669,7 @@ export default function HeaderClient() {
               <div className="p-3 border-t border-gray-200 dark:border-gray-600">
                 <Link
                   href="/notifications"
-                  className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
+                  className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-safe-muted dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
                   onClick={() => setIsNotificationOpen(false)}
                 >
                   Voir mes notifications

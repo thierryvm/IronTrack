@@ -333,7 +333,7 @@ export function PerformanceForm({
               <div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Durée <span className="text-red-500">*</span>
+                    Durée <span className="text-safe-error">*</span>
                   </label>
                   <div className="flex gap-2">
                     <Input
@@ -649,6 +649,7 @@ export function PerformanceForm({
             
             <Button
               type="submit"
+              variant="orange"
               loading={isLoading}
             >
               <Target className="w-4 h-4 mr-2" />

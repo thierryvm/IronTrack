@@ -155,12 +155,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0" aria-describedby="exercise-details-description">
+      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-white dark:bg-gray-900" aria-describedby="exercise-details-description">
         <DialogHeader className="sr-only">
-          <DialogTitle id="exercise-details-title">
+          <DialogTitle>
             Détails de l'exercice {exercise?.name || ''}
           </DialogTitle>
-          <DialogDescription id="exercise-details-description">
+          <DialogDescription>
             Consultation des informations détaillées et performances de cet exercice
           </DialogDescription>
         </DialogHeader>
@@ -180,20 +180,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label="Retour à la liste des exercices"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </Button>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center flex-1" aria-hidden="true">
               Détails de l'exercice
             </h2>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Fermer la modal des détails"
-            >
-              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </Button>
+            {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
           </div>
 
           {/* Content */}
@@ -211,7 +203,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       src={exercise.image_url}
                       alt={`Photo de ${exercise.name}`}
                       fill
-                      className="object-cover"
+                      className="object-cover object-center"
                       sizes="(max-width: 640px) 100vw, 50vw"
                     />
                   </div>
@@ -286,7 +278,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
 
                 {/* Dernière performance */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3">
-                  <Trophy className="h-6 w-6 text-yellow-500" />
+                  <Trophy className="h-6 w-6 text-safe-warning" />
                   {lastPerf ? (
                     <span className="text-gray-800 dark:text-gray-200">
                       Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
@@ -295,7 +287,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       </span>
                     </span>
                   ) : (
-                    <span className="text-gray-600 dark:text-gray-400">Aucune performance enregistrée</span>
+                    <span className="text-gray-600 dark:text-safe-muted">Aucune performance enregistrée</span>
                   )}
                 </div>
 
@@ -384,9 +376,9 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       onClose()
                       router.push(`/exercises/${exerciseId}/edit-exercise`)
                     }}
-                    className="flex-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                   >
-                    <Edit3 className="h-6 w-6" />
+                    <Edit3 className="h-4 w-4" />
                     Modifier l'exercice
                   </button>
                   <button
@@ -394,9 +386,9 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       onClose()
                       router.push(`/exercises/${exerciseId}/add-performance`)
                     }}
-                    className="flex-1 bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 text-white py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                   >
-                    <Plus className="h-6 w-6" />
+                    <Plus className="h-4 w-4" />
                     Nouvelle performance
                   </button>
                 </div>
@@ -408,7 +400,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   </h4>
                   
                   {performances.length === 0 ? (
-                    <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                    <div className="text-center py-8 text-gray-600 dark:text-safe-muted">
                       <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                       <p>Aucune performance enregistrée pour cet exercice.</p>
                       <p className="text-sm mt-1">Ajoutez votre première performance !</p>
@@ -418,7 +410,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       {performances.map((perf) => (
                         <div
                           key={perf.id}
-                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -426,7 +418,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                 <span className="font-medium text-gray-900 dark:text-gray-100">
                                   {getPerfLabel(perf, exercise.exercise_type, exercise.name)}
                                 </span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-gray-600 dark:text-safe-muted">
                                   {new Date(perf.performed_at).toLocaleDateString()}
                                 </span>
                               </div>
@@ -464,7 +456,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12 text-red-500">
+              <div className="text-center py-12 text-safe-error">
                 Erreur lors du chargement de l'exercice
               </div>
             )}

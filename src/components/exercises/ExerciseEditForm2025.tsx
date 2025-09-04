@@ -397,7 +397,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+          <AlertCircle className="mx-auto h-12 w-12 text-safe-error mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Exercice introuvable</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">L'exercice demandé n'existe pas ou a été supprimé.</p>
           <Button onClick={() => router.push('/exercises')}>
@@ -411,7 +411,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -427,7 +427,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   Modifier l'exercice
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{exercise.name}</p>
+                <p className="text-sm text-gray-600 dark:text-safe-muted">{exercise.name}</p>
               </div>
             </div>
             
@@ -438,7 +438,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">
@@ -587,7 +587,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Instructions d'exécution, conseils techniques, muscles ciblés...</p>
+                <p className="text-sm text-gray-600 dark:text-safe-muted">Instructions d'exécution, conseils techniques, muscles ciblés...</p>
                 <Textarea
                   value={exercise.description || ''}
                   onChange={(e) => setExercise({...exercise, description: e.target.value})}
@@ -599,7 +599,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
               {/* Notes de performance (maintenant éditables) */}
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes de la dernière performance</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance.</p>
+                <p className="text-sm text-gray-600 dark:text-safe-muted">Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance.</p>
                 <Textarea
                   value={exercise.notes || ''}
                   onChange={(e) => setExercise(prev => ({ ...prev!, notes: e.target.value }))}
@@ -655,10 +655,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
           </div>
 
           {/* Footer Actions - Position fixe en bas */}
-          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
+          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={handleCancel}
                 disabled={saving}
                 fullWidth
@@ -667,7 +667,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 Annuler
               </Button>
               <Button
-                variant="default"
+                variant="orange"
                 onClick={handleSave}
                 disabled={saving}
                 className="sm:w-auto order-1 sm:order-2"

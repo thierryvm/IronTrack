@@ -53,7 +53,7 @@ export function FormLabel({ children, required, className, ...props }: FormLabel
       {children}
       {required && (
         <span 
-          className="ml-1 text-red-500" 
+          className="ml-1 text-safe-error" 
           aria-label="Champ obligatoire"
         >
           *

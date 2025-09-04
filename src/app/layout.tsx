@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./hmr-optimization";
-import dynamic from "next/dynamic";
 import ClientProviders from "@/components/ClientProviders";
-
-// Lazy loading pour optimiser le bundle initial  
-const ConditionalHeader = dynamic(() => import("@/components/layout/ConditionalHeader").then(mod => ({ default: mod.ConditionalHeader })), {
-  ssr: true,
-  loading: () => <div className="h-16 bg-orange-600 dark:bg-orange-500" />
-});
+import VercelProviders from "@/components/VercelProviders";
+import ConditionalHeader from "@/components/layout/ConditionalHeader";
 
 // ULTRAHARDCORE: Police système uniquement
 // const inter = Inter({ subsets: ["latin"], variable: "--font-inter", });
@@ -71,7 +66,7 @@ export default function RootLayout({
           __html: `(function(){try{const s=localStorage.getItem('theme'),d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.remove('dark','light');s==='dark'||(!s&&d)?document.documentElement.classList.add('dark'):document.documentElement.classList.add('light')}catch{document.documentElement.classList[window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'add':'remove']('dark')}})();`
         }} />
       </head>
-      <body className="antialiased min-h-screen bg-gray-50 dark:bg-gray-800 text-gray-900 dark:bg-slate-900 dark:text-gray-100 overflow-x-hidden" suppressHydrationWarning>
+      <body className="antialiased min-h-screen overflow-x-hidden" suppressHydrationWarning>
         <ClientProviders>
           <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
             <ConditionalHeader />
@@ -80,6 +75,7 @@ export default function RootLayout({
             </main>
           </div>
         </ClientProviders>
+        <VercelProviders />
       </body>
     </html>
   );

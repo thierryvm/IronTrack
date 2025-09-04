@@ -34,7 +34,7 @@ export default function ProgressCharts({
   if (chartType === 'line') {
     if (progressData.length === 0) {
       return (
-        <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+        <div className="text-center py-12 text-gray-600 dark:text-safe-muted">
           <div className="text-6xl mb-4">📈</div>
           <p className="text-lg font-medium mb-2">Pas encore de données de progression</p>
           <span className="block">Ajoute plus de séances pour voir ta progression !</span>
@@ -89,7 +89,7 @@ export default function ProgressCharts({
   if (chartType === 'pie') {
     if (muscleGroupData.length === 0) {
       return (
-        <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+        <div className="text-center py-12 text-gray-600 dark:text-safe-muted">
           <div className="text-6xl mb-4">💪</div>
           <p className="text-lg font-medium mb-2">Aucune donnée de groupe musculaire</p>
           <span className="block">Commence à t'entraîner pour voir la répartition !</span>

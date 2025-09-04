@@ -173,14 +173,14 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={handleCancel}
               className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </button>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Modifier la performance
@@ -190,7 +190,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
             onClick={handleCancel}
             className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <X className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
           </button>
         </div>
       </div>
@@ -199,7 +199,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-6"
+          className="max-w-2xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-lg p-6"
         >
           {/* Info exercice */}
           <div className="flex items-center gap-3 mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">

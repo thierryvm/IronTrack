@@ -102,13 +102,13 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'open':
-        return <Clock className="h-6 w-6 text-blue-500" />
+        return <Clock className="h-6 w-6 text-safe-info" />
       case 'in_progress':
         return <AlertTriangle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
       case 'resolved':
-        return <CheckCircle className="h-6 w-6 text-green-500" />
+        return <CheckCircle className="h-6 w-6 text-safe-success" />
       case 'closed':
-        return <CheckCircle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+        return <CheckCircle className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
       default:
         return <MessageCircle className="h-6 w-6 text-gray-700 dark:text-gray-300" />
     }
@@ -191,7 +191,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
         </div>
         <div className="text-center py-8">
-          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-3" />
+          <AlertTriangle className="h-12 w-12 text-safe-error mx-auto mb-3" />
           <p className="text-red-600 font-medium mb-2">Erreur de chargement</p>
           <p className="text-gray-600 dark:text-gray-300 text-sm">{error}</p>
         </div>
@@ -221,7 +221,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
         <div className="text-center py-8">
           <MessageCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">Aucun ticket de support</p>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+          <p className="text-gray-600 dark:text-safe-muted text-sm mb-4">
             Vous n&apos;avez pas encore créé de ticket de support. 
             Notre équipe est là pour vous aider !
           </p>
@@ -261,7 +261,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-safe-muted">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                       <Tag className="h-5 w-5" />
@@ -275,7 +275,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                     </div>
                     {ticket.response_count > 0 && (
                       <div className="flex items-center gap-1">
-                        <Mail className="h-5 w-5 text-blue-500" />
+                        <Mail className="h-5 w-5 text-safe-info" />
                         <span className="text-blue-600">
                           {ticket.response_count} réponse{ticket.response_count > 1 ? 's' : ''}
                         </span>

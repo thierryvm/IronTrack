@@ -137,7 +137,7 @@ const Slider2025 = React.forwardRef<HTMLDivElement, Slider2025Props>(
 
         {/* Labels */}
         {labels && labels.length > 0 && (
-          <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-1">
+          <div className="flex justify-between text-xs text-gray-600 dark:text-safe-muted px-1">
             {labels.map((label, index) => (
               <span key={index} className="text-center">
                 {label}

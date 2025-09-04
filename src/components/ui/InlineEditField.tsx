@@ -110,7 +110,7 @@ export function InlineEditField({
     const currentValue = displayValue !== undefined ? displayValue : value
     
     if (currentValue === null || currentValue === undefined || currentValue === '' || currentValue === 0) {
-      return <span className="italic text-gray-600 dark:text-gray-400 text-sm">{placeholder}</span>
+      return <span className="italic text-gray-600 dark:text-safe-muted text-sm">{placeholder}</span>
     }
     
     return (
@@ -119,7 +119,7 @@ export function InlineEditField({
           {currentValue}{unit && ` ${unit}`}
         </span>
         {unit && type === 'number' && (
-          <span className="text-xs text-gray-600 dark:text-gray-400">Cliquer pour modifier</span>
+          <span className="text-xs text-gray-600 dark:text-safe-muted">Cliquer pour modifier</span>
         )}
       </div>
     )
@@ -141,7 +141,7 @@ export function InlineEditField({
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKeyPress}
-              className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 relative z-50"
+              className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  relative z-50"
               disabled={loading}
             >
               <option value="">Sélectionner...</option>
@@ -162,7 +162,7 @@ export function InlineEditField({
                 min={min}
                 max={max}
                 step={step}
-                className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 relative z-50"
+                className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  relative z-50"
                 disabled={loading}
                 placeholder={placeholder}
               />
@@ -175,7 +175,7 @@ export function InlineEditField({
           <button
             onClick={saveEdit}
             disabled={loading}
-            className="p-2 text-green-600 hover:text-green-700 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50 border border-green-200 relative z-50 shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900"
+            className="p-2 text-green-600 hover:text-green-700 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50 border border-green-200 relative z-50 shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 "
           >
             <Check className="h-6 w-6" />
           </button>
@@ -183,7 +183,7 @@ export function InlineEditField({
           <button
             onClick={cancelEdit}
             disabled={loading}
-            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 border border-red-200 relative z-50 shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900"
+            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 border border-red-200 relative z-50 shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 "
           >
             <X className="h-6 w-6" />
           </button>

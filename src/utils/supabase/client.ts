@@ -9,5 +9,15 @@ export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonK
     detectSessionInUrl: true,
     persistSession: true,
     autoRefreshToken: true
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 2
+    }
+  },
+  global: {
+    headers: {
+      'x-client-info': 'irontrack-web'
+    }
   }
 }); 

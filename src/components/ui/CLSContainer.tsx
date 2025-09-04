@@ -61,7 +61,7 @@ export function CLSContainer({
  */
 export function StatCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  p-3 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
       <div className="flex items-center justify-between mb-2 sm:mb-4">
         <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-lg" />
         <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />

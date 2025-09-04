@@ -146,9 +146,25 @@ img, video, svg, canvas {
 
 /* Mode clair explicite - priorité maximale */
 .light {
-  --background: var(--surface-light);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
   --background-alt: var(--surface-light-alt);
-  --foreground: var(--text-primary-light);
   --foreground-secondary: var(--text-secondary-light);
   --border-color: var(--border-light);
 }
@@ -506,7 +522,26 @@ input[type="submit"] {
   }
   body {
     @apply bg-background text-foreground;
+    /* Force l'application des variables de thème oklch - SAUF pour page auth */
+    background-color: var(--background);
+    color: var(--foreground);
   }
+  
+  /* Exclure page auth du background forcé pour préserver glassmorphism */
+  body:has(.backdrop-blur-lg) {
+    background-color: transparent !important;
+  }
+  
+  /* S'assurer que tous les éléments héritent correctement */
+  input, textarea, select {
+    color: inherit !important;
+  }
+  
+  /* Styles adaptatifs pour les éléments de formulaire */
+  input::placeholder, textarea::placeholder {
+    color: var(--muted-foreground) !important;
+  }
+  
 }
 
 /* OPTIMISATIONS TOUCH EVENTS - Performance mobile */
@@ -535,4 +570,21 @@ input[type="submit"] {
 /* Optimiser les composants avec react-easy-crop */
 .crop-container {
   touch-action: none;
+}
+
+/* Correction des icônes date/heure en thème sombre */
+@media (prefers-color-scheme: dark) {
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  cursor: pointer !important;
 }

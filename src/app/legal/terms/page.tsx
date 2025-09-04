@@ -13,7 +13,7 @@ export default function TermsOfService() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
         >
           {/* Bouton de retour */}
           <button
@@ -90,7 +90,7 @@ export default function TermsOfService() {
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                    <CheckCircle className="h-5 w-5 text-safe-success mr-2" />
                     <h3 className="font-medium text-green-900">Autorisé</h3>
                   </div>
                   <ul className="text-sm space-y-1">
@@ -102,7 +102,7 @@ export default function TermsOfService() {
                 </div>
                 <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+                    <AlertTriangle className="h-5 w-5 text-safe-error mr-2" />
                     <h3 className="font-medium text-red-900">Interdit</h3>
                   </div>
                   <ul className="text-sm space-y-1">
@@ -120,7 +120,7 @@ export default function TermsOfService() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">6. Avertissements santé</h2>
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4">
                 <div className="flex items-center mb-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
+                  <AlertTriangle className="h-5 w-5 text-safe-warning mr-2" />
                   <h3 className="font-medium text-yellow-900">Important</h3>
                 </div>
                 <ul className="text-sm space-y-2">

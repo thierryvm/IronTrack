@@ -691,7 +691,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="
                 modal-2025 fixed z-[80] 
-                bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl 
+                bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /95 backdrop-blur-xl rounded-2xl shadow-2xl 
                 border border-gray-200 dark:border-gray-700/50 overflow-hidden
                 smooth-120hz text-sharp
                 min-w-[300px] xs:min-w-[320px] sm:min-w-[340px]
@@ -731,7 +731,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                       repeat: Infinity,
                       repeatDelay: 2
                     }}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-full p-2"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-full p-2"
                   >
                     <MascotIcon className="h-8 w-8 text-white" />
                   </motion.div>
@@ -925,7 +925,7 @@ export function IronBuddyFAB({ defaultOpen = false }: IronBuddyFABProps) {
                               <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                                 {option.title}
                               </p>
-                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                              <p className="text-xs text-gray-600 dark:text-safe-muted">
                                 {option.description}
                               </p>
                             </div>

@@ -33,7 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const ProgressCharts = dynamic(() => import('@/components/progress/ProgressCharts'), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-gray-400">Chargement des graphiques...</span>
+    <span className="text-gray-600 dark:text-safe-muted">Chargement des graphiques...</span>
   </div>
 })
 
@@ -872,9 +872,9 @@ export default function ProgressPage() {
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="h-6 w-6 text-green-500" />
-      case 'down': return <TrendingDown className="h-6 w-6 text-red-500" />
-      default: return <Activity className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+      case 'up': return <TrendingUp className="h-6 w-6 text-safe-success" />
+      case 'down': return <TrendingDown className="h-6 w-6 text-safe-error" />
+      default: return <Activity className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
     }
   }
 
@@ -1168,7 +1168,7 @@ export default function ProgressPage() {
         {suggestions.length > 0 && (
           <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Suggestions d’objectifs</label>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Clique sur une suggestion pour pré-remplir le formulaire automatiquement et gagner du temps (et de la motivation) ! 💡</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mb-2">Clique sur une suggestion pour pré-remplir le formulaire automatiquement et gagner du temps (et de la motivation) ! 💡</p>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((s, i) => (
                 <Button
@@ -1284,20 +1284,20 @@ export default function ProgressPage() {
           {/* Skeleton stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px] animate-pulse" />
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[110px] animate-pulse" />
             ))}
           </div>
           {/* Skeleton graphiques */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[340px] animate-pulse" />
           </div>
           {/* Skeleton progression par exercice */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
           {/* Skeleton objectifs et badges */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px] animate-pulse" />
           </div>
         </div>
       </div>
@@ -1323,19 +1323,19 @@ export default function ProgressPage() {
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Poids moyen</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{averageWeight > 0 ? `${averageWeight.toFixed(1)} kg` : 'Poids du corps'}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
-                <BarChart3 className="h-6 w-6 text-blue-500" />
+                <BarChart3 className="h-6 w-6 text-safe-info" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total soulevé</p>
@@ -1343,12 +1343,12 @@ export default function ProgressPage() {
                 {ironBuddyMsg && <p className="text-xs text-orange-800 dark:text-orange-300 mt-1 italic">{ironBuddyMsg}</p>}
               </div>
               <div className="p-3 bg-green-100 rounded-full">
-                <Dumbbell className="h-6 w-6 text-green-500" />
+                <Dumbbell className="h-6 w-6 text-safe-success" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Séances</p>
@@ -1360,14 +1360,14 @@ export default function ProgressPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[110px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[110px]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Amélioration</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{globalImprovement}</p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
-                <TrendingUp className="h-6 w-6 text-purple-500" />
+                <TrendingUp className="h-6 w-6 text-safe-primary" />
               </div>
             </div>
           </div>
@@ -1378,7 +1378,7 @@ export default function ProgressPage() {
           <MotionWrapper
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px]"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Progression du poids</h2>
@@ -1404,7 +1404,7 @@ export default function ProgressPage() {
           <MotionWrapper
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[340px]"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[340px]"
           >
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Répartition par groupe musculaire</h2>
             
@@ -1424,7 +1424,7 @@ export default function ProgressPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px]"
         >
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Progression par exercice</h2>
           
@@ -1479,7 +1479,7 @@ export default function ProgressPage() {
           className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8"
         >
           {/* Objectifs */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-2">
                 <Target className="h-6 w-6 text-orange-800 dark:text-orange-300" />
@@ -1494,7 +1494,7 @@ export default function ProgressPage() {
             </div>
             <div className="space-y-4">
               {trainingGoals.filter(goal => goal.status !== 'Atteint').length === 0 && (
-                <div className="text-gray-600 dark:text-gray-400 text-sm">
+                <div className="text-gray-600 dark:text-safe-muted text-sm">
                   {trainingGoals.length === 0 
                     ? "Aucun objectif défini pour l'instant. Ajoute-en un pour te challenger !" 
                     : "Tous tes objectifs sont atteints ! 🎉 Félicitations, ajoute-en de nouveaux pour continuer à progresser."
@@ -1557,15 +1557,15 @@ export default function ProgressPage() {
                 const percent = typeof target === 'number' && target ? Math.min((current! / target) * 100, 100) : 0;
                 const bgClass = goal.status !== 'Atteint' ? 'bg-gray-100 dark:bg-gray-800' : (unit === 'kg' ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-green-50');
                 const barClass = goal.status !== 'Atteint' ? 'bg-gray-300' : (unit === 'kg' ? 'bg-orange-600' : 'bg-green-500');
-                const textClass = goal.status !== 'Atteint' ? 'text-gray-600 dark:text-gray-400' : (unit === 'kg' ? 'text-orange-800 dark:text-orange-300' : 'text-green-600');
+                const textClass = goal.status !== 'Atteint' ? 'text-gray-600 dark:text-safe-muted' : (unit === 'kg' ? 'text-orange-800 dark:text-orange-300' : 'text-green-600');
                 return (
                   <div key={goal.id} className={`p-4 rounded-lg ${bgClass}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600 dark:text-gray-300">{badgeDesc(goal)}</span></h3>
+                      <h3 className={`font-medium ${goal.status !== 'Atteint' ? 'text-gray-600 dark:text-safe-muted' : 'text-gray-900 dark:text-gray-100'}`}>{goal.exercises?.name}<br /><span className="text-sm text-gray-600 dark:text-gray-300">{badgeDesc(goal)}</span></h3>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm ${textClass}`}>{current}/{target} {unit}{extraKg ? ` à ${extraKg} kg` : ''}{extraDuration ? ` en ${extraDuration} min` : ''}</span>
-                        <Button variant="ghost" size="sm" title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-blue-500 hover:text-blue-700 p-1"><Pencil className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="sm" title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-red-500 hover:text-red-700 p-1"><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="sm" title="Éditer" onClick={() => handleEditGoal(goal)} className="ml-2 text-safe-info hover:text-blue-700 p-1"><Pencil className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="sm" title="Supprimer" onClick={() => handleDeleteGoal(goal)} className="ml-1 text-safe-error hover:text-red-700 p-1"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </div>
                     <div className={`w-full rounded-full h-2 ${goal.status !== 'Atteint' ? 'bg-gray-200 dark:bg-gray-700' : (unit === 'kg' ? 'bg-orange-200' : 'bg-green-200')}`}> 
@@ -1578,9 +1578,9 @@ export default function ProgressPage() {
           </div>
 
           {/* Badges à valider */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 min-h-[180px]">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 min-h-[180px]">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
-              <Award className="h-6 w-6 text-yellow-500" />
+              <Award className="h-6 w-6 text-safe-warning" />
               <span>Badges à valider</span>
             </h2>
             <div className="grid grid-cols-2 gap-4">
@@ -1594,7 +1594,7 @@ export default function ProgressPage() {
               })().map(achievement => (
                 <div key={achievement.id} className="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800 opacity-50">
                   <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl grayscale">{achievement.icon}</span>
-                  <h3 className="font-medium text-gray-600 dark:text-gray-400">{achievement.name}</h3>
+                  <h3 className="font-medium text-gray-600 dark:text-safe-muted">{achievement.name}</h3>
                   <p className="text-sm text-gray-700 dark:text-gray-300">{achievement.description}</p>
                 </div>
               ))}
@@ -1632,7 +1632,7 @@ export default function ProgressPage() {
                 </Select>
               </div>
               {dynamicGoalFields}
-              {goalError && <div className="text-red-500 text-sm">{goalError}</div>}
+              {goalError && <div className="text-safe-error text-sm">{goalError}</div>}
               <DialogFooter>
                 <Button
                   type="button"
@@ -1667,7 +1667,7 @@ export default function ProgressPage() {
               Tu es sûr de vouloir supprimer cet objectif ? IronBuddy va pleurer un peu…
             </p>
             <DialogFooter>
-              <Button onClick={cancelDeleteGoal} variant="outline" className="min-h-[44px]">
+              <Button onClick={cancelDeleteGoal} variant="secondary" className="min-h-[44px]">
                 Annuler
               </Button>
               <Button onClick={confirmDeleteGoal} variant="destructive" className="min-h-[44px]">
@@ -1680,7 +1680,7 @@ export default function ProgressPage() {
         {/* Animation/message de félicitations */}
         {showCongrats && (
           <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(8px)' }}>
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-lg p-8 flex flex-col items-center animate-avatar-pop" style={{ boxShadow: '0 0 32px 8px #a855f7, 0 0 0 #fff' }}>
               <span className="text-5xl mb-4">🏅</span>
               <h2 className="text-2xl font-bold text-orange-800 dark:text-orange-300 mb-2">Félicitations !</h2>
               <p className="text-lg text-gray-800 dark:text-gray-200">{congratsMsg}</p>

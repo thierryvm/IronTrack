@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion'
 import { X, Users, Check, UserX, Volume2, VolumeX, Wifi, WifiOff } from 'lucide-react'
 import { RealtimeNotification } from '@/hooks/useRealtimeNotifications'
+import { MotionWrapper, MotionPresence } from '@/components/ui/MotionWrapper'
 
 interface NotificationToastProps {
   notifications: RealtimeNotification[]
@@ -56,7 +56,7 @@ export function RealtimeNotificationToast({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={onToggleSound}
-          className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full shadow-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700"
+          className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-full shadow-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700"
           title={soundEnabled ? 'Désactiver les sons' : 'Activer les sons'}
         >
           {soundEnabled ? (
@@ -120,7 +120,7 @@ export function RealtimeNotificationToast({
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-0.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 p-2 rounded-lg">
+                  <div className="flex-shrink-0 mt-0.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 p-2 rounded-lg">
                     {getIcon(notification.type)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -163,7 +163,7 @@ export function RealtimeNotificationToast({
                 initial={{ width: "100%" }}
                 animate={{ width: "0%" }}
                 transition={{ duration: 8, ease: "linear" }}
-                className="h-0.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/30 rounded-full mt-3"
+                className="h-0.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /30 rounded-full mt-3"
               />
             </motion.div>
           ))}

@@ -78,7 +78,7 @@ export function OnboardingFlow({ onComplete, initialData = {} }: OnboardingFlowP
           </div>
           
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            <div className="text-sm text-gray-600 dark:text-safe-muted font-medium">
               Étape {currentStep} sur {totalSteps}
             </div>
             <div className="text-sm text-blue-600 font-semibold">
@@ -136,7 +136,7 @@ export function OnboardingFlow({ onComplete, initialData = {} }: OnboardingFlowP
             
             <div className="flex items-center gap-2">
               {!isStepComplete(currentStep) && (
-                <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
+                <span className="text-sm text-gray-600 dark:text-safe-muted hidden sm:block">
                   Veuillez faire votre choix pour continuer
                 </span>
               )}

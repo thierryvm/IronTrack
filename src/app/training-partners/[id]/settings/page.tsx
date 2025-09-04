@@ -274,7 +274,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
         )}
 
         {/* Settings Form */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
             Données partagées
           </h2>
@@ -286,7 +286,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Entraînements
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-safe-muted">
                   Partager vos séances d'entraînement et exercices
                 </p>
               </div>
@@ -307,7 +307,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Nutrition
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-safe-muted">
                   Partager vos données nutritionnelles et repas
                 </p>
               </div>
@@ -328,7 +328,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Progrès
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-safe-muted">
                   Partager vos statistiques et évolution
                 </p>
               </div>

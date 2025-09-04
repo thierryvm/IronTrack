@@ -21,7 +21,7 @@ export const AdminTicketsPage = dynamic(
   {
     loading: () => (
       <div className="space-y-4">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md animate-pulse">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
         </div>
@@ -37,7 +37,7 @@ export const AdminUsersPage = dynamic(
   {
     loading: () => (
       <div className="space-y-4">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md animate-pulse">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -57,7 +57,7 @@ export const AdminLogsPage = dynamic(
   {
     loading: () => (
       <div className="space-y-4">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md animate-pulse">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
           <div className="flex gap-4 mb-6">
             <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded flex-1" />
@@ -77,13 +77,13 @@ export const AdminExportsPage = dynamic(
   {
     loading: () => (
       <div className="space-y-6">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md animate-pulse">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-6" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl p-6 shadow-md animate-pulse">
+            <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md animate-pulse">
               <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-3" />
               <div className="h-4 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded w-full mb-4" />
               <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full" />

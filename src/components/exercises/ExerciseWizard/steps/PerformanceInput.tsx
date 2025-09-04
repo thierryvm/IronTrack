@@ -35,7 +35,7 @@ const StrengthPerformanceForm: React.FC<{
           placeholder="60"
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Poids total utilisé pour l'exercice</p>
+        <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Poids total utilisé pour l'exercice</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -50,7 +50,7 @@ const StrengthPerformanceForm: React.FC<{
           placeholder="10"
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Nombre de répétitions réalisées</p>
+        <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Nombre de répétitions réalisées</p>
       </div>
     </div>
 
@@ -66,7 +66,7 @@ const StrengthPerformanceForm: React.FC<{
           max={10}
           className="w-full"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Séries complètes réalisées</p>
+        <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Séries complètes réalisées</p>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -82,7 +82,7 @@ const StrengthPerformanceForm: React.FC<{
           placeholder="2"
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Repos entre les séries</p>
+        <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Repos entre les séries</p>
       </div>
     </div>
 
@@ -103,7 +103,7 @@ const StrengthPerformanceForm: React.FC<{
             placeholder="30"
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
           />
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Durée totale de la série</p>
+          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Durée totale de la série</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -121,7 +121,7 @@ const StrengthPerformanceForm: React.FC<{
             <option value="9">9 - Difficile</option>
             <option value="10">10 - Très difficile</option>
           </select>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Effort perçu (Rate of Perceived Exertion)</p>
+          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Effort perçu (Rate of Perceived Exertion)</p>
         </div>
       </div>
     </div>
@@ -138,7 +138,7 @@ const StrengthPerformanceForm: React.FC<{
         placeholder="Sensation, technique, points à améliorer..."
         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
       />
-      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Remarques sur votre ressenti et technique</p>
+      <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Remarques sur votre ressenti et technique</p>
     </div>
   </div>
 )
@@ -182,7 +182,7 @@ const CardioPerformanceForm: React.FC<{
             )}
           </div>
           {isRowing && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Laissez vide si vous ne connaissez pas la distance</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Laissez vide si vous ne connaissez pas la distance</p>
           )}
         </div>
         <div>
@@ -216,7 +216,7 @@ const CardioPerformanceForm: React.FC<{
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
           />
           {isRowing && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Vitesse en km/h si affichée sur l'écran du rameur</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Vitesse en km/h si affichée sur l'écran du rameur</p>
           )}
         </div>
         <div>
@@ -250,7 +250,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="24"
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -264,7 +264,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="120"
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
           </div>
         </div>
       )}
@@ -284,7 +284,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="140"
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">BPM - Zone cardio: 120-160</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">BPM - Zone cardio: 120-160</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -319,7 +319,7 @@ const CardioPerformanceForm: React.FC<{
               placeholder="80"
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Optimal: 70-90 RPM</p>
+            <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">Optimal: 70-90 RPM</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -437,7 +437,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         </div>
 
         {/* Form */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  p-6 rounded-xl border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-4">
             {getExerciseType() === 'Cardio' ? (
               <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />

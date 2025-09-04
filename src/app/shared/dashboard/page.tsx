@@ -113,12 +113,12 @@ export default function SharedDashboardPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-lg hover:bg-white dark:bg-gray-900/30 transition-colors"
+                className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-lg hover:bg-white dark:bg-gray-900/30 transition-colors"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900/20 rounded-full p-3">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-full p-3">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
@@ -139,7 +139,7 @@ export default function SharedDashboardPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 animate-pulse">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                   <div className="flex-1">
@@ -156,7 +156,7 @@ export default function SharedDashboardPage() {
             ))}
           </div>
         ) : partnerships.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-8 text-center">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-8 text-center">
             <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Users className="h-8 w-8 text-gray-700 dark:text-gray-300" />
             </div>
@@ -185,7 +185,7 @@ export default function SharedDashboardPage() {
                   key={partnership.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
@@ -193,7 +193,7 @@ export default function SharedDashboardPage() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 dark:text-gray-100">{partnerName}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Partenaire depuis {new Date(partnership.created_at || Date.now()).toLocaleDateString('fr-FR')}</p>
+                      <p className="text-sm text-gray-600 dark:text-safe-muted">Partenaire depuis {new Date(partnership.created_at || Date.now()).toLocaleDateString('fr-FR')}</p>
                     </div>
                   </div>
                   
@@ -265,11 +265,11 @@ export default function SharedDashboardPage() {
                       </div>
                       <div className="bg-green-50 p-2 rounded text-center">
                         <div className="text-green-600 font-medium">Nutrition</div>
-                        <div className="text-green-500">Activé</div>
+                        <div className="text-safe-success">Activé</div>
                       </div>
                       <div className="bg-gray-50 dark:bg-gray-800 p-2 rounded text-center">
                         <div className="text-gray-600 dark:text-gray-300 font-medium">Progrès</div>
-                        <div className="text-gray-600 dark:text-gray-400">Désactivé</div>
+                        <div className="text-gray-600 dark:text-safe-muted">Désactivé</div>
                       </div>
                     </div>
                     

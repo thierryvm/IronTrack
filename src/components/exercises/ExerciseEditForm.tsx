@@ -119,7 +119,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-6"></div>
@@ -139,9 +139,9 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="text-center py-8">
-              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <AlertCircle className="w-16 h-16 text-safe-error mx-auto mb-4" />
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 Exercice non trouvé
               </h2>
@@ -185,7 +185,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
         </div>
 
         {/* Formulaire */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-800 rounded-xl shadow-md p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-800 rounded-xl shadow-md p-6">
           {message && (
             <div className={`mb-6 p-4 rounded-lg ${
               isSuccess 
@@ -217,7 +217,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 type="text"
                 value={exercise.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               />
             </div>
@@ -231,7 +231,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 <select
                   value={exercise.exercise_type}
                   onChange={(e) => handleInputChange('exercise_type', e.target.value as 'Musculation' | 'Cardio')}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="Musculation">Musculation</option>
@@ -246,7 +246,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 <select
                   value={exercise.muscle_group}
                   onChange={(e) => handleInputChange('muscle_group', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="">Sélectionner...</option>
@@ -268,7 +268,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 <select
                   value={exercise.equipment_id}
                   onChange={(e) => handleInputChange('equipment_id', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="">Sélectionner...</option>
@@ -287,7 +287,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 <select
                   value={exercise.difficulty}
                   onChange={(e) => handleInputChange('difficulty', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value={1}>1 - Très facile</option>
@@ -308,7 +308,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 value={exercise.description || ''}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Description de l'exercice..."
               />
             </div>
@@ -322,7 +322,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
                 value={exercise.notes || ''}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Vos notes sur cet exercice..."
               />
             </div>

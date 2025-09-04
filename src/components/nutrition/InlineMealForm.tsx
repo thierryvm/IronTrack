@@ -113,7 +113,7 @@ export default function InlineMealForm({
       <Button
         variant="outline"
         onClick={() => setIsOpen(true)}
-        className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
+        className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-safe-muted hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
       >
         <Plus className="h-5 w-5" />
         <span>Ajouter un aliment</span>
@@ -191,19 +191,19 @@ export default function InlineMealForm({
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Protéines:</span>
+                  <span className="text-gray-600 dark:text-safe-muted">Protéines:</span>
                   <span className="ml-2 font-medium text-blue-600">
                     {Math.round(selectedFood.protein * quantity / 100 * 10) / 10}g
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Glucides:</span>
+                  <span className="text-gray-600 dark:text-safe-muted">Glucides:</span>
                   <span className="ml-2 font-medium text-green-600">
                     {Math.round(selectedFood.carbs * quantity / 100 * 10) / 10}g
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Lipides:</span>
+                  <span className="text-gray-600 dark:text-safe-muted">Lipides:</span>
                   <span className="ml-2 font-medium text-yellow-600">
                     {Math.round(selectedFood.fat * quantity / 100 * 10) / 10}g
                   </span>

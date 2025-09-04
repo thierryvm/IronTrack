@@ -188,16 +188,26 @@ export function QuickTimer() {
 
   const quickTimes = [30, 60, 90, 120, 180]
 
+  const handleTimeSelect = (time: number) => {
+    setSelectedTime(time)
+    setShowTimer(true)
+  }
+
+  const handleCloseTimer = () => {
+    setShowTimer(false)
+  }
+
+  // CORRECTIF: Tous les hooks doivent être au niveau racine
   if (showTimer) {
     return (
       <div className="space-y-4 w-full">
         <Timer 
           initialTime={selectedTime} 
-          onComplete={() => setShowTimer(false)}
+          onComplete={handleCloseTimer}
           autoStart={true}
         />
         <button
-          onClick={() => setShowTimer(false)}
+          onClick={handleCloseTimer}
           className="w-full bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors min-h-touch-44"
         >
           Fermer
@@ -213,10 +223,7 @@ export function QuickTimer() {
         {quickTimes.map((time) => (
           <button
             key={time}
-            onClick={() => {
-              setSelectedTime(time)
-              setShowTimer(true)
-            }}
+            onClick={() => handleTimeSelect(time)}
             className="bg-orange-700 dark:bg-orange-600 hover:bg-orange-800 dark:hover:bg-orange-700 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full min-h-touch-44"
             style={{minWidth: 0}}
           >

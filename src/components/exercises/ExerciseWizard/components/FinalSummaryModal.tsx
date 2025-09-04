@@ -36,7 +36,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-auto"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -58,7 +58,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <X className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
               </button>
             </div>
 
@@ -107,7 +107,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
               </div>
               
               {'description' in exercise && exercise.description && (
-                <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg border border-orange-200 dark:border-orange-800">
+                <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg border border-orange-200 dark:border-orange-800">
                   <div className="flex items-start gap-2 text-orange-700">
                     <span className="font-medium">📝</span>
                     <span className="italic">{exercise.description}</span>
@@ -232,7 +232,7 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
                 </div>
                 
                 {performance.notes && (
-                  <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg border border-blue-200">
+                  <div className="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg border border-blue-200">
                     <div className="flex items-start gap-2 text-blue-700">
                       <span className="font-medium">💭</span>
                       <span className="italic">{performance.notes}</span>

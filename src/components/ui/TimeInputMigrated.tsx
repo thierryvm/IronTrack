@@ -208,8 +208,8 @@ export function TimeInputMigrated({
               className={cn(
                 "h-11 w-full p-2 flex flex-col items-center justify-center text-xs",
                 value === preset.value
-                  ? "bg-orange-600 text-white hover:bg-orange-700 border-orange-600"
-                  : "border-orange-200 dark:border-orange-800 text-orange-700 hover:bg-orange-50 dark:bg-orange-900/20"
+                  ? "!bg-slate-800 dark:!bg-slate-700 !text-white hover:!bg-slate-900 dark:hover:!bg-slate-600 !border-slate-800"
+                  : "!border-slate-300 dark:!border-slate-600 !text-slate-800 dark:!text-white hover:!bg-slate-50 dark:hover:!bg-slate-800"
               )}
               aria-label={`Preset ${preset.label}: ${preset.description}`}
             >

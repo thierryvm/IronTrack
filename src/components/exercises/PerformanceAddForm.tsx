@@ -269,7 +269,7 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
                     rest_seconds: parseInt(e.target.value) || 60 
                   }))}
                 />
-                <p className="text-xs text-gray-600 dark:text-gray-400">Temps de récupération entre séries</p>
+                <p className="text-xs text-gray-600 dark:text-safe-muted">Temps de récupération entre séries</p>
               </div>
 
               <div className="space-y-2">
@@ -295,7 +295,7 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
                     <SelectItem value="10">10 - Au-delà du maximum</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Rate of Perceived Exertion (1-10)</p>
+                <p className="text-xs text-gray-600 dark:text-safe-muted">Rate of Perceived Exertion (1-10)</p>
               </div>
             </div>
           </>
@@ -306,7 +306,7 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
               <div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Durée <span className="text-red-500">*</span>
+                    Durée <span className="text-safe-error">*</span>
                   </label>
                   <div className="flex gap-2">
                     <Input
@@ -363,7 +363,7 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
                       </SelectContent>
                     </Select>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-safe-muted">
                     {getFieldHelpText('distance', exercise.type, exercise.name)}
                   </p>
                 </div>
@@ -498,7 +498,7 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
         <div className="flex items-center justify-between pt-6 border-t border-border/50">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={onBack}
             disabled={isLoading}
             className="min-w-[100px]"
@@ -510,8 +510,9 @@ export function PerformanceAddForm({ exercise, onComplete, onBack }: Performance
             
           <Button
             type="submit"
+            variant="orange"
             disabled={isLoading}
-            className="min-w-[160px] bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
+            className="min-w-[160px]"
             aria-label="Enregistrer cette performance"
           >
             {isLoading ? (

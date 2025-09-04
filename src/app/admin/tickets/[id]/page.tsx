@@ -300,7 +300,7 @@ export default function AdminTicketPage() {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Erreur de chargement</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+        <p className="text-gray-600 dark:text-safe-muted mb-4">{error}</p>
         <button
           onClick={() => router.push('/admin/tickets')}
           className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
@@ -315,7 +315,7 @@ export default function AdminTicketPage() {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Ticket non trouvé</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">Ce ticket n'existe pas.</p>
+        <p className="text-gray-600 dark:text-safe-muted mb-4">Ce ticket n'existe pas.</p>
         <button
           onClick={() => router.push('/admin/tickets')}
           className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
@@ -329,7 +329,7 @@ export default function AdminTicketPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-4 mb-4">
           <button
             onClick={() => router.push('/admin/tickets')}
@@ -371,7 +371,7 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Description */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Description</h3>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{ticket.description}</p>
@@ -383,7 +383,7 @@ export default function AdminTicketPage() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Conversation ({responses.length})</h3>
           {responses.map((response) => (
-            <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+            <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <div className="flex items-start space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   response.is_internal ? 'bg-orange-100' : 
@@ -411,7 +411,7 @@ export default function AdminTicketPage() {
                         Note interne
                       </span>
                     )}
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span className="text-xs text-gray-600 dark:text-safe-muted">
                       {new Date(response.created_at).toLocaleString('fr-FR')}
                     </span>
                   </div>
@@ -428,7 +428,7 @@ export default function AdminTicketPage() {
       )}
 
       {/* Contrôles Admin */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Gestion du ticket</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -521,7 +521,7 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Formulaire de réponse */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répondre au ticket</h3>
         
         <div className="space-y-4">
@@ -549,7 +549,7 @@ export default function AdminTicketPage() {
           />
 
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-xs text-gray-600 dark:text-safe-muted">
               {responseMessage.length} caractères
             </div>
             <button

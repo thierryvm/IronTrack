@@ -42,45 +42,23 @@ interface MotionWrapperProps {
   onClick?: () => void
   disabled?: boolean
   style?: React.CSSProperties
+  [key: string]: any // Permet toutes les props
 }
 
 export function MotionWrapper({ 
   children, 
   type = 'div',
-  initial,
-  animate,
-  exit,
-  transition,
-  whileHover,
-  whileTap,
-  layout,
-  className,
-  onClick,
-  disabled,
-  style
+  ...rest
 }: MotionWrapperProps) {
-  const props = {
-    initial,
-    animate,
-    exit,
-    transition,
-    whileHover,
-    whileTap,
-    layout,
-    className,
-    onClick,
-    disabled,
-    style
-  }
 
   return (
-    <Suspense fallback={<div className={className}>{children}</div>}>
+    <Suspense fallback={<div className={rest.className}>{children}</div>}>
       {type === 'button' ? (
-        <MotionButton {...props}>
+        <MotionButton {...rest}>
           {children}
         </MotionButton>
       ) : (
-        <MotionDiv {...props}>
+        <MotionDiv {...rest}>
           {children}
         </MotionDiv>
       )}

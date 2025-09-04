@@ -105,7 +105,7 @@ export function AdaptiveMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Activity className="w-5 h-5 text-blue-500" />
+              <Activity className="w-5 h-5 text-safe-info" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques Rameur</h4>
             </div>
             
@@ -122,8 +122,8 @@ export function AdaptiveMetricsForm({
                       : '--:--'
                     }
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Elite: 1:20-1:30 • Good: 1:40-2:00 • Beginner: 2:00+
+                  <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
+                    Elite: 1min20-1min30 • Good: 1min40-2min • Beginner: 2min+
                   </div>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export function AdaptiveMetricsForm({
                   }))}
                   className="text-center"
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                   Débutant: 20-24 • Expérimenté: 26-32 SPM
                 </div>
               </div>
@@ -173,7 +173,7 @@ export function AdaptiveMetricsForm({
                   }))}
                   className="text-center"
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                   Débutant: 100W • Moyen: 150W • Bon: 200W+
                 </div>
               </div>
@@ -189,7 +189,7 @@ export function AdaptiveMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <TrendingUp className="w-5 h-5 text-safe-success" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques Course</h4>
             </div>
             
@@ -212,7 +212,7 @@ export function AdaptiveMetricsForm({
                     }
                   }))}
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                   Descente: -15 à -3% • Plat: 0% • Côte: 3-15%
                 </div>
               </div>
@@ -229,7 +229,7 @@ export function AdaptiveMetricsForm({
                       : '--:--'
                     }
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                     Calculé automatiquement
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export function AdaptiveMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-5 h-5 text-purple-500" />
+              <Zap className="w-5 h-5 text-safe-primary" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques Vélo</h4>
             </div>
             
@@ -271,7 +271,7 @@ export function AdaptiveMetricsForm({
                   }))}
                   className="text-center"
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                   Endurance: 80-90 • Sprint: 100-120 RPM
                 </div>
               </div>
@@ -293,7 +293,7 @@ export function AdaptiveMetricsForm({
                   step={1}
                   className="mx-auto"
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 text-center">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1 text-center">
                   Facile: 1-5 • Modéré: 6-12 • Difficile: 13-20
                 </div>
               </div>
@@ -309,7 +309,7 @@ export function AdaptiveMetricsForm({
             className="space-y-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Heart className="w-5 h-5 text-red-500" />
+              <Heart className="w-5 h-5 text-safe-error" />
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">Métriques HIIT</h4>
             </div>
             
@@ -329,7 +329,7 @@ export function AdaptiveMetricsForm({
                     duration_seconds: parseInt(e.target.value) || 0
                   }))}
                 />
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                   Tabata: 20s • HIIT: 30-60s • EMOM: 60s
                 </div>
               </div>
@@ -345,7 +345,7 @@ export function AdaptiveMetricsForm({
                      cardioData.duration_seconds <= 60 ? 'HIIT (30s/30s)' : 
                      'Circuit training'}
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                     Basé sur la durée de travail
                   </div>
                 </div>

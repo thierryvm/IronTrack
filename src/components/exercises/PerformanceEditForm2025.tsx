@@ -212,7 +212,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+          <AlertCircle className="mx-auto h-12 w-12 text-safe-error mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Performance introuvable</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">La performance demandée n'existe pas ou a été supprimée.</p>
           <Button onClick={() => router.push('/exercises')}>
@@ -251,13 +251,13 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                   )}
                   Modifier la performance
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{performance.exercise_name}</p>
+                <p className="text-sm text-gray-600 dark:text-safe-muted">{performance.exercise_name}</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={handleCancel}
                 disabled={saving}
                 className="hidden sm:flex items-center gap-2"
@@ -324,7 +324,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                   className={errors.performed_at ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                 />
                 {errors.performed_at && (
-                  <p className="text-sm text-red-500">{errors.performed_at}</p>
+                  <p className="text-sm text-safe-error">{errors.performed_at}</p>
                 )}
               </div>
             </div>
@@ -345,7 +345,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="weight" className="text-sm font-medium">
-                      Poids (kg) <span className="text-red-500">*</span>
+                      Poids (kg) <span className="text-safe-error">*</span>
                     </Label>
                     <Input
                       id="weight"
@@ -361,13 +361,13 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                       className={errors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                     />
                     {errors.weight && (
-                      <p className="text-sm text-red-500">{errors.weight}</p>
+                      <p className="text-sm text-safe-error">{errors.weight}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="reps" className="text-sm font-medium">
-                      Répétitions <span className="text-red-500">*</span>
+                      Répétitions <span className="text-safe-error">*</span>
                     </Label>
                     <Input
                       id="reps"
@@ -382,7 +382,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                       className={errors.reps ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                     />
                     {errors.reps && (
-                      <p className="text-sm text-red-500">{errors.reps}</p>
+                      <p className="text-sm text-safe-error">{errors.reps}</p>
                     )}
                   </div>
 
@@ -408,7 +408,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="duration" className="text-sm font-medium">
-                        Durée (minutes) <span className="text-red-500">*</span>
+                        Durée (minutes) <span className="text-safe-error">*</span>
                       </Label>
                       <Input
                         id="duration"
@@ -424,7 +424,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                         className={errors.duration ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                       />
                       {errors.duration && (
-                        <p className="text-sm text-red-500">{errors.duration}</p>
+                        <p className="text-sm text-safe-error">{errors.duration}</p>
                       )}
                     </div>
 
@@ -630,7 +630,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
           <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={handleCancel}
                 disabled={saving}
                 className="w-full sm:w-auto"

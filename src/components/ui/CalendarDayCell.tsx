@@ -47,10 +47,10 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
 
   return (
     <div className={`relative h-20 sm:h-24 p-1.5 sm:p-2 border rounded-lg bg-white dark:bg-gray-800 flex flex-col overflow-hidden transition-all duration-200 ${
-      sessions.length > 0 ? 'border-blue-200 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/10' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+      sessions.length > 0 ? 'border-orange-200 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/10' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
     }`}>
       <div className={`text-sm font-semibold mb-1 ${
-        sessions.length > 0 ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'
+        sessions.length > 0 ? 'text-orange-900 dark:text-orange-100' : 'text-gray-700 dark:text-gray-300'
       }`}>{date}</div>
       
       <div className="flex-1 flex flex-col gap-1">
@@ -88,7 +88,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 />
               ))}
               {sessions.length > 5 && (
-                <span className="text-sm text-gray-600 dark:text-gray-400 ml-1 min-w-[20px] text-center">+{sessions.length - 5}</span>
+                <span className="text-sm text-gray-600 dark:text-safe-muted ml-1 min-w-[20px] text-center">+{sessions.length - 5}</span>
               )}
             </div>
           </div>
@@ -121,14 +121,24 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                 {session.participants && session.participants.length > 0 && session.participants[0].avatarUrl && (
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="mr-1">
+                      <div 
+                        className="mr-1 cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }
+                        }}
+                      >
                         <Avatar
                           src={session.participants[0].avatarUrl}
                           name={session.participants[0].name}
                           size={20}
                           className="border border-white dark:border-gray-600 shadow-sm"
                         />
-                      </button>
+                      </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-2">
                       <p className="text-sm">{session.participants[0].name}</p>
@@ -183,7 +193,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                           <div>
                             <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{session.name}</p>
                             {session.time && (
-                              <p className="text-xs text-gray-600 dark:text-gray-400">{session.time}</p>
+                              <p className="text-xs text-gray-600 dark:text-safe-muted">{session.time}</p>
                             )}
                           </div>
                         </div>
@@ -194,7 +204,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                         )}
                       </div>
                       {session.participants && session.participants.length > 0 && (
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">
                           Partagée par {session.participants[0].name}
                         </p>
                       )}
@@ -266,7 +276,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             {/* Affichage résumé partagé : avatar après le texte */}
             {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs text-gray-600 dark:text-gray-400">Partagée par</span>
+                <span className="text-xs text-gray-600 dark:text-safe-muted">Partagée par</span>
                 <Tooltip text={mobileSessionDetail.participants[0].name}>
                   <Avatar
                     src={mobileSessionDetail.participants[0].avatarUrl}
@@ -275,7 +285,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
                     className="border-2 border-white dark:border-gray-600 shadow-sm"
                   />
                 </Tooltip>
-                <span className="text-xs text-gray-600 dark:text-gray-400">{mobileSessionDetail.participants[0].name}</span>
+                <span className="text-xs text-gray-600 dark:text-safe-muted">{mobileSessionDetail.participants[0].name}</span>
               </div>
             )}
           </div>

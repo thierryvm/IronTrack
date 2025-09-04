@@ -299,46 +299,23 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
         </FormField>
 
         {/* Upload d'image avec aperçu */}
-        <FormField
-          label="Photo de démonstration (optionnel)"
-          helpText="Ajoute une photo pour illustrer l'exercice (JPG, PNG, HEIC acceptés)"
-        >
+        <div>
           
-          {/* Aperçu de la photo uploadée */}
-          {uploadedPhoto && (
-            <div className="relative">
-              <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
-                <Image
-                  src={uploadedPhoto.url}
-                  alt="Aperçu photo exercice"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 384px"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200" />
-              </div>
-              <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-                <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
-                  <div className="w-4 h-4 rounded-full bg-green-500 dark:bg-green-600 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full"></div>
-                  </div>
-                  <span>Photo uploadée avec succès</span>
-                </div>
-                <p className="text-xs text-green-600 dark:text-green-500 mt-1">
-                  {uploadedPhoto.originalName} • {Math.round(uploadedPhoto.size / 1024)} KB
-                </p>
-              </div>
-            </div>
-          )}
           
           <ExercisePhotoUpload
-            onPhotoUploaded={(attachment) => setUploadedPhoto(attachment)}
-            onPhotoRemoved={() => setUploadedPhoto(null)}
+            onPhotoUploaded={(attachment) => {
+              console.log('Photo uploadée:', attachment)
+              setUploadedPhoto(attachment)
+            }}
+            onPhotoRemoved={() => {
+              console.log('Photo supprimée')
+              setUploadedPhoto(null)
+            }}
             currentPhoto={uploadedPhoto?.url}
             disabled={isLoading}
             maxPhotos={1}
           />
-        </FormField>
+        </div>
 
         {/* Boutons d'action */}
         <div className="flex items-center justify-between pt-6">
@@ -353,6 +330,7 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack }: 
           
           <Button
             type="submit"
+            variant="orange"
             loading={isLoading}
             disabled={!formData.name.trim() || !formData.equipment}
           >

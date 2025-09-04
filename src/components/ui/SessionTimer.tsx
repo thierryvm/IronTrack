@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-react';
 
 interface Step {
@@ -161,7 +160,7 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
       <div className="bg-gradient-to-br from-orange-600 via-red-500 to-yellow-400 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden animate-timer-bg">
         {/* Progress bar améliorée */}
         <div className="absolute top-0 left-0 right-0 h-3 bg-orange-600/60 rounded-t-2xl overflow-hidden z-10">
-          <motion.div
+          <MotionWrapper
             className="h-full bg-yellow-300 shadow-lg"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -170,7 +169,7 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
           />
         </div>
         <div className="text-center mb-6 mt-2">
-          <motion.div
+          <MotionWrapper
             key={timeLeft + '-' + currentStep}
             initial={{ scale: 1.3, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -179,8 +178,8 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             style={{ textShadow: '0 0 16px #fff, 0 0 32px #facc15' }}
           >
             {formatTime(timeLeft)}
-          </motion.div>
-          <motion.p
+          </MotionWrapper>
+          <MotionWrapper
             key={steps[currentStep]?.name}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -188,13 +187,14 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             className="text-white/90 text-lg font-semibold mt-2 animate-timer-step"
           >
             {steps[currentStep]?.name || 'Étape'}
-          </motion.p>
+          </MotionWrapper>
           {steps.length > 0 && (
             <p className="text-white/80 text-xs mt-1">Étape {displayStep} / {steps.length}</p>
           )}
         </div>
         <div className="flex justify-center space-x-4">
-          <motion.button
+          <MotionWrapper
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={prevStep}
@@ -202,9 +202,10 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             disabled={currentStep === 0}
           >
             <SkipBack className="h-5 w-5" />
-          </motion.button>
+          </MotionWrapper>
           {!isRunning ? (
-            <motion.button
+            <MotionWrapper
+              type="button"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={startTimer}
@@ -212,26 +213,29 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
               disabled={timeLeft === 0}
             >
               <Play className="h-5 w-5" />
-            </motion.button>
+            </MotionWrapper>
           ) : (
-            <motion.button
+            <MotionWrapper
+              type="button"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={pauseTimer}
               className="bg-yellow-500 hover:bg-yellow-600 p-3 rounded-full transition-colors"
             >
               <Pause className="h-5 w-5" />
-            </motion.button>
+            </MotionWrapper>
           )}
-          <motion.button
+          <MotionWrapper
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={resetTimer}
             className="bg-gray-500 hover:bg-gray-600 p-3 rounded-full transition-colors"
           >
             <RotateCcw className="h-5 w-5" />
-          </motion.button>
-          <motion.button
+          </MotionWrapper>
+          <MotionWrapper
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={nextStep}
@@ -239,32 +243,33 @@ export default function SessionTimer({ steps, autoStart = false, onComplete }: S
             disabled={currentStep === steps.length - 1}
           >
             <SkipForward className="h-5 w-5" />
-          </motion.button>
-          <motion.button
+          </MotionWrapper>
+          <MotionWrapper
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleMute}
             className={`p-3 rounded-full transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-500' : 'bg-blue-500 hover:bg-blue-600'}`}
           >
             {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-          </motion.button>
+          </MotionWrapper>
         </div>
       </div>
-      <AnimatePresence>
+      <MotionPresence>
         {showNotification && (
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl border-2 border-white dark:border-gray-700 animate-timer-congrats"
           >
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-full animate-pulse" />
               <span className="font-semibold">{currentStep === steps.length - 1 ? "Session terminée ! IronBuddy valide 💪" : "Étape terminée !"}</span>
             </div>
-          </motion.div>
+          </MotionWrapper>
         )}
-      </AnimatePresence>
+      </MotionPresence>
     </div>
   );
 } 
