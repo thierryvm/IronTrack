@@ -132,7 +132,7 @@ export default function EmailAuthFormGlassmorphism({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60 !text-white"
               placeholder="ton-email@exemple.com"
               required
               autoComplete={isSignUp ? 'email' : 'username'}
@@ -161,7 +161,7 @@ export default function EmailAuthFormGlassmorphism({
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60"
+                  className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all backdrop-blur-md text-white placeholder-white/60 !text-white"
                   placeholder={isSignUp ? 'Un mot de passe sécurisé (min. 8 caractères)' : 'Ton mot de passe'}
                   required
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
@@ -202,7 +202,7 @@ export default function EmailAuthFormGlassmorphism({
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-12 pr-12 py-3 bg-white/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 ${
+                  className={`w-full pl-12 pr-12 py-3 bg-white/10 border rounded-xl focus:ring-2 transition-all backdrop-blur-md text-white placeholder-white/60 !text-white ${
                     confirmPassword && password !== confirmPassword
                       ? 'border-red-400/60 bg-red-500/10 focus:ring-red-400/50 focus:border-red-400/50'
                       : 'border-white/20 focus:ring-orange-400/50 focus:border-orange-400/50'
