@@ -40,8 +40,8 @@ export default function HeaderClient() {
     return null
   }
   
-  // Éviter le preload sur les pages auth
-  const shouldPreloadLogo = pathname === '/' || pathname === '/dashboard'
+  // Préloader seulement sur la page d'accueil
+  const shouldPreloadLogo = pathname === '/'
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const [userInitials, setUserInitials] = useState('')
@@ -298,7 +298,7 @@ export default function HeaderClient() {
                   alt="IronTrack Logo" 
                   width={40}
                   height={40}
-                  priority={shouldPreloadLogo}
+                  {...(shouldPreloadLogo ? { priority: true } : {})}
                   className="h-full w-full object-contain"
                   sizes="40px"
                   quality={95}
@@ -501,7 +501,7 @@ export default function HeaderClient() {
                 alt="IronTrack Logo" 
                 width={32}
                 height={32}
-                priority={pathname === '/' || pathname === '/dashboard'}
+                {...(shouldPreloadLogo ? { priority: true } : {})}
                 className="h-full w-full object-contain"
                 sizes="32px"
                 quality={95}

@@ -45,7 +45,7 @@ interface SearchUser extends Profile {
 }
 
 export default function TrainingPartnersPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'partners' | 'invitations' | 'search'>('partners')
   const [partnerships, setPartnerships] = useState<Partnership[]>([])
@@ -352,6 +352,20 @@ export default function TrainingPartnersPage() {
     )
   }
 
+  // Affichage de chargement pendant la vérification auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Vérification...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Affichage si non connecté
   if (!isAuthenticated) {
     return (
@@ -428,7 +442,7 @@ export default function TrainingPartnersPage() {
           <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-md p-6 mb-6 text-white">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl">
+                <div className="p-3 bg-white/20 dark:bg-gray-800/50 border border-white/30 dark:border-gray-600 rounded-xl backdrop-blur-sm">
                   <Users className="h-8 w-8 text-white" />
                 </div>
                 <div className="flex-1">

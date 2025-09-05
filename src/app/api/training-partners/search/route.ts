@@ -14,7 +14,6 @@ export async function GET(request: NextRequest) {
     
     // Si ça échoue, essayer l'auth par cookies
     if (authResult.error) {
-      if (process.env.NODE_ENV === 'development') {}
       authResult = await authenticateRequestCookies()
     }
     
