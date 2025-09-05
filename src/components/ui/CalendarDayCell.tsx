@@ -24,6 +24,7 @@ interface Session {
 interface CalendarDayCellProps {
   date: number;
   sessions: Session[];
+  isSelected?: boolean;
 }
 
 // Ajoute une fonction utilitaire pour formater la date et l'heure
@@ -38,7 +39,7 @@ function formatDateTime(dateStr: string, timeStr: string) {
 // Migration ShadCN UI - Suppression composant Tooltip custom
 // Utilisation de Popover ShadCN UI à la place
 
-const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => {
+const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions, isSelected = false }) => {
   const [showPopover, setShowPopover] = useState(false);
   const [mobileSessionDetail, setMobileSessionDetail] = useState<null | Session>(null);
 
@@ -47,7 +48,11 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
 
   return (
     <div className={`relative h-20 sm:h-24 p-1.5 sm:p-2 border rounded-lg bg-white dark:bg-gray-800 flex flex-col overflow-hidden transition-all duration-200 ${
-      sessions.length > 0 ? 'border-orange-200 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/10' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+      isSelected 
+        ? 'border-transparent' // Pas de bordure quand sélectionné pour éviter le conflit  
+        : sessions.length > 0 
+          ? 'border-orange-200 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/10' 
+          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
     }`}>
       <div className={`text-sm font-semibold mb-1 ${
         sessions.length > 0 ? 'text-orange-900 dark:text-orange-100' : 'text-gray-700 dark:text-gray-300'
@@ -277,14 +282,12 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions }) => 
             {mobileSessionDetail.participants && mobileSessionDetail.participants.length > 0 && mobileSessionDetail.participants[0].avatarUrl && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-gray-600 dark:text-safe-muted">Partagée par</span>
-                <Tooltip text={mobileSessionDetail.participants[0].name}>
-                  <Avatar
-                    src={mobileSessionDetail.participants[0].avatarUrl}
-                    name={mobileSessionDetail.participants[0].name}
-                    size={24}
-                    className="border-2 border-white dark:border-gray-600 shadow-sm"
-                  />
-                </Tooltip>
+                <Avatar
+                  src={mobileSessionDetail.participants[0].avatarUrl}
+                  name={mobileSessionDetail.participants[0].name}
+                  size={24}
+                  className="border-2 border-white dark:border-gray-600 shadow-sm"
+                />
                 <span className="text-xs text-gray-600 dark:text-safe-muted">{mobileSessionDetail.participants[0].name}</span>
               </div>
             )}

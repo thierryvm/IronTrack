@@ -52,7 +52,8 @@ export function RealtimeNotificationToast({
       {/* Contrôles - Toujours visibles */}
       <div className="fixed top-4 left-4 z-50 flex flex-col space-y-2">
         {/* Contrôle du son */}
-        <motion.button
+        <MotionWrapper
+          type="button"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={onToggleSound}
@@ -64,10 +65,10 @@ export function RealtimeNotificationToast({
           ) : (
             <VolumeX className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           )}
-        </motion.button>
+        </MotionWrapper>
 
         {/* Indicateur de statut realtime */}
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className={`p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 ${
@@ -90,15 +91,15 @@ export function RealtimeNotificationToast({
           ) : (
             <WifiOff className="h-5 w-5" />
           )}
-        </motion.div>
+        </MotionWrapper>
       </div>
 
       {/* Notifications */}
       {notifications.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-3 max-w-md w-full">
-          <AnimatePresence mode="popLayout">
+          <MotionPresence mode="popLayout">
             {notifications.map((notification) => (
-            <motion.div
+            <MotionWrapper
               key={notification.id}
               initial={{ opacity: 0, x: 400, scale: 0.8 }}
               animate={{ 
@@ -136,7 +137,8 @@ export function RealtimeNotificationToast({
                 </div>
                 <div className="flex items-center space-x-1 ml-3">
                   {!notification.read && (
-                    <motion.button
+                    <MotionWrapper
+                      type="button"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => onMarkAsRead(notification.id)}
@@ -144,9 +146,10 @@ export function RealtimeNotificationToast({
                       title="Marquer comme lu"
                     >
                       <Check className="h-6 w-6" />
-                    </motion.button>
+                    </MotionWrapper>
                   )}
-                  <motion.button
+                  <MotionWrapper
+                    type="button"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => onRemove(notification.id)}
@@ -154,20 +157,20 @@ export function RealtimeNotificationToast({
                     title="Fermer"
                   >
                     <X className="h-6 w-6" />
-                  </motion.button>
+                  </MotionWrapper>
                 </div>
               </div>
               
               {/* Barre de progression pour l'auto-suppression */}
-              <motion.div
+              <MotionWrapper
                 initial={{ width: "100%" }}
                 animate={{ width: "0%" }}
                 transition={{ duration: 8, ease: "linear" }}
                 className="h-0.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /30 rounded-full mt-3"
               />
-            </motion.div>
+            </MotionWrapper>
           ))}
-        </AnimatePresence>
+        </MotionPresence>
       </div>
       )}
     </>

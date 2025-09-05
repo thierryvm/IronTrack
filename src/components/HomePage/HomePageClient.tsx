@@ -649,18 +649,6 @@ export default function HomePageClient() {
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-2xl p-8 text-white shadow-lg min-h-[180px] flex items-center">
-            <div className="animate-pulse w-full">
-              <div className="h-8 w-1/3 bg-orange-300 rounded mb-4" />
-              <div className="h-6 w-2/3 bg-orange-200 rounded mb-6" />
-              <div className="flex gap-4">
-                <div className="h-12 w-48 bg-white/30 dark:bg-gray-600/30 rounded-xl" />
-                <div className="h-12 w-36 bg-orange-600/50 rounded-xl" />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     )
   }
@@ -689,13 +677,13 @@ export default function HomePageClient() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-white hover:bg-gray-50 text-orange-600 border border-orange-100">
+                <Button asChild variant="ghost" size="lg" className="bg-gray-800 hover:bg-orange-600 text-white hover:text-white border border-white shadow-sm transition-colors">
                   <Link href="/workouts/new" prefetch={false}>
                     <Dumbbell className="h-6 w-6" />
                     Commencer ma séance
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-white/20 hover:text-white transition-colors">
                   <Link href="/calendar" prefetch={false}>
                     <Calendar className="h-5 w-5" />
                     Voir le planning
