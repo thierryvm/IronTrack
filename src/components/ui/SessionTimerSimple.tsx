@@ -154,96 +154,127 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
   if (!currentStepInfo) return null
 
   return (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black rounded-2xl p-6 text-white shadow-xl border border-slate-700">
+    <div className="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black rounded-2xl p-3 sm:p-6 text-white shadow-xl border border-slate-700">
       {/* Barre de progression */}
-      <div className="w-full bg-slate-700 rounded-full h-3 mb-6">
+      <div className="w-full bg-slate-700 rounded-full h-2 sm:h-3 mb-4 sm:mb-6">
         <div
-          className="bg-orange-500 h-3 rounded-full transition-all duration-1000"
+          className="bg-orange-500 h-2 sm:h-3 rounded-full transition-all duration-1000"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
       {/* Informations de l'étape courante */}
-      <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold mb-2 text-slate-100">{currentStepInfo.name}</h3>
-        <p className="text-slate-400 mb-4">
+      <div className="text-center mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2 text-slate-100 px-2">{currentStepInfo.name}</h3>
+        <p className="text-slate-400 mb-3 sm:mb-4 text-sm sm:text-base">
           Étape {currentStep + 1} sur {steps.length}
         </p>
         
-        <div className="text-6xl font-bold mb-4">
+        <div className="text-4xl sm:text-6xl font-bold mb-3 sm:mb-4">
           {formatTime(timeLeft)}
         </div>
         
         {showNotification && (
-          <div className="bg-green-600 text-white px-4 py-2 rounded-lg mb-4 animate-pulse border border-green-500">
+          <div className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg mb-3 sm:mb-4 animate-pulse border border-green-500 text-sm sm:text-base">
             {currentStep === steps.length - 1 ? 'Session terminée !' : 'Étape suivante...'}
           </div>
         )}
       </div>
 
-      {/* Contrôles */}
-      <div className="flex justify-center items-center gap-3">
+      {/* Contrôles - En grille pour mobile */}
+      <div className="grid grid-cols-5 gap-2 sm:flex sm:justify-center sm:items-center sm:gap-3 mb-4 sm:mb-0">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}
-          className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-3 rounded-full transition-colors border border-slate-600"
+          className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <SkipBack className="h-5 w-5" />
+          <SkipBack className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
         <button
           onClick={handlePlayPause}
-          className="bg-orange-600 hover:bg-orange-700 p-4 rounded-full transition-colors shadow-lg"
+          className="bg-orange-600 hover:bg-orange-700 p-3 sm:p-4 rounded-full transition-colors shadow-lg flex items-center justify-center col-span-1"
         >
-          {isRunning ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
+          {isRunning ? <Pause className="h-5 w-5 sm:h-7 sm:w-7" /> : <Play className="h-5 w-5 sm:h-7 sm:w-7" />}
         </button>
 
         <button
           onClick={handleNext}
           disabled={currentStep === steps.length - 1}
-          className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-3 rounded-full transition-colors border border-slate-600"
+          className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <SkipForward className="h-5 w-5" />
+          <SkipForward className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
         <button
           onClick={handleReset}
-          className="bg-slate-700 hover:bg-slate-600 p-3 rounded-full transition-colors border border-slate-600"
+          className="bg-slate-700 hover:bg-slate-600 p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <RotateCcw className="h-5 w-5" />
+          <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className={`p-3 rounded-full transition-colors border ${
+          className={`p-2 sm:p-3 rounded-full transition-colors border flex items-center justify-center ${
             isMuted 
               ? 'bg-red-600 hover:bg-red-700 border-red-500' 
               : 'bg-slate-700 hover:bg-slate-600 border-slate-600'
           }`}
         >
-          {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+          {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />}
         </button>
       </div>
 
-      {/* Liste des étapes */}
-      <div className="mt-6 space-y-2">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className={`flex justify-between items-center p-3 rounded-lg transition-colors ${
-              index === currentStep 
-                ? 'bg-orange-600/20 border border-orange-500/50' 
-                : index < currentStep 
-                  ? 'bg-green-600/20 border border-green-500/50'
-                  : 'bg-slate-700/50 border border-slate-600'
-            }`}
-          >
-            <span className="font-medium text-slate-100">{step.name}</span>
-            <span className="text-sm text-slate-300">
-              {formatTime(step.duration)}
-            </span>
-          </div>
-        ))}
+      {/* Liste des étapes - Collapsible sur mobile */}
+      <div className="mt-4 sm:mt-6">
+        <div className="sm:hidden mb-3">
+          <details className="group">
+            <summary className="flex justify-between items-center p-3 bg-slate-700/50 rounded-lg cursor-pointer list-none">
+              <span className="font-medium text-slate-100">Voir toutes les étapes</span>
+              <span className="text-slate-300 group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div className="mt-2 space-y-2">
+              {steps.map((step, index) => (
+                <div
+                  key={index}
+                  className={`flex justify-between items-center p-2 rounded-lg transition-colors text-sm ${
+                    index === currentStep 
+                      ? 'bg-orange-600/20 border border-orange-500/50' 
+                      : index < currentStep 
+                        ? 'bg-green-600/20 border border-green-500/50'
+                        : 'bg-slate-700/50 border border-slate-600'
+                  }`}
+                >
+                  <span className="font-medium text-slate-100 truncate pr-2">{step.name}</span>
+                  <span className="text-xs text-slate-300 whitespace-nowrap">
+                    {formatTime(step.duration)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+        
+        {/* Liste complète sur desktop */}
+        <div className="hidden sm:block space-y-2">
+          {steps.map((step, index) => (
+            <div
+              key={index}
+              className={`flex justify-between items-center p-3 rounded-lg transition-colors ${
+                index === currentStep 
+                  ? 'bg-orange-600/20 border border-orange-500/50' 
+                  : index < currentStep 
+                    ? 'bg-green-600/20 border border-green-500/50'
+                    : 'bg-slate-700/50 border border-slate-600'
+              }`}
+            >
+              <span className="font-medium text-slate-100">{step.name}</span>
+              <span className="text-sm text-slate-300">
+                {formatTime(step.duration)}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

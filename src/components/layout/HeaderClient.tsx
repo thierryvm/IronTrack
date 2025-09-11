@@ -29,18 +29,21 @@ import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // Import direct du hook (correction erreur hooks React)
 import { useAdminRole } from '@/hooks/useAdminRole'
+import ClientOnlyNavigation from './ClientOnlyNavigation'
 
 export default function HeaderClient() {
   // États de menu désactivés - UI simplifiée mobile 2025
   const pathname = usePathname()
   const router = useRouter()
   
+  
   // Ne pas rendre le header sur les pages auth (évite le preload inutile)
   if (pathname?.startsWith('/auth')) {
     return null
   }
   
-  // Désactiver preload complètement - le logo est lazy-loadé naturellement
+  // Contrôle du preload logo - uniquement sur la page d'accueil
+  const shouldPreloadLogo = pathname === '/'
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const [userInitials, setUserInitials] = useState('')
@@ -73,6 +76,7 @@ export default function HeaderClient() {
 
   // Protection contre les re-chargements multiples
   const lastAdminState = useRef<boolean | null>(null)
+
 
   // Vérifier l'état de connexion et récupérer infos utilisateur
   useEffect(() => {
@@ -159,7 +163,6 @@ export default function HeaderClient() {
         // Vérifier d'abord que l'utilisateur est bien authentifié
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) {
-          console.debug('Utilisateur non authentifié, pas de chargement notifications')
           return
         }
         
@@ -300,6 +303,7 @@ export default function HeaderClient() {
                   className="h-full w-full object-contain"
                   sizes="40px"
                   quality={95}
+                  priority={shouldPreloadLogo}
                 />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -308,22 +312,13 @@ export default function HeaderClient() {
             </Link>
 
             {/* Navigation principale desktop */}
-            <nav className="flex space-x-6">
-              {mainNav.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
-                    pathname === item.href
-                      ? 'text-orange-600 dark:text-orange-400'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-300 dark:hover:text-orange-400'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.name}</span>
-                </Link>
-              ))}
-            </nav>
+            <ClientOnlyNavigation
+              items={mainNav}
+              className="flex space-x-6"
+              itemClassName="flex items-center space-x-1 text-sm font-medium transition-colors"
+              activeClassName="text-orange-600 dark:text-orange-400"
+              inactiveClassName="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400"
+            />
 
             {/* Actions utilisateur desktop */}
             <div className="flex items-center space-x-4">
@@ -449,7 +444,7 @@ export default function HeaderClient() {
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+                              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
                               onClick={() => setIsProfileDropdownOpen(false)}
                             >
                               <item.icon className="w-4 h-4" />
@@ -476,7 +471,7 @@ export default function HeaderClient() {
                   <ThemeToggle />
                   <Link
                     href="/auth/login"
-                    className="flex items-center space-x-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-300 dark:hover:text-orange-400 transition-colors"
+                    className="flex items-center space-x-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400 transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Connexion</span>
@@ -502,6 +497,7 @@ export default function HeaderClient() {
                 className="h-full w-full object-contain"
                 sizes="32px"
                 quality={95}
+                priority={shouldPreloadLogo}
               />
             </div>
             <span className="text-lg font-bold text-gray-900 dark:text-white">
@@ -589,7 +585,7 @@ export default function HeaderClient() {
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                              className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                               onClick={() => setIsProfileDropdownOpen(false)}
                             >
                               <item.icon className="w-5 h-5" />
@@ -681,20 +677,14 @@ export default function HeaderClient() {
       {isLoggedIn && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50">
           <div className="flex justify-around py-2">
-            {mainNav.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex flex-col items-center p-2 min-w-0 transition-colors ${
-                  pathname === item.href
-                    ? 'text-orange-600 dark:text-orange-400'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-700 dark:hover:text-orange-400'
-                }`}
-              >
-                <item.icon className="w-6 h-6 mb-1 flex-shrink-0" />
-                <span className="text-xs font-medium truncate">{item.name}</span>
-              </Link>
-            ))}
+            <ClientOnlyNavigation
+              items={mainNav}
+              className="contents"
+              itemClassName="flex flex-col items-center p-2 min-w-0 transition-colors"
+              activeClassName="text-orange-600 dark:text-orange-400"
+              inactiveClassName="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400"
+              isMobile={true}
+            />
           </div>
         </nav>
       )}

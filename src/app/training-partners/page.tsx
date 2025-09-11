@@ -59,6 +59,7 @@ export default function TrainingPartnersPage() {
     suggestion?: string
   } | null>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Hooks pour les notifications temps réel
   const {
@@ -171,11 +172,26 @@ export default function TrainingPartnersPage() {
     setSearchLoading(true)
     try {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      if (!session) {
-        console.error('Pas de session active pour la recherche')
+      if (sessionError) {
+        console.error('Erreur récupération session:', sessionError)
+        showNotification('Erreur de session. Reconnectez-vous.', 'error')
         return
+      }
+      
+      if (!session || !session.access_token) {
+        console.error('Pas de session active pour la recherche')
+        showNotification('Session expirée. Reconnectez-vous.', 'error')
+        return
+      }
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('=== DÉBOGAGE RECHERCHE FRONTEND ===')
+        console.log('Session trouvée pour recherche, utilisateur:', session.user?.email)
+        console.log('Access token présent:', !!session.access_token)
+        console.log('Query envoyée:', searchQuery)
+        console.log('URL appelée:', `/api/training-partners/search?q=${encodeURIComponent(searchQuery)}`)
       }
 
       const response = await fetch(`/api/training-partners/search?q=${encodeURIComponent(searchQuery)}`, {
@@ -184,6 +200,11 @@ export default function TrainingPartnersPage() {
           'Content-Type': 'application/json'
         }
       })
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Réponse API status:', response.status)
+        console.log('Réponse API ok:', response.ok)
+      }
       
       if (response.ok) {
         const data = await response.json()
@@ -196,17 +217,62 @@ export default function TrainingPartnersPage() {
       } else if (response.status === 429) {
         showNotification('Trop de recherches. Attendez 1 minute.', 'warning')
         setSearchResults([])
+      } else if (response.status === 401) {
+        showNotification('Session expirée. Reconnectez-vous.', 'error')
+        setSearchResults([])
+      } else if (response.status === 400) {
+        const error = await response.json()
+        showNotification(error.error || 'Requête invalide', 'error')
+        setSearchResults([])
       } else {
         const error = await response.json()
-        showNotification(error.error, 'error')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Erreur API complète:', error)
+        }
+        showNotification(error.error || `Aucun utilisateur trouvé pour "${searchQuery}"`, 'info')
         setSearchResults([])
       }
     } catch (error) {
       console.error('Erreur recherche utilisateurs:', error)
+      showNotification('Erreur lors de la recherche', 'error')
+      setSearchResults([])
     } finally {
       setSearchLoading(false)
     }
   }
+
+  // Recherche automatique avec débounce sécurisé (1.5s délai)
+  useEffect(() => {
+    // Nettoyer le timeout précédent
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+
+    // Si query vide, nettoyer les résultats
+    if (searchQuery.length === 0) {
+      setSearchResults([])
+      return
+    }
+
+    // Si query trop courte, ne pas chercher
+    if (searchQuery.length < 2) {
+      return
+    }
+
+    // Déclencher la recherche après 1.5s de pause (anti-spam)
+    searchTimeoutRef.current = setTimeout(() => {
+      if (searchQuery.length >= 2 && isAuthenticated && user) {
+        searchUsers()
+      }
+    }, 1500) // 1.5 secondes pour éviter le spam
+
+    // Cleanup
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [searchQuery, isAuthenticated, user])
 
   const sendInvitation = async (partnerId: string, message?: string) => {
     try {
@@ -739,7 +805,7 @@ export default function TrainingPartnersPage() {
                       <Input
                         id="partner-search"
                         type="text"
-                        placeholder="Email complet ou pseudo exact uniquement"
+                        placeholder="Email complet (ex: nom@domaine.com) ou pseudo exact (ex: Math)"
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value)

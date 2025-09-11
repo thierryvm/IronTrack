@@ -453,13 +453,6 @@ export async function validateFile(file: File): Promise<void> {
   }
   
   if (!validateMimeType(file)) {
-    console.log('[DEBUG] MIME validation failed:', {
-      fileName: file.name,
-      fileType: file.type,
-      fileSize: file.size,
-      allowedTypes: SECURITY_CONFIG.ALLOWED_MIME_TYPES
-    })
-    
     throw new FileUploadError(
       `Type de fichier non autorisé (${file.type || 'type vide/mobile'}). Formats acceptés : PNG, JPEG, GIF, HEIC. Extensions acceptées : ${SECURITY_CONFIG.ALLOWED_EXTENSIONS.join(', ')}.`,
       'INVALID_MIME_TYPE',
@@ -720,8 +713,6 @@ async function convertHeicToModernFormat(file: File): Promise<File> {
     // Détecter le meilleur format supporté
     const bestFormat = detectBestConversionFormat()
     
-    console.log('[HEIC] Début conversion:', file.name, `${(file.size / 1024 / 1024).toFixed(1)}MB`)
-    console.log('[HEIC] Format cible:', bestFormat.mimeType, `(qualité: ${Math.round(bestFormat.quality * 100)}%)`)
     
     // Convertir HEIC vers le meilleur format avec qualité optimisée pour réduction taille
     const convertedBlob = await heic2any({
@@ -730,8 +721,6 @@ async function convertHeicToModernFormat(file: File): Promise<File> {
       quality: bestFormat.quality
     }) as Blob
     
-    console.log('[HEIC] Taille avant conversion:', `${(file.size / 1024 / 1024).toFixed(1)}MB`)
-    console.log('[HEIC] Taille après conversion:', `${(convertedBlob.size / 1024 / 1024).toFixed(1)}MB`)
     
     // Vérifier si la conversion a réellement réduit la taille
     if (convertedBlob.size > file.size * 1.5) {
@@ -744,7 +733,6 @@ async function convertHeicToModernFormat(file: File): Promise<File> {
         quality: 0.50
       }) as Blob
       
-      console.log('[HEIC] Taille avec JPEG 50%:', `${(jpegBlob.size / 1024 / 1024).toFixed(1)}MB`)
       
       // Utiliser le plus petit des deux
       const finalBlob = jpegBlob.size < convertedBlob.size ? jpegBlob : convertedBlob
@@ -760,7 +748,6 @@ async function convertHeicToModernFormat(file: File): Promise<File> {
         }
       )
       
-      console.log('[HEIC] Conversion finale optimisée:', optimizedFile.name, `${(optimizedFile.size / 1024 / 1024).toFixed(1)}MB`)
       return optimizedFile
     }
     
@@ -774,7 +761,6 @@ async function convertHeicToModernFormat(file: File): Promise<File> {
       }
     )
     
-    console.log('[HEIC] Conversion réussie:', optimizedFile.name, `${(optimizedFile.size / 1024 / 1024).toFixed(1)}MB`)
     
     return optimizedFile
   } catch (error) {
@@ -798,9 +784,7 @@ export async function uploadExercisePhoto(file: File): Promise<UploadResult> {
         file.name.toLowerCase().endsWith('.heif')) {
       
       try {
-        console.log('[HEIC] Conversion HEIC vers format moderne démarrée:', file.name)
         processedFile = await convertHeicToModernFormat(file)
-        console.log('[HEIC] Conversion réussie:', processedFile.name, `${(processedFile.size / 1024 / 1024).toFixed(1)}MB`)
       } catch (conversionError) {
         console.error('[HEIC] Échec conversion:', conversionError)
         // Fallback: essayer l'upload direct (si Supabase supporte finalement HEIC)

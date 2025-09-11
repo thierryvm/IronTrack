@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-react';
+import { MotionWrapper, MotionPresence } from './MotionWrapper';
 
 interface Step {
   name: string;

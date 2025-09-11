@@ -116,7 +116,6 @@ export const useAdminUserManagement = () => {
       setUsers(transformedUsers)
       
       // Logger l'action admin (déjà fait côté API)
-      console.log(`[ADMIN_USERS] Chargé ${transformedUsers.length} utilisateurs avec succès`)
       
       return transformedUsers
 

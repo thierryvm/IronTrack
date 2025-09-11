@@ -27,7 +27,6 @@ export function useRealtimePartnerships() {
           filter: `or(requester_id.eq.${user.id},partner_id.eq.${user.id})`
         },
         (payload) => {
-          console.log('🔄 Changement dans les partenariats:', payload)
           // Déclencher le rafraîchissement après un petit délai pour éviter les doublons
           setTimeout(() => {
             triggerRefresh()

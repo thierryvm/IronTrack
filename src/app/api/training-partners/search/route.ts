@@ -35,12 +35,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Recherche trop longue (max 50 caractères)' }, { status: 400 })
     }
 
-    // Validation stricte : seulement email complet ou pseudo exact
+    // SÉCURITÉ : Emails complets OU pseudos sans caractères spéciaux
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const pseudoRegex = /^[a-zA-Z0-9_-]+$/
     
-    if (!emailRegex.test(query) && !pseudoRegex.test(query)) {
-      return NextResponse.json({ error: 'Format invalide. Utilisez un email complet ou pseudo exact.' }, { status: 400 })
+    const isEmail = emailRegex.test(query)
+    const isPseudo = pseudoRegex.test(query) && query.length >= 2
+    
+    if (!isEmail && !isPseudo) {
+      return NextResponse.json({ 
+        error: 'Format invalide. Utilisez un email complet ou un pseudo (lettres, chiffres, _ et - uniquement).',
+        hint: 'Formats acceptés: utilisateur@domaine.com ou pseudo123'
+      }, { status: 400 })
     }
 
     // SÉCURITÉ : Normalisation pour recherche insensible à la casse
@@ -58,25 +64,29 @@ export async function GET(request: NextRequest) {
     const userSearches = global.searchLimiter.get(userId) || []
     const recentSearches = userSearches.filter((timestamp: number) => now - timestamp < 60000) // 1 minute
     
-    if (recentSearches.length >= 3) {
+    if (recentSearches.length >= 10) {
       return NextResponse.json({ error: 'Trop de recherches. Attendez 1 minute.' }, { status: 429 })
     }
     
     global.searchLimiter.set(userId, [...recentSearches, now])
 
-    // SÉCURITÉ : Recherche exacte uniquement (insensible à la casse pour plus de facilité)
-    
+    // SÉCURITÉ : Recherche exacte par email OU pseudo
     const { data: users, error } = await supabase
       .from('profiles')
       .select('id, pseudo, full_name, email, avatar_url')
       .neq('id', user.id) // Exclure l'utilisateur actuel
-      .or(`pseudo.ilike.${sanitizedQuery},email.ilike.${sanitizedQuery}`)
+      .or(`email.eq.${sanitizedQuery},pseudo.ilike.${sanitizedQuery}`)
       .limit(3) // Limite drastique
     
     if (process.env.NODE_ENV === 'development') {
-
+      console.log('=== DÉBOGAGE RECHERCHE API ===')
+      console.log('Query originale:', query)
+      console.log('Query sanitized:', sanitizedQuery)
+      console.log('User qui recherche:', user.email)
       console.log('Résultats trouvés:', users?.length || 0, 'utilisateurs')
-
+      if (users?.length > 0) {
+        users.forEach(u => console.log('  - Trouvé:', u.email, '(pseudo:', u.pseudo + ')'))
+      }
     }
     if (error) console.log('Erreur SQL:', error)
 
@@ -95,21 +105,7 @@ export async function GET(request: NextRequest) {
       .select('requester_id, partner_id, status')
       .or(`requester_id.eq.${user.id},partner_id.eq.${user.id}`)
 
-    // SÉCURITÉ : Vérifier s'il y a des doublons de pseudo
-    const pseudoMatches = users?.filter(u => u.pseudo?.toLowerCase() === sanitizedQuery) || []
-    if (pseudoMatches.length > 1) {
-      if (process.env.NODE_ENV === 'development') {
-
-        console.log('ALERTE : Plusieurs utilisateurs avec le même pseudo détectés!', pseudoMatches)
-
-      }
-      return NextResponse.json({ 
-        error: 'Plusieurs utilisateurs trouvés avec ce pseudo. Utilisez l\'email pour plus de précision.',
-        suggestion: 'Essayez avec l\'email complet pour identifier précisément la personne.'
-      }, { status: 409 })
-    }
-
-    // Enrichir les résultats avec le statut de partenariat et trier par pertinence
+    // Enrichir les résultats avec le statut de partenariat
     const usersWithStatus = users?.map(u => {
       const partnership = existingPartnerships?.find(p => 
         (p.requester_id === user.id && p.partner_id === u.id) ||
@@ -117,41 +113,15 @@ export async function GET(request: NextRequest) {
       )
 
       const displayName = u.pseudo || u.full_name || u.email?.split('@')[0] || 'Utilisateur'
-      
-      // Calculer score de pertinence pour le tri
-      let relevanceScore = 0
-      const query = sanitizedQuery.toLowerCase()
-      
-      // Correspondance exacte = score le plus élevé
-      if (u.pseudo?.toLowerCase() === query || u.full_name?.toLowerCase() === query || u.email?.toLowerCase() === query) {
-        relevanceScore = 100
-      }
-      // Correspondance au début
-      else if (u.pseudo?.toLowerCase().startsWith(query) || u.full_name?.toLowerCase().startsWith(query) || u.email?.toLowerCase().startsWith(query)) {
-        relevanceScore = 50
-      }
-      // Correspondance partielle
-      else {
-        relevanceScore = 10
-      }
 
       return {
         ...u,
-        // SÉCURITÉ : Masquer l'email sauf si c'est une correspondance exacte
-        email: u.email === sanitizedQuery ? u.email : `${u.email.split('@')[0]}@***`,
         partnershipStatus: partnership?.status || null,
-        displayName,
-        relevanceScore,
-        // SÉCURITÉ : Ajouter plus d'infos si pseudo ambigu
-        isEmailMatch: u.email?.toLowerCase() === sanitizedQuery,
-        isPseudoMatch: u.pseudo?.toLowerCase() === sanitizedQuery
+        displayName
       }
     }) || []
 
-    // Trier par pertinence (score le plus élevé d'abord)
-    const sortedUsers = usersWithStatus.sort((a, b) => b.relevanceScore - a.relevanceScore)
-
-    return NextResponse.json({ users: sortedUsers })
+    return NextResponse.json({ users: usersWithStatus })
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
 
