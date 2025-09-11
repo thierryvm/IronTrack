@@ -42,8 +42,7 @@ export default function HeaderClient() {
     return null
   }
   
-  // Contrôle du preload logo - uniquement sur la page d'accueil
-  const shouldPreloadLogo = pathname === '/'
+  // Logo avec lazy loading pour éviter preload warnings
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const [userInitials, setUserInitials] = useState('')
@@ -303,7 +302,7 @@ export default function HeaderClient() {
                   className="h-full w-full object-contain"
                   sizes="40px"
                   quality={95}
-                  priority={shouldPreloadLogo}
+                  loading="lazy"
                 />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -497,7 +496,7 @@ export default function HeaderClient() {
                 className="h-full w-full object-contain"
                 sizes="32px"
                 quality={95}
-                priority={shouldPreloadLogo}
+                loading="lazy"
               />
             </div>
             <span className="text-lg font-bold text-gray-900 dark:text-white">
