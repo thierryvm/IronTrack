@@ -731,21 +731,21 @@ export default function HomePageClient() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon
-                  const tileColors = [
-                    'from-green-600 to-green-700 dark:from-green-700 dark:to-green-900',
-                    'from-orange-600 to-red-500 dark:from-orange-700 dark:to-orange-900',
-                    'from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-900',
-                    'from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-900',
-                    'from-yellow-600 to-yellow-700 dark:from-yellow-700 dark:to-yellow-900'
+                  const backgroundStyles = [
+                    'bg-gradient-to-br from-green-600 to-green-700 dark:from-green-700 dark:to-green-900',
+                    'bg-gradient-to-br from-orange-600 to-red-500 dark:from-orange-700 dark:to-orange-900', 
+                    'bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-900',
+                    'bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-900',
+                    'bg-gradient-to-br from-yellow-600 to-yellow-700 dark:from-yellow-700 dark:to-yellow-900'
                   ];
-                  const bg = `bg-gradient-to-br ${tileColors[index % tileColors.length]}`;
+                  const bgClass = backgroundStyles[index % backgroundStyles.length];
                   
                   if (action.onClick) {
                     return (
                       <button
                         key={action.name}
                         onClick={action.onClick}
-                        className={`${bg} rounded-xl p-4 sm:p-6 shadow-md transform hover:scale-105 transition-all min-h-[80px] sm:min-h-[90px] flex items-center hover:shadow-lg`}
+                        className={`${bgClass} rounded-xl p-4 sm:p-6 shadow-md transform hover:scale-105 transition-all min-h-[80px] sm:min-h-[90px] flex items-center hover:shadow-lg`}
                       >
                         <div className="flex items-center text-left text-white">
                           {Icon && <Icon className="h-6 w-6 mr-3 flex-shrink-0" />}
@@ -763,7 +763,7 @@ export default function HomePageClient() {
                       key={action.name}
                       href={action.href}
                       prefetch={false}
-                      className={`${bg} rounded-xl p-4 sm:p-6 shadow-md transform hover:scale-105 transition-all min-h-[80px] sm:min-h-[90px] flex items-center hover:shadow-lg`}
+                      className={`${bgClass} rounded-xl p-4 sm:p-6 shadow-md transform hover:scale-105 transition-all min-h-[80px] sm:min-h-[90px] flex items-center hover:shadow-lg`}
                     >
                       <div className="flex items-center text-left text-white">
                         {Icon && <Icon className="h-6 w-6 mr-3 flex-shrink-0" />}
