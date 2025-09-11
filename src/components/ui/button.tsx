@@ -69,16 +69,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading ? (
-          <>
+{loading ? (
+          <span className="flex items-center">
             <Loader2 className="h-6 w-6 animate-spin" />
             {children && "Chargement..."}
-          </>
+          </span>
         ) : (
-          <>
+          <span className="contents">
             {icon}
             {children}
-          </>
+          </span>
         )}
       </Comp>
     )
