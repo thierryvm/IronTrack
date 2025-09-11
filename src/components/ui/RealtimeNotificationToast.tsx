@@ -1,4 +1,4 @@
-import { X, Users, Check, UserX, Volume2, VolumeX, Wifi, WifiOff } from 'lucide-react'
+import { X, Users, Check, UserX } from 'lucide-react'
 import { RealtimeNotification } from '@/hooks/useRealtimeNotifications'
 import { MotionWrapper, MotionPresence } from '@/components/ui/MotionWrapper'
 
@@ -6,20 +6,12 @@ interface NotificationToastProps {
   notifications: RealtimeNotification[]
   onRemove: (id: string) => void
   onMarkAsRead: (id: string) => void
-  soundEnabled: boolean
-  onToggleSound: () => void
-  realtimeConnected?: boolean
-  fallbackEnabled?: boolean
 }
 
 export function RealtimeNotificationToast({
   notifications,
   onRemove,
-  onMarkAsRead,
-  soundEnabled,
-  onToggleSound,
-  realtimeConnected = false,
-  fallbackEnabled = false
+  onMarkAsRead
 }: NotificationToastProps) {
   const getIcon = (type: string) => {
     switch (type) {
@@ -49,51 +41,6 @@ export function RealtimeNotificationToast({
 
   return (
     <>
-      {/* Contrôles - Toujours visibles */}
-      <div className="fixed top-4 left-4 z-50 flex flex-col space-y-2">
-        {/* Contrôle du son */}
-        <MotionWrapper
-          type="button"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={onToggleSound}
-          className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-full shadow-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700"
-          title={soundEnabled ? 'Désactiver les sons' : 'Activer les sons'}
-        >
-          {soundEnabled ? (
-            <Volume2 className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-          ) : (
-            <VolumeX className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-          )}
-        </MotionWrapper>
-
-        {/* Indicateur de statut realtime */}
-        <MotionWrapper
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className={`p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 ${
-            realtimeConnected 
-              ? 'bg-green-50 text-green-600' 
-              : fallbackEnabled 
-                ? 'bg-yellow-50 text-yellow-600' 
-                : 'bg-red-50 text-red-600'
-          }`}
-          title={
-            realtimeConnected 
-              ? 'Notifications temps réel actives' 
-              : fallbackEnabled 
-                ? 'Mode polling actif (fallback)' 
-                : 'Notifications temps réel déconnectées'
-          }
-        >
-          {realtimeConnected ? (
-            <Wifi className="h-5 w-5" />
-          ) : (
-            <WifiOff className="h-5 w-5" />
-          )}
-        </MotionWrapper>
-      </div>
-
       {/* Notifications */}
       {notifications.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-3 max-w-md w-full">
