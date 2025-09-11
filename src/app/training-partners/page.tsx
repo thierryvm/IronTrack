@@ -444,17 +444,11 @@ export default function TrainingPartnersPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       {/* Notifications en temps réel */}
-      {process.env.NODE_ENV === 'development' && (
-        <RealtimeNotificationToast
-          notifications={notifications}
-          onRemove={removeNotification}
-          onMarkAsRead={markAsRead}
-          soundEnabled={soundEnabled}
-          onToggleSound={() => setSoundEnabled(!soundEnabled)}
-          realtimeConnected={realtimeConnected}
-          fallbackEnabled={fallbackEnabled}
-        />
-      )}
+      <RealtimeNotificationToast
+        notifications={notifications}
+        onRemove={removeNotification}
+        onMarkAsRead={markAsRead}
+      />
 
       {/* Notification Alert - ShadCN UI + fond flou */}
       {notification && (
