@@ -280,6 +280,3 @@ screenshot*.png
 screenshot*.jpg
 screenshot*.jpeg
 *.screenshot.png
-
-# Scripts utilitaires locaux
-ccc.bat
