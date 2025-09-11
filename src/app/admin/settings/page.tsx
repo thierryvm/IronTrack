@@ -128,8 +128,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Activé</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Activé</span>
               </div>
             </div>
           </CardContent>
@@ -152,8 +152,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Activé</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Activé</span>
               </div>
             </div>
 
@@ -187,8 +187,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Activé</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Activé</span>
               </div>
             </div>
           </CardContent>
@@ -211,8 +211,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Activé</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Activé</span>
               </div>
             </div>
 
@@ -226,8 +226,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Requis</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Requis</span>
               </div>
             </div>
 
@@ -269,8 +269,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Actif</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Actif</span>
               </div>
             </div>
 
@@ -304,8 +304,8 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-400" />
-                <span className="text-sm text-green-700 dark:text-green-400">Actif</span>
+                <CheckCircle className="h-6 w-6 text-green-700 dark:text-green-300" />
+                <span className="text-sm text-green-700 dark:text-green-300">Actif</span>
               </div>
             </div>
           </CardContent>

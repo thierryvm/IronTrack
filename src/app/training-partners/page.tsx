@@ -425,7 +425,7 @@ export default function TrainingPartnersPage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">Vérification...</p>
+            <p className="mt-2 text-gray-600 dark:text-gray-500">Vérification...</p>
           </div>
         </div>
       </div>

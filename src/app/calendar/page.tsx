@@ -681,7 +681,7 @@ export default function CalendarPage() {
                       
 
                       return allMonthWorkouts.length === 0 ? (
-                        <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+                        <div className="text-center py-12 text-gray-600 dark:text-gray-500">
                           <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                           <p className="text-lg font-medium">Aucune séance planifiée</p>
                           <p className="text-sm">Créez votre première séance pour commencer</p>
@@ -703,7 +703,7 @@ export default function CalendarPage() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-gray-600 dark:text-gray-500">
                                   {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
                                     weekday: 'long',
                                     day: 'numeric',
@@ -726,7 +726,7 @@ export default function CalendarPage() {
                 
                 <TabsContent value="stats" className="m-0 xl:hidden">
                   {/* Vue stats simplifiée */}
-                  <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+                  <div className="text-center py-12 text-gray-600 dark:text-gray-500">
                     <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                     <p className="text-lg font-medium">Statistiques</p>
                     <p className="text-sm">Fonctionnalité disponible prochainement</p>
@@ -804,7 +804,7 @@ export default function CalendarPage() {
                     
                     if (workoutsForDate.length === 0) {
                       return (
-                        <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+                        <div className="text-center py-6 text-gray-600 dark:text-gray-500">
                           <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                           <p>Aucune séance planifiée</p>
                         </div>

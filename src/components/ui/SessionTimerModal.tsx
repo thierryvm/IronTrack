@@ -150,7 +150,7 @@ export default function SessionTimerModal({
               <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 flex-shrink-0" />
               <span className="truncate">Timer de session</span>
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-500 mt-1">
               <span className="sm:hidden">
                 {formatTime(totalDuration)} • {steps.length} étapes
               </span>
