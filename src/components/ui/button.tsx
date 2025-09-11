@@ -70,15 +70,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <span className="flex items-center gap-2">
+          <>
             <Loader2 className="h-6 w-6 animate-spin" />
-            {children && <span>Chargement...</span>}
-          </span>
+            {children && "Chargement..."}
+          </>
         ) : (
-          <span className="flex items-center gap-2">
-            {icon && <span className="flex-shrink-0">{icon}</span>}
+          <>
+            {icon}
             {children}
-          </span>
+          </>
         )}
       </Comp>
     )
