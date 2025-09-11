@@ -4,33 +4,35 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-// Import direct de TOUTES les icônes pour éviter les dynamic imports
+// Import sélectif des icônes critiques uniquement
 import { 
   Dumbbell, 
   Calendar, 
   Trophy,
-  Apple,
-  Plus,
   Flame,
   Target,
-  TrendingUp,
   Play,
   Pause,
   RotateCcw,
   Volume2,
-  VolumeX
+  VolumeX,
+  Plus,
+  Apple,
+  TrendingUp
 } from 'lucide-react'
 
-import { createClient } from '@/utils/supabase/client'
+import { useHomepageData } from '@/hooks/useHomepageData'
+import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useBadges } from '@/hooks/useBadges'
-import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 import UserGreeting from '@/components/UserGreeting'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import SessionTimerModal from '@/components/ui/SessionTimerModal'
 
-// PWAInstallPrompt temporairement désactivé
+// Lazy load des composants lourds
+const SessionTimerModal = dynamic(() => import('@/components/ui/SessionTimerModal'), {
+  ssr: false
+})
 
 // Composant QuickTimer restauré sans Framer Motion
 function TimerRestored({ 
