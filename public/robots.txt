@@ -6,6 +6,7 @@ Allow: /faq
 Allow: /legal/privacy
 Allow: /legal/terms
 Allow: /pwa-guide
+Allow: /llms.txt
 
 # Pages privées non indexables
 Disallow: /admin/*
@@ -27,5 +28,5 @@ Disallow: /onboarding
 Disallow: /_next/*
 Disallow: /static/*
 
-# Sitemap (sera ajouté plus tard)
-# Sitemap: https://iron-track-dusky.vercel.app/sitemap.xml
+# Sitemap
+Sitemap: https://iron-track-dusky.vercel.app/sitemap.xml

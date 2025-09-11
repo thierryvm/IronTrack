@@ -14,22 +14,37 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     const supabase = createClient()
+    let mounted = true
     
     // Fonction pour récupérer l'utilisateur actuel
     const getUser = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser()
-        if (error) {
-          console.error('Erreur récupération utilisateur:', error)
-          setUser(null)
-        } else {
-          setUser(user)
+        // Vérifier d'abord la session depuis le localStorage/cookies
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('Erreur récupération session:', sessionError)
+        }
+        
+        if (mounted) {
+          if (session?.user) {
+            setUser(session.user)
+          } else {
+            // Fallback: essayer getUser() si pas de session
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if (error) {
+              console.error('Erreur récupération utilisateur:', error)
+            }
+            setUser(user)
+          }
+          setIsLoading(false)
         }
       } catch (error) {
         console.error('Erreur useAuth:', error)
-        setUser(null)
-      } finally {
-        setIsLoading(false)
+        if (mounted) {
+          setUser(null)
+          setIsLoading(false)
+        }
       }
     }
 
@@ -39,12 +54,15 @@ export function useAuth(): UseAuthReturn {
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
-        setIsLoading(false)
+        if (mounted) {
+          setUser(session?.user ?? null)
+          setIsLoading(false)
+        }
       }
     )
 
     return () => {
+      mounted = false
       subscription?.unsubscribe()
     }
   }, [])

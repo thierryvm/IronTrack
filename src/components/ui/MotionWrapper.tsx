@@ -1,48 +1,23 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { ReactNode, Suspense } from 'react'
-
-// Lazy loading des composants Framer Motion
-const MotionDiv = dynamic(
-  () => import('framer-motion').then((mod) => ({ default: mod.motion.div })),
-  { 
-    ssr: false,
-    loading: () => <div className="opacity-0">Loading...</div>
-  }
-)
-
-const MotionButton = dynamic(
-  () => import('framer-motion').then((mod) => ({ default: mod.motion.button })),
-  { 
-    ssr: false,
-    loading: () => <button className="opacity-0">Loading...</button>
-  }
-)
-
-const AnimatePresence = dynamic(
-  () => import('framer-motion').then((mod) => ({ default: mod.AnimatePresence })),
-  { 
-    ssr: false,
-    loading: () => <div>Loading...</div>
-  }
-)
+import { motion, AnimatePresence } from 'framer-motion'
+import { ReactNode } from 'react'
 
 interface MotionWrapperProps {
   children: ReactNode
   type?: 'div' | 'button'
-  initial?: any
-  animate?: any
-  exit?: any
-  transition?: any
-  whileHover?: any
-  whileTap?: any
+  initial?: Record<string, unknown>
+  animate?: Record<string, unknown>
+  exit?: Record<string, unknown>
+  transition?: Record<string, unknown>
+  whileHover?: Record<string, unknown>
+  whileTap?: Record<string, unknown>
   layout?: boolean
   className?: string
   onClick?: () => void
   disabled?: boolean
   style?: React.CSSProperties
-  [key: string]: any // Permet toutes les props
+  [key: string]: unknown // Permet toutes les props
 }
 
 export function MotionWrapper({ 
@@ -51,18 +26,14 @@ export function MotionWrapper({
   ...rest
 }: MotionWrapperProps) {
 
-  return (
-    <Suspense fallback={<div className={rest.className}>{children}</div>}>
-      {type === 'button' ? (
-        <MotionButton {...rest}>
-          {children}
-        </MotionButton>
-      ) : (
-        <MotionDiv {...rest}>
-          {children}
-        </MotionDiv>
-      )}
-    </Suspense>
+  return type === 'button' ? (
+    <motion.button {...rest}>
+      {children}
+    </motion.button>
+  ) : (
+    <motion.div {...rest}>
+      {children}
+    </motion.div>
   )
 }
 
@@ -74,11 +45,9 @@ export function MotionPresence({
   mode?: 'wait' | 'sync' | 'popLayout'
 }) {
   return (
-    <Suspense fallback={<div>{children}</div>}>
-      <AnimatePresence mode={mode}>
-        {children}
-      </AnimatePresence>
-    </Suspense>
+    <AnimatePresence mode={mode}>
+      {children}
+    </AnimatePresence>
   )
 }
 

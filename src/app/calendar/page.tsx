@@ -3,8 +3,16 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Head from 'next/head'
 
-// Import statique pour éviter les erreurs webpack
-import { ClientOnlyIcon } from '@/components/ui/ClientOnlyIcons'
+// Import directs des icônes pour éviter les erreurs webpack
+import { 
+  Plus, 
+  Calendar as CalendarIcon, 
+  List, 
+  Activity, 
+  ChevronLeft, 
+  ChevronRight,
+  Clock 
+} from 'lucide-react'
 
 
 // MIGRATION SHADCN/UI CALENDAR
@@ -438,7 +446,7 @@ export default function CalendarPage() {
                 onClick={() => router.push('/workouts/new')}
                 className="bg-orange-600 dark:bg-orange-600 hover:bg-orange-700 dark:hover:bg-orange-700 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation text-white shadow-sm transition-colors"
               >
-                <ClientOnlyIcon name="Plus" className="h-4 sm:h-5 w-4 sm:w-5" />
+                <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
                 <span className="hidden sm:inline">Nouvelle séance</span>
                 <span className="sm:hidden">Nouveau</span>
               </Button>
@@ -456,16 +464,16 @@ export default function CalendarPage() {
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'calendar' | 'list' | 'stats')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 xl:grid-cols-2 md:grid-cols-3 mb-6">
                   <TabsTrigger value="calendar" className="flex items-center space-x-2">
-                    <ClientOnlyIcon name="CalendarIcon" className="h-4 w-4" />
+                    <CalendarIcon className="h-4 w-4" />
                     <span>Calendrier</span>
                   </TabsTrigger>
                   <TabsTrigger value="list" className="flex items-center space-x-2">
-                    <ClientOnlyIcon name="List" className="h-4 w-4" />
+                    <List className="h-4 w-4" />
                     <span>Liste</span>
                   </TabsTrigger>
                   {/* Troisième onglet Stats pour mobile/tablette */}
                   <TabsTrigger value="stats" className="xl:hidden flex items-center space-x-2">
-                    <ClientOnlyIcon name="Activity" className="h-4 w-4" />
+                    <Activity className="h-4 w-4" />
                     <span>Stats</span>
                   </TabsTrigger>
                 </TabsList>
@@ -485,7 +493,7 @@ export default function CalendarPage() {
                         size="sm"
                         className="p-3 touch-manipulation"
                       >
-                        <ClientOnlyIcon name="ChevronLeft" className="h-5 w-5" />
+                        <ChevronLeft className="h-5 w-5" />
                       </Button>
                     </div>
                     
@@ -515,7 +523,7 @@ export default function CalendarPage() {
                           size="sm"
                           className="p-3 touch-manipulation"
                         >
-                          <ClientOnlyIcon name="ChevronRight" className="h-5 w-5" />
+                          <ChevronRight className="h-5 w-5" />
                         </Button>
                       </div>
                     </div>
@@ -642,37 +650,45 @@ export default function CalendarPage() {
                         size="sm"
                         className="bg-orange-600 hover:bg-orange-700 text-white"
                       >
-                        <ClientOnlyIcon name="Plus" className="h-4 w-4 mr-1" />
+                        <Plus className="h-4 w-4 mr-1" />
                         Nouvelle séance
                       </Button>
                     </div>
                     
 {(() => {
                       // Combiner séances personnelles et partenaires avec identification
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0); // Début de la journée
+                      // Afficher toutes les séances planifiées du mois courant pour cohérence avec les statistiques
+                      const currentDate = new Date();
                       
                       const personalWorkouts = workouts
-                        .filter(workout => new Date(workout.scheduled_date) >= today)
+                        .filter(workout => {
+                          const workoutDate = new Date(workout.scheduled_date);
+                          return workoutDate.getMonth() === currentDate.getMonth() && 
+                                 workoutDate.getFullYear() === currentDate.getFullYear();
+                        })
                         .map(workout => ({ ...workout, isPartnerWorkout: false }));
                         
                       const partnerWorkouts = partnersWorkouts
-                        .filter(workout => new Date(workout.scheduled_date) >= today)
+                        .filter(workout => {
+                          const workoutDate = new Date(workout.scheduled_date);
+                          return workoutDate.getMonth() === currentDate.getMonth() && 
+                                 workoutDate.getFullYear() === currentDate.getFullYear();
+                        })
                         .map(workout => ({ ...workout, isPartnerWorkout: true }));
                         
-                      const allUpcomingWorkouts = [...personalWorkouts, ...partnerWorkouts]
+                      const allMonthWorkouts = [...personalWorkouts, ...partnerWorkouts]
                         .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime());
                       
 
-                      return allUpcomingWorkouts.length === 0 ? (
+                      return allMonthWorkouts.length === 0 ? (
                         <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-                          <ClientOnlyIcon name="CalendarIcon" className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                          <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                           <p className="text-lg font-medium">Aucune séance planifiée</p>
                           <p className="text-sm">Créez votre première séance pour commencer</p>
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          {allUpcomingWorkouts.slice(0, 10).map(workout => (
+                          {allMonthWorkouts.slice(0, 10).map(workout => (
                             <div key={`${workout.isPartnerWorkout ? 'partner-' : 'personal-'}${workout.id}`} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
                               <div className={`w-3 h-3 rounded-full ${getTypeColor(getCorrectType(workout))}`}></div>
                               <div className="flex-1">
@@ -711,7 +727,7 @@ export default function CalendarPage() {
                 <TabsContent value="stats" className="m-0 xl:hidden">
                   {/* Vue stats simplifiée */}
                   <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-                    <ClientOnlyIcon name="Activity" className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                     <p className="text-lg font-medium">Statistiques</p>
                     <p className="text-sm">Fonctionnalité disponible prochainement</p>
                   </div>
@@ -789,7 +805,7 @@ export default function CalendarPage() {
                     if (workoutsForDate.length === 0) {
                       return (
                         <div className="text-center py-6 text-gray-600 dark:text-gray-400">
-                          <ClientOnlyIcon name="CalendarIcon" className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                          <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                           <p>Aucune séance planifiée</p>
                         </div>
                       );
@@ -804,7 +820,7 @@ export default function CalendarPage() {
                         </Badge>
                         {workout.duration && (
                           <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
-                            <ClientOnlyIcon name="Clock" className="h-4 w-4" />
+                            <Clock className="h-4 w-4" />
                             <span>{workout.duration} min</span>
                           </span>
                         )}
@@ -816,7 +832,7 @@ export default function CalendarPage() {
                   onClick={() => router.push('/workouts/new')}
                   className="w-full mt-4 bg-orange-600 dark:bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
                 >
-                  <ClientOnlyIcon name="Plus" className="h-5 w-5" />
+                  <Plus className="h-5 w-5" />
                   <span>Ajouter une séance</span>
                 </button>
               </div>

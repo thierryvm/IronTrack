@@ -28,7 +28,6 @@ interface SessionTimerModalProps {
 
 export default function SessionTimerModal({
   steps,
-  userSounds,
   sessionSounds,
   onClose,
   onStepsChange,
@@ -103,51 +102,68 @@ export default function SessionTimerModal({
 
   if (isRunning) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Session en cours</h3>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsRunning(false)}
-              className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-600 font-semibold"
-            >
-              Arrêter
-            </Button>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-6 w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white dark:bg-gray-800 z-10 pb-2 border-b border-gray-200 dark:border-gray-600">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Session en cours</h3>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsRunning(false)}
+                className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-600 font-semibold"
+              >
+                Arrêter
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onClose}
+                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
-          <SessionTimerSimple
-            steps={steps.map((step, index) => ({
-              ...step,
-              soundUrl: sessionSounds[index] || undefined
-            }))}
-            autoStart={true}
-            onComplete={handleTimerComplete}
-          />
+          <div className="mt-3 sm:mt-0">
+            <SessionTimerSimple
+              steps={steps.map((step, index) => ({
+                ...step,
+                soundUrl: sessionSounds[index] || undefined
+              }))}
+              autoStart={true}
+              onComplete={handleTimerComplete}
+            />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <Clock className="h-6 w-6 text-orange-600" />
-              Timer de session
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-6 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-start sm:items-center mb-4 sm:mb-6">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 flex-shrink-0" />
+              <span className="truncate">Timer de session</span>
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Durée totale: {formatTime(totalDuration)} • {steps.length} étapes
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <span className="sm:hidden">
+                {formatTime(totalDuration)} • {steps.length} étapes
+              </span>
+              <span className="hidden sm:inline">
+                Durée totale: {formatTime(totalDuration)} • {steps.length} étapes
+              </span>
             </p>
           </div>
           <Button
             variant="secondary"
             size="sm"
             onClick={onClose}
-            className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700"
+            className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 flex-shrink-0 ml-2"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -247,21 +263,23 @@ export default function SessionTimerModal({
           ))}
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <Button
             className="flex-1 bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700 text-white font-semibold"
             onClick={handleStartTimer}
           >
             <Play className="h-4 w-4 mr-2" />
-            Démarrer la session ({steps.length} étapes)
+            <span className="sm:hidden">Démarrer ({steps.length})</span>
+            <span className="hidden sm:inline">Démarrer la session ({steps.length} étapes)</span>
           </Button>
           <Button
             variant="secondary"
             onClick={handleAddStep}
-            className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700"
+            className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 sm:w-auto"
           >
-            <Plus className="h-4 w-4" />
-            Ajouter étape
+            <Plus className="h-4 w-4 mr-0 sm:mr-2" />
+            <span className="hidden sm:inline">Ajouter étape</span>
+            <span className="sm:hidden">Ajouter</span>
           </Button>
         </div>
       </div>

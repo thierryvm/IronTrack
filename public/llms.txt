@@ -1,0 +1,94 @@
+# IronTrack - Application de Musculation Complète
+
+## Description
+IronTrack est une application web moderne de suivi d'entraînement de musculation développée avec Next.js 15, TypeScript et Supabase. Elle offre une solution complète pour planifier, suivre et analyser ses séances de musculation avec une interface responsive optimisée mobile-first.
+
+## Fonctionnalités Principales
+
+### Timer de Session Avancé
+- Timer multi-étapes personnalisable avec notifications audio
+- Interface responsive adaptée à tous les formats d'écran
+- Gestion des temps de repos, échauffement et exercices principaux
+- Contrôles intuitifs (play, pause, suivant, précédent, reset)
+
+### Gestion des Exercices
+- Base de données complète d'exercices de musculation
+- Création et modification d'exercices personnalisés
+- Suivi des performances avec historique détaillé
+- Catégorisation par groupes musculaires
+
+### Calendrier et Planification
+- Calendrier interactif pour planifier les séances
+- Visualisation des entraînements passés et futurs
+- Séances partagées avec partenaires d'entraînement
+- Rappels et notifications
+
+### Système de Partenaires
+- Connexion avec d'autres utilisateurs
+- Partage de séances et programmes
+- Motivation et suivi collectif
+- Tableau de bord partagé
+
+### Suivi Nutritionnel
+- Base de données d'aliments et recettes
+- Calcul automatique des macronutriments
+- Planification des repas
+- Partage de recettes entre partenaires
+
+### Analyse et Progression
+- Graphiques détaillés de progression
+- Statistiques avancées par exercice
+- Suivi du volume d'entraînement
+- Comparaisons temporelles
+
+## Technologies Utilisées
+- **Frontend**: Next.js 15 avec App Router, TypeScript, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL, Authentication, Real-time)
+- **UI/UX**: shadcn/ui, Framer Motion, Lucide Icons
+- **Déploiement**: Vercel avec optimisations automatiques
+
+## Public Cible
+- Pratiquants de musculation débutants à avancés
+- Coachs sportifs et préparateurs physiques
+- Groupes d'entraînement et clubs de fitness
+- Personnes cherchant un suivi structuré de leur progression
+
+## Avantages Concurrentiels
+- Interface moderne et intuitive
+- Optimisation mobile parfaite
+- Fonctionnalités collaboratives uniques
+- Timer de session le plus avancé du marché
+- Intégration nutrition-entraînement
+
+## Cas d'Usage Typiques
+1. **Débutant**: Utilise les programmes pré-définis et le timer guidé
+2. **Intermédiaire**: Crée ses propres séances et suit sa progression
+3. **Avancé**: Analyse ses performances et optimise ses programmes
+4. **Coach**: Gère plusieurs clients et partage des programmes
+5. **Groupe**: S'entraîne ensemble avec des séances partagées
+
+## Sécurité et Protection des Données
+- **Authentification sécurisée**: OAuth 2.0, 2FA disponible
+- **Chiffrement**: HTTPS obligatoire, données chiffrées en base
+- **RGPD compliant**: Gestion complète du consentement et suppression de données
+- **Row Level Security (RLS)**: Isolation des données utilisateurs
+- **Protection XSS/CSRF**: Validation stricte des entrées utilisateur
+- **Audit de sécurité**: Tests réguliers et mise à jour des dépendances
+- **Données sensibles**: Aucune donnée de santé médicale stockée
+- **Backup sécurisé**: Sauvegardes chiffrées automatiques
+
+## Accessibilité et Performance
+- Score Lighthouse >95 sur tous les critères
+- Conformité WCAG 2.1 AA
+- Support PWA pour installation mobile
+- Optimisation Core Web Vitals
+- Compatible tous navigateurs modernes
+
+## Contact et Support
+- Support technique intégré à l'application
+- Documentation complète disponible
+- Communauté active d'utilisateurs
+
+---
+Dernière mise à jour: 2025-01-09
+Version: 1.0.0
