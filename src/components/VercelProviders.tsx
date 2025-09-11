@@ -10,7 +10,11 @@ export default function VercelProviders() {
   
   useEffect(() => {
     setMounted(true)
-    setIsProduction(process.env.NODE_ENV === 'production')
+    // Only load Vercel analytics on actual Vercel domains
+    const isVercelDomain = typeof window !== 'undefined' && 
+      (window.location.hostname.includes('vercel.app') || 
+       window.location.hostname.includes('iron-track-dusky.vercel.app'))
+    setIsProduction(process.env.NODE_ENV === 'production' && isVercelDomain)
   }, [])
   
   useEffect(() => {

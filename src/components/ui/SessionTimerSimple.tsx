@@ -35,13 +35,31 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
     const url = steps[currentStep]?.soundUrl || '/notification.mp3'
     const isSupported = url && typeof url === 'string' && url.trim() !== '' &&
       (url.includes('.mp3') || url.includes('.wav') || url.includes('.ogg'))
+    
     if (!isSupported) {
       audioRef.current = null
       return
     }
-    audioRef.current = new Audio(url)
-    audioRef.current.loop = false
-    audioRef.current.volume = 0.5
+
+    // Créer l'audio seulement quand nécessaire, avec gestion d'erreur
+    try {
+      const audio = new Audio()
+      audio.preload = 'none' // Ne pas précharger automatiquement
+      audio.src = url
+      audio.loop = false
+      audio.volume = 0.5
+      
+      // Gestion d'erreur silencieuse
+      audio.addEventListener('error', () => {
+        console.warn(`Audio file not available: ${url}`)
+        audioRef.current = null
+      })
+      
+      audioRef.current = audio
+    } catch (error) {
+      console.warn(`Failed to create audio: ${error}`)
+      audioRef.current = null
+    }
   }, [currentStep, steps])
 
   useEffect(() => {
@@ -154,7 +172,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
   if (!currentStepInfo) return null
 
   return (
-    <div className="!bg-gradient-to-br !from-slate-800 !to-slate-900 rounded-2xl pt-16 px-3 sm:px-6 pb-3 sm:pb-6 text-white shadow-xl border border-slate-700">
+    <div className="!bg-gradient-to-br !from-slate-800 !to-slate-900 rounded-2xl pt-16 px-3 sm:px-6 pb-3 sm:pb-6 text-white shadow-xl border border-slate-700" data-timer="v2">
       {/* Barre de progression */}
       <div className="absolute top-14 left-3 right-3 sm:left-6 sm:right-6 bg-slate-700 rounded-full h-2 sm:h-3 mt-2">
         <div
