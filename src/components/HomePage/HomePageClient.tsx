@@ -21,6 +21,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 
+import { createClient } from '@/utils/supabase/client'
 import { useHomepageData } from '@/hooks/useHomepageData'
 import { useOnboardingCheck } from '@/hooks/useOnboardingCheck'
 import { useUserProfile } from '@/hooks/useUserProfile'

@@ -48,12 +48,7 @@ export function PerformanceOptimizations() {
       })
     }
 
-    // 3. Service Worker pour mise en cache
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker.register('/sw.js').catch(error => {
-        console.log('SW registration failed:', error)
-      })
-    }
+    // 3. Service Worker désactivé (sw.js n'existe pas)
 
     // 4. Optimisation fetch (simplifiée pour éviter les problèmes)
     const originalFetch = window.fetch
