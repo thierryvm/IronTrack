@@ -444,7 +444,7 @@ export function ImageCropper({
               step={0.1}
               className="w-full"
             />
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-gray-500 text-center">
               {Math.round(scale * 100)}%
             </div>
           </div>
@@ -463,7 +463,7 @@ export function ImageCropper({
               step={5}
               className="w-full"
             />
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-gray-500 text-center">
               {rotation}°
             </div>
           </div>
@@ -481,7 +481,7 @@ export function ImageCropper({
             >
               {freeMode ? 'Libre' : 'Contraint'}
             </Button>
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-gray-500 text-center">
               {freeMode ? 'Libre' : `${aspectRatio.toFixed(1)}:1`}
             </div>
           </div>
@@ -500,7 +500,7 @@ export function ImageCropper({
             >
               Réinitialiser
             </Button>
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-gray-500 text-center">
               X: {Math.round(cropArea.x)}, Y: {Math.round(cropArea.y)}
             </div>
           </div>
@@ -529,7 +529,7 @@ export function ImageCropper({
         </div>
 
         {/* Usage Instructions */}
-        <div className="text-xs text-gray-400 text-center border-t border-gray-700 pt-3">
+        <div className="text-xs text-gray-500 text-center border-t border-gray-700 pt-3">
           <p className="hidden sm:block">📱 Glissez l'image pour la repositionner • 🔍 Utilisez les contrôles pour zoomer/pivoter</p>
           <p className="sm:hidden">👆 Glissez l'image pour la déplacer • 🎛️ Utilisez les boutons ci-dessus pour ajuster</p>
         </div>

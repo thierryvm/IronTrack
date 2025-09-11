@@ -795,7 +795,7 @@ export default function HomePageClient() {
               <CardContent className="p-0">
                 {recentExercises.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                    <p className="text-gray-600 dark:text-gray-500 text-sm mb-3">
                       Aucun exercice récent
                     </p>
                     <Button asChild size="sm" className="bg-orange-600 dark:bg-orange-500">
@@ -813,7 +813,7 @@ export default function HomePageClient() {
                           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {exercise.name}
                           </h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-gray-600 dark:text-gray-500">
                             {exercise.muscle_group}
                           </p>
                         </div>
@@ -821,7 +821,7 @@ export default function HomePageClient() {
                           <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
                             {exercise.displayValue}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500 dark:text-gray-500">
                             {exercise.displayLabel}
                           </p>
                         </div>
@@ -853,7 +853,7 @@ export default function HomePageClient() {
             <div className="flex justify-center items-center gap-8">
               <div className="text-center">
                 <div className="text-4xl font-bold">{stats.thisWeek}</div>
-                <div className="text-purple-300 dark:text-purple-400 text-sm">séances cette semaine</div>
+                <div className="text-purple-300 dark:text-purple-600 text-sm">séances cette semaine</div>
               </div>
               <div className="flex-1 max-w-md">
                 <div className="bg-purple-600 dark:bg-purple-700 rounded-full h-4 mb-2">
@@ -862,7 +862,7 @@ export default function HomePageClient() {
                     style={{ width: `${Math.min(stats.thisWeek * 33.33, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-purple-300 dark:text-purple-400 text-sm">
+                <p className="text-purple-300 dark:text-purple-600 text-sm">
                   Objectif: 3 séances par semaine
                 </p>
               </div>
