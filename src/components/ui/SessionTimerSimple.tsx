@@ -154,9 +154,9 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
   if (!currentStepInfo) return null
 
   return (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black rounded-2xl p-3 sm:p-6 text-white shadow-xl border border-slate-700">
+    <div className="!bg-gradient-to-br !from-slate-800 !to-slate-900 rounded-2xl pt-16 px-3 sm:px-6 pb-3 sm:pb-6 text-white shadow-xl border border-slate-700">
       {/* Barre de progression */}
-      <div className="w-full bg-slate-700 rounded-full h-2 sm:h-3 mb-4 sm:mb-6">
+      <div className="absolute top-14 left-3 right-3 sm:left-6 sm:right-6 bg-slate-700 rounded-full h-2 sm:h-3 mt-2">
         <div
           className="bg-orange-500 h-2 sm:h-3 rounded-full transition-all duration-1000"
           style={{ width: `${progressPercent}%` }}
@@ -164,13 +164,13 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
       </div>
 
       {/* Informations de l'étape courante */}
-      <div className="text-center mb-4 sm:mb-6">
+      <div className="text-center mb-4 sm:mb-6 mt-8">
         <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2 text-slate-100 px-2">{currentStepInfo.name}</h3>
         <p className="text-slate-400 mb-3 sm:mb-4 text-sm sm:text-base">
           Étape {currentStep + 1} sur {steps.length}
         </p>
         
-        <div className="text-4xl sm:text-6xl font-bold mb-3 sm:mb-4">
+        <div className="text-4xl sm:text-6xl font-bold mb-3 sm:mb-4 text-slate-100">
           {formatTime(timeLeft)}
         </div>
         
@@ -188,14 +188,14 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
           disabled={currentStep === 0}
           className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <SkipBack className="h-4 w-4 sm:h-5 sm:w-5" />
+          <SkipBack className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </button>
 
         <button
           onClick={handlePlayPause}
           className="bg-orange-600 hover:bg-orange-700 p-3 sm:p-4 rounded-full transition-colors shadow-lg flex items-center justify-center col-span-1"
         >
-          {isRunning ? <Pause className="h-5 w-5 sm:h-7 sm:w-7" /> : <Play className="h-5 w-5 sm:h-7 sm:w-7" />}
+          {isRunning ? <Pause className="h-5 w-5 sm:h-7 sm:w-7 text-white" /> : <Play className="h-5 w-5 sm:h-7 sm:w-7 text-white" />}
         </button>
 
         <button
@@ -203,14 +203,14 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
           disabled={currentStep === steps.length - 1}
           className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <SkipForward className="h-4 w-4 sm:h-5 sm:w-5" />
+          <SkipForward className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </button>
 
         <button
           onClick={handleReset}
           className="bg-slate-700 hover:bg-slate-600 p-2 sm:p-3 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
         >
-          <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+          <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </button>
 
         <button
@@ -221,7 +221,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
               : 'bg-slate-700 hover:bg-slate-600 border-slate-600'
           }`}
         >
-          {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />}
+          {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5 text-white" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />}
         </button>
       </div>
 

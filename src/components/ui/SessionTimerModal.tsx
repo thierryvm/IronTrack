@@ -103,15 +103,15 @@ export default function SessionTimerModal({
   if (isRunning) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-6 w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white dark:bg-gray-800 z-10 pb-2 border-b border-gray-200 dark:border-gray-600">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Session en cours</h3>
+        <div className="w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto relative rounded-2xl !bg-slate-100">
+          <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-2 rounded-t-2xl" style={{ background: 'linear-gradient(to bottom, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.8))', backdropFilter: 'blur(8px)' }}>
+            <h3 className="text-lg font-bold text-white">Session en cours</h3>
             <div className="flex gap-2">
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => setIsRunning(false)}
-                className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-600 font-semibold"
+                className="bg-red-500/20 text-red-200 hover:bg-red-500/30 border border-red-400/30 font-semibold backdrop-blur"
               >
                 Arrêter
               </Button>
@@ -119,23 +119,21 @@ export default function SessionTimerModal({
                 variant="secondary"
                 size="sm"
                 onClick={onClose}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600"
+                className="bg-slate-500/20 text-slate-200 hover:bg-slate-500/30 border border-slate-400/30 backdrop-blur"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
           
-          <div className="mt-3 sm:mt-0">
-            <SessionTimerSimple
-              steps={steps.map((step, index) => ({
-                ...step,
-                soundUrl: sessionSounds[index] || undefined
-              }))}
-              autoStart={true}
-              onComplete={handleTimerComplete}
-            />
-          </div>
+          <SessionTimerSimple
+            steps={steps.map((step, index) => ({
+              ...step,
+              soundUrl: sessionSounds[index] || undefined
+            }))}
+            autoStart={true}
+            onComplete={handleTimerComplete}
+          />
         </div>
       </div>
     )
