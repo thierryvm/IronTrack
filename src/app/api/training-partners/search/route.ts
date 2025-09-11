@@ -78,24 +78,8 @@ export async function GET(request: NextRequest) {
       .or(`email.eq.${sanitizedQuery},pseudo.ilike.${sanitizedQuery}`)
       .limit(3) // Limite drastique
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== DÉBOGAGE RECHERCHE API ===')
-      console.log('Query originale:', query)
-      console.log('Query sanitized:', sanitizedQuery)
-      console.log('User qui recherche:', user.email)
-      console.log('Résultats trouvés:', users?.length || 0, 'utilisateurs')
-      if (users?.length > 0) {
-        users.forEach(u => console.log('  - Trouvé:', u.email, '(pseudo:', u.pseudo + ')'))
-      }
-    }
-    if (error) console.log('Erreur SQL:', error)
 
     if (error) {
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Erreur recherche utilisateurs:', error)
-
-      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -123,11 +107,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users: usersWithStatus })
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-
-      console.error('Erreur API search users:', error)
-
-    }
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
