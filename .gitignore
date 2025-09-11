@@ -274,3 +274,9 @@ kill_dev.bat
 kill_port.bat
 kill-port.bat
 kill-port.ps1
+
+# Screenshots et images temporaires
+screenshot*.png
+screenshot*.jpg
+screenshot*.jpeg
+*.screenshot.png
