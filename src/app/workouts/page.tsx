@@ -315,7 +315,7 @@ export default function WorkoutsPage() {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Card 
-                      className={`cursor-pointer border-l-4 hover:shadow-lg transition-all min-h-[200px] flex flex-col ${
+                      className={`cursor-pointer border-l-4 hover:shadow-lg transition-all min-h-[260px] flex flex-col ${
                         isCompleted ? 'border-l-green-500' : 'border-l-orange-600'
                       }`}
                       onClick={() => setSelectedWorkout(workout)}
@@ -354,7 +354,7 @@ export default function WorkoutsPage() {
                       </div>
 
                       {/* Section actions - fixe en bas */}
-                      <div className="flex items-center justify-between mt-auto">
+                      <div className="flex items-center justify-between mt-auto mb-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         }`}>
@@ -393,18 +393,21 @@ export default function WorkoutsPage() {
                         </div>
                       </div>
 
-                      {!isCompleted && (
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            changeWorkoutStatus(workout.id, 'Réalisé');
-                          }}
-                          className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white"
-                          size="sm"
-                        >
-                          ✅ Marquer comme réalisé
-                        </Button>
-                      )}
+                      {/* Zone réservée pour le bouton - hauteur fixe */}
+                      <div className="h-10 flex items-center">
+                        {!isCompleted && (
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              changeWorkoutStatus(workout.id, 'Réalisé');
+                            }}
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                            size="sm"
+                          >
+                            ✅ Marquer comme réalisé
+                          </Button>
+                        )}
+                      </div>
                       </CardContent>
                     </Card>
                   </motion.div>
