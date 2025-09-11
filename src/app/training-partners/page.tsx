@@ -122,7 +122,6 @@ export default function TrainingPartnersPage() {
   // Rafraîchir les données quand refreshTrigger change
   useEffect(() => {
     if (refreshTrigger > 0 && isAuthenticated && user) {
-      console.log('🔄 Rafraîchissement automatique des partenaires')
       loadPartnerships()
     }
   }, [refreshTrigger, isAuthenticated, user, loadPartnerships])
@@ -186,13 +185,6 @@ export default function TrainingPartnersPage() {
         return
       }
       
-      if (process.env.NODE_ENV === 'development') {
-        console.log('=== DÉBOGAGE RECHERCHE FRONTEND ===')
-        console.log('Session trouvée pour recherche, utilisateur:', session.user?.email)
-        console.log('Access token présent:', !!session.access_token)
-        console.log('Query envoyée:', searchQuery)
-        console.log('URL appelée:', `/api/training-partners/search?q=${encodeURIComponent(searchQuery)}`)
-      }
 
       const response = await fetch(`/api/training-partners/search?q=${encodeURIComponent(searchQuery)}`, {
         headers: {
@@ -201,10 +193,6 @@ export default function TrainingPartnersPage() {
         }
       })
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Réponse API status:', response.status)
-        console.log('Réponse API ok:', response.ok)
-      }
       
       if (response.ok) {
         const data = await response.json()
@@ -226,9 +214,6 @@ export default function TrainingPartnersPage() {
         setSearchResults([])
       } else {
         const error = await response.json()
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Erreur API complète:', error)
-        }
         showNotification(error.error || `Aucun utilisateur trouvé pour "${searchQuery}"`, 'info')
         setSearchResults([])
       }
@@ -365,7 +350,6 @@ export default function TrainingPartnersPage() {
             const isAccepted = updatedPartnerships.some(p => p.id === partnershipId && p.status === 'accepted')
             
             if (!isAccepted && attempts < maxAttempts) {
-              console.log(`Tentative ${attempts}/${maxAttempts} - Nouveau rafraîchissement...`)
               setTimeout(refreshWithRetry, 800)
             } else if (isAccepted) {
               showNotification('Partenariat activé avec succès !', 'success', 'Vous pouvez maintenant configurer vos paramètres de partage.')
@@ -460,15 +444,17 @@ export default function TrainingPartnersPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       {/* Notifications en temps réel */}
-      <RealtimeNotificationToast
-        notifications={notifications}
-        onRemove={removeNotification}
-        onMarkAsRead={markAsRead}
-        soundEnabled={soundEnabled}
-        onToggleSound={() => setSoundEnabled(!soundEnabled)}
-        realtimeConnected={realtimeConnected}
-        fallbackEnabled={fallbackEnabled}
-      />
+      {process.env.NODE_ENV === 'development' && (
+        <RealtimeNotificationToast
+          notifications={notifications}
+          onRemove={removeNotification}
+          onMarkAsRead={markAsRead}
+          soundEnabled={soundEnabled}
+          onToggleSound={() => setSoundEnabled(!soundEnabled)}
+          realtimeConnected={realtimeConnected}
+          fallbackEnabled={fallbackEnabled}
+        />
+      )}
 
       {/* Notification Alert - ShadCN UI + fond flou */}
       {notification && (
