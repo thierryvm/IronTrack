@@ -114,7 +114,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange }: WorkoutModal
                 onStatusChange(workout.id, 'Réalisé')
                 onClose()
               }}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              variant="orange"
             >
               ✅ Marquer comme réalisé
             </Button>
@@ -401,7 +401,8 @@ export default function WorkoutsPage() {
                               e.stopPropagation();
                               changeWorkoutStatus(workout.id, 'Réalisé');
                             }}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                            variant="orange"
+                            className="w-full"
                             size="sm"
                           >
                             ✅ Marquer comme réalisé
