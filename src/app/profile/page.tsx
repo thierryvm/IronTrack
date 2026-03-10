@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
@@ -821,40 +821,38 @@ export default function ProfilePage() {
 
                   {/* Stats Section */}
                   <div className="grid grid-cols-2 gap-4 md:col-span-2">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200">
-                      <div className="text-sm text-blue-600 font-medium mb-1">IMC</div>
-                      <div className="text-3xl font-bold text-blue-700">{calculateBMI()}</div>
-                      <div className="text-xs text-blue-600 mt-1">
-                        {profile.height && profile.weight ? 
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+                      <div className="text-sm text-orange-600 font-medium mb-1">IMC</div>
+                      <div className="text-3xl font-bold text-orange-700">{calculateBMI()}</div>
+                      <div className="text-xs text-orange-600 mt-1">{profile.height && profile.weight ? 
                           `${profile.height}cm • ${profile.weight}kg` : 
                           'Données manquantes'
                         }
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-800">
-                      <div className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-1">Objectif</div>
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+                      <div className="text-sm text-orange-600 font-medium mb-1">Objectif</div>
                       <div className="text-lg font-bold text-orange-700">
                         {profile.goal || 'Non défini'}
                       </div>
-                      <div className="text-xs text-gray-800 dark:text-gray-200 mt-1">
-                        {profile.experience || 'Niveau inconnu'}
+                      <div className="text-xs text-orange-600 mt-1">{profile.experience || 'Niveau inconnu'}
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center border border-green-200">
-                      <div className="text-sm text-green-600 font-medium mb-1">Fréquence</div>
-                      <div className="text-lg font-bold text-green-700">
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+                      <div className="text-sm text-orange-600 font-medium mb-1">Fréquence</div>
+                      <div className="text-lg font-bold text-orange-700">
                         {profile.frequency || 'Non définie'}
                       </div>
-                      <div className="text-xs text-green-600 mt-1">
+                      <div className="text-xs text-orange-600 mt-1">
                         {profile.availability ? `${profile.availability} min/séance` : 'Durée non définie'}
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center border border-purple-200">
-                      <div className="text-sm text-purple-600 font-medium mb-1">Membre depuis</div>
-                      <div className="text-lg font-bold text-purple-700">
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+                      <div className="text-sm text-orange-600 font-medium mb-1">Membre depuis</div>
+                      <div className="text-lg font-bold text-orange-700">
                         {profile.joinDate 
                           ? new Date(profile.joinDate).toLocaleDateString('fr-FR', { 
                               year: 'numeric', 
@@ -863,7 +861,7 @@ export default function ProfilePage() {
                           : 'Récemment'
                         }
                       </div>
-                      <div className="text-xs text-purple-600 mt-1">
+                      <div className="text-xs text-orange-600 mt-1">
                         {profile.joinDate ? 
                           `${Math.floor((Date.now() - new Date(profile.joinDate).getTime()) / (1000 * 60 * 60 * 24))} jours` : 
                           'Nouveau membre'
@@ -1109,7 +1107,7 @@ export default function ProfilePage() {
                           <div>
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{badge.name}</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-300">{badge.description}</p>
-                            <p className="text-xs text-purple-600 mt-1">
+                            <p className="text-xs text-orange-600 mt-1">
                               Obtenu le {new Date(badge.earned_at).toLocaleDateString('fr-FR')}
                             </p>
                           </div>

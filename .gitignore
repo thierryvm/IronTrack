@@ -1,4 +1,4 @@
-# Dépendances et build
+﻿# Dépendances et build
 /node_modules
 /.next
 /out
@@ -38,7 +38,6 @@ GUIDE_CLAUDE_CODE.md
 GUIDE_PERMISSIONS_ROLES.md
 
 # Documentation technique interne (ne pas commiter - sensible)
-docs/
 documentation/
 *_security.md
 *_password_security.md
@@ -280,3 +279,8 @@ screenshot*.png
 screenshot*.jpg
 screenshot*.jpeg
 *.screenshot.png
+
+# BMAD Method - Fichiers générés et configuration
+.bmad/
+_bmad-output/
+*.bmad

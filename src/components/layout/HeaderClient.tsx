@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -463,6 +463,7 @@ export default function HeaderClient() {
                     )}
                   </div>
                   
+                  <div className="w-px h-5 bg-gray-200 dark:bg-gray-600" aria-hidden="true" />
                   <ThemeToggle />
                 </>
               ) : (
@@ -616,6 +617,7 @@ export default function HeaderClient() {
                 Connexion
               </Link>
             )}
+            <div className="w-px h-5 bg-gray-200 dark:bg-gray-600" aria-hidden="true" />
             <ThemeToggle />
           </div>
         </div>

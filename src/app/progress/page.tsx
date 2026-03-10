@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic';
@@ -32,7 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // Lazy loading des graphiques lourds
 const ProgressCharts = dynamic(() => import('@/components/progress/ProgressCharts'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
+  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
     <span className="text-gray-600 dark:text-safe-muted">Chargement des graphiques...</span>
   </div>
 })
@@ -615,7 +615,7 @@ export default function ProgressPage() {
         date: log.performed_at.split('T')[0],
         weight: Number(log.weight) || 0,
         reps: log.reps || 0,
-        sets: log.set_number || 1,
+        sets: (log as any).sets || 1,
         exercise: log.exercises?.name || `⚠️ Exercice manquant (#${log.exercise_id})`
       }))
       // 2. Calcul de la progression par exercice
@@ -905,13 +905,13 @@ export default function ProgressPage() {
   const filteredProgressData = startDate
     ? progressData.filter(d => new Date(d.date) >= startDate)
     : progressData;
-  // Nouveau calcul : ne prendre en compte que les perfs avec poids > 0
-  const weightedSessions = filteredProgressData.filter((session) => session.weight > 0)
-  const totalWeightLiftedKg = weightedSessions.reduce((total, session) =>
+  // KPIs ALL-TIME (indépendants du filtre de période pour éviter 0.0 kg)
+  const allWeightedSessions = progressData.filter((session) => session.weight > 0)
+  const totalWeightLiftedKg = allWeightedSessions.reduce((total, session) =>
     total + (session.weight * session.reps * session.sets), 0
   )
-  const averageWeight = weightedSessions.length > 0
-    ? weightedSessions.reduce((sum, session) => sum + session.weight, 0) / weightedSessions.length
+  const averageWeight = allWeightedSessions.length > 0
+    ? allWeightedSessions.reduce((sum, session) => sum + session.weight, 0) / allWeightedSessions.length
     : 0
   const totalSessions = progressData.length
 
@@ -922,9 +922,9 @@ export default function ProgressPage() {
 
   // Calcul de l'amélioration globale (si possible)
   let globalImprovement = 'N/A'
-  if (weightedSessions.length > 1) {
-    const first = weightedSessions[0].weight
-    const last = weightedSessions[weightedSessions.length - 1].weight
+  if (allWeightedSessions.length > 1) {
+    const first = allWeightedSessions[0].weight
+    const last = allWeightedSessions[allWeightedSessions.length - 1].weight
     if (first > 0) {
       const percent = ((last - first) / first) * 100
       globalImprovement = `${percent > 0 ? '+' : ''}${percent.toFixed(0)}%`
@@ -1339,7 +1339,7 @@ export default function ProgressPage() {
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total soulevé</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalWeightDisplay}</p>
-                {ironBuddyMsg && <p className="text-xs text-orange-800 dark:text-orange-300 mt-1 italic">{ironBuddyMsg}</p>}
+                {ironBuddyMsg && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">{ironBuddyMsg}</p>}
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <Dumbbell className="h-6 w-6 text-safe-success" />

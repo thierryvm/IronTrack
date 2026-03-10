@@ -318,7 +318,7 @@ export default function NutritionPage() {
               <Button 
                 onClick={openRecipeLibrary}
                 variant="outline"
-                className="text-white border-white/20 hover:bg-white/10"
+                className="bg-transparent text-white border-white/20 hover:bg-white/10"
               >
                 <ChefHat className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
                 <span>Mes recettes</span>

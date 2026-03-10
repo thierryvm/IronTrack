@@ -1,0 +1,230 @@
+{
+  "timestamp": "2025-08-14T16:50:58.996Z",
+  "summary": {
+    "overallScore": 34,
+    "criticalIssues": [
+      "Bundle size critique (> 2MB) - refactorisation nécessaire"
+    ],
+    "recommendations": [
+      "Implémenter le code splitting par route",
+      "Analyser et supprimer les dépendances inutiles"
+    ]
+  },
+  "lighthouse": [
+    {
+      "filename": "lighthouse-performance-optimized.json",
+      "url": "http://localhost:3000/",
+      "fetchTime": "2025-08-13T10:34:05.907Z",
+      "scores": {
+        "performance": 38,
+        "accessibility": 0,
+        "seo": 0,
+        "pwa": 0
+      },
+      "metrics": {
+        "FCP": 912.844,
+        "LCP": 18708.843999999997,
+        "TTI": 31689.7201,
+        "TBT": 1820.4219999999968,
+        "CLS": 0.030567411368415176,
+        "SI": 31910.102442545
+      },
+      "deviceType": "desktop"
+    },
+    {
+      "filename": "lighthouse-mobile.json",
+      "url": "http://localhost:3000/",
+      "fetchTime": "2025-08-13T11:28:29.508Z",
+      "scores": {
+        "performance": 44,
+        "accessibility": 83,
+        "seo": 91,
+        "pwa": 0
+      },
+      "metrics": {
+        "FCP": 926.6389999999999,
+        "LCP": 24670.278000000002,
+        "TTI": 32679.103724999997,
+        "TBT": 2895.499999999996,
+        "CLS": 0.07411907654921021,
+        "SI": 3428.5675592643024
+      },
+      "deviceType": "mobile"
+    },
+    {
+      "filename": "lighthouse-fresh-desktop.json",
+      "url": "chrome-error://chromewebdata/",
+      "fetchTime": "2025-08-14T11:07:30.719Z",
+      "scores": {
+        "performance": 0,
+        "accessibility": 0,
+        "seo": 0,
+        "pwa": 0
+      },
+      "metrics": {
+        "FCP": 0,
+        "LCP": 0,
+        "TTI": 0,
+        "TBT": 0,
+        "CLS": 0,
+        "SI": 0
+      },
+      "deviceType": "desktop"
+    }
+  ],
+  "bundle": {
+    "success": true,
+    "timestamp": "2025-08-14T16:50:58.994Z",
+    "pages": [],
+    "chunks": [
+      {
+        "file": "7977.b05d1a036abb74e4.js",
+        "size": 1320,
+        "type": "chunk"
+      },
+      {
+        "file": "main-app-e4f87b6e28e17d44.js",
+        "size": 337,
+        "type": "chunk"
+      },
+      {
+        "file": "6552.8374017eb7dc2021.js",
+        "size": 318,
+        "type": "chunk"
+      },
+      {
+        "file": "main-1ea95d91aae73627.js",
+        "size": 289,
+        "type": "chunk"
+      },
+      {
+        "file": "2782.b3c1311f26371d8b.js",
+        "size": 170,
+        "type": "chunk"
+      },
+      {
+        "file": "3254.ddc28a1d79de293c.js",
+        "size": 150,
+        "type": "chunk"
+      },
+      {
+        "file": "polyfills-42372ed130431b0a.js",
+        "size": 110,
+        "type": "chunk"
+      },
+      {
+        "file": "9416.07724659966f4057.js",
+        "size": 29,
+        "type": "chunk"
+      },
+      {
+        "file": "8658.b817161181645712.js",
+        "size": 23,
+        "type": "chunk"
+      },
+      {
+        "file": "1439.cf9fcafcf7d1519b.js",
+        "size": 22,
+        "type": "chunk"
+      },
+      {
+        "file": "3824.267ed01ff25b9c55.js",
+        "size": 15,
+        "type": "chunk"
+      },
+      {
+        "file": "6114.ff41657db4079fb8.js",
+        "size": 14,
+        "type": "chunk"
+      },
+      {
+        "file": "1836.5977f1701eeb1083.js",
+        "size": 13,
+        "type": "chunk"
+      },
+      {
+        "file": "9341.d79f7549abcc5c7c.js",
+        "size": 6,
+        "type": "chunk"
+      },
+      {
+        "file": "4291.d12ff47835f4d26b.js",
+        "size": 5,
+        "type": "chunk"
+      },
+      {
+        "file": "webpack-ebe61878b81a8fb6.js",
+        "size": 4,
+        "type": "chunk"
+      },
+      {
+        "file": "4209.3582efa75c84f55a.js",
+        "size": 2,
+        "type": "chunk"
+      },
+      {
+        "file": "6096.3f38616519a01e70.js",
+        "size": 2,
+        "type": "chunk"
+      },
+      {
+        "file": "8078.827e3690da97d3f3.js",
+        "size": 2,
+        "type": "chunk"
+      },
+      {
+        "file": "3332.99bcad047013d558.js",
+        "size": 1,
+        "type": "chunk"
+      },
+      {
+        "file": "3719.4dd2c0e443323e07.js",
+        "size": 1,
+        "type": "chunk"
+      },
+      {
+        "file": "472.04a8725c923ee78b.js",
+        "size": 1,
+        "type": "chunk"
+      },
+      {
+        "file": "4950.328c5299b99a0569.js",
+        "size": 0,
+        "type": "chunk"
+      }
+    ],
+    "totalSize": 2834
+  },
+  "images": {
+    "total": 0,
+    "optimized": 0,
+    "webpReady": 0,
+    "oversized": [],
+    "recommendations": []
+  },
+  "dependencies": {
+    "dependencies": 34,
+    "devDependencies": 22,
+    "heavyPackages": [],
+    "recommendations": []
+  },
+  "coreWebVitals": {
+    "LCP": {
+      "value": 0,
+      "valueSeconds": "0.0",
+      "status": "GOOD",
+      "threshold": 2500
+    },
+    "FCP": {
+      "value": 0,
+      "valueSeconds": "0.0",
+      "status": "GOOD",
+      "threshold": 1800
+    },
+    "CLS": {
+      "value": 0,
+      "status": "GOOD",
+      "threshold": 0.1
+    }
+  }
+}

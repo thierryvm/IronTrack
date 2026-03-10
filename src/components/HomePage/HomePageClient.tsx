@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
@@ -612,7 +612,7 @@ export default function HomePageClient() {
 
   const statCards = [
     {
-      title: 'Séances totales',
+      title: 'Séances réalisées',
       value: stats.totalWorkouts,
       icon: Trophy,
       color: 'text-yellow-500',
