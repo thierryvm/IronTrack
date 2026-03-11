@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Validation sécurisée des exercices - Correction problème ExerciseEditForm2025
  * 
  * 🚨 PROBLÈME: Validation côté client uniquement + type 'any' 
@@ -16,8 +16,8 @@ export interface ExerciseUpdateData {
   difficulty: number
   description?: string | null
   image_url?: string | null
-  default_strength_metrics?: any
-  default_cardio_metrics?: any
+  default_strength_metrics?: unknown
+  default_cardio_metrics?: unknown
 }
 
 export interface ValidationResult<T = unknown> {
@@ -377,11 +377,11 @@ export function validateExerciseUpdateData(data: unknown): ValidationResult<Exer
 
   // Validation métriques par défaut (optionnelles)
   if (input.default_strength_metrics !== undefined) {
-    validatedData.default_strength_metrics = input.default_strength_metrics
+    validatedData.default_strength_metrics = input.default_strength_metrics as unknown
   }
   
   if (input.default_cardio_metrics !== undefined) {
-    validatedData.default_cardio_metrics = input.default_cardio_metrics
+    validatedData.default_cardio_metrics = input.default_cardio_metrics as unknown
   }
 
   if (errors.length > 0) {

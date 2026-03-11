@@ -1,9 +1,17 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useCallback, useRef, useState } from 'react'
 
+type IdleRequestOptions = { timeout?: number }
+type IdleRequestDeadline = { readonly didTimeout: boolean; timeRemaining: () => number }
+type IdleCallbackFn = (deadline: IdleRequestDeadline) => void
+
+interface WindowWithIdleCallback {
+  requestIdleCallback: (callback: IdleCallbackFn, opts?: IdleRequestOptions) => number
+}
+
 /**
- * Hook pour différer l'exécution d'un callback quand le browser est idle
+ * Hook pour differer l'execution d'un callback quand le browser est idle
  * Utilise requestIdleCallback si disponible, sinon setTimeout
  */
 export function useIdleCallback(
@@ -12,7 +20,7 @@ export function useIdleCallback(
   timeout: number = 100
 ) {
   const callbackRef = useRef(callback)
-  
+
   // Update callback ref when it changes
   useEffect(() => {
     callbackRef.current = callback
@@ -21,7 +29,7 @@ export function useIdleCallback(
   const deferredCallback = useCallback(() => {
     if (typeof window !== 'undefined') {
       if ('requestIdleCallback' in window) {
-        ;(window as any).requestIdleCallback(() => {
+        (window as unknown as WindowWithIdleCallback).requestIdleCallback(() => {
           callbackRef.current()
         }, { timeout })
       } else {
@@ -31,7 +39,7 @@ export function useIdleCallback(
         }, timeout)
       }
     } else {
-      // Server-side, exécuter immédiatement
+      // Server-side, executer immediatement
       callbackRef.current()
     }
   }, deps) // eslint-disable-line react-hooks/exhaustive-deps
@@ -40,7 +48,7 @@ export function useIdleCallback(
 }
 
 /**
- * Hook pour différer le chargement d'un composant lourd
+ * Hook pour differer le chargement d'un composant lourd
  */
 export function useDeferredComponent<T>(
   loader: () => Promise<T>,
@@ -48,7 +56,7 @@ export function useDeferredComponent<T>(
 ) {
   const [component, setComponent] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
-  
+
   const deferredLoad = useIdleCallback(() => {
     loader()
       .then(comp => {

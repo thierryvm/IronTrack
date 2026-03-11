@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useAuth } from './useAuth'
 
@@ -26,7 +26,7 @@ export function useRealtimePartnerships() {
           table: 'training_partners',
           filter: `or(requester_id.eq.${user.id},partner_id.eq.${user.id})`
         },
-        (payload) => {
+        (_payload) => {
           // Déclencher le rafraîchissement après un petit délai pour éviter les doublons
           setTimeout(() => {
             triggerRefresh()
