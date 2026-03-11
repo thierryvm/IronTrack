@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+﻿import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Button } from './button'
 import { Slider } from './slider'
 import { RotateCcw, Move, ZoomIn, ZoomOut, Check, X } from 'lucide-react'
@@ -8,6 +8,7 @@ interface ImageCropperProps {
   onCropComplete: (croppedImageUrl: string) => void
   onCancel: () => void
   aspectRatio?: number // width/height ratio (ex: 4/3, 16/9)
+  freeMode?: boolean
   className?: string
 }
 
@@ -402,22 +403,22 @@ export function ImageCropper({
               {/* Resize handles */}
               {/* Corner handles */}
               <div
-                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-nw-resize -top-2 -left-2"
+                className="absolute w-4 h-4 bg-orange-700 dark:bg-orange-500 border-2 border-white cursor-nw-resize -top-2 -left-2"
                 onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'nw')}}
                 onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'nw')}}
               />
               <div
-                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-ne-resize -top-2 -right-2"
+                className="absolute w-4 h-4 bg-orange-700 dark:bg-orange-500 border-2 border-white cursor-ne-resize -top-2 -right-2"
                 onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'ne')}}
                 onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'ne')}}
               />
               <div
-                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-sw-resize -bottom-2 -left-2"
+                className="absolute w-4 h-4 bg-orange-700 dark:bg-orange-500 border-2 border-white cursor-sw-resize -bottom-2 -left-2"
                 onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'sw')}}
                 onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'sw')}}
               />
               <div
-                className="absolute w-4 h-4 bg-orange-500 border-2 border-white cursor-se-resize -bottom-2 -right-2"
+                className="absolute w-4 h-4 bg-orange-700 dark:bg-orange-500 border-2 border-white cursor-se-resize -bottom-2 -right-2"
                 onMouseDown={(e) => {e.stopPropagation(); handleMouseDown(e, 'se')}}
                 onTouchStart={(e) => {e.stopPropagation(); handleTouchStart(e, 'se')}}
               />
@@ -464,7 +465,7 @@ export function ImageCropper({
               className="w-full"
             />
             <div className="text-xs text-gray-500 text-center">
-              {rotation}°
+              {rotation}Â°
             </div>
           </div>
 
@@ -498,7 +499,7 @@ export function ImageCropper({
               onClick={resetCrop}
               className="w-full"
             >
-              Réinitialiser
+              RÃ©initialiser
             </Button>
             <div className="text-xs text-gray-500 text-center">
               X: {Math.round(cropArea.x)}, Y: {Math.round(cropArea.y)}
@@ -507,31 +508,31 @@ export function ImageCropper({
         </div>
 
         {/* Mobile Quick Controls */}
-        <div className="flex justify-center gap-3 sm:hidden">
+        <div className="flex justify-center gap-4 sm:hidden">
           <button
             onClick={() => setScale(prev => Math.max(0.1, prev - 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
-            🔍➖ Zoom -
+            ðŸ”âž– Zoom -
           </button>
           <button
             onClick={() => setScale(prev => Math.min(3, prev + 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
-            🔍➕ Zoom +
+            ðŸ”âž• Zoom +
           </button>
           <button
             onClick={() => setRotation(prev => prev - 15)}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
-            ↻ -15°
+            â†» -15Â°
           </button>
         </div>
 
         {/* Usage Instructions */}
         <div className="text-xs text-gray-500 text-center border-t border-gray-700 pt-3">
-          <p className="hidden sm:block">📱 Glissez l'image pour la repositionner • 🔍 Utilisez les contrôles pour zoomer/pivoter</p>
-          <p className="sm:hidden">👆 Glissez l'image pour la déplacer • 🎛️ Utilisez les boutons ci-dessus pour ajuster</p>
+          <p className="hidden sm:block">ðŸ“± Glissez l'image pour la repositionner â€¢ ðŸ” Utilisez les contrÃ´les pour zoomer/pivoter</p>
+          <p className="sm:hidden">ðŸ‘† Glissez l'image pour la dÃ©placer â€¢ ðŸŽ›ï¸ Utilisez les boutons ci-dessus pour ajuster</p>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
@@ -9,13 +9,26 @@ import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
+// Types pour les métriques JSONB (champs Supabase non typés)
+interface CardioMetrics {
+  distance?: number
+  running?: { speed?: number; incline?: number }
+  rowing?: { stroke_rate?: number; watts?: number }
+  cycling?: { cadence?: number; resistance?: number }
+}
+interface StrengthMetrics {
+  weight?: number
+  reps?: number
+  sets?: number
+}
+
 interface Exercise {
   id: number
   name: string
   exercise_type: 'Musculation' | 'Cardio'
   muscle_group: string
   equipment: string
-  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
+  difficulty: 'DÃ©butant' | 'IntermÃ©diaire' | 'AvancÃ©'
   description?: string
   instructions?: string
   image_url?: string
@@ -64,7 +77,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       setLoading(true)
       const supabase = createClient()
 
-      // Charger les données de l'exercice avec métriques par défaut
+      // Charger les donnÃ©es de l'exercice avec mÃ©triques par dÃ©faut
       const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercises')
         .select('*, image_url, default_cardio_metrics, default_strength_metrics')
@@ -123,18 +136,18 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       const isRowing = exerciseName?.toLowerCase().includes('rameur')
       
       if (perf.distance) {
-        // Adapter l'unité selon le type d'exercice avec conversion intelligente
+        // Adapter l'unitÃ© selon le type d'exercice avec conversion intelligente
         if (isRowing) {
-          // Rameur → afficher en mètres (ex: 2000m, 5000m)
+          // Rameur â†’ afficher en mÃ¨tres (ex: 2000m, 5000m)
           parts.push(`${perf.distance}m`)
         } else {
-          // Course/vélo → vérifier si données en mètres ou km
+          // Course/vÃ©lo â†’ vÃ©rifier si donnÃ©es en mÃ¨tres ou km
           const distance = perf.distance
           if (distance > 100) {
-            // Probablement en mètres si > 100, convertir en km
+            // Probablement en mÃ¨tres si > 100, convertir en km
             parts.push(`${(distance / 1000).toFixed(1).replace('.0', '')}km`)
           } else {
-            // Probablement déjà en km si ≤ 100
+            // Probablement dÃ©jÃ  en km si â‰¤ 100
             parts.push(`${distance}km`)
           }
         }
@@ -142,12 +155,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       if (perf.duration) parts.push(`${Math.round(perf.duration / 60)}min`)
       if (perf.calories) parts.push(`${perf.calories} kcal`)
       
-      return parts.join(' • ') || 'Performance cardio'
+      return parts.join(' â€¢ ') || 'Performance cardio'
     } else {
       const parts = []
       if (perf.weight) parts.push(`${perf.weight}kg`)
       if (perf.reps) parts.push(`${perf.reps} reps`)
-      return parts.join(' × ') || 'Performance musculation'
+      return parts.join(' Ã— ') || 'Performance musculation'
     }
   }
 
@@ -158,10 +171,10 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-white dark:bg-gray-900" aria-describedby="exercise-details-description">
         <DialogHeader className="sr-only">
           <DialogTitle>
-            Détails de l'exercice {exercise?.name || ''}
+            DÃ©tails de l'exercice {exercise?.name || ''}
           </DialogTitle>
           <DialogDescription>
-            Consultation des informations détaillées et performances de cet exercice
+            Consultation des informations dÃ©taillÃ©es et performances de cet exercice
           </DialogDescription>
         </DialogHeader>
         
@@ -171,21 +184,21 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="w-full h-full"
         >
-          {/* Header visuel - conservé pour l'UI */}
+          {/* Header visuel - conservÃ© pour l'UI */}
           <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
             <Button
               onClick={onClose}
               variant="ghost"
               size="sm"
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Retour à la liste des exercices"
+              aria-label="Retour Ã  la liste des exercices"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </Button>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center flex-1" aria-hidden="true">
-              Détails de l'exercice
+              DÃ©tails de l'exercice
             </h2>
-            {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
+            {/* Bouton X supprimÃ© - DialogContent gÃ¨re dÃ©jÃ  la fermeture */}
           </div>
 
           {/* Content */}
@@ -213,7 +226,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
                     {(() => {
-                      // Calcul du score de complétion
+                      // Calcul du score de complÃ©tion
                       let score = 60 // Base pour champs requis
                       if (exercise.description) score += 20
                       if (exercise.instructions) score += 15
@@ -230,7 +243,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                         <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium ${getScoreColor(score)}`}>
                           <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
                           Profil {score}%
-                          {score >= 95 && <span>✨</span>}
+                          {score >= 95 && <span>âœ¨</span>}
                         </div>
                       )
                     })()}
@@ -256,7 +269,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     ) : (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                         <p className="text-sm text-blue-700">
-                          💡 <strong>Améliore ton exercice :</strong> Ajoute une description pour le rendre plus facile à identifier
+                          ðŸ’¡ <strong>AmÃ©liore ton exercice :</strong> Ajoute une description pour le rendre plus facile Ã  identifier
                         </p>
                       </div>
                     )}
@@ -269,102 +282,102 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     ) : (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                         <p className="text-sm text-yellow-700">
-                          📝 <strong>Complète ton exercice :</strong> Ajoute des instructions détaillées d'exécution
+                          ðŸ“ <strong>ComplÃ¨te ton exercice :</strong> Ajoute des instructions dÃ©taillÃ©es d'exÃ©cution
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Dernière performance */}
+                {/* DerniÃ¨re performance */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3">
                   <Trophy className="h-6 w-6 text-safe-warning" />
                   {lastPerf ? (
                     <span className="text-gray-800 dark:text-gray-200">
-                      Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
+                      DerniÃ¨re : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
                       <span className="text-gray-700 dark:text-gray-300 ml-2">
                         ({new Date(lastPerf.performed_at).toLocaleDateString()})
                       </span>
                     </span>
                   ) : (
-                    <span className="text-gray-600 dark:text-safe-muted">Aucune performance enregistrée</span>
+                    <span className="text-gray-600 dark:text-safe-muted">Aucune performance enregistrÃ©e</span>
                   )}
                 </div>
 
-                {/* Métriques par défaut - Seulement si aucune performance enregistrée */}
+                {/* MÃ©triques par dÃ©faut - Seulement si aucune performance enregistrÃ©e */}
                 {(exercise.default_cardio_metrics || exercise.default_strength_metrics) && performances.length === 0 && (
                   <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
                     <h5 className="font-medium text-orange-900 mb-3 flex items-center gap-2">
-                      <span className="text-orange-600">🎯</span>
-                      Valeurs recommandées pour démarrer
+                      <span className="text-orange-600">ðŸŽ¯</span>
+                      Valeurs recommandÃ©es pour dÃ©marrer
                     </h5>
                     
-                    {/* Métriques cardio */}
+                    {/* MÃ©triques cardio */}
                     {exercise.default_cardio_metrics && exercise.exercise_type === 'Cardio' && (
                       <div className="space-y-2">
-                        {exercise.default_cardio_metrics.distance > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Distance :</strong> {exercise.default_cardio_metrics.distance >= 1000 
-                              ? `${(exercise.default_cardio_metrics.distance / 1000).toFixed(1)} km`
-                              : `${exercise.default_cardio_metrics.distance} m`}
+                            <strong>Distance :</strong> {((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) >= 1000 
+                              ? `${(((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) / 1000).toFixed(1)} km`
+                              : `${(exercise.default_cardio_metrics as CardioMetrics).distance ?? 0} m`}
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.running?.speed > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).running?.speed ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Vitesse :</strong> {exercise.default_cardio_metrics.running.speed} km/h
+                            <strong>Vitesse :</strong> {(exercise.default_cardio_metrics as CardioMetrics).running?.speed} km/h
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.running?.incline > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).running?.incline ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Inclinaison :</strong> {exercise.default_cardio_metrics.running.incline}%
+                            <strong>Inclinaison :</strong> {(exercise.default_cardio_metrics as CardioMetrics).running?.incline}%
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.rowing?.stroke_rate > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).rowing?.stroke_rate ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>SPM :</strong> {exercise.default_cardio_metrics.rowing.stroke_rate}
+                            <strong>SPM :</strong> {(exercise.default_cardio_metrics as CardioMetrics).rowing?.stroke_rate}
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.rowing?.watts > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).rowing?.watts ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Puissance :</strong> {exercise.default_cardio_metrics.rowing.watts} watts
+                            <strong>Puissance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).rowing?.watts} watts
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.cycling?.cadence > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).cycling?.cadence ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Cadence :</strong> {exercise.default_cardio_metrics.cycling.cadence} RPM
+                            <strong>Cadence :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.cadence} RPM
                           </div>
                         )}
-                        {exercise.default_cardio_metrics.cycling?.resistance > 0 && (
+                        {((exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Résistance :</strong> {exercise.default_cardio_metrics.cycling.resistance}
+                            <strong>RÃ©sistance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance}
                           </div>
                         )}
                       </div>
                     )}
                     
-                    {/* Métriques musculation */}
+                    {/* MÃ©triques musculation */}
                     {exercise.default_strength_metrics && exercise.exercise_type === 'Musculation' && (
                       <div className="space-y-2">
-                        {exercise.default_strength_metrics.weight > 0 && (
+                        {((exercise.default_strength_metrics as StrengthMetrics).weight ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Poids :</strong> {exercise.default_strength_metrics.weight} kg
+                            <strong>Poids :</strong> {(exercise.default_strength_metrics as StrengthMetrics).weight} kg
                           </div>
                         )}
-                        {exercise.default_strength_metrics.reps > 0 && (
+                        {((exercise.default_strength_metrics as StrengthMetrics).reps ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Répétitions :</strong> {exercise.default_strength_metrics.reps}
+                            <strong>RÃ©pÃ©titions :</strong> {(exercise.default_strength_metrics as StrengthMetrics).reps}
                           </div>
                         )}
-                        {exercise.default_strength_metrics.sets > 0 && (
+                        {((exercise.default_strength_metrics as StrengthMetrics).sets ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>Séries :</strong> {exercise.default_strength_metrics.sets}
+                            <strong>SÃ©ries :</strong> {(exercise.default_strength_metrics as StrengthMetrics).sets}
                           </div>
                         )}
                       </div>
                     )}
                     
                     <p className="text-xs text-orange-700 mt-3 italic">
-                      💡 Ces valeurs suggérées vous aideront à commencer votre première session !
+                      ðŸ’¡ Ces valeurs suggÃ©rÃ©es vous aideront Ã  commencer votre premiÃ¨re session !
                     </p>
                   </div>
                 )}
@@ -402,8 +415,8 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   {performances.length === 0 ? (
                     <div className="text-center py-8 text-gray-600 dark:text-safe-muted">
                       <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                      <p>Aucune performance enregistrée pour cet exercice.</p>
-                      <p className="text-sm mt-1">Ajoutez votre première performance !</p>
+                      <p>Aucune performance enregistrÃ©e pour cet exercice.</p>
+                      <p className="text-sm mt-1">Ajoutez votre premiÃ¨re performance !</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -469,7 +482,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-2">Supprimer la performance</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.
+                ÃŠtes-vous sÃ»r de vouloir supprimer cette performance ? Cette action est irrÃ©versible.
               </p>
               <div className="flex space-x-3">
                 <Button

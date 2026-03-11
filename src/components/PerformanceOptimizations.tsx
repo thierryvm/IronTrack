@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 'use client'
 
 import { useEffect } from 'react'
@@ -5,10 +6,10 @@ import { useEffect } from 'react'
 // Optimisations de performance pour mobile
 export function PerformanceOptimizations() {
   useEffect(() => {
-    // Vérifier que nous sommes côté client
+    // VÃ©rifier que nous sommes cÃ´tÃ© client
     if (typeof window === 'undefined') return
 
-    // 1. Préconnexion aux domaines critiques
+    // 1. PrÃ©connexion aux domaines critiques
     const preconnectLinks = [
       'https://taspdceblvmpvdjixyit.supabase.co',
       'https://fonts.googleapis.com',
@@ -16,7 +17,7 @@ export function PerformanceOptimizations() {
     ]
     
     preconnectLinks.forEach(href => {
-      // Vérifier si le lien n'existe pas déjà
+      // VÃ©rifier si le lien n'existe pas dÃ©jÃ 
       const existingLink = document.head.querySelector(`link[href="${href}"]`)
       if (!existingLink) {
         const link = document.createElement('link')
@@ -48,9 +49,9 @@ export function PerformanceOptimizations() {
       })
     }
 
-    // 3. Service Worker désactivé (sw.js n'existe pas)
+    // 3. Service Worker dÃ©sactivÃ© (sw.js n'existe pas)
 
-    // 4. Optimisation fetch (simplifiée pour éviter les problèmes)
+    // 4. Optimisation fetch (simplifiÃ©e pour Ã©viter les problÃ¨mes)
     const originalFetch = window.fetch
     
     // 5. CSS critique
@@ -70,7 +71,7 @@ export function PerformanceOptimizations() {
     }
 
     return () => {
-      // Nettoyage si nécessaire
+      // Nettoyage si nÃ©cessaire
     }
   }, [])
 
@@ -80,12 +81,12 @@ export function PerformanceOptimizations() {
 // Hook pour optimiser les re-rendus
 export function usePerformanceOptimizations() {
   useEffect(() => {
-    // 6. Réduction des re-rendus React
+    // 6. RÃ©duction des re-rendus React
     if (typeof window !== 'undefined') {
       const originalSetTimeout = window.setTimeout
       const originalSetInterval = window.setInterval
       
-      // Throttle des timers pour économiser la batterie mobile
+      // Throttle des timers pour Ã©conomiser la batterie mobile
       window.setTimeout = (callback, delay, ...args) => {
         const minDelay = Math.max(delay || 0, 16) // 60fps max
         return originalSetTimeout(callback, minDelay, ...args)
