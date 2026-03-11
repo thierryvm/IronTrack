@@ -166,7 +166,7 @@ function ResetPasswordForm() {
                     transition={{ delay: 0.3 }}
                   >
                     <div>
-                      <label className="block text-sm font-medium text-white/90 mb-2">
+                      <label className="block text-sm font-medium text-white mb-2">
                         Nouveau mot de passe
                       </label>
                       <div className="relative">
@@ -183,17 +183,18 @@ function ResetPasswordForm() {
                         <motion.button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                         >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          {showPassword ? <EyeOff className="w-5 h-5" aria-hidden="true" /> : <Eye className="w-5 h-5" aria-hidden="true" />}
                         </motion.button>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-white/90 mb-2">
+                      <label className="block text-sm font-medium text-white mb-2">
                         Confirmer le mot de passe
                       </label>
                       <motion.input

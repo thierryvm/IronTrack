@@ -1,7 +1,7 @@
-﻿// ðŸŽ¯ EXPORTS CENTRALISÃ‰S SHADCN/UI + IRONTRACK
-// Point d'entrÃ©e unique pour tous les composants UI
+// 🎯 EXPORTS CENTRALISÉS SHADCN/UI + IRONTRACK
+// Point d'entrée unique pour tous les composants UI
 
-// Composants shadcn/ui migrÃ© avec features IronTrack
+// Composants shadcn/ui migré avec features IronTrack
 export { Button, buttonVariants } from './button'
 export { Button as IronButton } from './button' // Alias pour migration
 export type { ButtonProps } from './button'
@@ -31,6 +31,6 @@ export { Progress } from './progress'
 export { Slider } from './slider'
 export { Toggle } from './toggle'
 
-// Composants IronTrack custom (Ã  migrer progressivement)
+// Composants IronTrack custom (à migrer progressivement)
 export { default as Avatar } from './Avatar'
-// Note: Button2025, Modal2025, etc. seront progressivement remplacÃ©s par les versions shadcn amÃ©liorÃ©es
+// Note: Button2025, Modal2025, etc. seront progressivement remplacés par les versions shadcn améliorées

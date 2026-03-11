@@ -17,6 +17,7 @@ interface ClientOnlyNavigationProps {
   activeClassName?: string
   inactiveClassName?: string
   isMobile?: boolean
+  ariaLabel?: string
 }
 
 export default function ClientOnlyNavigation({
@@ -25,24 +26,31 @@ export default function ClientOnlyNavigation({
   itemClassName = '',
   activeClassName = 'text-orange-600 dark:text-orange-400',
   inactiveClassName = 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400',
-  isMobile = false
+  isMobile = false,
+  ariaLabel = 'Navigation principale',
 }: ClientOnlyNavigationProps) {
   const pathname = usePathname()
 
   return (
-    <nav className={className}>
-      {items.map((item) => (
-        <Link
-          key={item.name}
-          href={item.href}
-          className={`${itemClassName} ${
-            pathname === item.href ? activeClassName : inactiveClassName
-          }`}
-        >
-          <item.icon className={isMobile ? "w-6 h-6 mb-1 flex-shrink-0" : "w-4 h-4"} />
-          <span className={isMobile ? "text-xs font-medium truncate" : ""}>{item.name}</span>
-        </Link>
-      ))}
+    <nav aria-label={ariaLabel} className={className}>
+      {items.map((item) => {
+        const isActive = pathname === item.href
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            aria-label={item.name}
+            className={`${itemClassName} ${isActive ? activeClassName : inactiveClassName}`}
+          >
+            <item.icon
+              className={isMobile ? "w-6 h-6 mb-1 flex-shrink-0" : "w-4 h-4"}
+              aria-hidden="true"
+            />
+            <span className={isMobile ? "text-xs font-medium truncate" : ""}>{item.name}</span>
+          </Link>
+        )
+      })}
     </nav>
   )
 }

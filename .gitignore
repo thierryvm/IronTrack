@@ -284,3 +284,5 @@ screenshot*.jpeg
 .bmad/
 _bmad-output/
 *.bmad
+# BMAD methodology files
+_bmad/

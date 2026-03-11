@@ -169,7 +169,7 @@ export default function SessionTimerModal({
 
         <div className="space-y-4 mb-6">
           {steps.map((step, index) => (
-            <div key={index} className="flex items-center gap-3 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            <div key={index} className="flex items-center gap-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               {editingStep === index ? (
                 <div className="flex-1 flex gap-2">
                   <input
@@ -261,7 +261,7 @@ export default function SessionTimerModal({
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <Button
             className="flex-1 bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700 text-white font-semibold"
             onClick={handleStartTimer}

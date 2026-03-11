@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic';
@@ -1308,7 +1308,7 @@ export default function ProgressPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div>
+          <div className="text-center">
             <h1 className="text-3xl font-bold">Progression</h1>
             <p className="text-white/90">Suis tes performances et tes objectifs</p>
           </div>

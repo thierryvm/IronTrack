@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
@@ -28,7 +28,7 @@ interface Exercise {
   exercise_type: 'Musculation' | 'Cardio'
   muscle_group: string
   equipment: string
-  difficulty: 'DÃ©butant' | 'IntermÃ©diaire' | 'AvancÃ©'
+  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé'
   description?: string
   instructions?: string
   image_url?: string
@@ -77,7 +77,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       setLoading(true)
       const supabase = createClient()
 
-      // Charger les donnÃ©es de l'exercice avec mÃ©triques par dÃ©faut
+      // Charger les données de l'exercice avec métriques par défaut
       const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercises')
         .select('*, image_url, default_cardio_metrics, default_strength_metrics')
@@ -136,18 +136,18 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       const isRowing = exerciseName?.toLowerCase().includes('rameur')
       
       if (perf.distance) {
-        // Adapter l'unitÃ© selon le type d'exercice avec conversion intelligente
+        // Adapter l'unité selon le type d'exercice avec conversion intelligente
         if (isRowing) {
-          // Rameur â†’ afficher en mÃ¨tres (ex: 2000m, 5000m)
+          // Rameur â†’ afficher en mètres (ex: 2000m, 5000m)
           parts.push(`${perf.distance}m`)
         } else {
-          // Course/vÃ©lo â†’ vÃ©rifier si donnÃ©es en mÃ¨tres ou km
+          // Course/vélo â†’ vérifier si données en mètres ou km
           const distance = perf.distance
           if (distance > 100) {
-            // Probablement en mÃ¨tres si > 100, convertir en km
+            // Probablement en mètres si > 100, convertir en km
             parts.push(`${(distance / 1000).toFixed(1).replace('.0', '')}km`)
           } else {
-            // Probablement dÃ©jÃ  en km si â‰¤ 100
+            // Probablement déjà en km si â‰¤ 100
             parts.push(`${distance}km`)
           }
         }
@@ -160,7 +160,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       const parts = []
       if (perf.weight) parts.push(`${perf.weight}kg`)
       if (perf.reps) parts.push(`${perf.reps} reps`)
-      return parts.join(' Ã— ') || 'Performance musculation'
+      return parts.join(' × ') || 'Performance musculation'
     }
   }
 
@@ -171,10 +171,10 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
       <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-white dark:bg-gray-900" aria-describedby="exercise-details-description">
         <DialogHeader className="sr-only">
           <DialogTitle>
-            DÃ©tails de l'exercice {exercise?.name || ''}
+            Détails de l'exercice {exercise?.name || ''}
           </DialogTitle>
           <DialogDescription>
-            Consultation des informations dÃ©taillÃ©es et performances de cet exercice
+            Consultation des informations détaillées et performances de cet exercice
           </DialogDescription>
         </DialogHeader>
         
@@ -184,21 +184,21 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="w-full h-full"
         >
-          {/* Header visuel - conservÃ© pour l'UI */}
+          {/* Header visuel - conservé pour l'UI */}
           <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
             <Button
               onClick={onClose}
               variant="ghost"
               size="sm"
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Retour Ã  la liste des exercices"
+              aria-label="Retour à la liste des exercices"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </Button>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center flex-1" aria-hidden="true">
-              DÃ©tails de l'exercice
+              Détails de l'exercice
             </h2>
-            {/* Bouton X supprimÃ© - DialogContent gÃ¨re dÃ©jÃ  la fermeture */}
+            {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
           </div>
 
           {/* Content */}
@@ -226,7 +226,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
                     {(() => {
-                      // Calcul du score de complÃ©tion
+                      // Calcul du score de complétion
                       let score = 60 // Base pour champs requis
                       if (exercise.description) score += 20
                       if (exercise.instructions) score += 15
@@ -269,7 +269,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     ) : (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                         <p className="text-sm text-blue-700">
-                          ðŸ’¡ <strong>AmÃ©liore ton exercice :</strong> Ajoute une description pour le rendre plus facile Ã  identifier
+                          💡 <strong>Améliore ton exercice :</strong> Ajoute une description pour le rendre plus facile à identifier
                         </p>
                       </div>
                     )}
@@ -282,37 +282,37 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     ) : (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                         <p className="text-sm text-yellow-700">
-                          ðŸ“ <strong>ComplÃ¨te ton exercice :</strong> Ajoute des instructions dÃ©taillÃ©es d'exÃ©cution
+                          📝 <strong>Complète ton exercice :</strong> Ajoute des instructions détaillées d'exécution
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* DerniÃ¨re performance */}
+                {/* Dernière performance */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3">
                   <Trophy className="h-6 w-6 text-safe-warning" />
                   {lastPerf ? (
                     <span className="text-gray-800 dark:text-gray-200">
-                      DerniÃ¨re : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
+                      Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
                       <span className="text-gray-700 dark:text-gray-300 ml-2">
                         ({new Date(lastPerf.performed_at).toLocaleDateString()})
                       </span>
                     </span>
                   ) : (
-                    <span className="text-gray-600 dark:text-safe-muted">Aucune performance enregistrÃ©e</span>
+                    <span className="text-gray-600 dark:text-safe-muted">Aucune performance enregistrée</span>
                   )}
                 </div>
 
-                {/* MÃ©triques par dÃ©faut - Seulement si aucune performance enregistrÃ©e */}
+                {/* Métriques par défaut - Seulement si aucune performance enregistrée */}
                 {(exercise.default_cardio_metrics || exercise.default_strength_metrics) && performances.length === 0 && (
                   <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
                     <h5 className="font-medium text-orange-900 mb-3 flex items-center gap-2">
-                      <span className="text-orange-600">ðŸŽ¯</span>
-                      Valeurs recommandÃ©es pour dÃ©marrer
+                      <span className="text-orange-600">🎯</span>
+                      Valeurs recommandées pour démarrer
                     </h5>
                     
-                    {/* MÃ©triques cardio */}
+                    {/* Métriques cardio */}
                     {exercise.default_cardio_metrics && exercise.exercise_type === 'Cardio' && (
                       <div className="space-y-2">
                         {((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) > 0 && (
@@ -349,13 +349,13 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                         )}
                         {((exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>RÃ©sistance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance}
+                            <strong>Résistance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance}
                           </div>
                         )}
                       </div>
                     )}
                     
-                    {/* MÃ©triques musculation */}
+                    {/* Métriques musculation */}
                     {exercise.default_strength_metrics && exercise.exercise_type === 'Musculation' && (
                       <div className="space-y-2">
                         {((exercise.default_strength_metrics as StrengthMetrics).weight ?? 0) > 0 && (
@@ -365,19 +365,19 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                         )}
                         {((exercise.default_strength_metrics as StrengthMetrics).reps ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>RÃ©pÃ©titions :</strong> {(exercise.default_strength_metrics as StrengthMetrics).reps}
+                            <strong>Répétitions :</strong> {(exercise.default_strength_metrics as StrengthMetrics).reps}
                           </div>
                         )}
                         {((exercise.default_strength_metrics as StrengthMetrics).sets ?? 0) > 0 && (
                           <div className="text-sm text-orange-800 dark:text-orange-300">
-                            <strong>SÃ©ries :</strong> {(exercise.default_strength_metrics as StrengthMetrics).sets}
+                            <strong>Séries :</strong> {(exercise.default_strength_metrics as StrengthMetrics).sets}
                           </div>
                         )}
                       </div>
                     )}
                     
                     <p className="text-xs text-orange-700 mt-3 italic">
-                      ðŸ’¡ Ces valeurs suggÃ©rÃ©es vous aideront Ã  commencer votre premiÃ¨re session !
+                      💡 Ces valeurs suggérées vous aideront à commencer votre première session !
                     </p>
                   </div>
                 )}
@@ -415,8 +415,8 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   {performances.length === 0 ? (
                     <div className="text-center py-8 text-gray-600 dark:text-safe-muted">
                       <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                      <p>Aucune performance enregistrÃ©e pour cet exercice.</p>
-                      <p className="text-sm mt-1">Ajoutez votre premiÃ¨re performance !</p>
+                      <p>Aucune performance enregistrée pour cet exercice.</p>
+                      <p className="text-sm mt-1">Ajoutez votre première performance !</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -482,7 +482,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-2">Supprimer la performance</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                ÃŠtes-vous sÃ»r de vouloir supprimer cette performance ? Cette action est irrÃ©versible.
+                Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.
               </p>
               <div className="flex space-x-3">
                 <Button

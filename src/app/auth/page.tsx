@@ -94,7 +94,7 @@ export default function AuthPage() {
                   IronTrack
                 </h1>
                 <motion.p 
-                  className="text-white/90 text-lg"
+                  className="text-white text-lg drop-shadow-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
@@ -102,7 +102,7 @@ export default function AuthPage() {
                   Ton coach muscu personnel
                 </motion.p>
                 <motion.p 
-                  className="text-white/90 text-sm mt-2"
+                  className="text-white text-sm mt-2 drop-shadow-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4, duration: 0.3 }}
@@ -153,7 +153,7 @@ export default function AuthPage() {
                   <div className="w-full border-t border-white/30"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white/10 backdrop-blur-md text-white/80 rounded-full border border-white/20">ou</span>
+                  <span className="px-4 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/20">ou</span>
                 </div>
               </motion.div>
 

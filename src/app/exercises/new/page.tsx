@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { ExerciseCreationWizard } from '@/components/exercises/ExerciseCreation'
@@ -20,18 +20,18 @@ interface PerformanceMetrics {
   heart_rate?: number
   calories?: number
   
-  // SpÃ©cialisÃ© rameur
+  // Spécialisé rameur
   rowing?: {
     stroke_rate?: number
     watts?: number
   }
   
-  // SpÃ©cialisÃ© course
+  // Spécialisé course
   running?: {
     incline?: number
   }
   
-  // SpÃ©cialisÃ© vÃ©lo
+  // Spécialisé vélo
   cycling?: {
     cadence?: number
     resistance?: number
@@ -49,8 +49,8 @@ export default function NewExercisePage() {
     const supabase = createClient()
     
     try {
-      // 0. Mapper le nom d'Ã©quipement vers l'ID
-      let equipment_id = 1 // DÃ©faut
+      // 0. Mapper le nom d'équipement vers l'ID
+      let equipment_id = 1 // Défaut
       if (data.exercise.equipment) {
         const { data: equipmentData } = await supabase
           .from('equipment')
@@ -63,7 +63,7 @@ export default function NewExercisePage() {
         }
       }
       
-      // 1. CrÃ©er l'exercice
+      // 1. Créer l'exercice
       const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercises')
         .insert({
@@ -83,13 +83,13 @@ export default function NewExercisePage() {
 
       if (exerciseError) throw exerciseError
 
-      // 2. CrÃ©er la performance si fournie
+      // 2. Créer la performance si fournie
       if (data.performance && exerciseData) {
         const performanceInsert = {
           exercise_id: exerciseData.id,
           performed_at: new Date().toISOString(),
           notes: '', // Notes vides pour l'instant
-          // MÃ©triques selon le type
+          // Métriques selon le type
           ...(data.exercise.exercise_type === 'Musculation' && {
             weight: (data.performance.metrics as PerformanceMetrics).weight,
             reps: (data.performance.metrics as PerformanceMetrics).reps,
@@ -115,21 +115,21 @@ export default function NewExercisePage() {
           .insert(performanceInsert)
 
         if (performanceError) {
-          console.warn('Erreur crÃ©ation performance:', performanceError)
-          // Ne pas faire Ã©chouer la crÃ©ation si seule la performance Ã©choue
+          console.warn('Erreur création performance:', performanceError)
+          // Ne pas faire échouer la création si seule la performance échoue
         }
       }
 
       toast.success(
         data.performance 
-          ? `Exercice "${data.exercise.name}" crÃ©Ã© avec premiÃ¨re performance !`
-          : `Exercice "${data.exercise.name}" crÃ©Ã© avec succÃ¨s !`
+          ? `Exercice "${data.exercise.name}" créé avec première performance !`
+          : `Exercice "${data.exercise.name}" créé avec succès !`
       )
       
       router.push('/exercises')
     } catch (error) {
-      console.error('Erreur crÃ©ation exercice:', error)
-      console.error('Erreur lors de la crÃ©ation de l\'exercice')
+      console.error('Erreur création exercice:', error)
+      console.error('Erreur lors de la création de l\'exercice')
     }
   }
 

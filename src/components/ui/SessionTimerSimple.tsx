@@ -176,7 +176,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
       {/* Barre de progression */}
       <div className="absolute top-14 left-3 right-3 sm:left-6 sm:right-6 bg-slate-700 rounded-full h-2 sm:h-3 mt-2">
         <div
-          className="bg-orange-500 h-2 sm:h-3 rounded-full transition-all duration-1000"
+          className="bg-orange-700 dark:bg-orange-600 h-2 sm:h-3 rounded-full transition-all duration-1000"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
@@ -200,7 +200,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
       </div>
 
       {/* Contrôles - En grille pour mobile */}
-      <div className="grid grid-cols-5 gap-2 sm:flex sm:justify-center sm:items-center sm:gap-3 mb-4 sm:mb-0">
+      <div className="grid grid-cols-5 gap-2 sm:flex sm:justify-center sm:items-center sm:gap-4 mb-4 sm:mb-0">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}
@@ -257,7 +257,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
                   key={index}
                   className={`flex justify-between items-center p-2 rounded-lg transition-colors text-sm ${
                     index === currentStep 
-                      ? 'bg-orange-600/20 border border-orange-500/50' 
+                      ? 'bg-orange-600/20 border border-orange-700/50 dark:border-orange-500/50' 
                       : index < currentStep 
                         ? 'bg-green-600/20 border border-green-500/50'
                         : 'bg-slate-700/50 border border-slate-600'
@@ -280,7 +280,7 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
               key={index}
               className={`flex justify-between items-center p-3 rounded-lg transition-colors ${
                 index === currentStep 
-                  ? 'bg-orange-600/20 border border-orange-500/50' 
+                  ? 'bg-orange-600/20 border border-orange-700/50 dark:border-orange-500/50' 
                   : index < currentStep 
                     ? 'bg-green-600/20 border border-green-500/50'
                     : 'bg-slate-700/50 border border-slate-600'

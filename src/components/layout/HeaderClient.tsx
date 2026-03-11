@@ -676,8 +676,8 @@ export default function HeaderClient() {
       
       {/* NAVIGATION MOBILE EN BAS - Fixe */}
       {isLoggedIn && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50">
-          <div className="flex justify-around py-2">
+        <nav aria-label="Navigation mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50">
+          <div className="flex justify-around py-2" role="list">
             <ClientOnlyNavigation
               items={mainNav}
               className="contents"
@@ -685,6 +685,7 @@ export default function HeaderClient() {
               activeClassName="text-orange-600 dark:text-orange-400"
               inactiveClassName="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400"
               isMobile={true}
+              ariaLabel="Navigation mobile bas de page"
             />
           </div>
         </nav>

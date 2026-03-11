@@ -121,11 +121,11 @@ export default function EmailAuthFormGlassmorphism({
       <motion.form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
             Adresse email
           </label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
+            <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" aria-hidden="true" />
             <motion.input
               id="email"
               name="email"
@@ -150,11 +150,11 @@ export default function EmailAuthFormGlassmorphism({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Mot de passe
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" aria-hidden="true" />
                 <motion.input
                   id="password"
                   name="password"
@@ -171,11 +171,12 @@ export default function EmailAuthFormGlassmorphism({
                 <motion.button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors"
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors min-w-6 min-h-6 flex items-center justify-center"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-5 h-5" aria-hidden="true" /> : <Eye className="w-5 h-5" aria-hidden="true" />}
                 </motion.button>
               </div>
             </motion.div>
@@ -191,11 +192,11 @@ export default function EmailAuthFormGlassmorphism({
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/90 mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
                 Confirmer le mot de passe
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/80 w-5 h-5" />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" aria-hidden="true" />
                 <motion.input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -215,11 +216,12 @@ export default function EmailAuthFormGlassmorphism({
                 <motion.button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors"
+                  aria-label={showConfirmPassword ? "Masquer la confirmation" : "Afficher la confirmation"}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white/90 transition-colors min-w-6 min-h-6 flex items-center justify-center"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" aria-hidden="true" /> : <Eye className="w-5 h-5" aria-hidden="true" />}
                 </motion.button>
               </div>
               <AnimatePresence>

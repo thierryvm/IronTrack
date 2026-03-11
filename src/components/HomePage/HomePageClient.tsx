@@ -697,13 +697,13 @@ export default function HomePageClient() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild variant="ghost" size="lg" className="bg-gray-800 hover:bg-orange-600 text-white hover:text-white border border-white shadow-sm transition-colors">
+                <Button asChild variant="ghost" size="lg" className="bg-gray-900 text-white font-semibold hover:bg-gray-800 transition-colors border border-gray-700">
                   <Link href="/workouts/new" prefetch={false}>
                     <Dumbbell className="h-6 w-6" />
                     Commencer ma séance
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-white/20 hover:text-white transition-colors">
+                <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-gray-900 hover:border-gray-700 transition-colors">
                   <Link href="/calendar" prefetch={false}>
                     <Calendar className="h-5 w-5" />
                     Voir le planning
@@ -864,29 +864,29 @@ export default function HomePageClient() {
         </div>
 
         {/* Section finale objectifs */}
-        <div className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 rounded-xl p-6 text-white">
+        <div className="mt-8 bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-700 dark:to-red-600 rounded-xl p-6 text-white">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
               <Trophy className="h-8 w-8 text-yellow-300" />
               Objectif de la semaine
             </h2>
-            <p className="text-purple-100 dark:text-purple-200 text-lg mb-6">
+            <p className="text-orange-50 dark:text-orange-100 text-lg mb-6">
               🏆 Prêt à démarrer ? Commence ta première séance de la semaine !
             </p>
             
             <div className="flex justify-center items-center gap-8">
               <div className="text-center">
                 <div className="text-4xl font-bold">{stats.thisWeek}</div>
-                <div className="text-purple-300 dark:text-purple-600 text-sm">séances cette semaine</div>
+                <div className="text-orange-100 dark:text-orange-200 text-sm">séances cette semaine</div>
               </div>
               <div className="flex-1 max-w-md">
-                <div className="bg-purple-600 dark:bg-purple-700 rounded-full h-4 mb-2">
+                <div className="bg-orange-700/60 dark:bg-orange-800/80 rounded-full h-4 mb-2">
                   <div 
                     className="bg-yellow-300 h-4 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(stats.thisWeek * 33.33, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-purple-300 dark:text-purple-600 text-sm">
+                <p className="text-orange-100 dark:text-orange-200 text-sm">
                   Objectif: 3 séances par semaine
                 </p>
               </div>

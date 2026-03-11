@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Button } from './button'
 import { Slider } from './slider'
 import { RotateCcw, Move, ZoomIn, ZoomOut, Check, X } from 'lucide-react'
@@ -499,7 +499,7 @@ export function ImageCropper({
               onClick={resetCrop}
               className="w-full"
             >
-              RÃ©initialiser
+              Réinitialiser
             </Button>
             <div className="text-xs text-gray-500 text-center">
               X: {Math.round(cropArea.x)}, Y: {Math.round(cropArea.y)}
@@ -513,13 +513,13 @@ export function ImageCropper({
             onClick={() => setScale(prev => Math.max(0.1, prev - 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
-            ðŸ”âž– Zoom -
+            🔍âž– Zoom -
           </button>
           <button
             onClick={() => setScale(prev => Math.min(3, prev + 0.2))}
             className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm font-medium active:bg-gray-600 min-h-[44px]"
           >
-            ðŸ”âž• Zoom +
+            🔍âž• Zoom +
           </button>
           <button
             onClick={() => setRotation(prev => prev - 15)}
@@ -531,8 +531,8 @@ export function ImageCropper({
 
         {/* Usage Instructions */}
         <div className="text-xs text-gray-500 text-center border-t border-gray-700 pt-3">
-          <p className="hidden sm:block">ðŸ“± Glissez l'image pour la repositionner â€¢ ðŸ” Utilisez les contrÃ´les pour zoomer/pivoter</p>
-          <p className="sm:hidden">ðŸ‘† Glissez l'image pour la dÃ©placer â€¢ ðŸŽ›ï¸ Utilisez les boutons ci-dessus pour ajuster</p>
+          <p className="hidden sm:block">📱 Glissez l'image pour la repositionner â€¢ 🔍 Utilisez les contrôles pour zoomer/pivoter</p>
+          <p className="sm:hidden">👆 Glissez l'image pour la déplacer â€¢ 🎛ï¸ Utilisez les boutons ci-dessus pour ajuster</p>
         </div>
       </div>
 
