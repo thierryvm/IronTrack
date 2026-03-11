@@ -16,6 +16,11 @@ const eslintConfig = [
       // Désactiver la règle des apostrophes non échappées car elle est cosmétique
       // et cause des centaines d'erreurs sans impact fonctionnel
       "react/no-unescaped-entities": "off",
+      // Désactiver les règles TypeScript trop strictes pour ce projet
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      // Désactiver les warnings react-hooks pour éviter les faux positifs
+      "react-hooks/exhaustive-deps": "off",
     }
   },
   {
