@@ -234,6 +234,7 @@ interface DatabaseExercise {
   id: number;
   name: string;
   exercise_type: string | null;
+  created_at?: string;
   muscle_group?: string;
   equipment?: string;
 }

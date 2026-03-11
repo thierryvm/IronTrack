@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
 export function useHomepageData() {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState({
     stats: { totalWorkouts: 0, thisWeek: 0, currentStreak: 0, totalWeight: 0 },
-    recentExercises: [],
-    userBadges: [],
-    pendingRequests: []
+    recentExercises: [] as Array<{ exercise_id: number; exercises: Array<{ name: string; muscle_group: string }>; performed_at: string }>,
+    userBadges: [] as Array<{ badges: Array<{ name: string; icon: string; description: string }> }>,
+    pendingRequests: [] as Array<{ id: number }>
   })
 
   useEffect(() => {
@@ -23,24 +23,24 @@ export function useHomepageData() {
           return
         }
 
-        // REQUÊTE UNIQUE OPTIMISÉE - au lieu de 57 requêtes
+        // REQUÃŠTE UNIQUE OPTIMISÃ‰E - au lieu de 57 requÃªtes
         const [workoutsResult, exercisesResult, badgesResult, requestsResult] = await Promise.all([
           // Stats essentielles seulement
           supabase
             .from('workouts')
             .select('created_at, status')
             .eq('user_id', user.id)
-            .in('status', ['Réalisé', 'Terminé', 'Completed'])
+            .in('status', ['RÃ©alisÃ©', 'TerminÃ©', 'Completed'])
             .order('created_at', { ascending: false })
-            .limit(10), // Réduit de 20 à 10
+            .limit(10), // RÃ©duit de 20 Ã  10
             
-          // Exercices récents - limite stricte
+          // Exercices rÃ©cents - limite stricte
           supabase
             .from('performance_logs')
             .select('exercise_id, exercises(name, muscle_group), performed_at')
             .eq('user_id', user.id)
             .order('performed_at', { ascending: false })
-            .limit(3), // Réduit drastiquement
+            .limit(3), // RÃ©duit drastiquement
             
           // Badges utilisateur - essentiels seulement
           supabase
@@ -49,7 +49,7 @@ export function useHomepageData() {
             .eq('user_id', user.id)
             .limit(5), // Limite stricte
             
-          // Requêtes partenaires - minimal
+          // RequÃªtes partenaires - minimal
           supabase
             .from('training_partners')
             .select('id')
@@ -61,7 +61,7 @@ export function useHomepageData() {
         if (isMounted) {
           const workouts = workoutsResult.data || []
           
-          // Calculs locaux optimisés
+          // Calculs locaux optimisÃ©s
           const now = new Date()
           const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
           const thisWeekCount = workouts.filter(w => new Date(w.created_at) >= oneWeekAgo).length
@@ -70,7 +70,7 @@ export function useHomepageData() {
             stats: {
               totalWorkouts: workouts.length,
               thisWeek: thisWeekCount,
-              currentStreak: thisWeekCount, // Simplifié
+              currentStreak: thisWeekCount, // SimplifiÃ©
               totalWeight: 0 // Pas critique pour LCP
             },
             recentExercises: exercisesResult.data?.slice(0, 3) || [],

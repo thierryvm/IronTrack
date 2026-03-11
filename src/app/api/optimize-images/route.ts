@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import sharp from 'sharp'
 
+// Type definition for file objects from Supabase storage
+interface StorageFile {
+  name: string
+  id?: string
+  metadata: { size?: number } | null
+}
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -28,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Lister les fichiers du bucket de façon récursive
     console.log(`🔍 Scanning bucket ${bucket}...`)
     
-    let allFiles: Array<{ name: string; metadata: unknown; id?: string }> = []
+    let allFiles: StorageFile[] = []
     
     // 1. Fichiers à la racine
     const { data: rootFiles, error: rootError } = await supabase.storage
@@ -40,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
     
     if (rootFiles) {
-      allFiles = [...rootFiles]
+      allFiles = [...(rootFiles as StorageFile[])]
       console.log(`📁 Root level: ${rootFiles.length} items`)
       
       // 2. Pour chaque élément, vérifier s'il s'agit d'un dossier et lister son contenu
@@ -55,7 +62,7 @@ export async function POST(request: NextRequest) {
           
           if (!folderError && folderFiles) {
             // Ajouter le préfixe du dossier aux noms de fichiers
-            const prefixedFiles = folderFiles.map(file => ({
+            const prefixedFiles = (folderFiles as StorageFile[]).map(file => ({
               ...file,
               name: `${item.name}/${file.name}`
             }))
@@ -89,7 +96,7 @@ export async function POST(request: NextRequest) {
     
     // Filtrer seulement les images > 300KB (candidats à optimisation)
     const filesToOptimize = imageFiles.filter(file => {
-      const fileSize = file.metadata?.size || 0
+      const fileSize = (file.metadata?.size as number) || 0
       return fileSize > 300 * 1024
     })
     
@@ -212,7 +219,7 @@ export async function POST(request: NextRequest) {
                 })
               
               if (!verifyError && verifyFile?.[0]) {
-                const newSize = verifyFile[0].metadata?.size || optimizedSize
+                const newSize = (verifyFile[0].metadata as any)?.size || optimizedSize
                 console.log(`🔍 Vérification cache: ${file.name} nouvelle taille ${newSize}B (attendue ${optimizedSize}B)`)
               }
             } catch (verifyError) {
@@ -305,7 +312,7 @@ export async function GET(request: NextRequest) {
     // Lister tous les fichiers de façon récursive
     console.log(`🔍 Scanning bucket ${bucket} for analysis...`)
     
-    let allFiles: Array<{ name: string; metadata: unknown; id?: string }> = []
+    let allFiles: StorageFile[] = []
     
     // 1. Fichiers à la racine
     const { data: rootFiles, error: rootError } = await supabase.storage
@@ -317,7 +324,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (rootFiles) {
-      allFiles = [...rootFiles]
+      allFiles = [...(rootFiles as StorageFile[])]
       console.log(`📁 Root level: ${rootFiles.length} items`)
       
       // 2. Scanner les dossiers
@@ -330,7 +337,7 @@ export async function GET(request: NextRequest) {
             .list(item.name, { limit: 1000 })
           
           if (!folderError && folderFiles) {
-            const prefixedFiles = folderFiles.map(file => ({
+            const prefixedFiles = (folderFiles as StorageFile[]).map(file => ({
               ...file,
               name: `${item.name}/${file.name}`
             }))
@@ -359,7 +366,7 @@ export async function GET(request: NextRequest) {
     // Analyser les tailles pour détecter les images candidates à optimisation  
     const candidateFiles = imageFiles.filter(file => {
       // Fichiers > 300KB considérés comme candidats à traiter
-      const fileSize = file.metadata?.size || 0
+      const fileSize = (file.metadata?.size as number) || 0
       return fileSize > 300 * 1024
     })
     
@@ -367,15 +374,15 @@ export async function GET(request: NextRequest) {
     
     // Debug: Afficher les tailles détectées
     imageFiles.forEach(file => {
-      const size = file.metadata?.size || 0
+      const size = (file.metadata?.size as number) || 0
       const isCandidate = size > 300 * 1024
       console.log(`📊 ${file.name}: ${(size / 1024).toFixed(1)}KB ${isCandidate ? '🎯 candidate' : '✅ optimisée'}`)
     })
     
     // Estimation ULTRA-RÉALISTE pour images déjà optimisées
-    const totalSize = candidateFiles.reduce((sum, file) => sum + (file.metadata?.size || 0), 0)
+    const totalSize = candidateFiles.reduce((sum, file) => sum + ((file.metadata?.size as number) || 0), 0)
     const estimatedSavings = candidateFiles.reduce((sum, file) => {
-      const size = file.metadata?.size || 0
+      const size = (file.metadata?.size as number) || 0
       // Pour images déjà optimisées : gain réaliste 0.1-0.2%
       const realisticSaving = size * 0.002 // 0.2% 
       // Seules 20% des images auront ce gain minimal

@@ -1,4 +1,4 @@
-// Configuration Next.js simplifiée pour éviter warnings webpack
+﻿// Configuration Next.js simplifiÃ©e pour Ã©viter warnings webpack
 const nextConfig = {
   experimental: {
     optimizeCss: true,
@@ -24,11 +24,11 @@ const nextConfig = {
   },
   
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   
   images: {
@@ -39,16 +39,16 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 365,
   },
 
-  // Configuration webpack minimale pour éviter l'erreur 'self is not defined'
+  // Configuration webpack minimale pour Ã©viter l'erreur 'self is not defined'
   webpack: (config, { dev, isServer }) => {
-    // Ignorer les warnings spécifiques
+    // Ignorer les warnings spÃ©cifiques
     config.ignoreWarnings = [
       /Critical dependency: the request of a dependency is an expression/,
       /Can't resolve 'next.config.compiled.js'/,
       /Module not found/,
     ];
 
-    // Fix pour l'erreur 'self is not defined' côté serveur
+    // Fix pour l'erreur 'self is not defined' cÃ´tÃ© serveur
     if (isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,

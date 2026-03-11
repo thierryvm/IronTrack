@@ -169,7 +169,15 @@ export default function ImageOptimizationPage() {
     }))
     
     try {
-      let allResults: Array<{ file: string; originalSize: number; optimizedSize: number; compressionRatio: number }> = []
+      let allResults: Array<{
+        file: string
+        status: 'optimized' | 'skipped' | 'error'
+        originalSize?: number
+        optimizedSize?: number
+        compression?: number
+        reason?: string
+        error?: string
+      }> = []
       let totalProcessed = 0
       let totalOptimized = 0
       let totalSavings = 0

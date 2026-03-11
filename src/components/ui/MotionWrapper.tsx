@@ -1,17 +1,23 @@
-'use client'
+﻿'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { ReactNode } from 'react'
 
 interface MotionWrapperProps {
-  children: ReactNode
+  children?: ReactNode
   type?: 'div' | 'button'
-  initial?: Record<string, unknown>
-  animate?: Record<string, unknown>
-  exit?: Record<string, unknown>
-  transition?: Record<string, unknown>
-  whileHover?: Record<string, unknown>
-  whileTap?: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initial?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  animate?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  exit?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transition?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  whileHover?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  whileTap?: any
   layout?: boolean
   className?: string
   onClick?: () => void
@@ -27,11 +33,11 @@ export function MotionWrapper({
 }: MotionWrapperProps) {
 
   return type === 'button' ? (
-    <motion.button {...rest}>
+    <motion.button {...(rest as any)}>
       {children}
     </motion.button>
   ) : (
-    <motion.div {...rest}>
+    <motion.div {...(rest as any)}>
       {children}
     </motion.div>
   )
