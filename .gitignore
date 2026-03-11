@@ -1,4 +1,4 @@
-﻿# Dépendances et build
+# Dépendances et build
 /node_modules
 /.next
 /out
@@ -286,3 +286,21 @@ _bmad-output/
 *.bmad
 # BMAD methodology files
 _bmad/
+
+# 🤖 FICHIERS D'ANALYSE AGENT - JAMAIS À COMMITER
+# Rapports générés automatiquement par les agents Claude
+ACTION_PLAN.md
+ANALYSIS_REPORT.json
+ANALYSIS_SUMMARY.md
+DETAILED_FINDINGS.md
+FILES_TO_DELETE.txt
+QUICK_SUMMARY.txt
+COMPONENTS_ANALYSIS.md
+ARCHITECTURE_ANALYSIS.md
+DEAD_COMPONENTS.md
+SPRINT_ANALYSIS*.md
+AGENT_REPORT*.md
+AGENT_ANALYSIS*.md
+*_ANALYSIS_REPORT.*
+*_FINDINGS.*
+README_ANALYSIS.md

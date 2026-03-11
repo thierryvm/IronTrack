@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 
 export default function VercelProviders() {
   const [mounted, setMounted] = useState(false)
   const [isProduction, setIsProduction] = useState(false)
-  const [Analytics, setAnalytics] = useState<any>(null)
-  const [SpeedInsights, setSpeedInsights] = useState<any>(null)
+  const [Analytics, setAnalytics] = useState<ComponentType | null>(null)
+  const [SpeedInsights, setSpeedInsights] = useState<ComponentType | null>(null)
   
   useEffect(() => {
     setMounted(true)

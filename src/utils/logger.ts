@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Système de logging centralisé et sécurisé
  * Remplace les console.log dispersés par un système unifié
  */
@@ -71,8 +71,8 @@ class Logger {
     // En production : monitoring uniquement pour erreurs/warnings critiques
     if (level === 'error' || level === 'warn') {
       // Ici on pourrait intégrer Sentry/DataDog
-      if (this.isClient && (window as any).gtag) {
-        (window as any).gtag('event', 'exception', {
+      if (this.isClient && (window as unknown as { gtag?: unknown }).gtag) {
+        (window as unknown as { gtag: (a: string, b: string, c: Record<string, unknown>) => void }).gtag('event', 'exception', {
           description: message,
           fatal: level === 'error'
         })

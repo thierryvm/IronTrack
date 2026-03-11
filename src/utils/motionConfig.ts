@@ -1,4 +1,4 @@
-// Configuration optimisée Framer Motion pour réduire les violations touch events
+﻿// Configuration optimisée Framer Motion pour réduire les violations touch events
 export const optimizedMotionConfig = {
   // Réduire les event listeners non-passifs
   reducedMotion: typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -27,7 +27,7 @@ export const useOptimizedGestures = () => {
   return {
     // Pour les calendriers avec swipe
     calendarGestures: {
-      onPanEnd: (event: any, info: any) => {
+      onPanEnd: (_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number; y: number }; velocity: { x: number; y: number } }) => {
         // Seulement traiter les swipes significatifs pour éviter les faux positifs
         if (Math.abs(info.offset.x) > optimizedMotionConfig.swipeConfig.distanceThreshold) {
           return info.offset.x > 0 ? 'right' : 'left'

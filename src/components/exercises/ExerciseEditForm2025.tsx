@@ -294,7 +294,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
           const latestPerf = latestPerfData[0]
           
           // Préparer les nouvelles données selon le type d'exercice
-          const perfUpdateData: any = {}
+          const perfUpdateData: Record<string, unknown> = {}
           
           if (exercise.exercise_type === 'Cardio') {
             if (cardioData.distance) perfUpdateData.distance = cardioData.distance

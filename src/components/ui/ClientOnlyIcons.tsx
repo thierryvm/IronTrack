@@ -83,6 +83,6 @@ export function ClientOnlyIcon({ name, className = "", size = 24 }: ClientOnlyIc
     return <IconComponent />
   }
   
-  const LucideIcon = IconComponent as any
+  const LucideIcon = IconComponent as React.ComponentType<{ className?: string; size?: number }>
   return <LucideIcon className={className} size={size} />
 }

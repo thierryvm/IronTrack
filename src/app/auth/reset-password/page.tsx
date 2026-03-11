@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -121,7 +121,7 @@ function ResetPasswordForm() {
           className="w-full max-w-md"
         >
           {/* Carte glassmorphism */}
-          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /10 rounded-2xl border border-white dark:border-gray-700/20 shadow-2xl overflow-hidden">
+          <div className="relative backdrop-blur-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent" />
             
             <div className="relative z-10 p-8">

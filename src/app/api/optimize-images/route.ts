@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import sharp from 'sharp'
 
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
                 })
               
               if (!verifyError && verifyFile?.[0]) {
-                const newSize = (verifyFile[0].metadata as any)?.size || optimizedSize
+                const newSize = (verifyFile[0].metadata as Record<string, unknown>)?.size || optimizedSize
                 console.log(`🔍 Vérification cache: ${file.name} nouvelle taille ${newSize}B (attendue ${optimizedSize}B)`)
               }
             } catch (verifyError) {
