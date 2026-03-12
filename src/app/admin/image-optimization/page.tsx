@@ -104,7 +104,7 @@ export default function ImageOptimizationPage() {
           // totalSize was removed
           
         } catch (apiError) {
-          console.warn(`Erreur API pour ${bucket}, fallback direct:`, apiError)
+          // Fallback direct si l'API échoue
           
           // Fallback: méthode directe avec logique UUID
           const { data: files, error } = await supabase.storage

@@ -26,10 +26,6 @@ interface AdminUser {
 }
 
 export async function GET() {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API LOG] /api/admin/users - appelé à`, new Date().toISOString());
-  }
-  
   try {
     const cookieStore = await cookies()
     
@@ -128,13 +124,9 @@ export async function GET() {
           
           workoutCount = workoutResult.count || 0
           
-          if (workoutResult.error && process.env.NODE_ENV === 'development') {
-            console.warn(`[API ADMIN USERS] Erreur comptage workouts:`, workoutResult.error.message)
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn(`[API ADMIN USERS] Erreur workouts:`, (error as Error).message)
-          }
+          // Erreur comptage workouts ignorée silencieusement
+        } catch {
+          // Erreur workouts ignorée silencieusement
         }
 
         try {
@@ -146,13 +138,9 @@ export async function GET() {
           
           badgeCount = badgeResult.count || 0
           
-          if (badgeResult.error && process.env.NODE_ENV === 'development') {
-            console.warn(`[API ADMIN USERS] Erreur comptage badges:`, badgeResult.error.message)
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn(`[API ADMIN USERS] Erreur badges:`, (error as Error).message)
-          }
+          // Erreur comptage badges ignorée silencieusement
+        } catch {
+          // Erreur badges ignorée silencieusement
         }
 
         // Calculer is_banned en fonction de banned_until ET is_banned
@@ -201,8 +189,8 @@ export async function GET() {
           timestamp: new Date().toISOString()
         }
       })
-    } catch (logError) {
-      console.warn('[API ADMIN USERS] Erreur logging admin:', logError)
+    } catch {
+      // Erreur logging admin ignorée silencieusement
     }
 
     return NextResponse.json({ users: enrichedUsers })

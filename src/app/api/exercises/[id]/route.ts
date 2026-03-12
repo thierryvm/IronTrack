@@ -138,9 +138,8 @@ export async function PUT(
           timestamp: new Date().toISOString()
         }
       })
-    } catch (logError) {
+    } catch {
       // Log audit non-critique, ne pas faire échouer la requête
-      console.warn('[API] Impossible de créer log audit:', logError)
     }
 
     // 9. Retour succès avec headers rate limiting
@@ -361,8 +360,8 @@ export async function DELETE(
           timestamp: new Date().toISOString()
         }
       })
-    } catch (logError) {
-      console.warn('[API] Log audit échec suppression:', logError)
+    } catch {
+      // Log audit non-critique, ne pas faire échouer la requête
     }
 
     const config = RATE_LIMIT_CONFIGS.exercises.authenticated

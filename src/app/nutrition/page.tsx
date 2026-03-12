@@ -187,7 +187,6 @@ export default function NutritionPage() {
       if (profile || user.email?.includes('admin')) {
         setUserId(user.id)
       } else {
-        console.warn('Utilisateur sans profil détecté, création automatique...')
         // Créer automatiquement un profil basique
         await supabase.from('profiles').insert({
           id: user.id,

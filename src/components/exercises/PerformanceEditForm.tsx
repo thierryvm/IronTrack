@@ -51,7 +51,6 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('🔍 Chargement performance ID:', performanceId, 'pour exercice ID:', exerciseId)
         const supabase = createClient()
         
         // Récupérer la performance
