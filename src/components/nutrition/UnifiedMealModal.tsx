@@ -124,7 +124,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
                     ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 <Search className="h-6 w-6 inline mr-2" />
@@ -135,7 +135,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
                     ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 <Edit className="h-6 w-6 inline mr-2" />
@@ -146,7 +146,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
                     ? 'bg-white dark:bg-gray-900 text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 <ChefHat className="h-6 w-6 inline mr-2" />

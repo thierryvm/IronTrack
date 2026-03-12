@@ -16,14 +16,14 @@ import { Label } from '@/components/ui/label'
 // Lazy loading des composants lourds pour réduire le bundle initial
 const RecipeLibrary = dynamic(() => import('@/components/nutrition/RecipeLibrary'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-96 rounded-lg flex items-center justify-center">
+  loading: () => <div className="animate-pulse bg-muted h-96 rounded-lg flex items-center justify-center">
     <span className="text-gray-600 dark:text-safe-muted">Chargement de la bibliothèque...</span>
   </div>
 })
 
 const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMealModal'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
+  loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg flex items-center justify-center">
     <span className="text-gray-600 dark:text-safe-muted">Chargement du modal...</span>
   </div>
 })
@@ -31,7 +31,7 @@ const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMea
 // Lazy loading des graphiques complets (approche component groupée)
 const NutritionCharts = dynamic(() => import('@/components/nutrition/NutritionCharts'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg flex items-center justify-center">
+  loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg flex items-center justify-center">
     <span className="text-gray-600 dark:text-safe-muted">Chargement des graphiques...</span>
   </div>
 })
