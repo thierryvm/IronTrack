@@ -369,7 +369,7 @@ export async function GET(request: NextRequest) {try {
 
     // Effectuer la requête avec timeout
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 secondes timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 secondes timeout (#33/#37)
 
     try {
       const response = await fetch(searchUrl, {
@@ -481,9 +481,15 @@ export async function GET(request: NextRequest) {try {
       clearTimeout(timeoutId)
       
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        return NextResponse.json({ 
-          error: 'Timeout de la recherche nutrition' 
-        }, { status: 408 })
+        // Fix #33/#37 : Sur timeout, retourner les aliments locaux au lieu d'une erreur
+        const localFallback = searchLocalFoods(sanitizedQuery)
+        return NextResponse.json({
+          success: true,
+          products: localFallback,
+          count: localFallback.length,
+          query: sanitizedQuery,
+          source: 'local_fallback'
+        })
       }
       
       throw fetchError

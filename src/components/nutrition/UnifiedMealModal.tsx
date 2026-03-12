@@ -15,6 +15,14 @@ interface UnifiedMealModalProps {
   userId: string
 }
 
+// Fix #34/#36 : types de repas standard
+const MEAL_TYPES = [
+  { name: 'Petit-déjeuner', icon: '🌅' },
+  { name: 'Déjeuner', icon: '☀️' },
+  { name: 'Dîner', icon: '🌙' },
+  { name: 'Collation', icon: '🍎' },
+]
+
 export default function UnifiedMealModal({
   isOpen,
   onClose,
@@ -24,9 +32,12 @@ export default function UnifiedMealModal({
   userId
 }: UnifiedMealModalProps) {
   const [addMode, setAddMode] = useState<'smart' | 'manual' | 'builder'>('smart')
+  // Fix #34/#36 : sélecteur de type quand le modal est ouvert sans type pré-sélectionné
+  const [localMealType, setLocalMealType] = useState<string>(mealType)
 
   const handleClose = () => {
     setAddMode('smart')
+    setLocalMealType(mealType)
     onClose()
   }
 
@@ -34,6 +45,9 @@ export default function UnifiedMealModal({
     onMealAdded()
     handleClose()
   }
+
+  // Mettre à jour localMealType quand mealType change (ouverture depuis catégorie spécifique)
+  const effectiveMealType = localMealType || mealType
 
   if (!isOpen) return null
 
@@ -68,7 +82,7 @@ export default function UnifiedMealModal({
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                Ajouter un repas - {mealType}
+                {effectiveMealType ? `Ajouter un repas — ${effectiveMealType}` : 'Ajouter un repas'}
               </h2>
               <button
                 onClick={handleClose}
@@ -78,8 +92,33 @@ export default function UnifiedMealModal({
               </button>
             </div>
             
+            {/* Fix #34/#36 : Sélecteur de type de repas si non pré-défini */}
+            {!mealType && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Type de repas <span className="text-red-500">*</span>
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {MEAL_TYPES.map(type => (
+                    <button
+                      key={type.name}
+                      onClick={() => setLocalMealType(type.name)}
+                      className={`py-2 px-2 rounded-lg text-xs font-medium transition-colors border ${
+                        localMealType === type.name
+                          ? 'bg-orange-500 text-white border-orange-500'
+                          : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-orange-400'
+                      }`}
+                    >
+                      <span className="block text-base mb-1">{type.icon}</span>
+                      {type.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Onglets de sélection du mode */}
-            <div className="flex space-x-1 mt-4 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 p-1 rounded-lg">
+            <div className={`flex space-x-1 mt-4 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg ${!mealType && !localMealType ? 'opacity-50 pointer-events-none' : ''}`}>
               <button
                 onClick={() => setAddMode('smart')}
                 className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
@@ -129,7 +168,7 @@ export default function UnifiedMealModal({
                 </div>
                 
                 <SimpleMealBuilder
-                  mealType={mealType}
+                  mealType={effectiveMealType}
                   selectedDate={selectedDate}
                   userId={userId}
                   onMealAdded={handleMealAdded}
@@ -148,7 +187,7 @@ export default function UnifiedMealModal({
                 </div>
                 
                 <ManualMealForm
-                  mealType={mealType}
+                  mealType={effectiveMealType}
                   selectedDate={selectedDate}
                   userId={userId}
                   onMealAdded={handleMealAdded}
@@ -167,7 +206,7 @@ export default function UnifiedMealModal({
                 </div>
                 
                 <MultiIngredientMealBuilder
-                  mealType={mealType}
+                  mealType={effectiveMealType}
                   selectedDate={selectedDate}
                   userId={userId}
                   onMealAdded={handleMealAdded}

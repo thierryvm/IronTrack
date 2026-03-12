@@ -71,6 +71,7 @@ export async function GET(request: NextRequest) {
     global.searchLimiter.set(userId, [...recentSearches, now])
 
     // SÉCURITÉ : Recherche exacte par email OU pseudo
+    // Note: email sélectionné pour la recherche mais NON retourné dans la réponse (RGPD)
     const { data: users, error } = await supabase
       .from('profiles')
       .select('id, pseudo, full_name, email, avatar_url')
@@ -96,10 +97,14 @@ export async function GET(request: NextRequest) {
         (p.partner_id === user.id && p.requester_id === u.id)
       )
 
-      const displayName = u.pseudo || u.full_name || u.email?.split('@')[0] || 'Utilisateur'
+      const displayName = u.pseudo || u.full_name || 'Utilisateur'
 
+      // RGPD #28 : Ne jamais retourner l'email dans la réponse
       return {
-        ...u,
+        id: u.id,
+        pseudo: u.pseudo,
+        full_name: u.full_name,
+        avatar_url: u.avatar_url,
         partnershipStatus: partnership?.status || null,
         displayName
       }

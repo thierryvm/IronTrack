@@ -323,8 +323,8 @@ export default function NutritionPage() {
                 <ChefHat className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
                 <span>Mes recettes</span>
               </Button>
-              <Button 
-                onClick={() => openMealModal('Repas rapide')}
+              <Button
+                onClick={() => openMealModal('')}
                 className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white"
               >
                 <Plus className="h-5 w-5 max-sm:h-4 max-sm:w-4" />

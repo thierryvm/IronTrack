@@ -38,6 +38,8 @@ GUIDE_PERMISSIONS_ROLES.md
 
 # Documentation technique interne (ne pas commiter - sensible)
 documentation/
+# Exception : pages source admin (code, pas docs)
+!src/app/admin/documentation/
 *_security.md
 *_password_security.md
 supabase_*.md

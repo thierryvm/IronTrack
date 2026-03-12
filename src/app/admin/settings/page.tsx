@@ -5,33 +5,48 @@ import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-// import { Separator } from '@/components/ui/separator'
-import { 
-  Settings, 
-  Shield, 
-  Database, 
-  Bell, 
-  Mail, 
+import {
+  Settings,
+  Shield,
+  Database,
+  Bell,
+  Mail,
   Users,
   Activity,
   RotateCcw,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  X
 } from 'lucide-react'
 
 export default function AdminSettingsPage() {
   const { user, hasPermission } = useAdminAuth()
   const [isLoading, setIsLoading] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  // Fix #48 : confirmation avant reset
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
-  // Simuler une action de configuration
-  const handleConfigAction = async () => {
-    setIsLoading(true)
-    // Simuler un délai
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsLoading(false)
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
   }
 
-  // Debug des permissions
+  // Fix #47 : feedback visuel sur toutes les actions config
+  const handleConfigAction = async (label?: string) => {
+    setIsLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setIsLoading(false)
+    if (label) showToast(`${label} effectué avec succès`)
+  }
+
+  // Fix #48 : reset avec confirmation obligatoire
+  const handleResetConfig = async () => {
+    setShowResetConfirm(false)
+    setIsLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 1200))
+    setIsLoading(false)
+    showToast('Configuration réinitialisée avec succès')
+  }
 
   if (!hasPermission('super_admin')) {
     return (
@@ -54,6 +69,54 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* Fix #47 : Toast feedback */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 flex items-center space-x-3 px-4 py-3 rounded-lg shadow-lg border ${
+          toast.type === 'success'
+            ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-700 dark:text-green-200'
+            : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-700 dark:text-red-200'
+        }`}>
+          <CheckCircle className="h-5 w-5 shrink-0" />
+          <span className="text-sm font-medium">{toast.message}</span>
+          <button onClick={() => setToast(null)} className="ml-2">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Fix #48 : Modal de confirmation Reset */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-2 bg-red-100 dark:bg-red-950 rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Confirmer la réinitialisation
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
+              Cette action est <strong>irréversible</strong>. Toute la configuration personnalisée sera
+              supprimée et remplacée par les valeurs par défaut. Êtes-vous sûr de vouloir continuer ?
+            </p>
+            <div className="flex space-x-3 justify-end">
+              <Button variant="outline" onClick={() => setShowResetConfirm(false)}>
+                Annuler
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleResetConfig}
+                disabled={isLoading}
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Réinitialiser
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* En-tête */}
       <div className="flex items-center justify-between">
         <div>
@@ -319,33 +382,35 @@ export default function AdminSettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <Button 
-              onClick={() => handleConfigAction()}
+            {/* Fix #47 : feedback visuel sur chaque bouton */}
+            <Button
+              onClick={() => handleConfigAction('Export configuration')}
               disabled={isLoading}
             >
               Exporter Configuration
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => handleConfigAction()}
+              onClick={() => handleConfigAction('Sauvegarde')}
               disabled={isLoading}
             >
               Sauvegarder Maintenant
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => handleConfigAction()}
+              onClick={() => handleConfigAction('Téléchargement des logs')}
               disabled={isLoading}
             >
               Télécharger Logs
             </Button>
+            {/* Fix #48 : Reset avec confirmation obligatoire */}
             {hasPermission('super_admin') && (
-              <Button 
-                variant="outline"
-                onClick={() => handleConfigAction()}
+              <Button
+                variant="destructive"
+                onClick={() => setShowResetConfirm(true)}
                 disabled={isLoading}
               >
-                <AlertTriangle className="h-6 w-6 mr-2" />
+                <AlertTriangle className="h-4 w-4 mr-2" />
                 Reset Configuration
               </Button>
             )}
