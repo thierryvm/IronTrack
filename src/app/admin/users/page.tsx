@@ -305,7 +305,7 @@ export default function AdminUsersPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Chargement des utilisateurs...</p>
         </div>
       </div>
@@ -318,12 +318,9 @@ export default function AdminUsersPage() {
         <div className="flex items-center space-x-2">
           <AlertTriangle className="h-5 w-5 text-safe-error" />
           <p className="text-red-700">{error}</p>
-          <button
-            onClick={clearError}
-            className="ml-auto text-safe-error hover:text-red-700"
-          >
+          <Button variant="ghost" size="icon" onClick={clearError} className="ml-auto text-destructive hover:text-red-700">
             <XCircle className="h-6 w-6" />
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -336,8 +333,8 @@ export default function AdminUsersPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Users className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+              <div className="p-2 bg-muted rounded-lg">
+                <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestion des Utilisateurs</h1>
@@ -357,8 +354,8 @@ export default function AdminUsersPage() {
               variant={showFilters ? "default" : "outline"}
               size="sm"
               className={`flex items-center ${
-                showFilters 
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                showFilters
+                  ? 'bg-accent text-accent-foreground'
                   : ''
               }`}
             >
@@ -384,9 +381,9 @@ export default function AdminUsersPage() {
             </div>
             <div className="text-sm text-purple-700">Administrateurs</div>
           </div>
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-            <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">{getUsersByRole('moderator').length}</div>
-            <div className="text-sm text-orange-700">Modérateurs</div>
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="text-2xl font-bold text-foreground">{getUsersByRole('moderator').length}</div>
+            <div className="text-sm text-muted-foreground">Modérateurs</div>
           </div>
         </div>
 
@@ -524,17 +521,17 @@ export default function AdminUsersPage() {
                   >
                     <TableCell>
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                           {user.avatar_url ? (
-                            <Image 
-                              src={user.avatar_url} 
+                            <Image
+                              src={user.avatar_url}
                               alt={user.full_name || user.email}
                               width={40}
                               height={40}
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (
-                            <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
+                            <span className="text-sm font-medium text-foreground">
                               {formatUserName(user).charAt(0).toUpperCase()}
                             </span>
                           )}
@@ -601,64 +598,47 @@ export default function AdminUsersPage() {
 
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedUser(user)
-                            setShowDetails(true)
-                          }}
-                          className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-info hover:bg-blue-50 rounded-lg transition-colors"
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setShowDetails(true) }}
                           title="Voir les détails"
                         >
                           <Eye className="h-6 w-6" />
-                        </button>
+                        </Button>
                         
                         {hasPermission('admin') && (
                           <>
                             {hasPermission('super_admin') && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setSelectedUser(user)
-                                  setNewRole(user.role)
-                                  setShowRoleModal(true)
-                                }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-orange-800 dark:text-orange-300 hover:bg-orange-50 dark:bg-orange-900/20 rounded-lg transition-colors"
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setNewRole(user.role); setShowRoleModal(true) }}
                                 title="Changer le rôle"
                               >
                                 <Key className="h-6 w-6" />
-                              </button>
+                              </Button>
                             )}
                             
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSelectedUser(user)
-                                setBanOptions({})
-                                setShowBanModal(true)
-                              }}
-                              className={`p-2 rounded-lg transition-colors ${
-                                !user.is_banned
-                                  ? 'text-gray-700 dark:text-gray-300 hover:text-safe-error hover:bg-red-50'
-                                  : 'text-gray-700 dark:text-gray-300 hover:text-safe-success hover:bg-green-50'
-                              }`}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setBanOptions({}); setShowBanModal(true) }}
                               title={!user.is_banned ? 'Bannir' : 'Débannir'}
                             >
                               {!user.is_banned ? <Ban className="h-6 w-6" /> : <CheckCircle className="h-6 w-6" />}
-                            </button>
+                            </Button>
 
                             {hasPermission('super_admin') && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setSelectedUser(user)
-                                  setShowDeleteModal(true)
-                                }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-error hover:bg-red-50 rounded-lg transition-colors"
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setShowDeleteModal(true) }}
                                 title="Supprimer l'utilisateur"
+                                className="hover:text-destructive hover:bg-red-50 dark:hover:bg-red-900/20"
                               >
                                 <Trash2 className="h-6 w-6" />
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
@@ -693,17 +673,17 @@ export default function AdminUsersPage() {
               {/* En-tête du modal */}
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
                     {selectedUser.avatar_url ? (
-                      <Image 
-                        src={selectedUser.avatar_url} 
+                      <Image
+                        src={selectedUser.avatar_url}
                         alt={selectedUser.full_name || selectedUser.email}
                         width={48}
                         height={48}
                         className="w-12 h-12 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="text-lg font-medium text-orange-800 dark:text-orange-300">
+                      <span className="text-lg font-medium text-foreground">
                         {formatUserName(selectedUser).charAt(0).toUpperCase()}
                       </span>
                     )}
@@ -721,12 +701,9 @@ export default function AdminUsersPage() {
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(selectedUser.role)}`}>
                     {getRoleLabel(selectedUser.role)}
                   </span>
-                  <button
-                    onClick={() => setShowDetails(false)}
-                    className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors ml-4"
-                  >
-                    <XCircle className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
-                  </button>
+                  <Button variant="ghost" size="icon" onClick={() => setShowDetails(false)} className="ml-4">
+                    <XCircle className="h-5 w-5" />
+                  </Button>
                 </div>
               </div>
 
@@ -825,18 +802,12 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="flex items-center justify-end space-x-3">
-                <button
-                  onClick={() => setShowRoleModal(false)}
-                  className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-800 transition-colors"
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowRoleModal(false)}>
                   Annuler
-                </button>
-                <button
-                  onClick={handleRoleChange}
-                  className="px-4 py-2 text-sm bg-orange-600 dark:bg-orange-500 text-white rounded-md hover:bg-orange-700 transition-colors"
-                >
+                </Button>
+                <Button variant="orange" size="sm" onClick={handleRoleChange}>
                   Modifier le rôle
-                </button>
+                </Button>
               </div>
             </motion.div>
           </>
@@ -904,22 +875,16 @@ export default function AdminUsersPage() {
               )}
 
               <div className="flex items-center justify-end space-x-3">
-                <button
-                  onClick={() => setShowBanModal(false)}
-                  className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-800 transition-colors"
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowBanModal(false)}>
                   Annuler
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant={!selectedUser.is_banned ? "destructive" : "success"}
+                  size="sm"
                   onClick={handleBanSubmit}
-                  className={`px-4 py-2 text-sm rounded-md transition-colors ${
-                    !selectedUser.is_banned
-                      ? 'bg-red-500 text-white hover:bg-red-700'
-                      : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
                 >
                   {!selectedUser.is_banned ? 'Bannir' : 'Débannir'}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </>
@@ -957,18 +922,12 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="flex items-center justify-end space-x-3">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-800 transition-colors"
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowDeleteModal(false)}>
                   Annuler
-                </button>
-                <button
-                  onClick={handleDeleteConfirm}
-                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-700 transition-colors"
-                >
+                </Button>
+                <Button variant="destructive" size="sm" onClick={handleDeleteConfirm}>
                   Supprimer définitivement
-                </button>
+                </Button>
               </div>
             </motion.div>
           </>

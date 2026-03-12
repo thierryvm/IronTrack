@@ -20,6 +20,7 @@ import {
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext'
+import { Button } from '@/components/ui/button'
 
 interface AdminStats {
   open_tickets: number
@@ -167,7 +168,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Vérification des permissions admin...</p>
         </div>
       </div>
@@ -195,12 +196,9 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             >
               Retour à l'accueil
             </Link>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
+            <Button variant="secondary" onClick={() => window.location.reload()}>
               Recharger
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -212,15 +210,11 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
       {/* Header Mobile avec support safe areas iPhone */}
       <div className="lg:hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between header-mobile-ios">
         <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 transition-colors"
-            aria-label="Ouvrir le menu"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} aria-label="Ouvrir le menu">
             <Menu className="h-6 w-6" />
-          </button>
+          </Button>
           <div className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+            <Shield className="h-6 w-6 text-foreground" />
             <span className="font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
           </div>
         </div>
@@ -228,17 +222,14 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
         <div className="flex items-center space-x-2">
           {/* User menu mobile */}
           <div className="relative">
-            <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 transition-colors"
-            >
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
+            <Button variant="ghost" onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center space-x-2 h-auto px-2 py-1">
+              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-foreground">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <ChevronDown className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
-            </button>
+              <ChevronDown className="h-6 w-6 text-muted-foreground" />
+            </Button>
             
             {userMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
@@ -250,13 +241,14 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                     </p>
                   </div>
                   
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                    className="w-full justify-start px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     <LogOut className="h-6 w-6 mr-2" />
                     Se déconnecter
-                  </button>
+                  </Button>
               </div>
             )}
           </div>
@@ -267,7 +259,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
         {/* Sidebar Desktop */}
         <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white dark:bg-gray-900 lg:border-r lg:border-gray-200 dark:border-gray-600">
           <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200 dark:border-gray-700">
-            <Shield className="h-8 w-8 text-orange-800 dark:text-orange-300 mr-3" />
+            <Shield className="h-8 w-8 text-foreground mr-3" />
             <span className="text-xl font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
           </div>
           
@@ -282,8 +274,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                   href={item.href}
                   className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     item.active
-                      ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 border border-orange-200 dark:border-orange-800'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
+                      ? 'bg-accent text-accent-foreground border border-border'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <Icon className="h-5 w-5 mr-3" />
@@ -300,8 +292,8 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
           
           <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
+              <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-foreground">
                   {user?.email.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -311,13 +303,9 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                   {user?.role.replace('_', ' ')}
                 </p>
               </div>
-              <button
-                onClick={handleLogout}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-safe-error transition-colors"
-                title="Se déconnecter"
-              >
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Se déconnecter" className="hover:text-destructive">
                 <LogOut className="h-6 w-6" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -335,15 +323,12 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
             >
                 <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center space-x-2">
-                    <Shield className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+                    <Shield className="h-6 w-6 text-foreground" />
                     <span className="font-bold text-gray-900 dark:text-gray-100">IronTrack Admin</span>
                   </div>
-                  <button
-                    onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800"
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
                     <X className="h-5 w-5" />
-                  </button>
+                  </Button>
                 </div>
                 
                 <nav className="flex-1 px-4 py-6 space-y-2">

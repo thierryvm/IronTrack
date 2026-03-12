@@ -33,7 +33,6 @@ claude_code_specification_optimized.md
 # Dossier refonte design (temporaire)
 /refonte-design/
 /refonte-design-system/
-CLAUDE.md
 GUIDE_CLAUDE_CODE.md
 GUIDE_PERMISSIONS_ROLES.md
 
@@ -44,15 +43,14 @@ documentation/
 supabase_*.md
 
 # 🚨 FICHIERS INTERNES CLAUDE - JAMAIS À COMMITER
-CLAUDE.md
+# NOTE: CLAUDE.md est commité intentionnellement (config agents, aucun secret)
 HTTP_PERFORMANCE_GUIDE.md
 DIAGNOSTIC_*.md
 *_DIAGNOSTIC.md
 
-# 🤖 AGENTS CLAUDE CODE - SÉCURITÉ CRITIQUE
-# Agents autonomes contenant patterns de détection vulnérabilités
-# Ne pas exposer publiquement - outils internes uniquement
-agents/
+# 🤖 AGENTS CLAUDE CODE - COMMITÉS INTENTIONNELLEMENT
+# agents/ et .claude/commands/ contiennent la config du projet, pas de secrets
+# Les rapports d'audit générés automatiquement sont ignorés ci-dessous
 *-agent.js
 *-audit-report.md
 security-audit-report.md
@@ -84,8 +82,12 @@ REGLES_SECURITE_CLAUDE.md
 *.sqlite
 *.db
 
-# Dossiers d'outils de développement (sécurité)
-.claude/
+# Dossiers d'outils de développement
+# .claude/ : on ignore les settings locaux mais on garde les commandes du projet
+.claude/*
+!.claude/commands/
+!.claude/commands/**
+!.claude/hooks/
 .vscode/
 
 # Fichiers de debug

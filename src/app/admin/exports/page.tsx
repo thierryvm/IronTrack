@@ -303,13 +303,13 @@ export default function AdminExportsPage() {
         {/* Statistiques rapides */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200">
+            <Card className="bg-card border-border">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
-                  <MessageSquare className="h-8 w-8 text-orange-600" />
+                  <MessageSquare className="h-8 w-8 text-muted-foreground" />
                   <div>
-                    <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">{stats.tickets}</div>
-                    <div className="text-sm text-orange-700">Tickets de support</div>
+                    <div className="text-2xl font-bold text-foreground">{stats.tickets}</div>
+                    <div className="text-sm text-muted-foreground">Tickets de support</div>
                   </div>
                 </div>
               </CardContent>

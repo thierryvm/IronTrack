@@ -49,8 +49,8 @@ export default function AdminLogsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalLogs, setTotalLogs] = useState(0)
   const [filters, setFilters] = useState<Filters>({
-    action: '',
-    target_type: '',
+    action: 'all',
+    target_type: 'all',
     date_range: '24h',
     search: ''
   })
@@ -70,8 +70,8 @@ export default function AdminLogsPage() {
         page: page.toString(),
         limit: LOGS_PER_PAGE.toString(),
         date_range: newFilters.date_range,
-        ...(newFilters.action && { action: newFilters.action }),
-        ...(newFilters.target_type && { target_type: newFilters.target_type }),
+        ...(newFilters.action && newFilters.action !== 'all' && { action: newFilters.action }),
+        ...(newFilters.target_type && newFilters.target_type !== 'all' && { target_type: newFilters.target_type }),
         ...(newFilters.search && { search: newFilters.search })
       })
 
@@ -205,7 +205,7 @@ export default function AdminLogsPage() {
                   <SelectValue placeholder="Toutes les actions" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Toutes les actions</SelectItem>
+                  <SelectItem value="all">Toutes les actions</SelectItem>
                   <SelectItem value="admin_access">Accès admin</SelectItem>
                   <SelectItem value="view_admin_logs">Consultation logs</SelectItem>
                   <SelectItem value="unauthorized_admin_access_attempt">Accès non autorisé</SelectItem>
@@ -227,7 +227,7 @@ export default function AdminLogsPage() {
                   <SelectValue placeholder="Tous les types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les types</SelectItem>
+                  <SelectItem value="all">Tous les types</SelectItem>
                   <SelectItem value="admin_panel">Interface admin</SelectItem>
                   <SelectItem value="user_account">Comptes utilisateurs</SelectItem>
                   <SelectItem value="admin_logs">Logs système</SelectItem>
@@ -259,7 +259,7 @@ export default function AdminLogsPage() {
               <span>
                 <strong>{totalLogs.toLocaleString('fr-FR')}</strong> logs trouvés
                 {totalLogs >= MAX_LOGS_TOTAL && (
-                  <span className="text-orange-800 dark:text-orange-300 ml-2">
+                  <span className="text-amber-600 dark:text-amber-400 ml-2">
                     (limité à {MAX_LOGS_TOTAL.toLocaleString('fr-FR')} pour les performances)
                   </span>
                 )}
@@ -309,7 +309,7 @@ export default function AdminLogsPage() {
                       key={log.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="hover:bg-gray-50 dark:bg-gray-800"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
@@ -330,7 +330,7 @@ export default function AdminLogsPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                        <span className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded text-xs">
+                        <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">
                           {log.admin_id.slice(0, 8)}...
                         </span>
                       </td>

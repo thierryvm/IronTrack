@@ -250,7 +250,7 @@ export default function ImageOptimizationPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <Database className="h-8 w-8 text-orange-600" />
+            <Database className="h-8 w-8 text-muted-foreground" />
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
               Optimisation Images Existantes
             </h1>
@@ -264,7 +264,7 @@ export default function ImageOptimizationPage() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Zap className="h-5 w-5 text-orange-600 mr-2" />
+              <Zap className="h-5 w-5 text-muted-foreground mr-2" />
               Configuration
             </CardTitle>
           </CardHeader>
@@ -310,7 +310,7 @@ export default function ImageOptimizationPage() {
                 <Button
                   onClick={startOptimization}
                   disabled={stats.isRunning}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  variant="orange"
                 >
                   {stats.isRunning ? (
                     <>
@@ -397,11 +397,11 @@ export default function ImageOptimizationPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Espace économisé</p>
-                    <p className="text-2xl font-bold text-orange-600">
+                    <p className="text-2xl font-bold text-foreground">
                       {(stats.totalSavings / 1024 / 1024).toFixed(1)}MB
                     </p>
                   </div>
-                  <Download className="h-8 w-8 text-orange-600" />
+                  <Download className="h-8 w-8 text-muted-foreground" />
                 </div>
               </CardContent>
             </Card>
@@ -435,8 +435,8 @@ export default function ImageOptimizationPage() {
             </div>
             
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
-              <div 
-                className="bg-orange-600 dark:bg-orange-500 h-3 rounded-full transition-all duration-300"
+              <div
+                className="bg-blue-500 h-3 rounded-full transition-all duration-300"
                 style={{ 
                   width: `${stats.totalBatches > 0 ? (stats.currentBatch / stats.totalBatches) * 100 : 0}%` 
                 }}
@@ -445,7 +445,7 @@ export default function ImageOptimizationPage() {
             
             <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-orange-600 dark:bg-orange-500 rounded-full mr-2 animate-pulse" />
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse" />
                 Optimisation en cours...
               </div>
               <div>

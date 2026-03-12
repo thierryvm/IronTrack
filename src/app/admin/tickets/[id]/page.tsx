@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
 // Types pour les tickets admin
 interface AdminTicket {
@@ -289,7 +290,7 @@ export default function AdminTicketPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Chargement du ticket admin...</p>
         </div>
       </div>
@@ -301,12 +302,9 @@ export default function AdminTicketPage() {
       <div className="text-center py-12">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Erreur de chargement</h3>
         <p className="text-gray-600 dark:text-safe-muted mb-4">{error}</p>
-        <button
-          onClick={() => router.push('/admin/tickets')}
-          className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
-        >
+        <Button variant="secondary" onClick={() => router.push('/admin/tickets')}>
           Retour aux tickets
-        </button>
+        </Button>
       </div>
     )
   }
@@ -316,12 +314,9 @@ export default function AdminTicketPage() {
       <div className="text-center py-12">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Ticket non trouvé</h3>
         <p className="text-gray-600 dark:text-safe-muted mb-4">Ce ticket n'existe pas.</p>
-        <button
-          onClick={() => router.push('/admin/tickets')}
-          className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors"
-        >
+        <Button variant="secondary" onClick={() => router.push('/admin/tickets')}>
           Retour aux tickets
-        </button>
+        </Button>
       </div>
     )
   }
@@ -331,13 +326,13 @@ export default function AdminTicketPage() {
       {/* En-tête */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-4 mb-4">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => router.push('/admin/tickets')}
-            className="flex items-center px-3 py-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200"
             title="Retour aux tickets"
           >
             ← Retour aux tickets
-          </button>
+          </Button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {ticket.title}
@@ -350,7 +345,7 @@ export default function AdminTicketPage() {
           <div className="flex items-center space-x-2">
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               ticket.priority === 'critical' ? 'bg-red-100 text-red-700' :
-              ticket.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+              ticket.priority === 'high' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
               ticket.priority === 'medium' ? 'bg-blue-100 text-blue-700' :
               'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
             }`}>
@@ -358,7 +353,7 @@ export default function AdminTicketPage() {
             </span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               ticket.status === 'resolved' ? 'bg-green-100 text-green-700' :
-              ticket.status === 'in_progress' ? 'bg-orange-100 text-orange-700' :
+              ticket.status === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
               ticket.status === 'open' ? 'bg-blue-100 text-blue-700' :
               ticket.status === 'closed' ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' :
               ticket.status === 'waiting_user' ? 'bg-yellow-100 text-yellow-700' :
@@ -386,7 +381,7 @@ export default function AdminTicketPage() {
             <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
               <div className="flex items-start space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  response.is_internal ? 'bg-orange-100' : 
+                  response.is_internal ? 'bg-amber-100 dark:bg-amber-900/30' :
                   response.user_id === ticket.user_id ? 'bg-blue-100' : 'bg-green-100'
                 }`}>
                   {response.is_internal ? '🔒' :
@@ -407,7 +402,7 @@ export default function AdminTicketPage() {
                       })()}
                     </span>
                     {response.is_internal && (
-                      <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-xs rounded-full">
                         Note interne
                       </span>
                     )}
@@ -488,32 +483,24 @@ export default function AdminTicketPage() {
               </div>
               
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setPendingChanges({})}
-                  className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 transition-colors"
-                >
+                <Button variant="ghost" size="sm" onClick={() => setPendingChanges({})}>
                   Annuler
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="success"
+                  size="sm"
                   onClick={handleSaveTicketChanges}
                   disabled={savingChanges}
-                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    savingChanges
-                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
-                      : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
                 >
                   {savingChanges ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white dark:border-gray-700 border-t-transparent rounded-full animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                       Sauvegarde...
                     </>
                   ) : (
-                    <>
-                      💾 Enregistrer les modifications
-                    </>
+                    <>💾 Enregistrer les modifications</>
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -552,29 +539,23 @@ export default function AdminTicketPage() {
             <div className="text-xs text-gray-600 dark:text-safe-muted">
               {responseMessage.length} caractères
             </div>
-            <button
+            <Button
               onClick={handleSendResponse}
               disabled={!responseMessage.trim() || sendingResponse}
-              className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                !responseMessage.trim() || sendingResponse
-                  ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
-                  : isInternalNote
-                    ? 'bg-orange-600 text-white hover:bg-orange-700'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
+              variant={isInternalNote ? "secondary" : "default"}
             >
               {sendingResponse ? (
-                <div className="w-4 h-4 border-2 border-white dark:border-gray-700 border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
               ) : (
                 <span className="mr-2">💬</span>
               )}
-              {sendingResponse 
-                ? 'Envoi...' 
-                : isInternalNote 
+              {sendingResponse
+                ? 'Envoi...'
+                : isInternalNote
                   ? 'Ajouter note interne'
                   : 'Envoyer réponse'
               }
-            </button>
+            </Button>
           </div>
         </div>
       </div>

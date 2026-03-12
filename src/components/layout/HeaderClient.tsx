@@ -37,11 +37,6 @@ export default function HeaderClient() {
   const router = useRouter()
   
   
-  // Ne pas rendre le header sur les pages auth (évite le preload inutile)
-  if (pathname?.startsWith('/auth')) {
-    return null
-  }
-  
   // Logo avec lazy loading pour éviter preload warnings
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
@@ -276,6 +271,11 @@ export default function HeaderClient() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isProfileDropdownOpen, isNotificationOpen])
+
+  // Ne pas rendre le header sur les pages auth (évite le preload inutile)
+  if (pathname?.startsWith('/auth')) {
+    return null
+  }
 
   return (
     <>

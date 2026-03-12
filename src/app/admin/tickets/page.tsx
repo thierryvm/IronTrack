@@ -195,7 +195,7 @@ export default function AdminTicketsPage() {
     const icons = {
       'pending': <Clock className="h-6 w-6 text-safe-warning" />,
       'open': <Clock className="h-6 w-6 text-safe-info" />,
-      'in_progress': <AlertTriangle className="h-6 w-6 text-orange-800 dark:text-orange-300" />,
+      'in_progress': <AlertTriangle className="h-6 w-6 text-amber-500" />,
       'waiting_user': <MessageCircle className="h-6 w-6 text-safe-primary" />,
       'resolved': <CheckCircle className="h-6 w-6 text-safe-success" />,
       'closed': <XCircle className="h-6 w-6 text-gray-600 dark:text-safe-muted" />
@@ -219,7 +219,7 @@ export default function AdminTicketsPage() {
     const colors = {
       'low': 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
       'medium': 'bg-blue-100 text-blue-700',
-      'high': 'bg-orange-100 text-orange-700',
+      'high': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
       'critical': 'bg-red-100 text-red-700'
     }
     return colors[priority] || colors.medium
@@ -251,7 +251,7 @@ export default function AdminTicketsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Chargement des tickets de support...</p>
         </div>
       </div>
@@ -265,8 +265,8 @@ export default function AdminTicketsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <MessageSquare className="h-6 w-6 text-orange-800 dark:text-orange-300" />
+              <div className="p-2 bg-muted rounded-lg">
+                <MessageSquare className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestion des Tickets</h1>
@@ -285,7 +285,7 @@ export default function AdminTicketsPage() {
               onClick={() => setShowFilters(!showFilters)}
               variant={showFilters ? "default" : "outline"}
               size="sm"
-              className={showFilters ? "bg-orange-100 text-orange-700" : ""}
+              className={showFilters ? "bg-accent text-accent-foreground" : ""}
             >
               <Filter className="h-4 w-4 mr-2" />
               Filtres
@@ -293,7 +293,7 @@ export default function AdminTicketsPage() {
             <Button
               onClick={() => loadTickets(true)}
               size="sm"
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              variant="orange"
               title="Recharger la liste des tickets"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
@@ -446,7 +446,7 @@ export default function AdminTicketsPage() {
                 {filteredAndSortedTickets.map((ticket) => (
                   <tr 
                     key={ticket.id} 
-                    className="hover:bg-gray-50 dark:bg-gray-800 cursor-pointer"
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                     onClick={() => {
                       // 🔄 REDIRECTION vers page dédiée au lieu du modal
                       window.location.href = `/admin/tickets/${ticket.id}`
