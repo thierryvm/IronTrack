@@ -33,8 +33,15 @@ export async function GET(request: Request) {
     const action = searchParams.get('action')
     const target_type = searchParams.get('target_type')
     const admin_id = searchParams.get('admin_id')
-    
+    const date_range = searchParams.get('date_range') || '24h'
+    const search = searchParams.get('search')
+
     const offset = (page - 1) * limit
+
+    // Calcul de la date de début selon le filtre date_range
+    const dateRangeMap: Record<string, number> = { '1h': 1, '24h': 24, '7d': 168, '30d': 720 }
+    const hoursBack = dateRangeMap[date_range] ?? 24
+    const startDate = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString()
     
     const cookieStore = await cookies()
     
@@ -97,7 +104,8 @@ export async function GET(request: Request) {
         ip_address,
         user_agent,
         created_at
-      `)
+      `, { count: 'exact' })
+      .gte('created_at', startDate)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
@@ -110,6 +118,9 @@ export async function GET(request: Request) {
     }
     if (admin_id) {
       query = query.eq('admin_id', admin_id)
+    }
+    if (search) {
+      query = query.ilike('action', `%${search}%`)
     }
 
     const { data: logsData, error: logsError, count } = await query
@@ -151,14 +162,8 @@ export async function GET(request: Request) {
       })
     )
 
-    // 5. Récupérer le nombre total pour la pagination
-    let totalCount = count
-    if (totalCount === null) {
-      const { count: totalCountQuery } = await supabase
-        .from('admin_logs')
-        .select('*', { count: 'exact', head: true })
-      totalCount = totalCountQuery || 0
-    }
+    // 5. Récupérer le nombre total pour la pagination (count inclus dans la requête principale)
+    const totalCount = count ?? 0
 
     // 📊 6. Log de l'accès aux logs
     await supabase.from('admin_logs').insert({
@@ -170,7 +175,7 @@ export async function GET(request: Request) {
         role: adminProfile.role,
         page,
         limit,
-        filters: { action, target_type, admin_id },
+        filters: { action, target_type, admin_id, date_range, search },
         logs_returned: enrichedLogs.length,
         timestamp: new Date().toISOString()
       }

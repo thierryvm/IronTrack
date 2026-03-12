@@ -87,10 +87,10 @@ export default function AdminLogsPage() {
         throw new Error(`Erreur API logs (${response.status}): ${response.statusText}`)
       }
 
-      const { logs: apiLogs, meta } = await response.json()
-      
+      const { logs: apiLogs, pagination } = await response.json()
+
       setLogs(apiLogs || [])
-      setTotalLogs(Math.min(meta?.total || 0, MAX_LOGS_TOTAL))
+      setTotalLogs(Math.min(pagination?.total || 0, MAX_LOGS_TOTAL))
       setCurrentPage(page)// Log de consultation (déjà fait par l'API)
       if (page === 1 && apiLogs?.length) {}
 
@@ -317,12 +317,12 @@ export default function AdminLogsPage() {
                             {getActionIcon(log.action)}
                           </div>
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {log.action.replace(/_/g, ' ')}
+                            {(log.action || '').replace(/_/g, ' ')}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                        {log.target_type.replace(/_/g, ' ')}
+                        {(log.target_type || '').replace(/_/g, ' ')}
                         {log.target_id && (
                           <div className="text-xs text-gray-700 dark:text-gray-300 mt-1">
                             ID: {log.target_id.slice(0, 8)}...
@@ -331,7 +331,7 @@ export default function AdminLogsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">
-                          {log.admin_id.slice(0, 8)}...
+                          {(log.admin_id || 'système').slice(0, 8)}...
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
