@@ -324,7 +324,7 @@ export default function AdminTicketPage() {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-4 mb-4">
           <Button
             variant="ghost"
@@ -366,7 +366,7 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Description */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Description</h3>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{ticket.description}</p>
@@ -378,7 +378,7 @@ export default function AdminTicketPage() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Conversation ({responses.length})</h3>
           {responses.map((response) => (
-            <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+            <div key={response.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
               <div className="flex items-start space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   response.is_internal ? 'bg-amber-100 dark:bg-amber-900/30' :
@@ -423,7 +423,7 @@ export default function AdminTicketPage() {
       )}
 
       {/* Contrôles Admin */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Gestion du ticket</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -508,7 +508,7 @@ export default function AdminTicketPage() {
       </div>
 
       {/* Formulaire de réponse */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répondre au ticket</h3>
         
         <div className="space-y-4">

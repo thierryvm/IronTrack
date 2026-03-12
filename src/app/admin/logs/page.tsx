@@ -143,7 +143,7 @@ export default function AdminLogsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-purple-100 rounded-xl">
@@ -169,7 +169,7 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Filtres optimisés */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label htmlFor="date-range-filter" className="text-sm font-medium mb-2 flex items-center">
@@ -270,7 +270,7 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Liste des logs avec pagination */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
               <RefreshCw className="h-8 w-8 text-safe-primary animate-spin mx-auto mb-4" />
@@ -303,7 +303,7 @@ export default function AdminLogsPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 divide-y divide-gray-200">
                   {logs.map((log) => (
                     <motion.tr
                       key={log.id}

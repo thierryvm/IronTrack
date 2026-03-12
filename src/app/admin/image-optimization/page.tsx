@@ -332,7 +332,7 @@ export default function ImageOptimizationPage() {
 
         {/* Résultats scan */}
         {scanResults && (
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <ImageIcon className="h-5 w-5 text-blue-600 mr-2" />
               Résultats du scan
@@ -426,7 +426,7 @@ export default function ImageOptimizationPage() {
 
         {/* Barre de progression */}
         {stats.isRunning && (
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Progression</h3>
               <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -461,7 +461,7 @@ export default function ImageOptimizationPage() {
 
         {/* Résultats détaillés */}
         {stats.completed && stats.results.length > 0 && (
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-8">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
               Résultats Détaillés ({stats.results.length} fichiers traités)
