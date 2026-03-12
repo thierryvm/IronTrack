@@ -615,7 +615,7 @@ export default function ProgressPage() {
         date: log.performed_at.split('T')[0],
         weight: Number(log.weight) || 0,
         reps: log.reps || 0,
-        sets: (log as Record<string, unknown>).sets || 1,
+        sets: Number((log as unknown as Record<string, unknown>).sets) || 1,
         exercise: log.exercises?.name || `⚠️ Exercice manquant (#${log.exercise_id})`
       }))
       // 2. Calcul de la progression par exercice
