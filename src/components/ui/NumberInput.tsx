@@ -49,7 +49,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           type="button"
           onClick={handleDecrement}
           disabled={value <= min}
-          className="flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+          className="flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
           <Minus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>
@@ -69,7 +69,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           type="button"
           onClick={handleIncrement}
           disabled={value >= max}
-          className="flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+          className="flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>

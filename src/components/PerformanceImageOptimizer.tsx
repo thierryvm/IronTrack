@@ -60,7 +60,7 @@ export function OptimizedImage({
       
       {/* Erreur fallback */}
       {hasError && !fallbackSrc && (
-        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
           <div className="text-gray-600 dark:text-safe-muted text-sm text-center">
             <div className="mb-2">📷</div>
             Image non disponible

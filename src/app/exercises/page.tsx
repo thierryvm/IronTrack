@@ -19,7 +19,7 @@ const ExerciseDetailsModal = dynamic(() =>
   import('@/components/exercises/ExerciseDetailsModal').then(mod => ({ default: mod.ExerciseDetailsModal })), 
   { 
     ssr: false,
-    loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 h-64 rounded-lg">Chargement...</div>
+    loading: () => <div className="animate-pulse bg-gray-100 dark:bg-gray-800 h-64 rounded-lg">Chargement...</div>
   }
 )
 

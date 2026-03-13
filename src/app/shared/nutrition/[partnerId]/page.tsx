@@ -204,7 +204,7 @@ export default function SharedNutritionPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-lg hover:bg-white dark:bg-gray-900/30 transition-colors"
+                className="p-2 bg-white/20 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-white/30 dark:hover:bg-gray-900/30 transition-colors"
                 aria-label="Retour à la page précédente"
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -368,7 +368,7 @@ export default function SharedNutritionPage() {
 
         {nutritionData.dailyStats.length === 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-8 text-center">
-            <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Calendar className="h-8 w-8 text-gray-700 dark:text-gray-300" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">

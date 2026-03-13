@@ -653,7 +653,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag) => (
-                        <div key={tag} className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full">
+                        <div key={tag} className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
                           <Tag className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
                           <span className="text-sm text-gray-700 dark:text-gray-300">{tag}</span>
                           <button

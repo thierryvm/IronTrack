@@ -211,7 +211,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               <div className="space-y-6">
                 {/* Photo de l'exercice */}
                 {exercise.image_url && (
-                  <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 dark:bg-gray-800">
+                  <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
                     <Image
                       src={exercise.image_url}
                       alt={`Photo de ${exercise.name}`}
@@ -389,7 +389,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       onClose()
                       router.push(`/exercises/${exerciseId}/edit-exercise`)
                     }}
-                    className="flex-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                   >
                     <Edit3 className="h-4 w-4" />
                     Modifier l'exercice
@@ -423,7 +423,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       {performances.map((perf) => (
                         <div
                           key={perf.id}
-                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -445,7 +445,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                   onClose()
                                   router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
                                 }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-orange-800 dark:text-orange-300 hover:bg-orange-50 dark:bg-orange-900/20 rounded-lg transition-colors"
+                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-orange-800 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
                                 title="Modifier cette performance"
                               >
                                 <Edit3 className="h-6 w-6" />

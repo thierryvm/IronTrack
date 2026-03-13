@@ -127,7 +127,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
         ref={containerRef}
         className={`relative h-32 w-20 min-w-[44px] overflow-hidden rounded-lg border-2 number-wheel ${
           isDragging ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900'
-        } cursor-grab active:cursor-grabbing select-none touch-none focus:ring-2 focus:ring-orange-500 focus:outline-none touch-manipulation`}
+        } cursor-grab active:cursor-grabbing select-none touch-none focus:ring-2 focus:ring-orange-500 focus:outline-none`}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         role="spinbutton"
@@ -211,7 +211,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
           disabled={value <= min}
           aria-label={`Diminuer ${label || 'la valeur'} (${value - step})`}
           title={`Diminuer ${label || 'la valeur'}`}
-          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
+          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -223,7 +223,7 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
           disabled={value >= max}
           aria-label={`Augmenter ${label || 'la valeur'} (${value + step})`}
           title={`Augmenter ${label || 'la valeur'}`}
-          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
+          className="p-3 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-500 focus:outline-none flex items-center justify-center touch-manipulation"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />

@@ -230,18 +230,18 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Résultats de recherche */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {results.map((food, index) => (
               <button
                 key={`${food.id}-${index}-${food.name}`}
                 onClick={() => handleFoodSelect(food)}
-                className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:bg-gray-800 focus:bg-gray-50 dark:bg-gray-800 focus:outline-none border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 focus:bg-gray-50 dark:focus:bg-gray-800 focus:outline-none border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
                   index === selectedIndex ? 'bg-orange-50 dark:bg-orange-900/20' : ''
                 }`}
               >
                 <div className="flex items-start space-x-3">
                   {/* Image ou icône */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
                     {food.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -303,7 +303,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
 
       {/* Message aucun résultat */}
       {isOpen && !isLoading && results.length === 0 && query.length >= 2 && (
-        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 text-center text-gray-600 dark:text-safe-muted">
+        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 text-center text-gray-600 dark:text-safe-muted">
           <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
           <p className="text-sm">Aucun aliment trouvé pour &quot;{query}&quot;</p>
           <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">

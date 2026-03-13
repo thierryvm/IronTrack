@@ -347,7 +347,7 @@ export default function AdminDashboard() {
         </div>
         
         <div className="mt-3 sm:mt-0 flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
-          <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-safe-muted bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 px-2 py-1 rounded-full">
+          <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-safe-muted bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
             <Shield className="h-5 w-5 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden xs:inline">{user?.role.replace('_', ' ').toUpperCase()}</span>
             <span className="xs:hidden">{user?.role === 'super_admin' ? 'S.ADM' : user?.role === 'admin' ? 'ADM' : 'MOD'}</span>

@@ -215,7 +215,7 @@ export default function NotificationsPage() {
           
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg">
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
                 <Bell className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
               </div>
               <div>
@@ -251,7 +251,7 @@ export default function NotificationsPage() {
                             </p>
                           )}
                           <div className="flex items-center gap-4 mt-2 text-xs text-gray-600 dark:text-safe-muted">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
                               {getNotificationTypeLabel(notification.type)}
                             </span>
                             <span>
@@ -302,7 +302,7 @@ export default function NotificationsPage() {
             {(isAdmin || isModerator) && (
               <Link 
                 href="/admin/tickets" 
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <HeadphonesIcon className="w-4 h-4" />
                 Gérer tickets support
@@ -311,7 +311,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/training-partners" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Users className="w-4 h-4" />
               Gérer partenaires
@@ -319,7 +319,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/support/contact" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Calendar className="w-4 h-4" />
               Contacter le support

@@ -414,13 +414,13 @@ export default function RecipeLibrary({
                           {recipe.tags.slice(0, 3).map(tag => (
                             <span 
                               key={tag}
-                              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full"
+                              className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full"
                             >
                               {tag}
                             </span>
                           ))}
                           {recipe.tags.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">
+                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">
                               +{recipe.tags.length - 3}
                             </span>
                           )}
@@ -575,7 +575,7 @@ export default function RecipeLibrary({
                   <div className="flex justify-end space-x-3">
                     <button
                       onClick={() => setSelectedRecipe(null)}
-                      className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:bg-gray-700 transition-colors"
+                      className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     >
                       Fermer
                     </button>

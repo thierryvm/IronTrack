@@ -157,7 +157,7 @@ export default function SharedDashboardPage() {
           </div>
         ) : partnerships.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-8 text-center">
-            <div className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Users className="h-8 w-8 text-gray-700 dark:text-gray-300" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
