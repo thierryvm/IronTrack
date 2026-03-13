@@ -249,10 +249,11 @@ export async function middleware(request: NextRequest) {
 ### 👨‍💼 Compte superadmin de test
 
 **Credentials de développement** :
-- **Email** : ***REDACTED_EMAIL***
-- **Password** : ***REDACTED_ADMIN_PASSWORD***
+- **Email** : voir `.env.local` → `ADMIN_EMAIL`
+- **Password** : voir `.env.local` → `ADMIN_PASSWORD`
 - **Rôle** : super_admin
 - **Usage** : Tests et développement uniquement
+- ⚠️ Ne jamais commiter de credentials dans les fichiers du dépôt
 
 ### 🔄 Contexts d'authentification
 
@@ -273,7 +274,7 @@ const { user, isAdmin, isSuperAdmin, refreshUserRoles } = useAdminAuth()
 
 ```bash
 # Vercel CLI (optionnel)
-npx vercel --token ***REDACTED_VERCEL_TOKEN***
+npx vercel --token "$VERCEL_TOKEN"
 
 # Variables d'environnement production
 npx vercel env add VARIABLE_NAME production

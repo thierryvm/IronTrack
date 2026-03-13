@@ -14,7 +14,11 @@ const https = require('https');
 
 // Configuration depuis .env.local
 const SUPABASE_URL = 'https://taspdceblvmpvdjixyit.supabase.co';
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '***REDACTED_SERVICE_ROLE_KEY***';
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SERVICE_ROLE_KEY) {
+  console.error('❌ Variable SUPABASE_SERVICE_ROLE_KEY non définie. Ajoutez-la dans .env.local');
+  process.exit(1);
+}
 
 /**
  * Effectue une requête HTTP POST vers Supabase

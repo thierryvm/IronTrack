@@ -12,7 +12,7 @@ Ce guide est destiné aux administrateurs qui gèrent le système IronTrack en p
 
 ### Interface d'administration
 - **URL**: `/admin` (nécessite rôle admin/super_admin)
-- **Authentification**: ***REDACTED_EMAIL*** (compte de test)
+- **Authentification**: voir `.env.local` pour l'email admin (compte de test)
 - **Niveaux d'accès**: moderator, admin, super_admin
 
 ### Navigation principale

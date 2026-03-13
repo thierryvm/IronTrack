@@ -45,7 +45,7 @@ documentation/
 supabase_*.md
 
 # 🚨 FICHIERS INTERNES CLAUDE - JAMAIS À COMMITER
-# NOTE: CLAUDE.md est commité intentionnellement (config agents, aucun secret)
+# NOTE: CLAUDE.md est commité intentionnellement (config projet, AUCUN secret/token/password)
 HTTP_PERFORMANCE_GUIDE.md
 DIAGNOSTIC_*.md
 *_DIAGNOSTIC.md

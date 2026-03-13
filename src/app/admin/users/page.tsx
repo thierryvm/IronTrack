@@ -196,32 +196,7 @@ export default function AdminUsersPage() {
         return name
       }
       
-      // SÉPARATION AUTOMATIQUE : Mapping direct pour tous les cas connus
-      const nameMapping: Record<string, string> = {
-        'vanmeeterenlucas': 'Vanmeeteren Lucas',
-        'Vanmeeterenlucas': 'Vanmeeteren Lucas', // Variante avec majuscule
-        'vanmeeterenhugo': 'Vanmeeteren Hugo', 
-        'hugovanmeteren': 'Hugo Vanmeteren',
-        'josephnakouzi': 'Joseph Nakouzi',
-        'fruishjeremy': 'Fruish Jeremy',
-        'oceanevanmeeteren': 'Océane Vanmeeteren'
-      }
-      
-      // Vérifier d'abord le nom exact (avec casse)
-      if (nameMapping[name]) {
-        return nameMapping[name]
-      }
-      
-      // Puis vérifier en minuscules
-      const lowerName = name.toLowerCase()
-      
-      // Debug supprimé - problème résolu
-      
-      if (nameMapping[lowerName]) {
-        return nameMapping[lowerName]
-      }
-      
-      // Fallback : séparation automatique pour les autres cas
+      // Séparation automatique des noms concaténés (ex: "prenomnom" → "Prenom Nom")
       const separatedName = name
         // Séparer avant une majuscule précédée de minuscules
         .replace(/([a-z])([A-Z])/g, '$1 $2')

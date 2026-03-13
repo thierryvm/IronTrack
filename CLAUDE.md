@@ -130,31 +130,34 @@ npm run typecheck    # Vérifier les erreurs TypeScript
 
 ## 🔧 Configuration CLI Complète - RÉFÉRENCE AUTONOME
 
+> ⚠️ **SÉCURITÉ** : Les credentials sont dans `.env.local` (jamais committé).
+> Utiliser `$SUPABASE_DB_URL`, `$SUPABASE_ACCESS_TOKEN`, `$VERCEL_TOKEN` depuis l'environnement.
+
 ### ✅ Supabase CLI
 - **Project ID**: `taspdceblvmpvdjixyit`
 - **URL**: `https://taspdceblvmpvdjixyit.supabase.co`
-- **DB Password**: `***REDACTED_DB_PASSWORD***`
-- **Access Token**: `***REDACTED_SUPABASE_TOKEN***`
-- **Connection String**: `postgresql://postgres.taspdceblvmpvdjixyit:***REDACTED_DB_PASSWORD***@aws-0-eu-west-3.pooler.supabase.com:5432/postgres`
+- **DB Password**: voir `.env.local` → `SUPABASE_DB_PASSWORD`
+- **Access Token**: voir `.env.local` → `SUPABASE_ACCESS_TOKEN`
+- **Connection String**: voir `.env.local` → `SUPABASE_DB_URL`
 
 **Commandes essentielles** :
 ```bash
-npx supabase db push --db-url "postgresql://postgres.taspdceblvmpvdjixyit:***REDACTED_DB_PASSWORD***@aws-0-eu-west-3.pooler.supabase.com:5432/postgres"
+npx supabase db push --db-url "$SUPABASE_DB_URL"
 npx supabase migration new nom_migration
 npx supabase link --project-ref taspdceblvmpvdjixyit
 ```
 
-### ✅ Vercel CLI  
-- **Token**: `***REDACTED_VERCEL_TOKEN***`
+### ✅ Vercel CLI
+- **Token**: voir `.env.local` → `VERCEL_TOKEN`
 - **Org**: `thierry-vanmeeterens-projects`
 - **Project**: `irontrack`
 - **Production URL**: `https://iron-track-dusky.vercel.app`
 
 **Commandes essentielles** :
 ```bash
-npx vercel --token ***REDACTED_VERCEL_TOKEN*** deploy --prod
-npx vercel --token ***REDACTED_VERCEL_TOKEN*** env add VARIABLE_NAME production
-npx vercel --token ***REDACTED_VERCEL_TOKEN*** ls
+npx vercel --token "$VERCEL_TOKEN" deploy --prod
+npx vercel --token "$VERCEL_TOKEN" env add VARIABLE_NAME production
+npx vercel --token "$VERCEL_TOKEN" ls
 ```
 
 ### ✅ GitHub CLI

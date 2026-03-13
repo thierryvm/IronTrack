@@ -7,7 +7,7 @@ set -e
 
 # Configuration (à adapter selon votre projet)
 SUPABASE_URL="https://taspdceblvmpvdjixyit.supabase.co"
-SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-***REDACTED_SERVICE_ROLE_KEY***}"
+SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:?❌ Variable SUPABASE_SERVICE_ROLE_KEY non définie. Ajoutez-la dans .env.local}"
 
 echo "🔄 Rafraîchissement du cache PostgREST..."
 echo ""
