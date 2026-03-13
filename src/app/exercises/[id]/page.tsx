@@ -80,7 +80,7 @@ export default function ExerciseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
@@ -94,7 +94,7 @@ export default function ExerciseDetailPage() {
 
   if (error || !exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Exercice non trouvé
@@ -115,7 +115,7 @@ export default function ExerciseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -146,7 +146,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Exercise Info */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             {exercise.name}
           </h1>
@@ -182,7 +182,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Recent Performances */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Performances récentes

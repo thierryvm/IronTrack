@@ -244,7 +244,7 @@ export default function RecipeLibrary({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -271,7 +271,7 @@ export default function RecipeLibrary({
                 className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                   showFavoritesOnly 
                     ? 'bg-red-100 text-red-700' 
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
                 <Heart className={`h-5 w-5 ${showFavoritesOnly ? 'fill-current' : ''}`} />
@@ -306,7 +306,7 @@ export default function RecipeLibrary({
                     className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedTags.includes(tag)
                         ? 'bg-orange-100 text-orange-700'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     <Tag className="h-5 w-5" />
@@ -350,7 +350,7 @@ export default function RecipeLibrary({
                     key={recipe.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
