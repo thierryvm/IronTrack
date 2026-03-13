@@ -147,6 +147,7 @@ playwright-report/
 
 # Scripts et outils temporaires
 scripts/fix-*.js
+!scripts/fix-contrast-classes.js
 analyze-*.js
 analyze-*.mjs
 cleanup-*.js
@@ -220,7 +221,10 @@ REGLES_SECURITE_CLAUDE.md
 TESTS-VALIDATION.md
 SOLUTION-PERSONNALISATION.md
 # Note: jest.config.js et jest.setup.js sont versionnés (nécessaires pour npm run test)
+# Note: scripts CI référencés par package.json sont versionnés (exceptions ci-dessous)
 test-*.js
+!scripts/test-contrast-ci.js
+!scripts/test-anti-regression-ultrahardcore.js
 debug-*.js
 kill-dev.bat
 
