@@ -124,7 +124,7 @@ const PortionCalculator: React.FC<PortionCalculatorProps> = ({
       </div>
 
       {/* Calculateur de portion */}
-      <div className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
         <div className="flex items-center space-x-2 mb-3">
           <Calculator className="h-5 w-5 text-orange-800 dark:text-orange-300" />
           <h4 className="font-medium text-gray-900 dark:text-gray-100">Calculer la portion</h4>
@@ -161,7 +161,7 @@ const PortionCalculator: React.FC<PortionCalculatorProps> = ({
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                   portion === amount.toString()
                     ? 'bg-orange-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
                 {amount}g

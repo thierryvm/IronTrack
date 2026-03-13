@@ -80,7 +80,7 @@ export function ImageCropper({
     const deltaX = e.clientX - dragStart.x
     const deltaY = e.clientY - dragStart.y
 
-    let newCropArea = { ...cropArea }
+    const newCropArea = { ...cropArea }
 
     switch (isDragging) {
       case 'move':
@@ -157,7 +157,7 @@ export function ImageCropper({
     const deltaX = touch.clientX - dragStart.x
     const deltaY = touch.clientY - dragStart.y
 
-    let newCropArea = { ...cropArea }
+    const newCropArea = { ...cropArea }
 
     switch (isDragging) {
       case 'move':
@@ -319,6 +319,7 @@ export function ImageCropper({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element -- Image cropper needs native ref, crossOrigin and CSS transforms not supported by next/image */}
           <img
             ref={imageRef}
             src={imageUrl}
