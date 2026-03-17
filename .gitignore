@@ -89,7 +89,6 @@ REGLES_SECURITE_CLAUDE.md
 .claude/*
 !.claude/commands/
 !.claude/commands/**
-!.claude/hooks/
 .vscode/
 
 # Fichiers de debug
@@ -311,3 +310,33 @@ AGENT_ANALYSIS*.md
 *_ANALYSIS_REPORT.*
 *_FINDINGS.*
 README_ANALYSIS.md
+
+# Docs internes Claude et audits temporaires
+docs/*_2025*.md
+docs/*_2025*.json
+docs/AUDIT_*_2025*
+docs/CLAUDE_TODO_*.md
+docs/CONTEXT7_*.md
+docs/GUIDE_BMAD_*.md
+docs/GUIDE_AUTOMATISATION_CONTEXT7.md
+docs/CORRECTIONS_*_2025*.md
+docs/GLASSMORPHISM_*.md
+docs/SOLUTION_*.md
+docs/SECURISATION_*.md
+docs/RESUME_CHAMPS_*.md
+docs/ROADMAP_*.md
+docs/ANALYSE_*.md
+docs/ORGANISATION_*.md
+docs/GUIDELINES_EQUIPE_*.md
+docs/CI_CD_CONTRASTE.md
+docs/OPTIMISATIONS_LIGHTHOUSE*.md
+docs/PLAN_OPTIMISATION_*.md
+docs/AUDITS_COMPLETS_*.md
+docs/POSTGREST_*.md
+docs/IronTrack_Audit_UX_2026.*
+docs/PROMPT_CLAUDE_CODE_*.md
+# Agent Vibes (plugin TTS utilisateur, pas spécifique au projet)
+.claude/commands/agent-vibes/
+.claude/hooks/
+# Agents Claude (redondants avec CLAUDE.md)
+agents/

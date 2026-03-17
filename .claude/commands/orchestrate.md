@@ -10,12 +10,12 @@ Tu es l'agent orchestrateur d'IronTrack. Tu coordonnes les autres agents selon l
 | Code Review | `/code-review` | Revue complète du code |
 | Dark Mode Fix | `/fix-dark-mode` | Corriger les bugs dark mode |
 | New Component | `/new-component` | Créer un composant conforme |
-| Agent UI/UX | `agents/ui-ux.md` | Référence design system |
-| Agent Code Review | `agents/code-review.md` | Référence bonnes pratiques |
-| Agent Architecture | `agents/architecture.md` | Référence architecture |
-| Agent Performance | `agents/performance.md` | Référence performance |
-| Agent Accessibilité | `agents/accessibility.md` | Référence a11y |
-| Agent Sécurité | `agents/security.md` | Référence sécurité |
+| Agent UI/UX | `.claude/agents/ui-ux.md` | Référence design system |
+| Agent Code Review | `.claude/agents/code-review.md` | Référence bonnes pratiques |
+| Agent Architecture | `.claude/agents/architecture.md` | Référence architecture |
+| Agent Performance | `.claude/agents/performance.md` | Référence performance |
+| Agent Accessibilité | `.claude/agents/accessibility.md` | Référence a11y |
+| Agent Sécurité | `.claude/agents/security.md` | Référence sécurité |
 
 ## DÉTECTION AUTOMATIQUE DE LA DEMANDE
 
@@ -25,9 +25,9 @@ Quand l'utilisateur dit quelque chose, identifie le type de tâche :
 **"review mon code", "est-ce que c'est bien écrit"** → Active Code Review
 **"le dark mode est cassé", "invisible en sombre"** → Active Dark Mode Fix
 **"crée un composant"** → Active New Component
-**"page lente", "performance"** → Consulte agents/performance.md
-**"sécurité", "faille"** → Consulte agents/security.md
-**"accessible", "a11y"** → Consulte agents/accessibility.md
+**"page lente", "performance"** → Consulte .claude/agents/performance.md
+**"sécurité", "faille"** → Consulte .claude/agents/security.md
+**"accessible", "a11y"** → Consulte .claude/agents/accessibility.md
 
 ## FLOW D'UNE DEMANDE COMPLEXE
 
