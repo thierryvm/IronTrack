@@ -338,5 +338,6 @@ docs/PROMPT_CLAUDE_CODE_*.md
 # Agent Vibes (plugin TTS utilisateur, pas spécifique au projet)
 .claude/commands/agent-vibes/
 .claude/hooks/
-# Agents Claude (redondants avec CLAUDE.md)
+# Agents Claude et skills (redondants avec CLAUDE.md, usage interne Claude Code)
 agents/
+skills/
