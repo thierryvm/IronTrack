@@ -61,6 +61,15 @@ export default function TicketDetailPage() {
   // 🚀 Activation de la communication bidirectionnelle
   const { addTicketResponse, getTicketWithResponses } = useSupport()
 
+  // Marquer le ticket comme vu dans localStorage
+  useEffect(() => {
+    if (!ticketId) return
+    const key = `ticket_seen_${ticketId}`
+    localStorage.setItem(key, new Date().toISOString())
+    // Déclencher un event pour que le header rafraîchisse le badge
+    window.dispatchEvent(new Event('ticket-seen'))
+  }, [ticketId])
+
   useEffect(() => {
     const fetchTicketDetails = async () => {
       try {

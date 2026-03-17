@@ -202,18 +202,23 @@ export default function HeaderClient() {
         const notificationData: Array<{id: string, type: string, message: string, created_at: string, href?: string}> = []
         
         // Ajouter tickets support avec liens directs
+        // Exclure les tickets déjà consultés (mis à jour avant la dernière visite)
         if (tickets) {
           tickets.forEach(ticket => {
-            notificationData.push({
-              id: `ticket-${ticket.id}`,
-              type: 'support',
-              message: `Ticket: ${ticket.title || ticket.description || 'Support ticket'}`,
-              created_at: ticket.created_at || new Date().toISOString(),
-              // SÉCURITÉ: Liens différents selon le rôle
-              href: (isAdmin || isModerator) 
-                ? `/admin/tickets/${ticket.id}` 
-                : `/support/tickets/${ticket.id}`
-            })
+            const seenAt = localStorage.getItem(`ticket_seen_${ticket.id}`)
+            const updatedAt = ticket.updated_at || ticket.created_at || ''
+            // Afficher seulement si jamais vu, ou si mis à jour après la dernière visite
+            if (!seenAt || new Date(updatedAt) > new Date(seenAt)) {
+              notificationData.push({
+                id: `ticket-${ticket.id}`,
+                type: 'support',
+                message: `Ticket: ${ticket.title || ticket.description || 'Support ticket'}`,
+                created_at: ticket.created_at || new Date().toISOString(),
+                href: (isAdmin || isModerator)
+                  ? `/admin/tickets/${ticket.id}`
+                  : `/support/tickets/${ticket.id}`
+              })
+            }
           })
         }
         
@@ -242,6 +247,10 @@ export default function HeaderClient() {
     }
 
     loadNotifications()
+
+    // Rafraîchir le badge quand un ticket est consulté
+    window.addEventListener('ticket-seen', loadNotifications)
+    return () => window.removeEventListener('ticket-seen', loadNotifications)
   }, [isLoggedIn, isAdmin, isModerator])
 
 
