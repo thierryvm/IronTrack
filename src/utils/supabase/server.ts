@@ -1,8 +1,15 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Variables d\'environnement Supabase manquantes. ' +
+    'Vérifier NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local'
+  )
+}
 
 const cookieMethods = {
   get: async (name: string) => {
@@ -18,7 +25,7 @@ const cookieMethods = {
   set: async (name: string, value: string, options: Record<string, unknown>) => {
     const cookieStore = await cookies();
     cookieStore.set(name, value, {
-      ...options,
+      ...options, // maxAge géré par Supabase selon le type de token
       // SÉCURITÉ: httpOnly: false requis pour Supabase PKCE flow côté client
       // Les tokens sont chiffrés par Supabase et auto-refresh côté client
       httpOnly: false,
@@ -28,8 +35,6 @@ const cookieMethods = {
       sameSite: 'lax',
       // Chemin par défaut
       path: '/',
-      // Durée maximale cohérente avec Supabase (7 jours par défaut)
-      maxAge: 7 * 24 * 60 * 60 // 7 jours en secondes
     });
   },
   remove: async (name: string, options: Record<string, unknown>) => {
