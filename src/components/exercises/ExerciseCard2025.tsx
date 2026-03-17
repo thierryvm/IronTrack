@@ -332,7 +332,7 @@ export function ExerciseCard2025({
       <div className="p-6 flex flex-col flex-1">
         {/* Header avec titre et métadonnées */}
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:text-orange-300 transition-colors mb-2 line-clamp-2">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-orange-300 transition-colors mb-2 line-clamp-2">
             {exercise.name}
           </h3>
           <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-safe-muted">

@@ -411,7 +411,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -419,7 +419,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 variant="ghost"
                 size="icon"
                 onClick={handleCancel}
-                className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
+                className="text-gray-700 dark:text-gray-300 hover:text-gray-600"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -438,7 +438,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">
@@ -489,7 +489,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                           flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                           ${exercise.exercise_type === type
                             ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-700'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600'
+                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                           }
                         `}
                       >
@@ -569,7 +569,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                         flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                         ${exercise.difficulty === level
                           ? difficultyColors[level]
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }
                       `}
                     >
@@ -655,7 +655,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
           </div>
 
           {/* Footer Actions - Position fixe en bas */}
-          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
+          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center">
               <Button
                 variant="secondary"
