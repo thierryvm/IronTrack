@@ -1,9 +1,13 @@
-# Dépendances et build
-/node_modules
-/.next
-/out
-/build
-/.pnp
+# ============================================================
+# IRONTRACK — .gitignore
+# ============================================================
+
+# ─── Dépendances et build ───────────────────────────────────
+node_modules/
+.next/
+out/
+build/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -11,307 +15,54 @@
 !.yarn/releases
 !.yarn/versions
 
-# Tests et couverture
-/coverage
-/tests/
-__tests__/
-*.test.ts
-*.test.tsx
-*.spec.ts
-*.spec.tsx
-
-# Guides et documentation temporaires
-*_TEST_GUIDE.md
-*_MIGRATION_GUIDE.md
-TESTING_GUIDE.md
-README-DEV.md
-README_MIGRATION.md
-SUPABASE_MIGRATION_GUIDE.md
-irontrack_ux_audit.md
-claude_code_specification_optimized.md
-
-# Dossier refonte design (temporaire)
-/refonte-design/
-/refonte-design-system/
-GUIDE_CLAUDE_CODE.md
-GUIDE_PERMISSIONS_ROLES.md
-
-# Documentation technique interne (ne pas commiter - sensible)
-documentation/
-# Exception : pages source admin (code, pas docs)
-!src/app/admin/documentation/
-*_security.md
-*_password_security.md
-supabase_*.md
-
-# 🚨 FICHIERS INTERNES CLAUDE - JAMAIS À COMMITER
-# NOTE: CLAUDE.md est commité intentionnellement (config projet, AUCUN secret/token/password)
-HTTP_PERFORMANCE_GUIDE.md
-DIAGNOSTIC_*.md
-*_DIAGNOSTIC.md
-
-# 🤖 AGENTS CLAUDE CODE - COMMITÉS INTENTIONNELLEMENT
-# agents/ et .claude/commands/ contiennent la config du projet, pas de secrets
-# Les rapports d'audit générés automatiquement sont ignorés ci-dessous
-*-agent.js
-*-audit-report.md
-security-audit-report.md
-accessibility-audit-report.md
-performance-audit-report.md
-ui-ux-audit-report.md
-architecture-audit-report.md
-
-# IDE et éditeurs - configurations privées
-.cursor/
-.vscode/settings.json
-.idea/
-*_FIXED.md
-
-# 🚨 SCRIPTS SENSIBLES - LISTE EXPLICITE
-# Garder dossier scripts/ mais ignorer fichiers avec PROJECT ID/SERVICE KEYS
-scripts/dev-setup.js
-scripts/analyze-with-env.js
-scripts/analyze-duplicates-comprehensive.js
-scripts/analyze-exercises-duplicates.js
-scripts/consolidate-duplicates.js
-scripts/consolidate-duplicates-fixed.js
-REGLES_SECURITE_CLAUDE.md
-
-# Fichiers système et logs
-.DS_Store
-*.pem
-*.log
-*.sqlite
-*.db
-
-# Dossiers d'outils de développement
-# .claude/ : on ignore les settings locaux mais on garde les commandes du projet
-.claude/*
-!.claude/commands/
-!.claude/commands/**
-.vscode/
-
-# Fichiers de debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Fichiers d'environnement et secrets
-.env*
+# ─── Environnement et secrets ───────────────────────────────
+.env
+.env.local
+.env*.local
 *.local
-
-# Fichiers de développement et sécurité
-test-supabase.ts
-migration-*.sql
-migration_*.sql
-
-# Scripts et fichiers de développement local
-kill-dev.bat
-README-DEV.md
 mcp.json
 mcp.json.backup
 
-# 🚨 Scripts temporaires et outils de développement (NE PAS COMMITER)
-# Anciens patterns supprimés - remplacés par liste explicite ci-dessus
-
-# Note: scripts/dev-setup.js est partagé avec l'équipe (pas de données sensibles)
-
-# Next.js/TypeScript
-*.tsbuildinfo
+# ─── Next.js / TypeScript ───────────────────────────────────
 next-env.d.ts
+*.tsbuildinfo
 
-# Vercel
+# ─── Vercel ─────────────────────────────────────────────────
 .vercel
 
-# Fichiers générés par Workbox/Serwist (optionnel, si tu ne veux pas les versionner)
+# ─── Tests — couverture et rapports ─────────────────────────
+# NOTE: les fichiers *.test.ts, *.spec.ts et __tests__/ sont versionnés (code du projet)
+/coverage
+coverage/
+test-results/
+playwright-report/
+lighthouse-*.json
+
+# ─── Supabase ────────────────────────────────────────────────
+# Tout le dossier supabase/ est local (migrations sensibles)
+supabase/
+!src/utils/supabase/
+
+# ─── PWA / Service Worker (générés) ─────────────────────────
 public/sw.js
 public/sw.js.map
 public/sw-dev.js
 public/workbox-*
 
-# SOLUTION JEST WORKER - Fichiers temporaires
-.jest-worker-patched
-restart-dev.bat
-test-jest-worker-*.js
-node_modules/.cache
+# ─── Claude Code — fichiers personnels/système ──────────────
+# .claude/ : settings locaux ignorés, commandes projet versionnées
+.claude/*
+!.claude/commands/
+!.claude/commands/**
+# hooks et agent-vibes : plugin TTS utilisateur, pas spécifique au projet
+.claude/hooks/
+.claude/commands/agent-vibes/
 
-# Fichiers de build et optimisation temporaires  
-lighthouse-*.json
-next.config.backup-*.ts
-next.config.complex.ts
-coverage/
-test-results/
-playwright-report/
+# agents/ et skills/ : usage interne Claude Code uniquement
+agents/
+skills/
 
-# Scripts et outils temporaires
-scripts/fix-*.js
-!scripts/fix-contrast-classes.js
-analyze-*.js
-analyze-*.mjs
-cleanup-*.js
-kill-dev.bat
-*.backup
-
-# Fichiers de debug et analyse temporaires
-RAPPORT-*.md
-RAPPORT_*.md
-PLAN-*.md
-check-*.js
-check-*.mjs
-diagnose-*.mjs
-test-*.mjs
-get_complete_database_structure.js
-nul
-
-# 🤖 FICHIERS CHALLENGE ET PATCH TEMPORAIRES (ne pas commiter)
-CLAUDE_CHALLENGE_REPORT.md
-*_CHALLENGE_*.md
-*_PATCH.txt
-*_TRANSLATION_PATCH.txt
-FRENCH_TRANSLATION_PATCH.txt
-
-# 🚨 FICHIERS SQL TEMPORAIRES - TOUS INTERDITS
-# Scripts SQL créés pendant le développement (JAMAIS À COMMITER)
-*.sql
-!src/**/*.sql
-!supabase/migrations/*.sql
-create_*.sql
-debug_*.sql
-fix_*.sql
-test_*.sql
-verify_*.sql
-*_admin*.sql
-*_backup*.sql
-*_migration*.sql
-*_system.sql
-*_security*.sql
-*_fix.sql
-force_cache_refresh.sql
-simple_*.sql
-badges_system*.sql
-create_support_system*.sql
-create_ticket_responses*.sql
-full_database_audit*.sql
-security_fixes*.sql
-verify_support_tables*.sql
-check_support_tickets*.sql
-verify_new_fields*.sql
-execute_backup*.sql
-activate_*.sql
-analyze_*.sql
-dump_*.sql
-
-# Fichiers de cahier des charges et audit (ne pas commiter - IMPORTANT pour évolution app)
-# NOTE: CAHIER_des_CHARGES_UX.md doit exister localement mais ne pas être committé
-CAHIER_DES_CHARGES_UX.md
-CAHIER_des_CHARGES_UX.md
-irontrack_ux_audit.md
-*_audit.md
-*_charges.md
-*_CHARGES_*.md
-
-# Règles de sécurité internes Claude (ne pas commiter)
-REGLES_SECURITE_CLAUDE.md
-*_REGLES_*.md
-*_SECURITY_RULES*.md
-
-# Fichiers de test et documentation de développement
-TESTS-VALIDATION.md
-SOLUTION-PERSONNALISATION.md
-# Note: jest.config.js et jest.setup.js sont versionnés (nécessaires pour npm run test)
-# Note: scripts CI référencés par package.json sont versionnés (exceptions ci-dessous)
-test-*.js
-!scripts/test-contrast-ci.js
-!scripts/test-anti-regression-ultrahardcore.js
-debug-*.js
-kill-dev.bat
-
-# 🛡️ FICHIERS DE SÉCURITÉ CRITIQUE - JAMAIS À COMMITER
-SECURITY_STRATEGY.md
-GUIDE_EXECUTION_ADMIN_SQL.md
-create_first_admin.sql
-admin_architecture.sql
-fix_admin_dashboard_stats.sql
-verify_admin_setup.sql
-add_file_upload_support.sql
-supabase_schema.sql
-supabase_storage.sql
-
-# Fichiers sensibles et configuration locale
-mcp.json
-irontrack_ux_audit.md
-*_audit.md
-README_MIGRATION.md
-
-# Guides de backup et maintenance (utiles localement, pas à versionner)
-how_to_save_backup.md
-backup_and_upgrade_guide.md
-*_backup_guide.md
-*_save_backup.md
-
-# Documentation de migration (utile localement, pas à versionner)
-SUPABASE_SSR_MIGRATION.md
-*_MIGRATION.md
-
-# Fichiers temporaires Supabase CLI
-supabase/.temp/
-supabase/functions/.vscode/
-supabase/*.temp
-
-# 🚨 DOSSIER SUPABASE COMPLET - CRITIQUE SÉCURITÉ
-# Le dossier supabase/ entier contient des migrations et config sensibles
-supabase/
-!src/utils/supabase/
-
-# Migrations et configurations Supabase (JAMAIS À COMMITER)
-supabase/migrations/
-supabase/config.toml
-supabase/.gitignore
-supabase/*.sql
-supabase/*.toml
-
-.env.local
-.env
-
-# Ne jamais versionner les scripts de kill des serveurs de dev
-kill_dev.bat
-kill_port.bat
-kill-port.bat
-kill-port.ps1
-
-# Screenshots et images temporaires
-screenshot*.png
-screenshot*.jpg
-screenshot*.jpeg
-*.screenshot.png
-
-# BMAD Method - Fichiers générés et configuration
-.bmad/
-_bmad-output/
-*.bmad
-# BMAD methodology files
-_bmad/
-
-# 🤖 FICHIERS D'ANALYSE AGENT - JAMAIS À COMMITER
-# Rapports générés automatiquement par les agents Claude
-ACTION_PLAN.md
-ANALYSIS_REPORT.json
-ANALYSIS_SUMMARY.md
-DETAILED_FINDINGS.md
-FILES_TO_DELETE.txt
-QUICK_SUMMARY.txt
-COMPONENTS_ANALYSIS.md
-ARCHITECTURE_ANALYSIS.md
-DEAD_COMPONENTS.md
-SPRINT_ANALYSIS*.md
-AGENT_REPORT*.md
-AGENT_ANALYSIS*.md
-*_ANALYSIS_REPORT.*
-*_FINDINGS.*
-README_ANALYSIS.md
-
-# Docs internes Claude et audits temporaires
+# ─── Docs internes — audits et rapports temporaires ─────────
 docs/*_2025*.md
 docs/*_2025*.json
 docs/AUDIT_*_2025*
@@ -335,9 +86,74 @@ docs/AUDITS_COMPLETS_*.md
 docs/POSTGREST_*.md
 docs/IronTrack_Audit_UX_2026.*
 docs/PROMPT_CLAUDE_CODE_*.md
-# Agent Vibes (plugin TTS utilisateur, pas spécifique au projet)
-.claude/commands/agent-vibes/
-.claude/hooks/
-# Agents Claude et skills (redondants avec CLAUDE.md, usage interne Claude Code)
-agents/
-skills/
+
+# ─── Scripts — fichiers one-shot locaux ─────────────────────
+scripts/fix-*.js
+!scripts/fix-contrast-classes.js
+scripts/consolidate-*.js
+scripts/analyze-*.js
+scripts/dev-setup.js
+scripts/harmonize-*.js
+scripts/implement-*.js
+scripts/import-*.js
+scripts/lighthouse-*.js
+scripts/mobile-*.js
+scripts/performance-audit*.js
+scripts/performance-comprehensive*.js
+scripts/performance-final*.js
+scripts/responsive-*.js
+scripts/security-audit*.js
+scripts/verify-*.js
+scripts/wcag-*.js
+scripts/functional-tests-*.js
+scripts/activate-realtime-*.js
+scripts/final-*.js
+scripts/accessibility-audit*.js
+scripts/rapport-*.md
+scripts/consolidation-strategy.md
+
+# ─── SQL temporaires ─────────────────────────────────────────
+*.sql
+!src/**/*.sql
+
+# ─── Fichiers internes Claude ────────────────────────────────
+CLAUDE_CHALLENGE_REPORT.md
+REGLES_SECURITE_CLAUDE.md
+CAHIER_DES_CHARGES_UX.md
+CAHIER_des_CHARGES_UX.md
+irontrack_ux_audit.md
+claude_code_specification_optimized.md
+supabase_*.md
+*_security.md
+
+# ─── Logs ────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── Système et éditeurs ─────────────────────────────────────
+.DS_Store
+*.pem
+*.db
+*.sqlite
+.cursor/
+.vscode/settings.json
+.vscode/
+.idea/
+.bmad/
+_bmad-output/
+_bmad/
+
+# ─── Divers build/debug ──────────────────────────────────────
+*.backup
+nul
+kill-dev.bat
+kill_dev.bat
+kill_port.bat
+kill-port.bat
+kill-port.ps1
+restart-dev.bat
+.jest-worker-patched
+node_modules/.cache

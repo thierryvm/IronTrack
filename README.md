@@ -1,101 +1,124 @@
 # IronTrack
 
-Application de suivi de fitness et musculation moderne avec React et Next.js.
+Application de suivi fitness et musculation — Next.js 15 + Supabase + Vercel.
 
-## 🚀 Fonctionnalités
-
-- **Gestion d'exercices** : Créez et suivez vos exercices personnalisés
-- **Suivi de performances** : Historique détaillé de vos progressions
-- **Nutrition** : Suivi alimentaire et calculs nutritionnels
-- **Calendrier** : Planification de vos séances d'entraînement
-- **Partenaires d'entraînement** : Partagez vos programmes avec d'autres utilisateurs
-- **Interface responsive** : Optimisée pour mobile et desktop
-- **PWA** : Installation possible comme application native
-
-## 🛠️ Stack Technique
-
-- **Framework** : Next.js 15.3.5 avec App Router
-- **Frontend** : React 18, TypeScript
-- **Styling** : Tailwind CSS + shadcn/ui
-- **Base de données** : Supabase (PostgreSQL)
-- **Authentification** : Supabase Auth
-- **Déploiement** : Vercel
-- **Tests** : Jest + Playwright
-
-## 🏗️ Installation
-
-```bash
-# Installation des dépendances
-npm install
-
-# Variables d'environnement
-cp .env.example .env.local
-# Configurez vos clés Supabase dans .env.local
-
-# Démarrage du serveur de développement
-npm run dev
-```
-
-## 📦 Scripts Disponibles
-
-```bash
-npm run dev      # Serveur de développement
-npm run build    # Build de production
-npm run start    # Serveur de production
-npm run lint     # Vérification ESLint
-npm run test     # Tests unitaires
-npm run test:e2e # Tests end-to-end
-```
-
-## 🌐 Déploiement
-
-L'application est automatiquement déployée sur Vercel lors des push sur la branche `main`.
-
-## 🔧 Configuration
-
-### Supabase
-
-1. Créez un projet Supabase
-2. Configurez les tables selon le schéma dans `/supabase/migrations/`
-3. Ajoutez les variables d'environnement :
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
-
-### Vercel
-
-Variables d'environnement requises :
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créez une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit vos changements (`git commit -m 'Add AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
-
-## 📱 PWA
-
-L'application supporte l'installation Progressive Web App :
-- Icônes adaptives pour tous les appareils
-- Mode hors ligne partiel
-- Notifications push (à venir)
-
-## 🔒 Sécurité
-
-- Row Level Security (RLS) activé sur toutes les tables
-- Validation des données avec Zod
-- Sanitisation des entrées utilisateur
-- Protection CSRF intégrée
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+**Production** : [iron-track-dusky.vercel.app](https://iron-track-dusky.vercel.app)
 
 ---
 
-**IronTrack** - Votre compagnon fitness intelligent 💪
+## Fonctionnalités
+
+| Module | Description |
+|---|---|
+| **Exercices** | Bibliothèque personnalisée avec assistant de création intelligent |
+| **Performances** | Historique détaillé — séries, répétitions, poids, métriques cardio |
+| **Cardio avancé** | Rameur (SPM, watts), tapis (inclinaison, vitesse), vélo (cadence, résistance) |
+| **Nutrition** | Suivi alimentaire et calculs nutritionnels |
+| **Progression** | Graphiques de progression par exercice et période |
+| **Calendrier** | Planification des séances d'entraînement |
+| **Partenaires** | Partage de programmes avec d'autres utilisateurs |
+| **Notifications** | Rappels d'entraînement |
+| **Support** | Système de tickets intégré |
+| **Admin** | Panneau d'administration (utilisateurs, logs, exports) |
+| **PWA** | Installable comme application native sur mobile/desktop |
+
+---
+
+## Stack technique
+
+| Couche | Technologie |
+|---|---|
+| Framework | Next.js 15.5 — App Router |
+| Language | TypeScript strict |
+| UI | React 18 + Tailwind CSS + shadcn/ui |
+| Animations | Framer Motion |
+| Base de données | Supabase (PostgreSQL + RLS) |
+| Authentification | Supabase Auth |
+| IA | OpenAI API (suggestions d'exercices) |
+| Déploiement | Vercel (auto-deploy sur push `main`) |
+| Tests | Jest + Playwright |
+
+---
+
+## Installation
+
+```bash
+npm install
+cp .env.example .env.local
+# Remplir .env.local avec vos clés (voir ci-dessous)
+npm run dev
+```
+
+### Variables d'environnement requises
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+OPENAI_API_KEY=<openai-key>
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+---
+
+## Scripts
+
+```bash
+npm run dev                  # Développement (port 3000)
+npm run build                # Build production
+npm run lint                 # ESLint
+npm run typecheck            # TypeScript
+npm run test                 # Tests unitaires (Jest)
+npm run test:e2e             # Tests end-to-end (Playwright)
+npm run test:contrast        # Tests contraste WCAG
+npm run test:regression      # Tests anti-régression
+npm run db:push              # Push migrations Supabase
+npm run db:refresh-cache     # Rafraîchir cache PostgREST
+```
+
+---
+
+## Structure
+
+```
+src/
+├── app/                    # Routes Next.js (App Router)
+│   ├── (auth)/             # Pages publiques
+│   ├── exercises/          # Gestion exercices
+│   ├── workouts/           # Séances
+│   ├── nutrition/          # Nutrition
+│   ├── progress/           # Progression
+│   ├── calendar/           # Calendrier
+│   ├── training-partners/  # Partenaires
+│   ├── admin/              # Administration
+│   └── api/                # API Routes
+├── components/             # Composants React
+├── hooks/                  # Custom hooks
+├── lib/                    # Utilitaires partagés
+└── utils/supabase/         # Client Supabase
+```
+
+---
+
+## Sécurité
+
+- Row Level Security (RLS) activé sur toutes les tables
+- Validation Zod sur toutes les entrées utilisateur
+- Middleware d'authentification sur toutes les routes protégées
+- Protection CSRF intégrée (Next.js)
+- Conformité RGPD (utilisateurs belges)
+
+---
+
+## Déploiement
+
+Push sur `main` → déploiement automatique Vercel.
+
+```bash
+# Déploiement manuel si besoin
+npx vercel deploy --prod --token "$VERCEL_TOKEN"
+```
+
+---
+
+**IronTrack** — Belgique 🇧🇪
