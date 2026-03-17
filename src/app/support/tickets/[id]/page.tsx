@@ -238,7 +238,7 @@ export default function TicketDetailPage() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg p-8">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-8">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
@@ -256,7 +256,7 @@ export default function TicketDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg p-8 text-center">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-8 text-center">
             <AlertTriangle className="h-16 w-16 text-safe-error mx-auto mb-4" />
             <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               {error || 'Ticket introuvable'}
@@ -301,7 +301,7 @@ export default function TicketDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6"
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
@@ -352,7 +352,7 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6 mb-6"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6"
           >
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-safe-info" />
@@ -425,7 +425,7 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
           >
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Send className="h-5 w-5 text-orange-600" />
