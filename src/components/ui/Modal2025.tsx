@@ -81,7 +81,7 @@ export function Modal2025({
             transition={{ type: 'spring', duration: 0.3 }}
             className={`
               relative w-full ${sizeClasses[size]} mx-4 
-              bg-white dark:bg-gray-900 rounded-xl shadow-2xl 
+              bg-card rounded-xl shadow-2xl
               max-h-[90vh] overflow-hidden
               ${className}
             `}
@@ -98,7 +98,7 @@ export function Modal2025({
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
+                    className="text-gray-700 dark:text-gray-300 hover:text-gray-600"
                   >
                     <X className="h-5 w-5" />
                   </ButtonMigrated>
@@ -128,7 +128,7 @@ export function ModalContent({ children, className = '' }: { children: ReactNode
 
 export function ModalFooter({ children, className = '' }: { children: ReactNode, className?: string }) {
   return (
-    <div className={`flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 ${className}`}>
+    <div className={`flex items-center justify-end gap-3 p-6 border-t border-border bg-muted ${className}`}>
       {children}
     </div>
   )

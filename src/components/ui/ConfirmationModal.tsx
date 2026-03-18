@@ -32,24 +32,24 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       case 'danger':
         return {
           icon: Trash2,
-          iconBg: 'bg-red-100',
-          iconColor: 'text-red-600',
+          iconBg: 'bg-red-100 dark:bg-red-900/30',
+          iconColor: 'text-red-600 dark:text-red-400',
           confirmBg: 'bg-red-500 hover:bg-red-500',
           confirmText: 'text-white'
         }
       case 'warning':
         return {
           icon: AlertTriangle,
-          iconBg: 'bg-yellow-100',
-          iconColor: 'text-yellow-600',
+          iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
+          iconColor: 'text-yellow-600 dark:text-yellow-400',
           confirmBg: 'bg-yellow-500 hover:bg-yellow-600',
           confirmText: 'text-white'
         }
       default:
         return {
           icon: AlertTriangle,
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600',
+          iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+          iconColor: 'text-blue-600 dark:text-blue-400',
           confirmBg: 'bg-blue-500 hover:bg-blue-600',
           confirmText: 'text-white'
         }
@@ -73,7 +73,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-2xl p-6 w-full max-w-md"
+            className="bg-card border border-border rounded-xl shadow-2xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -89,7 +89,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-full transition-colors"
+                className="p-1 hover:bg-muted rounded-full transition-colors"
               >
                 <X className="w-4 h-4 text-gray-600 dark:text-safe-muted" />
               </button>

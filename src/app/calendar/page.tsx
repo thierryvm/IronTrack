@@ -410,7 +410,7 @@ export default function CalendarPage() {
         <meta property="og:description" content="Organisez vos séances de musculation avec le calendrier interactif IronTrack" />
         <meta property="og:type" content="website" />
       </Head>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900" suppressHydrationWarning>
+      <div className="min-h-screen bg-background" suppressHydrationWarning>
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -73,28 +73,28 @@ export function ActionHierarchy({
       case 'success':
         return 'bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-400'
       case 'danger':
-        return 'bg-red-100 text-red-700 hover:bg-red-200 focus:ring-red-400'
+        return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 focus:ring-red-400'
       case 'warning':
-        return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 focus:ring-yellow-400'
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 focus:ring-yellow-400'
       case 'neutral':
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-400'
       default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-400'
     }
   }
 
   const getTertiaryVariantClasses = (variant?: string): string => {
     switch (variant) {
       case 'success':
-        return 'text-green-600 hover:bg-green-50 focus:ring-green-300'
+        return 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 focus:ring-green-300'
       case 'danger':
-        return 'text-red-600 hover:bg-red-50 focus:ring-red-300'
+        return 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:ring-red-300'
       case 'warning':
-        return 'text-yellow-600 hover:bg-yellow-50 focus:ring-yellow-300'
+        return 'text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 focus:ring-yellow-300'
       case 'neutral':
-        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 focus:ring-gray-300'
+        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-gray-300'
       default:
-        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 focus:ring-gray-300'
+        return 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-gray-300'
     }
   }
 

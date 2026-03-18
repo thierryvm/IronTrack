@@ -252,12 +252,12 @@ export default function FAQPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-purple-100 rounded-xl">
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
               <HelpCircle className="h-8 w-8 text-safe-primary" />
             </div>
             <div>
@@ -296,8 +296,8 @@ export default function FAQPage() {
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-center justify-between ${
                         isActive
-                          ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                          : 'hover:bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                          ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                       }`}
                       aria-label={`Filtrer par catégorie ${category.label}`}
                       aria-pressed={isActive}
@@ -309,8 +309,8 @@ export default function FAQPage() {
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         isActive 
-                          ? 'bg-purple-100 text-purple-700' 
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+                          ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                       }`}>
                         {category.count}
                       </span>
@@ -358,7 +358,7 @@ export default function FAQPage() {
                       <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                         <button
                           onClick={() => toggleItem(item.id)}
-                          className="w-full text-left p-4 hover:bg-gray-50 dark:bg-gray-800 transition-colors flex items-center justify-between"
+                          className="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between"
                           aria-expanded={isOpen}
                           aria-controls={`faq-answer-${item.id}`}
                           aria-label={`${isOpen ? 'Masquer' : 'Afficher'} la réponse pour: ${item.question}`}
@@ -407,7 +407,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
               >
                 Guide Complet
               </Link>

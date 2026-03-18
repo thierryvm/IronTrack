@@ -138,7 +138,7 @@ export default function SharedNutritionPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
       </div>
     )
@@ -151,7 +151,7 @@ export default function SharedNutritionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+      <div className="min-h-screen bg-background py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6">
             <div className="flex items-center space-x-3">
@@ -185,7 +185,7 @@ export default function SharedNutritionPage() {
 
   if (!nutritionData) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
       </div>
     )
@@ -196,7 +196,7 @@ export default function SharedNutritionPage() {
     : nutritionData.dailyStats[0]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl p-6 mb-8">

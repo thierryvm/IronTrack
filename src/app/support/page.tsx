@@ -8,12 +8,12 @@ export default function SupportPage() {
   const [activeSection, setActiveSection] = useState<'partners' | 'general' | 'account' | 'progression' | 'onboarding'>('partners')
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-blue-100 rounded-xl">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
               <HelpCircle className="h-8 w-8 text-safe-info" />
             </div>
             <div>
@@ -626,7 +626,7 @@ export default function SupportPage() {
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">📝 Étapes de Configuration</h3>
                       <div className="space-y-3">
                         <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                             <span className="text-sm font-bold text-orange-800 dark:text-orange-300">1</span>
                           </div>
                           <div>
@@ -635,7 +635,7 @@ export default function SupportPage() {
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                             <span className="text-sm font-bold text-orange-800 dark:text-orange-300">2</span>
                           </div>
                           <div>
@@ -644,7 +644,7 @@ export default function SupportPage() {
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                             <span className="text-sm font-bold text-orange-800 dark:text-orange-300">3</span>
                           </div>
                           <div>
@@ -653,7 +653,7 @@ export default function SupportPage() {
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                             <span className="text-sm font-bold text-orange-800 dark:text-orange-300">4</span>
                           </div>
                           <div>
@@ -720,28 +720,28 @@ export default function SupportPage() {
             {/* NOUVEAU - Contact Support en premier */}
             <Link 
               href="/support/contact" 
-              className="flex items-center space-x-3 p-4 border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 hover:border-orange-300 transition-colors group"
+              className="flex items-center space-x-3 p-4 border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:border-orange-300 transition-colors group"
             >
               <MessageSquare className="h-6 w-6 text-orange-800 dark:text-orange-300" />
               <div className="flex-1">
                 <p className="font-medium text-orange-900">✉️ Contacter le Support</p>
                 <p className="text-sm text-orange-700">Signaler un problème</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-orange-800 dark:text-orange-300 group-hover:text-orange-800 dark:text-orange-300" />
+              <ArrowRight className="h-6 w-6 text-orange-800 dark:text-orange-300 group-hover:text-orange-900 dark:group-hover:text-orange-200" />
             </Link>
-            <Link 
-              href="/training-partners" 
-              className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-orange-50 dark:bg-orange-900/20 hover:border-orange-200 dark:border-orange-800 transition-colors group"
+            <Link
+              href="/training-partners"
+              className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-200 transition-colors group"
             >
               <Users className="h-6 w-6 text-orange-800 dark:text-orange-300" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">Training Partners</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Gérer vos partenaires</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300" />
+              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-orange-800 dark:group-hover:text-orange-300" />
             </Link>
-            
-            <Link 
+
+            <Link
               href="/faq" 
               className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors group"
             >
@@ -779,14 +779,14 @@ export default function SupportPage() {
 
             <Link 
               href="/onboarding" 
-              className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-orange-50 dark:bg-orange-900/20 hover:border-orange-200 dark:border-orange-800 transition-colors group"
+              className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-200 transition-colors group"
             >
               <Target className="h-6 w-6 text-orange-800 dark:text-orange-300" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">Onboarding</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Refaire la configuration</p>
               </div>
-              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-orange-800 dark:text-orange-300" />
+              <ArrowRight className="h-6 w-6 text-gray-700 dark:text-gray-300 group-hover:text-orange-800 dark:group-hover:text-orange-300" />
             </Link>
           </div>
         </div>

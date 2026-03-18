@@ -232,7 +232,7 @@ export default function WorkoutsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-background">
       <WorkoutModal 
         workout={selectedWorkout} 
         isOpen={!!selectedWorkout} 

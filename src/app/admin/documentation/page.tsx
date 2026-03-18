@@ -100,7 +100,7 @@ export default function AdminDocumentationPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 mb-6">

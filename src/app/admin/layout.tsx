@@ -166,7 +166,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Vérification des permissions admin...</p>
@@ -178,9 +178,9 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   // Error state avec debug
   if (error || !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="h-8 w-8 text-safe-error" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Accès Non Autorisé</h1>
@@ -206,7 +206,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-background">
       {/* Header Mobile avec support safe areas iPhone */}
       <div className="lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between header-mobile-ios">
         <div className="flex items-center space-x-3">
@@ -344,7 +344,7 @@ function AdminLayoutInternal({ children }: AdminLayoutProps) {
                         className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           item.active
                             ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 border border-orange-200 dark:border-orange-800'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                         }`}
                       >
                         <Icon className="h-5 w-5 mr-3" />

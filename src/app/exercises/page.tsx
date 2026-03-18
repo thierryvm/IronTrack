@@ -236,7 +236,7 @@ export default function ExercisesPageOptimized() {
   // OPTIMISATION: Loading état avec skeleton au lieu de spinner simple
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold">Mes Exercices</h1>
@@ -251,7 +251,7 @@ export default function ExercisesPageOptimized() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header optimisé - rendu immédiat */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -301,7 +301,7 @@ export default function ExercisesPageOptimized() {
                   onClick={() => setSelectedMuscleGroup(group)}
                   variant={selectedMuscleGroup === group ? "default" : "secondary"}
                   size="sm"
-                  className={selectedMuscleGroup === group ? "bg-orange-600 hover:bg-orange-700 text-white" : "border-orange-200 text-orange-700 hover:bg-orange-50"}
+                  className={selectedMuscleGroup === group ? "bg-orange-600 hover:bg-orange-700 text-white" : "border-orange-200 text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"}
                   aria-pressed={selectedMuscleGroup === group}
                   aria-label={`Filtrer par ${group}${selectedMuscleGroup === group ? ' (actif)' : ''}`}
                 >

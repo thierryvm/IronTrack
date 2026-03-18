@@ -203,7 +203,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
 
   if (!isAuthenticated || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     )
@@ -211,7 +211,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     )
@@ -219,7 +219,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
 
   if (!partnership) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Partenariat non trouvé</h2>
           <button
@@ -238,7 +238,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
     : partnership.requester
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

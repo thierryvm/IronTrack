@@ -711,7 +711,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">Chargement du profil...</p>
@@ -722,7 +722,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <User className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Profil non trouvé</p>
@@ -732,7 +732,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -933,7 +933,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg group relative">
                     <Calendar className="h-8 w-8 text-safe-info mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.currentStreak || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Jours consécutifs</p>
@@ -942,7 +942,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-green-50 rounded-lg group relative">
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg group relative">
                     <Activity className="h-8 w-8 text-safe-success mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats?.averageWorkoutsPerWeek || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Séances/semaine</p>
@@ -951,7 +951,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="text-center p-4 bg-purple-50 rounded-lg group relative">
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg group relative">
                     <Target className="h-8 w-8 text-safe-primary mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userBadges?.length || 0}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Badges gagnés</p>
@@ -1000,7 +1000,7 @@ export default function ProfilePage() {
                           </span>
                         </div>
                         {!progressionStats.initial_weight && progressionStats.current_weight && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                          <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300">
                             💡 Définissez votre poids initial pour suivre votre progression
                           </div>
                         )}
@@ -1101,7 +1101,7 @@ export default function ProfilePage() {
                 {userBadges.length > 0 ? (
                   <div className="grid grid-cols-2 gap-4">
                     {userBadges.map((badge) => (
-                      <div key={badge.name} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+                      <div key={badge.name} className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
                         <div className="flex items-center space-x-3">
                           <div className="text-2xl">{badge.icon}</div>
                           <div>
@@ -1174,7 +1174,7 @@ export default function ProfilePage() {
                     </h4>
                     <button 
               onClick={handleChangePassword} 
-              className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors flex items-center space-x-3 mb-2"
+              className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center space-x-3 mb-2"
               aria-label="Modifier le mot de passe"
             >
                       <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -1257,14 +1257,14 @@ export default function ProfilePage() {
                       <HelpCircle className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                       <span>Support</span>
                     </h4>
-                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
+                    <button onClick={handleSupport} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center space-x-3 mb-2" aria-label="Contacter le support client">
                       <HelpCircle className="h-5 w-5 text-safe-info" />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">Aide & support</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
                       </div>
                     </button>
-                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
+                    <button onClick={handleFAQ} className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center space-x-3" aria-label="Consulter la foire aux questions">
                       <HelpCircle className="h-5 w-5 text-safe-info" />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">FAQ</p>

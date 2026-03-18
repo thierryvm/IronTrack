@@ -110,7 +110,7 @@ export default function NewWorkoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       {toast && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 font-semibold">
           {toast}

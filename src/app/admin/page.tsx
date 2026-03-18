@@ -222,12 +222,12 @@ export default function AdminDashboard() {
 
   const getActionColor = (color: string) => {
     const colors = {
-      orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 hover:bg-orange-100',
-      blue: 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
-      green: 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100',
-      purple: 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100',
-      indigo: 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100',
-      teal: 'bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-100'
+      orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 hover:bg-orange-100 dark:hover:bg-orange-900/30',
+      blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30',
+      green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30',
+      purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/30',
+      indigo: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+      teal: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/30'
     }
     return colors[color as keyof typeof colors] || colors.orange
   }
@@ -423,10 +423,10 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center justify-between mb-2 sm:mb-4">
                     <div className={`p-2 sm:p-3 rounded-lg ${
-                      stat.color === 'orange' ? 'bg-orange-100' :
-                      stat.color === 'blue' ? 'bg-blue-100' :
-                      stat.color === 'green' ? 'bg-green-100' :
-                      'bg-purple-100'
+                      stat.color === 'orange' ? 'bg-orange-100 dark:bg-orange-900/20' :
+                      stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/20' :
+                      stat.color === 'green' ? 'bg-green-100 dark:bg-green-900/20' :
+                      'bg-purple-100 dark:bg-purple-900/20'
                     }`}>
                       <Icon className={`h-6 w-6 sm:h-6 sm:w-6 ${
                         stat.color === 'orange' ? 'text-orange-800 dark:text-orange-300' :
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <Activity className="h-5 w-5 mr-2" />
               Activité Récente
-              <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+              <span className="ml-2 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-full">
                 Dernière heure
               </span>
             </h2>

@@ -396,7 +396,7 @@ export default function TrainingPartnersPage() {
   // Affichage du loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
       </div>
     )
@@ -405,7 +405,7 @@ export default function TrainingPartnersPage() {
   // Affichage de chargement pendant la vérification auth
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-background py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
@@ -419,7 +419,7 @@ export default function TrainingPartnersPage() {
   // Affichage si non connecté
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-background py-8">
         <div className="max-w-4xl mx-auto px-4">
           <Card className="text-center max-w-md mx-auto">
             <CardContent className="p-8">
@@ -442,7 +442,7 @@ export default function TrainingPartnersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       {/* Notifications en temps réel */}
       <RealtimeNotificationToast
         notifications={notifications}

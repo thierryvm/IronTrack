@@ -71,7 +71,7 @@ function ContactSupportPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header avec navigation */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
@@ -225,7 +225,7 @@ function ContactSupportPageContent() {
 export default function ContactSupportPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Chargement...</p>

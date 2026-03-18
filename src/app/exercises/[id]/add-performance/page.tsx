@@ -129,7 +129,7 @@ export default function AddPerformancePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -148,7 +148,7 @@ export default function AddPerformancePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -165,7 +165,7 @@ export default function AddPerformancePage() {
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +181,7 @@ export default function AddPerformancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-background">
       {/* Header - Design 2025 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

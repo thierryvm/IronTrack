@@ -49,9 +49,9 @@ export function UnifiedCard({
   }, [])
 
   const cardClasses = `
-    relative bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-100 dark:border-gray-700
-    ${hover ? 'hover:shadow-lg hover:border-orange-200 dark:border-orange-800 transition-all duration-300' : ''}
-    ${gradient ? 'bg-gradient-to-br from-white to-gray-50' : ''}
+    relative bg-card text-card-foreground rounded-xl shadow-md border border-gray-100 dark:border-gray-700
+    ${hover ? 'hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-300' : ''}
+    ${gradient ? 'bg-gradient-to-br from-card to-muted dark:from-card dark:to-card' : ''}
     ${onCardClick ? 'cursor-pointer' : ''}
     ${className}
   `.trim()
@@ -75,7 +75,7 @@ export function UnifiedCard({
               e.stopPropagation()
               setIsDropdownOpen(!isDropdownOpen)
             }}
-            className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
+            className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:text-gray-600 hover:bg-muted transition-colors"
             aria-label="Actions"
             data-testid="card-menu-button"
           >
@@ -86,7 +86,7 @@ export function UnifiedCard({
           {isDropdownOpen && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-48 bg-card border border-border rounded-lg shadow-xl py-1 z-50"
               data-testid="card-dropdown-menu"
             >
               {actions.map((action, index) => (
@@ -100,9 +100,9 @@ export function UnifiedCard({
                   className={`
                     flex items-center space-x-3 px-4 py-2 text-sm w-full text-left
                     transition-colors duration-150
-                    ${action.danger 
-                      ? 'text-red-600 hover:bg-red-50' 
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
+                    ${action.danger
+                      ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                      : 'text-foreground hover:bg-muted'
                     }
                     ${index === 0 ? 'rounded-t-lg' : ''}
                     ${index === actions.length - 1 ? 'rounded-b-lg' : ''}
@@ -136,11 +136,11 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, badge, icon, className = '' }: CardHeaderProps) {
   const badgeColors = {
-    green: 'bg-green-100 text-green-700',
-    yellow: 'bg-yellow-100 text-yellow-700', 
-    red: 'bg-red-100 text-red-700',
-    blue: 'bg-blue-100 text-blue-700',
-    gray: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+    green: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+    yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
+    red: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+    gray: 'bg-muted text-muted-foreground'
   }
 
   return (
@@ -152,7 +152,7 @@ export function CardHeader({ title, subtitle, badge, icon, className = '' }: Car
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-orange-800 dark:text-orange-300 transition-colors">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-orange-800 dark:group-hover:text-orange-300 transition-colors">
             {title}
           </h3>
           {subtitle && (

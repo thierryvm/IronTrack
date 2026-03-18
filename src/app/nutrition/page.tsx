@@ -304,7 +304,7 @@ export default function NutritionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -350,7 +350,7 @@ export default function NutritionPage() {
                 <p className="text-3xl font-bold text-orange-800 dark:text-orange-300">{Math.round(todayNutrition.calories)}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.calories} kcal</p>
               </div>
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                 <span className="text-2xl">🔥</span>
               </div>
             </div>
@@ -371,7 +371,7 @@ export default function NutritionPage() {
                 <p className="text-3xl font-bold text-safe-info">{Math.round(todayNutrition.protein * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.protein}g</p>
               </div>
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
                 <span className="text-2xl">💪</span>
               </div>
             </div>
@@ -392,7 +392,7 @@ export default function NutritionPage() {
                 <p className="text-3xl font-bold text-safe-success">{Math.round(todayNutrition.carbs * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.carbs}g</p>
               </div>
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
                 <span className="text-2xl">🍞</span>
               </div>
             </div>
@@ -413,7 +413,7 @@ export default function NutritionPage() {
                 <p className="text-3xl font-bold text-safe-warning">{Math.round(todayNutrition.fat * 10) / 10}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">/ {goals.fat}g</p>
               </div>
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
                 <span className="text-2xl">🥑</span>
               </div>
             </div>
@@ -494,7 +494,7 @@ export default function NutritionPage() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg text-sm font-medium">
                 <Calendar className="h-6 w-6" />
                 <span>Aujourd'hui</span>
               </div>
