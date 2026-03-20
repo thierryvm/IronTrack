@@ -187,7 +187,7 @@ export default function TicketDetailPage() {
       case 'closed':
         return <CheckCircle className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
       default:
-        return <MessageCircle className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+        return <MessageCircle className="h-5 w-5 text-foreground" />
     }
   }
 
@@ -204,12 +204,12 @@ export default function TicketDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'open': return 'bg-blue-100 text-blue-800 border-blue-300'
-      case 'in_progress': return 'bg-orange-100 text-orange-800 dark:text-orange-300 border-orange-300'
-      case 'resolved': return 'bg-green-100 text-green-800 border-green-300'
-      case 'closed': return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
-      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+      case 'pending': return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700'
+      case 'open': return 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700'
+      case 'in_progress': return 'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700'
+      case 'resolved': return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700'
+      case 'closed': return 'bg-muted text-muted-foreground border-border'
+      default: return 'bg-muted text-muted-foreground border-border'
     }
   }
 
@@ -238,7 +238,7 @@ export default function TicketDetailPage() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-8">
+            <div className="bg-card border border-border rounded-lg p-8">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
@@ -256,12 +256,12 @@ export default function TicketDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-8 text-center">
+          <div className="bg-card border border-border rounded-lg p-8 text-center">
             <AlertTriangle className="h-16 w-16 text-safe-error mx-auto mb-4" />
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-xl font-bold text-foreground mb-2">
               {error || 'Ticket introuvable'}
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <p className="text-muted-foreground mb-6">
               Le ticket demandé n'existe pas ou vous n'avez pas l'autorisation de le voir.
             </p>
             <Link
@@ -284,14 +284,14 @@ export default function TicketDetailPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href="/profile"
-            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label="Retour au profil"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Détail du ticket</h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <h1 className="text-3xl font-bold text-foreground">Détail du ticket</h1>
+            <p className="text-muted-foreground">
               Ticket #{ticket.id.slice(-8)}
             </p>
           </div>
@@ -301,14 +301,14 @@ export default function TicketDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6"
+          className="bg-card border border-border rounded-lg p-6 mb-6"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-bold text-foreground mb-2">
                 {ticket.title}
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 {ticket.description}
               </p>
             </div>
@@ -322,25 +322,25 @@ export default function TicketDetailPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <Tag className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-              <span className="text-gray-600 dark:text-gray-300">Catégorie:</span>
+              <Tag className="h-6 w-6 text-foreground" />
+              <span className="text-muted-foreground">Catégorie:</span>
               <span className="font-medium capitalize">{ticket.category}</span>
             </div>
             <div className="flex items-center gap-2">
               <AlertTriangle className={`h-6 w-6 ${getPriorityColor(ticket.priority)}`} />
-              <span className="text-gray-600 dark:text-gray-300">Priorité:</span>
+              <span className="text-muted-foreground">Priorité:</span>
               <span className={`font-medium capitalize ${getPriorityColor(ticket.priority)}`}>
                 {ticket.priority === 'high' ? 'Haute' : ticket.priority === 'medium' ? 'Moyenne' : 'Basse'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-              <span className="text-gray-600 dark:text-gray-300">Créé:</span>
+              <Calendar className="h-6 w-6 text-foreground" />
+              <span className="text-muted-foreground">Créé:</span>
               <span className="font-medium">{formatDate(ticket.created_at)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-6 w-6 text-safe-info" />
-              <span className="text-gray-600 dark:text-gray-300">Réponses:</span>
+              <span className="text-muted-foreground">Réponses:</span>
               <span className="font-medium">{responses.length}</span>
             </div>
           </div>
@@ -352,9 +352,9 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6"
+            className="bg-card border border-border rounded-lg p-6 mb-6"
           >
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-safe-info" />
               Conversation ({responses.length} réponse{responses.length > 1 ? 's' : ''})
             </h3>
@@ -399,17 +399,17 @@ export default function TicketDetailPage() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-600 dark:text-gray-300">
+                      <span className="text-xs text-muted-foreground">
                         {formatDate(response.created_at)}
                       </span>
                     </div>
                   </div>
                   <div className={`rounded-lg p-3 ${
                     response.user_id === ticket?.user_id
-                      ? 'bg-white dark:bg-gray-800'
-                      : 'bg-white dark:bg-gray-800'
+                      ? 'bg-card'
+                      : 'bg-card'
                   }`}>
-                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-foreground leading-relaxed whitespace-pre-wrap">
                       {response.message}
                     </p>
                   </div>
@@ -425,9 +425,9 @@ export default function TicketDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+            className="bg-card border border-border rounded-lg p-6"
           >
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <Send className="h-5 w-5 text-orange-600" />
               Ajouter une réponse
             </h3>
@@ -444,7 +444,7 @@ export default function TicketDetailPage() {
                   value={userResponse}
                   onChange={(e) => setUserResponse(e.target.value)}
                   placeholder="Tapez votre réponse ici..."
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-800 dark:text-white resize-none"
+                  className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-card dark:text-white resize-none"
                   disabled={submitting}
                 />
               </div>
@@ -456,7 +456,7 @@ export default function TicketDetailPage() {
                   className="inline-flex items-center gap-2 bg-orange-600 dark:bg-orange-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {submitting ? (
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-border"></div>
                   ) : (
                     <Send className="h-6 w-6" />
                   )}

@@ -128,7 +128,7 @@ function TimerRestored({
 
             <button
               onClick={resetTimer}
-              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform"
+              className="bg-muted hover:bg-muted/80 p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform"
             >
               <RotateCcw className="h-5 w-5" />
             </button>
@@ -184,7 +184,7 @@ function QuickTimerRestored() {
         />
         <button
           onClick={handleCloseTimer}
-          className="w-full bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors min-h-touch-44"
+          className="w-full bg-muted hover:bg-muted/80 text-foreground py-2 px-4 rounded-lg transition-colors min-h-touch-44"
         >
           Fermer
         </button>
@@ -193,8 +193,8 @@ function QuickTimerRestored() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-6 shadow-md w-full">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">Temps de repos rapide</h2>
+    <div className="bg-card border border-border rounded-xl p-6 shadow-md w-full">
+      <h2 className="text-xl font-bold text-foreground mb-4 text-center">Temps de repos rapide</h2>
       <div className="grid grid-cols-3 gap-2">
         {quickTimes.map((time) => (
           <button
@@ -606,7 +606,7 @@ export default function HomePageClient() {
       name: 'Mes exercices',
       href: '/exercises',
       icon: Trophy,
-      color: 'bg-gray-600 hover:bg-gray-700',
+      color: 'bg-gray-600 hover:bg-muted',
       description: 'Voir tous les exercices'
     },
   ]
@@ -659,7 +659,7 @@ export default function HomePageClient() {
 
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         {/* Loading skeleton - identique au rendu final */}
         <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-12 min-h-[160px] flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -674,7 +674,7 @@ export default function HomePageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-800 dark:to-red-700 text-white py-12 min-h-[160px] flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -685,7 +685,7 @@ export default function HomePageClient() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Séance du jour */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-2xl p-8 text-white shadow-lg">
+          <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-700 dark:to-red-600 rounded-2xl p-8 text-white shadow-lg">
             <div className="flex flex-col lg:flex-row items-center justify-between">
               <div className="text-center lg:text-left mb-6 lg:mb-0">
                 <h2 className="text-3xl font-bold mb-2">Prêt pour ta séance ?</h2>
@@ -697,13 +697,13 @@ export default function HomePageClient() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild variant="ghost" size="lg" className="bg-gray-900 text-white font-semibold hover:bg-gray-800 transition-colors border border-gray-700">
+                <Button asChild variant="ghost" size="lg" className="bg-gray-900 text-white font-semibold hover:bg-muted transition-colors border border-gray-700">
                   <Link href="/workouts/new" prefetch={false}>
                     <Dumbbell className="h-6 w-6" />
                     Commencer ma séance
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-gray-900 hover:border-gray-700 transition-colors">
+                <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-muted hover:border-gray-700 transition-colors">
                   <Link href="/calendar" prefetch={false}>
                     <Calendar className="h-5 w-5" />
                     Voir le planning
@@ -723,11 +723,11 @@ export default function HomePageClient() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</p>
+                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                     </div>
-                    <div className={`p-3 rounded-full ${stat.bgColor} dark:bg-gray-700`}>
-                      <Icon className={`h-6 w-6 ${stat.color} dark:text-yellow-400`} />
+                    <div className={`p-3 rounded-full ${stat.bgColor} dark:bg-muted`}>
+                      <Icon className={`h-6 w-6 ${stat.color}`} />
                     </div>
                   </div>
                 </CardContent>
@@ -832,12 +832,12 @@ export default function HomePageClient() {
                 ) : (
                   <div className="space-y-3">
                     {recentExercises.slice(0, 3).map((exercise) => (
-                      <div key={exercise.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={exercise.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                         <div className="flex-1">
-                          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          <h3 className="text-sm font-medium text-foreground truncate">
                             {exercise.name}
                           </h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             {exercise.muscle_group}
                           </p>
                         </div>
@@ -892,7 +892,7 @@ export default function HomePageClient() {
               </div>
               <Link 
                 href="/workouts/new" 
-                className="bg-white/20 hover:bg-white/30 dark:bg-white/30 dark:hover:bg-white/40 rounded-lg p-4 transition-colors"
+                className="bg-white/20 hover:bg-muted/30 dark:bg-white/30 dark:hover:bg-muted/40 rounded-lg p-4 transition-colors"
               >
                 <Dumbbell className="h-8 w-8" />
               </Link>

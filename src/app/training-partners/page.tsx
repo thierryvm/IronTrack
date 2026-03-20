@@ -409,7 +409,7 @@ export default function TrainingPartnersPage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600 dark:text-gray-500">Vérification...</p>
+            <p className="mt-2 text-muted-foreground">Vérification...</p>
           </div>
         </div>
       </div>
@@ -488,7 +488,7 @@ export default function TrainingPartnersPage() {
           <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-md p-6 mb-6 text-white">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-white/20 dark:bg-gray-800/50 border border-white/30 dark:border-gray-600 rounded-xl backdrop-blur-sm">
+                <div className="p-3 bg-white/20 dark:bg-card/50 border border-white/30 dark:border-border rounded-xl backdrop-blur-sm">
                   <Users className="h-8 w-8 text-white" />
                 </div>
                 <div className="flex-1">
@@ -514,7 +514,7 @@ export default function TrainingPartnersPage() {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <a 
                       href="/support" 
-                      className="flex-1 sm:flex-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-blue-600 dark:text-safe-info px-6 py-3 rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
+                      className="flex-1 sm:flex-none bg-card border border-border text-blue-600 dark:text-safe-info px-6 py-3 rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
                     >
                       Guide complet
                     </a>
@@ -538,15 +538,15 @@ export default function TrainingPartnersPage() {
         )}
 
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 sm:p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl shadow-md p-4 sm:p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="p-2 sm:p-3 bg-orange-100 rounded-xl flex-shrink-0">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-800 dark:text-gray-200" />
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Training Partners</h1>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 truncate">Partagez vos entraînements avec vos partenaires</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-foreground">Training Partners</h1>
+                <p className="text-sm sm:text-base text-muted-foreground truncate">Partagez vos entraînements avec vos partenaires</p>
               </div>
             </div>
             
@@ -572,7 +572,7 @@ export default function TrainingPartnersPage() {
                   <Users className="h-4 w-4" />
                   <span>Mes Partenaires</span>
                   {acceptedPartnerships.length > 0 && (
-                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-gray-800 dark:text-gray-200 py-0.5 px-1.5 rounded-full text-xs">
+                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-foreground py-0.5 px-1.5 rounded-full text-xs">
                       {acceptedPartnerships.length}
                     </span>
                   )}
@@ -581,7 +581,7 @@ export default function TrainingPartnersPage() {
                   <Clock className="h-4 w-4" />
                   <span>Invitations</span>
                   {pendingInvitations.length > 0 && (
-                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-gray-800 dark:text-gray-200 py-0.5 px-1.5 rounded-full text-xs">
+                    <span className="ml-1 bg-orange-100 dark:bg-orange-900/30 text-foreground py-0.5 px-1.5 rounded-full text-xs">
                       {pendingInvitations.length}
                     </span>
                   )}
@@ -625,7 +625,7 @@ export default function TrainingPartnersPage() {
                               priority={false}
                             />
                             <div>
-                              <p className="font-medium text-gray-900 dark:text-gray-100">{getDisplayName(partner)}</p>
+                              <p className="font-medium text-foreground">{getDisplayName(partner)}</p>
                               <p className="text-sm text-gray-600 dark:text-safe-muted">
                                 Partenaires depuis {new Date(partnership.created_at).toLocaleDateString()}
                               </p>
@@ -636,7 +636,7 @@ export default function TrainingPartnersPage() {
                               onClick={() => router.push(`/training-partners/${partnership.id}/settings`)}
                               variant="ghost"
                               size="sm"
-                              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200"
+                              className="p-2 text-foreground hover:text-foreground dark:hover:text-foreground"
                               title="Paramètres de partage"
                             >
                               <Settings className="h-5 w-5" />
@@ -683,7 +683,7 @@ export default function TrainingPartnersPage() {
                                 priority={false}
                               />
                               <div>
-                                <p className="font-medium text-gray-900 dark:text-gray-100">
+                                <p className="font-medium text-foreground">
                                   {getDisplayName(invitation.requester)}
                                 </p>
                                 <p className="text-sm text-gray-600 dark:text-safe-muted">
@@ -743,7 +743,7 @@ export default function TrainingPartnersPage() {
                                 priority={false}
                               />
                               <div>
-                                <p className="font-medium text-gray-900 dark:text-gray-100">
+                                <p className="font-medium text-foreground">
                                   {getDisplayName(invitation.partner)}
                                 </p>
                                 <p className="text-sm text-gray-600 dark:text-safe-muted flex items-center space-x-1">
@@ -829,17 +829,17 @@ export default function TrainingPartnersPage() {
                 {searchResults.length > 0 && (
                   <div className="space-y-4">
                     {searchResults.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <div key={user.id} className="flex items-center justify-between p-4 bg-background rounded-lg">
                         <div className="flex items-center space-x-4">
                           <OptimizedAvatar
                             src={user.avatar_url}
                             alt={`Avatar de ${user.displayName}`}
                             size="md"
-                            className="border-2 border-gray-300 dark:border-gray-500"
+                            className="border-2 border-border"
                             priority={false}
                           />
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">{user.displayName}</p>
+                            <p className="font-medium text-foreground">{user.displayName}</p>
                             <p className="text-sm text-gray-600 dark:text-safe-muted">{user.email}</p>
                             {user.pseudo && user.pseudo !== user.displayName && (
                               <p className="text-xs text-blue-600">Pseudo: {user.pseudo}</p>

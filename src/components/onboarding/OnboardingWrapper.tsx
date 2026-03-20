@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { OnboardingFlow } from './OnboardingFlow'
 import { LoadingState } from './LoadingState'
+import { Button } from '@/components/ui/button'
 import type { OnboardingData } from './OnboardingFlow'
 
 interface OnboardingWrapperProps {
@@ -17,13 +18,13 @@ export function OnboardingWrapper({ onComplete }: OnboardingWrapperProps) {
 
   useEffect(() => {
     loadExistingData()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExistingData = async () => {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) return
 
       const { data, error } = await supabase
@@ -37,7 +38,6 @@ export function OnboardingWrapper({ onComplete }: OnboardingWrapperProps) {
         return
       }
 
-      // Vérifier si l'utilisateur a déjà des données
       const hasExistingData = data?.goal || data?.experience
       setIsReturningUser(hasExistingData)
 
@@ -61,52 +61,51 @@ export function OnboardingWrapper({ onComplete }: OnboardingWrapperProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       {isReturningUser ? (
-        <div className="w-full max-w-2xl">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl p-8 text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mb-4">
-              <span className="text-2xl">👋</span>
+        <div className="w-full max-w-2xl space-y-4">
+          <div className="bg-card border border-border rounded-xl shadow-sm p-8 text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-brand-500/10 rounded-full mb-4">
+              <span className="text-2xl" role="img" aria-label="Bienvenue">👋</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Bon retour sur IronTrack !
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <p className="text-muted-foreground mb-6">
               Vous avez déjà un profil configuré. Souhaitez-vous le mettre à jour ?
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Profil actuel</h3>
-                <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                  <p><strong>Objectif:</strong> {existingData.goal || 'Non défini'}</p>
-                  <p><strong>Expérience:</strong> {existingData.experience || 'Non définie'}</p>
-                  <p><strong>Fréquence:</strong> {existingData.frequency || 'Non définie'}</p>
-                  <p><strong>Disponibilité:</strong> {existingData.availability ? `${existingData.availability}min` : 'Non définie'}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-left">
+              <div className="bg-muted p-4 rounded-lg">
+                <h3 className="font-semibold text-foreground mb-2 text-sm">Profil actuel</h3>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p><span className="font-medium text-foreground">Objectif :</span> {existingData.goal || 'Non défini'}</p>
+                  <p><span className="font-medium text-foreground">Expérience :</span> {existingData.experience || 'Non définie'}</p>
+                  <p><span className="font-medium text-foreground">Fréquence :</span> {existingData.frequency || 'Non définie'}</p>
+                  <p><span className="font-medium text-foreground">Disponibilité :</span> {existingData.availability ? `${existingData.availability} min` : 'Non définie'}</p>
                 </div>
               </div>
-              
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-blue-800 mb-2">Mise à jour</h3>
-                <p className="text-sm text-blue-700">
+
+              <div className="bg-brand-500/5 border border-brand-500/20 p-4 rounded-lg">
+                <h3 className="font-semibold text-foreground mb-2 text-sm">Mise à jour</h3>
+                <p className="text-sm text-muted-foreground">
                   Complétez uniquement les champs manquants sans écraser vos données existantes.
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4 justify-center">
-              <button
+            <div className="flex gap-3 justify-center">
+              <Button
+                variant="outline"
                 onClick={() => window.location.href = '/'}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 transition-colors"
               >
                 Garder mon profil actuel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setIsReturningUser(false)}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Compléter mon profil
-              </button>
+              </Button>
             </div>
           </div>
         </div>

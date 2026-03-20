@@ -124,7 +124,7 @@ export default function SharedNutritionPage() {
       'Souper': 'bg-purple-100 text-purple-800 border-purple-200',
       'Collation': 'bg-green-100 text-green-800 border-green-200'
     }
-    return colors[mealType] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'
+    return colors[mealType] || 'bg-muted text-foreground border-border'
   }
 
   const formatMacroPercentage = (value: number, total: number) => {
@@ -204,13 +204,13 @@ export default function SharedNutritionPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white/20 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-white/30 dark:hover:bg-gray-900/30 transition-colors"
+                className="p-2 bg-white/20 dark:bg-background/20 border border-border rounded-lg hover:bg-muted/30 dark:hover:bg-muted/30 transition-colors"
                 aria-label="Retour à la page précédente"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-full p-3">
+                <div className="bg-card border border-border /20 rounded-full p-3">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
@@ -224,7 +224,7 @@ export default function SharedNutritionPage() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-lg p-3">
+              <div className="bg-card border border-border /20 rounded-lg p-3">
                 <Calendar className="h-6 w-6" />
               </div>
             </div>
@@ -232,8 +232,8 @@ export default function SharedNutritionPage() {
         </div>
 
         {/* Sélecteur de date */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Sélectionner un jour</h3>
+        <div className="bg-card border border-border  rounded-xl shadow-md p-6 mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Sélectionner un jour</h3>
           <div className="grid grid-cols-7 gap-2">
             {generateDateOptions().map(date => {
               const dateObj = new Date(date)
@@ -248,8 +248,8 @@ export default function SharedNutritionPage() {
                     isSelected
                       ? 'bg-green-500 text-white'
                       : hasData
-                      ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                      : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                      ? 'bg-green-50 text-green-700 hover:bg-success/10'
+                      : 'bg-muted text-foreground cursor-not-allowed'
                   }`}
                   disabled={!hasData}
                 >
@@ -276,8 +276,8 @@ export default function SharedNutritionPage() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {/* Statistiques du jour */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center space-x-2">
+            <div className="bg-card border border-border  rounded-xl shadow-md p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-safe-success" />
                 <span>Résumé du jour</span>
               </h3>
@@ -309,8 +309,8 @@ export default function SharedNutritionPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">Répartition macronutriments</div>
+                <div className="pt-4 border-t border-border">
+                  <div className="text-sm text-muted-foreground mb-2">Répartition macronutriments</div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs">
                       <span>Protéines: {formatMacroPercentage(selectedDayStats.totalProtein * 4, selectedDayStats.totalCalories)}</span>
@@ -330,27 +330,27 @@ export default function SharedNutritionPage() {
                 if (mealsOfType.length === 0) return null
 
                 return (
-                  <div key={mealType} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+                  <div key={mealType} className="bg-card border border-border  rounded-xl shadow-md p-6">
                     <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getMealTypeColor(mealType)} mb-4`}>
                       <span>{getMealTypeIcon(mealType)}</span>
                       <span>{mealType}</span>
-                      <span className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /50 px-2 py-0.5 rounded-full text-xs">
+                      <span className="bg-card border border-border /50 px-2 py-0.5 rounded-full text-xs">
                         {mealsOfType.length} élément{mealsOfType.length > 1 ? 's' : ''}
                       </span>
                     </div>
 
                     <div className="space-y-3">
                       {mealsOfType.map(meal => (
-                        <div key={meal.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div key={meal.id} className="border border-border rounded-lg p-4">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 dark:text-gray-100">{meal.food_name}</h4>
+                              <h4 className="font-medium text-foreground">{meal.food_name}</h4>
                               <div className="text-sm text-gray-600 dark:text-safe-muted mt-1">
                                 {meal.time && `${meal.time} • `}
                                 {meal.calories} cal
                               </div>
                             </div>
-                            <div className="text-right text-sm text-gray-600 dark:text-gray-300">
+                            <div className="text-right text-sm text-muted-foreground">
                               <div>P: {meal.protein}g</div>
                               <div>G: {meal.carbs}g</div>
                               <div>L: {meal.fat}g</div>
@@ -367,14 +367,14 @@ export default function SharedNutritionPage() {
         )}
 
         {nutritionData.dailyStats.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-8 text-center">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-              <Calendar className="h-8 w-8 text-gray-700 dark:text-gray-300" />
+          <div className="bg-card border border-border  rounded-xl shadow-md p-8 text-center">
+            <div className="bg-muted rounded-full p-4 w-16 h-16 mx-auto mb-4">
+              <Calendar className="h-8 w-8 text-foreground" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Aucune donnée nutrition disponible
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-muted-foreground">
               {getPartnerDisplayName(nutritionData.partner)} n'a pas encore enregistré de repas pour cette période.
             </p>
           </div>

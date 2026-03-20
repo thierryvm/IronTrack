@@ -339,7 +339,7 @@ export default function PWAGuidePage() {
             className="text-center"
           >
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 /20 rounded-xl backdrop-blur-sm">
+              <div className="p-3 bg-card border border-border /20 rounded-xl backdrop-blur-sm">
                 <Download className="h-8 w-8" />
               </div>
             </div>
@@ -362,7 +362,7 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
+          <h2 className="text-2xl font-bold text-foreground text-center mb-8">
             Pourquoi installer IronTrack ?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -372,13 +372,13 @@ export default function PWAGuidePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl p-6 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow"
+                className="bg-card border border-border  rounded-xl p-6 shadow-md border border-gray-100 dark:border-border hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center mb-4">
                   {benefit.icon}
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 ml-3">{benefit.title}</h3>
+                  <h3 className="font-semibold text-foreground ml-3">{benefit.title}</h3>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">{benefit.description}</p>
+                <p className="text-muted-foreground text-sm">{benefit.description}</p>
               </motion.div>
             ))}
           </div>
@@ -391,7 +391,7 @@ export default function PWAGuidePage() {
           transition={{ delay: 0.3 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
+          <h2 className="text-2xl font-bold text-foreground text-center mb-8">
             Choisissez votre appareil
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -402,7 +402,7 @@ export default function PWAGuidePage() {
                 className={`p-4 rounded-xl border-2 transition-all ${
                   selectedDevice === device.id
                     ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900'
+                    : 'border-border hover:border-border bg-card'
                 }`}
                 aria-label={`Sélectionner le guide pour ${device.name}`}
               >
@@ -411,7 +411,7 @@ export default function PWAGuidePage() {
                     {device.icon}
                   </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm text-center">
+                <h3 className="font-semibold text-foreground text-sm text-center">
                   {device.name}
                 </h3>
               </button>
@@ -424,15 +424,15 @@ export default function PWAGuidePage() {
           key={selectedDevice}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 sm:p-8"
+          className="bg-card border border-border  rounded-xl shadow-md p-6 sm:p-8"
         >
           <div className="flex items-center mb-6">
             <div className={`p-3 rounded-lg bg-gradient-to-r ${selectedGuide.color} text-white mr-4`}>
               {selectedGuide.icon}
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedGuide.name}</h3>
-              <p className="text-gray-600 dark:text-gray-300">Guide d'installation étape par étape</p>
+              <h3 className="text-2xl font-bold text-foreground">{selectedGuide.name}</h3>
+              <p className="text-muted-foreground">Guide d'installation étape par étape</p>
             </div>
           </div>
 
@@ -454,13 +454,13 @@ export default function PWAGuidePage() {
 
           {/* Étapes */}
           <div className="mb-8">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Étapes d'installation</h4>
+            <h4 className="text-lg font-semibold text-foreground mb-6">Étapes d'installation</h4>
             <div className="space-y-4">
               {selectedGuide.steps.map((step) => (
-                <div key={step.step} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div key={step.step} className="border border-border rounded-lg overflow-hidden">
                   <button
                     onClick={() => setExpandedStep(expandedStep === step.step ? null : step.step)}
-                    className="w-full p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:bg-gray-800 transition-colors flex items-center justify-between"
+                    className="w-full p-4 bg-muted hover:bg-muted transition-colors flex items-center justify-between"
                     aria-label={`${expandedStep === step.step ? 'Réduire' : 'Développer'} l'étape ${step.step}: ${step.title}`}
                     aria-expanded={expandedStep === step.step}
                   >
@@ -469,14 +469,14 @@ export default function PWAGuidePage() {
                         {step.step}
                       </div>
                       <div className="text-left">
-                        <h5 className="font-semibold text-gray-900 dark:text-gray-100">{step.title}</h5>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">{step.description}</p>
+                        <h5 className="font-semibold text-foreground">{step.title}</h5>
+                        <p className="text-muted-foreground text-sm">{step.description}</p>
                       </div>
                     </div>
                     {expandedStep === step.step ? (
-                      <ChevronDown className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                      <ChevronDown className="h-5 w-5 text-foreground" />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                      <ChevronRight className="h-5 w-5 text-foreground" />
                     )}
                   </button>
                   
@@ -485,7 +485,7 @@ export default function PWAGuidePage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-t border-gray-200 dark:border-gray-700"
+                      className="p-4 bg-card border border-border  border-t border-border"
                     >
                       <div className="flex items-start">
                         <div className="p-2 bg-orange-100 rounded-lg mr-4 flex-shrink-0">
@@ -493,7 +493,7 @@ export default function PWAGuidePage() {
                         </div>
                         <ul className="space-y-2 flex-1">
                           {step.details.map((detail, index) => (
-                            <li key={index} className="text-gray-700 dark:text-gray-300 text-sm flex items-start">
+                            <li key={index} className="text-foreground text-sm flex items-start">
                               <ArrowRight className="h-6 w-6 text-orange-800 dark:text-orange-300 mr-2 mt-0.5 flex-shrink-0" />
                               {detail}
                             </li>
@@ -540,7 +540,7 @@ export default function PWAGuidePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors inline-flex items-center justify-center"
+                className="bg-card border border-border  text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors inline-flex items-center justify-center"
               >
                 <Home className="h-5 w-5 mr-2" />
                 Retour à l'accueil

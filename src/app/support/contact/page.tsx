@@ -74,22 +74,22 @@ function ContactSupportPageContent() {
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header avec navigation */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-card border border-border  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link 
                 href="/support"
-                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
               </Link>
               <div className="flex items-center space-x-3">
                 <div className="p-3 bg-orange-100 rounded-xl">
                   <MessageSquare className="h-8 w-8 text-orange-800 dark:text-orange-300" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Contact Support</h1>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <h1 className="text-2xl font-bold text-foreground">Contact Support</h1>
+                  <p className="text-muted-foreground">
                     {showForm ? 'Décrivez votre problème ou demande' : 'Votre demande a été envoyée'}
                   </p>
                 </div>
@@ -116,26 +116,26 @@ function ContactSupportPageContent() {
                 initialCategory={initialCategory}
               />
             ) : (
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Vos demandes récentes</h2>
+              <div className="bg-card border border-border  rounded-xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-foreground mb-4">Vos demandes récentes</h2>
                 
                 {loadingTickets ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-6 h-6 border-2 border-orange-600 border-t-transparent rounded-full animate-spin mr-3" />
-                    <span className="text-gray-600 dark:text-gray-300">Chargement de vos tickets...</span>
+                    <span className="text-muted-foreground">Chargement de vos tickets...</span>
                   </div>
                 ) : userTickets.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+                    <MessageSquare className="h-12 w-12 text-foreground mx-auto mb-4" />
                     <p className="text-gray-600 dark:text-safe-muted">Aucune demande trouvée.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {userTickets.map((ticket) => (
-                      <div key={ticket.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <div key={ticket.id} className="border border-border rounded-lg p-4">
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{ticket.title}</h3>
+                            <h3 className="font-semibold text-foreground mb-1">{ticket.title}</h3>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-safe-muted">
                               <span>{getCategoryLabel(ticket.category)}</span>
                               <span>•</span>
@@ -144,12 +144,12 @@ function ContactSupportPageContent() {
                           </div>
                           <div className="flex items-center space-x-2">
                             {getStatusIcon(ticket.status)}
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-foreground">
                               {getStatusLabel(ticket.status)}
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{ticket.description}</p>
+                        <p className="text-muted-foreground text-sm line-clamp-2">{ticket.description}</p>
                       </div>
                     ))}
                   </div>
@@ -161,23 +161,23 @@ function ContactSupportPageContent() {
           {/* Sidebar avec informations */}
           <div className="space-y-6">
             {/* Temps de réponse */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">⏱️ Temps de réponse</h3>
+            <div className="bg-card border border-border  rounded-xl shadow-md p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">⏱️ Temps de réponse</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">🐛 Bugs critiques</span>
+                  <span className="text-sm text-muted-foreground">🐛 Bugs critiques</span>
                   <span className="text-sm font-medium text-red-600">&lt; 2h</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">👤 Problèmes de compte</span>
+                  <span className="text-sm text-muted-foreground">👤 Problèmes de compte</span>
                   <span className="text-sm font-medium text-orange-800 dark:text-orange-300">&lt; 4h</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">❓ Aide générale</span>
+                  <span className="text-sm text-muted-foreground">❓ Aide générale</span>
                   <span className="text-sm font-medium text-blue-600">&lt; 24h</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">💡 Nouvelles fonctionnalités</span>
+                  <span className="text-sm text-muted-foreground">💡 Nouvelles fonctionnalités</span>
                   <span className="text-sm font-medium text-green-600">&lt; 72h</span>
                 </div>
               </div>
@@ -195,23 +195,23 @@ function ContactSupportPageContent() {
             </div>
 
             {/* Ressources alternatives */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">📚 Ressources utiles</h3>
+            <div className="bg-card border border-border  rounded-xl shadow-md p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">📚 Ressources utiles</h3>
               <div className="space-y-3">
                 <Link 
                   href="/faq"
-                  className="block p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors"
+                  className="block p-3 border border-border rounded-lg hover:bg-muted transition-colors"
                 >
-                  <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">Questions Fréquentes</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">Réponses aux questions courantes</p>
+                  <p className="font-medium text-foreground mb-1">Questions Fréquentes</p>
+                  <p className="text-xs text-muted-foreground">Réponses aux questions courantes</p>
                 </Link>
                 
                 <Link 
                   href="/support"
-                  className="block p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 transition-colors"
+                  className="block p-3 border border-border rounded-lg hover:bg-muted transition-colors"
                 >
-                  <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">Guide d'utilisation</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">Documentation complète</p>
+                  <p className="font-medium text-foreground mb-1">Guide d'utilisation</p>
+                  <p className="text-xs text-muted-foreground">Documentation complète</p>
                 </Link>
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function ContactSupportPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
+          <p className="text-muted-foreground">Chargement...</p>
         </div>
       </div>
     }>

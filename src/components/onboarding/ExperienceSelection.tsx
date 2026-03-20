@@ -8,77 +8,70 @@ interface ExperienceSelectionProps {
   onChange: (experience: 'Débutant' | 'Intermédiaire' | 'Avancé') => void
 }
 
-export function ExperienceSelection({ value, onChange }: ExperienceSelectionProps) {
-  const experiences = [
-    {
-      id: 'Débutant',
-      title: 'Débutant',
-      description: 'Je commence tout juste ou j\'ai peu d\'expérience en musculation',
-      details: 'Moins de 6 mois d\'expérience',
-      icon: Dumbbell,
-      color: 'bg-green-50 border-green-200 hover:bg-green-100'
-    },
-    {
-      id: 'Intermédiaire',
-      title: 'Intermédiaire',
-      description: 'J\'ai quelques bases et je m\'entraîne régulièrement',
-      details: '6 mois à 2 ans d\'expérience',
-      icon: Trophy,
-      color: 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-    },
-    {
-      id: 'Avancé',
-      title: 'Avancé',
-      description: 'J\'ai une solide expérience et je maîtrise les techniques',
-      details: 'Plus de 2 ans d\'expérience',
-      icon: Star,
-      color: 'bg-purple-50 border-purple-200 hover:bg-purple-100'
-    }
-  ]
+const experiences = [
+  {
+    id: 'Débutant' as const,
+    title: 'Débutant',
+    description: "Je commence tout juste ou j'ai peu d'expérience en musculation",
+    details: "Moins de 6 mois d'expérience",
+    icon: Dumbbell,
+  },
+  {
+    id: 'Intermédiaire' as const,
+    title: 'Intermédiaire',
+    description: "J'ai quelques bases et je m'entraîne régulièrement",
+    details: "6 mois à 2 ans d'expérience",
+    icon: Trophy,
+  },
+  {
+    id: 'Avancé' as const,
+    title: 'Avancé',
+    description: "J'ai une solide expérience et je maîtrise les techniques",
+    details: "Plus de 2 ans d'expérience",
+    icon: Star,
+  },
+]
 
+export function ExperienceSelection({ value, onChange }: ExperienceSelectionProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          Quel est votre niveau d'expérience ?
+        <h2 className="text-xl font-semibold text-foreground mb-1">
+          Quel est votre niveau d&apos;expérience ?
         </h2>
-        <p className="text-gray-600 dark:text-gray-300">
-          Cela nous aidera à adapter l'intensité et la complexité de vos entraînements
+        <p className="text-sm text-muted-foreground">
+          Cela nous aidera à adapter l&apos;intensité et la complexité de vos entraînements
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {experiences.map((exp) => {
           const Icon = exp.icon
           const isSelected = value === exp.id
-          
+
           return (
-            <Card 
+            <Card
               key={exp.id}
-              className={`cursor-pointer transition-all duration-200 ${exp.color} ${
-                isSelected 
-                  ? 'ring-2 ring-blue-500 border-blue-300' 
-                  : 'hover:shadow-md'
+              className={`cursor-pointer transition-all duration-200 hover:shadow-sm ${
+                isSelected
+                  ? 'ring-2 ring-primary border-primary bg-primary/5'
+                  : 'border-border'
               }`}
-              onClick={() => onChange(exp.id as 'Débutant' | 'Intermédiaire' | 'Avancé')}
+              onClick={() => onChange(exp.id)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-lg ${
-                    isSelected 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300'
+                  <div className={`p-3 rounded-lg transition-colors ${
+                    isSelected
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
                   }`}>
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <CardTitle className="text-lg">{exp.title}</CardTitle>
-                    <CardDescription className="text-gray-700 dark:text-gray-300 mt-1">
-                      {exp.description}
-                    </CardDescription>
-                    <div className="text-sm text-gray-600 dark:text-safe-muted mt-1">
-                      {exp.details}
-                    </div>
+                    <CardTitle className="text-base">{exp.title}</CardTitle>
+                    <CardDescription className="mt-0.5">{exp.description}</CardDescription>
+                    <p className="text-xs text-muted-foreground mt-1">{exp.details}</p>
                   </div>
                 </div>
               </CardHeader>
@@ -88,15 +81,9 @@ export function ExperienceSelection({ value, onChange }: ExperienceSelectionProp
       </div>
 
       {value && (
-        <div className="text-center bg-green-50 p-4 rounded-lg border border-green-200">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-xl">💪</span>
-            <p className="text-sm font-medium text-green-800">
-              Parfait !
-            </p>
-          </div>
-          <p className="text-sm text-green-700">
-            Nous adapterons la difficulté selon votre niveau : <strong>{value}</strong>
+        <div className="text-center bg-primary/5 border border-primary/20 p-3 rounded-lg">
+          <p className="text-sm font-medium text-foreground">
+            Programme adapté au niveau : <span className="text-primary">{value}</span>
           </p>
         </div>
       )}

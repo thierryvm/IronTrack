@@ -410,8 +410,8 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
           <div className="space-y-4">
             <div className="text-center mb-6">
               <ChefHat className="h-12 w-12 mx-auto text-orange-800 dark:text-orange-300 mb-2" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Sélectionnez vos ingrédients</h3>
-              <p className="text-gray-600 dark:text-gray-300">Recherchez et ajoutez les ingrédients de votre repas</p>
+              <h3 className="text-xl font-bold text-foreground">Sélectionnez vos ingrédients</h3>
+              <p className="text-muted-foreground">Recherchez et ajoutez les ingrédients de votre repas</p>
             </div>
             
             <FoodSearchAutocomplete
@@ -422,9 +422,9 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             
             {ingredients.length > 0 && (
               <div className="space-y-3">
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">Ingrédients sélectionnés ({ingredients.length})</h4>
+                <h4 className="font-medium text-foreground">Ingrédients sélectionnés ({ingredients.length})</h4>
                 {ingredients.map((ingredient) => (
-                  <div key={ingredient.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div key={ingredient.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
                         <span className="text-orange-800 dark:text-orange-300 font-bold text-sm">
@@ -432,8 +432,8 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                         </span>
                       </div>
                       <div>
-                        <h5 className="font-medium text-gray-900 dark:text-gray-100">{ingredient.food.name}</h5>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <h5 className="font-medium text-foreground">{ingredient.food.name}</h5>
+                        <p className="text-sm text-muted-foreground">
                           {ingredient.food.calories_per_100g} cal/100g
                         </p>
                       </div>
@@ -463,8 +463,8 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
           <div className="space-y-4">
             <div className="text-center mb-6">
               <Scale className="h-12 w-12 mx-auto text-orange-800 dark:text-orange-300 mb-2" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Définissez les quantités</h3>
-              <p className="text-gray-600 dark:text-gray-300">Ajustez les quantités pour chaque ingrédient</p>
+              <h3 className="text-xl font-bold text-foreground">Définissez les quantités</h3>
+              <p className="text-muted-foreground">Ajustez les quantités pour chaque ingrédient</p>
             </div>
             
             <div className="space-y-4">
@@ -473,9 +473,9 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                 const availableUnits = UNIT_CATEGORIES[recommendedUnit.category].units
                 
                 return (
-                  <div key={ingredient.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg space-y-3">
+                  <div key={ingredient.id} className="p-4 border border-border rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
-                      <h5 className="font-medium text-gray-900 dark:text-gray-100">{ingredient.food.name}</h5>
+                      <h5 className="font-medium text-foreground">{ingredient.food.name}</h5>
                       <span className="text-sm text-gray-600 dark:text-safe-muted">
                         {ingredient.calculatedNutrition.calories} cal
                       </span>
@@ -483,7 +483,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     
                     <div className="grid grid-cols-3 gap-3">
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Quantité
                         </label>
                         <input
@@ -494,18 +494,18 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                           onChange={(e) => updateIngredient(ingredient.id, { 
                             quantity: parseFloat(e.target.value) || 0 
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Unité
                         </label>
                         <select
                           value={ingredient.unit}
                           onChange={(e) => updateIngredient(ingredient.id, { unit: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         >
                           {availableUnits.map(unit => (
                             <option key={unit.value} value={unit.value}>
@@ -516,31 +516,31 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="bg-muted p-3 rounded-lg">
                       <div className="grid grid-cols-4 gap-2 text-sm">
                         <div className="text-center">
                           <span className="font-medium text-orange-800 dark:text-orange-300">
                             {ingredient.calculatedNutrition.calories}
                           </span>
-                          <p className="text-gray-600 dark:text-gray-300">cal</p>
+                          <p className="text-muted-foreground">cal</p>
                         </div>
                         <div className="text-center">
                           <span className="font-medium text-blue-600">
                             {ingredient.calculatedNutrition.protein}g
                           </span>
-                          <p className="text-gray-600 dark:text-gray-300">prot</p>
+                          <p className="text-muted-foreground">prot</p>
                         </div>
                         <div className="text-center">
                           <span className="font-medium text-green-600">
                             {ingredient.calculatedNutrition.carbs}g
                           </span>
-                          <p className="text-gray-600 dark:text-gray-300">glu</p>
+                          <p className="text-muted-foreground">glu</p>
                         </div>
                         <div className="text-center">
                           <span className="font-medium text-yellow-600">
                             {ingredient.calculatedNutrition.fat}g
                           </span>
-                          <p className="text-gray-600 dark:text-gray-300">lip</p>
+                          <p className="text-muted-foreground">lip</p>
                         </div>
                       </div>
                     </div>
@@ -563,13 +563,13 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
           <div className="space-y-6">
             <div className="text-center mb-6">
               <Calculator className="h-12 w-12 mx-auto text-orange-800 dark:text-orange-300 mb-2" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Résumé et sauvegarde</h3>
-              <p className="text-gray-600 dark:text-gray-300">Nommez votre repas et vérifiez les valeurs nutritionnelles</p>
+              <h3 className="text-xl font-bold text-foreground">Résumé et sauvegarde</h3>
+              <p className="text-muted-foreground">Nommez votre repas et vérifiez les valeurs nutritionnelles</p>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Nom du repas *
                 </label>
                 <input
@@ -579,7 +579,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   onBlur={(e) => setMealName(sanitizeMealName(e.target.value))}
                   placeholder="Ex: Salade de poulet aux légumes"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                    errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    errors.name ? 'border-red-500' : 'border-border'
                   }`}
                   maxLength={100}
                 />
@@ -590,7 +590,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Portions
                   </label>
                   <input
@@ -600,7 +600,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     value={servings}
                     onChange={(e) => setServings(parseInt(e.target.value) || 1)}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                      errors.servings ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.servings ? 'border-red-500' : 'border-border'
                     }`}
                   />
                   {errors.servings && (
@@ -609,7 +609,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Temps de préparation (min)
                   </label>
                   <input
@@ -617,14 +617,14 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                     min="0"
                     value={preparationTime}
                     onChange={(e) => setPreparationTime(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               {/* Gestion des tags */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Tags (optionnel)
                 </label>
                 <div className="space-y-2">
@@ -640,7 +640,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                         }
                       }}
                       placeholder="Ex: Végétarien, Rapide, Protéiné..."
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       maxLength={30}
                     />
                     <button
@@ -653,12 +653,12 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag) => (
-                        <div key={tag} className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+                        <div key={tag} className="flex items-center space-x-1 px-2 py-1 bg-muted rounded-full">
                           <Tag className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">{tag}</span>
+                          <span className="text-sm text-foreground">{tag}</span>
                           <button
                             onClick={() => removeTag(tag)}
-                            className="text-gray-700 dark:text-gray-300 hover:text-safe-error transition-colors"
+                            className="text-foreground hover:text-safe-error transition-colors"
                           >
                             <LucideX className="h-5 w-5" />
                           </button>
@@ -672,14 +672,14 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             
             {/* Résumé nutritionnel */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Valeurs nutritionnelles totales</h4>
+              <h4 className="font-medium text-foreground mb-3">Valeurs nutritionnelles totales</h4>
               
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">
                     {totalNutrition.calories}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">calories</div>
+                  <div className="text-sm text-muted-foreground">calories</div>
                   <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.calories / servings)} cal/portion
                   </div>
@@ -689,7 +689,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   <div className="text-2xl font-bold text-blue-600">
                     {Math.round(totalNutrition.protein * 10) / 10}g
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">protéines</div>
+                  <div className="text-sm text-muted-foreground">protéines</div>
                   <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.protein / servings * 10) / 10}g/portion
                   </div>
@@ -699,7 +699,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   <div className="text-2xl font-bold text-green-600">
                     {Math.round(totalNutrition.carbs * 10) / 10}g
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">glucides</div>
+                  <div className="text-sm text-muted-foreground">glucides</div>
                   <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.carbs / servings * 10) / 10}g/portion
                   </div>
@@ -709,7 +709,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   <div className="text-2xl font-bold text-yellow-600">
                     {Math.round(totalNutrition.fat * 10) / 10}g
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">lipides</div>
+                  <div className="text-sm text-muted-foreground">lipides</div>
                   <div className="text-xs text-gray-600 dark:text-safe-muted">
                     {Math.round(totalNutrition.fat / servings * 10) / 10}g/portion
                   </div>
@@ -718,15 +718,15 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
             </div>
             
             {/* Détail des ingrédients */}
-            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Détail des ingrédients</h4>
+            <div className="bg-muted p-4 rounded-lg">
+              <h4 className="font-medium text-foreground mb-3">Détail des ingrédients</h4>
               <div className="space-y-2">
                 {ingredients.map((ingredient) => (
                   <div key={ingredient.id} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700 dark:text-gray-300">
+                    <span className="text-foreground">
                       {ingredient.food.name} ({ingredient.quantity} {ingredient.unit})
                     </span>
-                    <span className="text-gray-600 dark:text-gray-300">
+                    <span className="text-muted-foreground">
                       {ingredient.calculatedNutrition.calories} cal
                     </span>
                   </div>
@@ -746,17 +746,17 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg ${className}`}
+      className={`bg-card rounded-xl shadow-lg ${className}`}
     >
       {/* Header avec progress bar */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-foreground">
             {initialMeal ? 'Modifier le repas' : 'Créer un repas'}
           </h2>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
             <LucideX className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
           </button>
@@ -771,20 +771,20 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                   ? 'bg-orange-600 text-white' 
                   : step < currentStep 
                     ? 'bg-green-500 text-white' 
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                    : 'bg-muted text-muted-foreground'
               }`}>
                 {step < currentStep ? <CheckCircle className="h-6 w-6" /> : step}
               </div>
               {step < 3 && (
                 <div className={`w-12 h-1 ${
-                  step < currentStep ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                  step < currentStep ? 'bg-green-500' : 'bg-muted'
                 }`} />
               )}
             </div>
           ))}
         </div>
         
-        <div className="text-sm text-gray-600 dark:text-gray-300">
+        <div className="text-sm text-muted-foreground">
           Étape {currentStep} sur 3: {
             currentStep === 1 ? 'Ingrédients' : 
             currentStep === 2 ? 'Quantités' : 
@@ -809,15 +809,15 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
       </div>
       
       {/* Footer avec navigation */}
-      <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-6 border-t border-border">
         <div className="flex justify-between">
           <button
             onClick={prevStep}
             disabled={currentStep === 1}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               currentStep === 1 
-                ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
+                ? 'bg-muted text-foreground cursor-not-allowed' 
+                : 'bg-muted text-foreground hover:bg-muted'
             }`}
           >
             <ArrowLeft className="h-6 w-6" />
@@ -842,7 +842,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
                 >
                   {isSavingRecipe ? (
                     <>
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                       <span>Sauvegarde...</span>
                     </>
                   ) : (
@@ -860,7 +860,7 @@ export default function MealBuilder({ onMealComplete, onCancel, initialMeal, cla
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white dark:border-gray-700"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                     <span>Sauvegarde...</span>
                   </>
                 ) : (

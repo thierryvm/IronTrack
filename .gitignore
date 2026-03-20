@@ -86,6 +86,7 @@ docs/AUDITS_COMPLETS_*.md
 docs/POSTGREST_*.md
 docs/IronTrack_Audit_UX_2026.*
 docs/PROMPT_CLAUDE_CODE_*.md
+docs/GUIDE_AGENTS_SKILLS.md
 
 # ─── Scripts — fichiers one-shot locaux ─────────────────────
 scripts/fix-*.js

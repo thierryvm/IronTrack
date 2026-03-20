@@ -9,10 +9,10 @@ export default function NotFoundPage() {
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
           <div className="text-8xl font-bold text-orange-600 mb-4">404</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             Page introuvable
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted-foreground">
             La page que vous cherchez n'existe pas ou a été déplacée.
           </p>
         </div>
@@ -29,7 +29,7 @@ export default function NotFoundPage() {
           <div className="text-center">
             <button
               onClick={() => window.history.back()}
-              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:hover:text-orange-400 text-sm transition-colors"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground dark:hover:text-foreground dark:hover:text-orange-400 text-sm transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la page précédente

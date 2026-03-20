@@ -105,8 +105,17 @@ export default function NotificationsPage() {
         
         // Trier par date (plus récent d'abord)
         allNotifications.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        
+
         setNotifications(allNotifications)
+
+        // Marquer tous les tickets comme vus pour effacer le badge du header
+        if (tickets) {
+          const now = new Date().toISOString()
+          tickets.forEach(ticket => {
+            localStorage.setItem(`ticket_seen_${ticket.id}`, now)
+          })
+          window.dispatchEvent(new Event('ticket-seen'))
+        }
         
       } catch (error) {
         console.error('Error in loadAllNotifications:', error)
@@ -147,7 +156,7 @@ export default function NotificationsPage() {
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
+              <div key={i} className="bg-card border border-border rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-4">
                   <div className="w-5 h-5 bg-gray-200 rounded"></div>
                   <div className="flex-1">
@@ -170,14 +179,14 @@ export default function NotificationsPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href="/"
-            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label="Retour à l'accueil"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Notifications</h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <h1 className="text-3xl font-bold text-foreground">Notifications</h1>
+            <p className="text-muted-foreground">
               Gérer vos notifications et alertes importantes
             </p>
           </div>
@@ -185,42 +194,42 @@ export default function NotificationsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <HeadphonesIcon className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Support</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Support</p>
+                <p className="text-xl font-bold text-foreground">
                   {notifications.filter(n => n.type === 'support').length}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                 <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Partenaires</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Partenaires</p>
+                <p className="text-xl font-bold text-foreground">
                   {notifications.filter(n => n.type === 'partner').length}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              <div className="p-2 bg-muted rounded-lg">
                 <Bell className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-xl font-bold text-foreground">
                   {notifications.length}
                 </p>
               </div>
@@ -232,7 +241,7 @@ export default function NotificationsPage() {
         <div className="space-y-4">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
-              <div key={notification.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+              <div key={notification.id} className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                 <div className="p-4">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
@@ -242,16 +251,16 @@ export default function NotificationsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-sm font-medium text-foreground">
                             {notification.message}
                           </p>
                           {notification.description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                               {notification.description}
                             </p>
                           )}
                           <div className="flex items-center gap-4 mt-2 text-xs text-gray-600 dark:text-safe-muted">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-muted">
                               {getNotificationTypeLabel(notification.type)}
                             </span>
                             <span>
@@ -282,12 +291,12 @@ export default function NotificationsPage() {
               </div>
             ))
           ) : (
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-8 text-center">
-              <Bell className="w-12 h-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
+              <Bell className="w-12 h-12 text-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 Aucune notification
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-muted-foreground">
                 Vous n'avez aucune notification pour le moment.
               </p>
             </div>
@@ -295,14 +304,14 @@ export default function NotificationsPage() {
         </div>
         
         {/* Actions rapides */}
-        <div className="mt-8 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Actions rapides</h3>
+        <div className="mt-8 p-4 bg-card border border-border rounded-lg">
+          <h3 className="text-sm font-medium text-foreground mb-3">Actions rapides</h3>
           <div className="flex flex-wrap gap-3">
             {/* SÉCURITÉ: Lien admin tickets UNIQUEMENT pour admin/modérateurs */}
             {(isAdmin || isModerator) && (
               <Link 
                 href="/admin/tickets" 
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted rounded-lg transition-colors"
               >
                 <HeadphonesIcon className="w-4 h-4" />
                 Gérer tickets support
@@ -311,7 +320,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/training-partners" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted rounded-lg transition-colors"
             >
               <Users className="w-4 h-4" />
               Gérer partenaires
@@ -319,7 +328,7 @@ export default function NotificationsPage() {
             
             <Link 
               href="/support/contact" 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted rounded-lg transition-colors"
             >
               <Calendar className="w-4 h-4" />
               Contacter le support
@@ -335,10 +344,10 @@ export default function NotificationsPage() {
                 <MessageSquare className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   Mes Tickets Support
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-sm text-muted-foreground">
                   Gérez vos demandes de support et suivez leurs réponses
                 </p>
               </div>

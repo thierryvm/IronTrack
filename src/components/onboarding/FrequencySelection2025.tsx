@@ -118,7 +118,7 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
                 relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden
                 ${isSelected 
                   ? `${freq.selectedBg} ${freq.selectedBorder} shadow-lg ring-4 ring-orange-100` 
-                  : `${freq.bgColor} ${freq.borderColor} hover:shadow-md hover:border-gray-300 dark:border-gray-600`
+                  : `${freq.bgColor} ${freq.borderColor} hover:shadow-md hover:border-border`
                 }
               `}
               onClick={() => handleFrequencyChange(freq.id as 'Faible' | 'Modérée' | 'Élevée')}

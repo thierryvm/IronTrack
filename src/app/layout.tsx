@@ -1,12 +1,15 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-// HMR optimization disabled in production
 import ClientProviders from "@/components/ClientProviders";
 import VercelProviders from "@/components/VercelProviders";
 import ConditionalHeader from "@/components/layout/ConditionalHeader";
 
-// ULTRAHARDCORE: Police système uniquement
-// const inter = Inter({ subsets: ["latin"], variable: "--font-inter", });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://iron-track-dusky.vercel.app";
 const APP_DESCRIPTION = "Application de suivi de musculation avec minuterie, nutrition et progression. Suis tes entraînements, ta nutrition et ta progression comme un(e) champion(ne) !";
@@ -85,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="h-full" suppressHydrationWarning>
+    <html lang="fr" className={`h-full ${inter.variable}`} suppressHydrationWarning>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

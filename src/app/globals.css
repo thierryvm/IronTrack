@@ -17,9 +17,12 @@ body {
   position: relative;
   /* Padding en bas pour compenser la navigation mobile fixe */
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  
+
   /* OPTIMISATION TOUCH EVENTS - Réduire les violations non-passive */
   touch-action: pan-y pinch-zoom;
+
+  /* Police Inter via CSS variable injectée par next/font */
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 /* 🔧 CORRECTION: Espace pour navigation mobile en bas - uniquement sur mobile */
@@ -71,10 +74,10 @@ img, video, svg, canvas {
   /* ===== SYSTÈME DE THÈME IRONTRACK ===== */
 
   /* Surfaces principales */
-  --surface-light: #ffffff;
-  --surface-light-alt: #f9fafb;
-  --surface-dark: #0b1220;
-  --surface-dark-alt: #111827;
+  --surface-light: #faf9f7;
+  --surface-light-alt: #f4f3f1;
+  --surface-dark: #0d1521;
+  --surface-dark-alt: #111d2e;
 
   /* Brand - Orange IronTrack */
   --brand-500: #f97316;
@@ -111,100 +114,180 @@ img, video, svg, canvas {
   --foreground-secondary: var(--text-secondary-light);
   --border-color: var(--border-light);
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Fond légèrement chaud — premium, moins stérile que le blanc pur */
+  --background: #faf9f7;
+  --foreground: #111218;
+  /* Carte blanche sur fond chaud = séparation nette */
+  --card: #ffffff;
+  --card-foreground: #111218;
+  --popover: #ffffff;
+  --popover-foreground: #111218;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f3f1;
+  --secondary-foreground: #1f2937;
+  --muted: #f4f3f1;
+  --muted-foreground: #6b7280;
+  --accent: #fff7ed;
+  --accent-foreground: #c2410c;
+  --destructive: #ef4444;
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #f97316;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #f4f3f1;
+  --sidebar-foreground: #111218;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff7ed;
+  --sidebar-accent-foreground: #c2410c;
+  --sidebar-border: #e8e6e3;
+  --sidebar-ring: #f97316;
 }
 
-/* Mode clair explicite - priorité maximale */
+/* Mode clair explicite - priorité maximale via html.light */
+/* html.light = spécificité 0,1,1 → garantit la priorité sur tout */
+html.light {
+  --background: #faf9f7;
+  --foreground: #111218;
+  --card: #ffffff;
+  --card-foreground: #111218;
+  --popover: #ffffff;
+  --popover-foreground: #111218;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f3f1;
+  --secondary-foreground: #1f2937;
+  --muted: #f4f3f1;
+  --muted-foreground: #6b7280;
+  --accent: #fff7ed;
+  --accent-foreground: #c2410c;
+  --destructive: #ef4444;
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #f97316;
+  --background-alt: #f4f3f1;
+  --foreground-secondary: #6b7280;
+  --border-color: #e8e6e3;
+}
+
+/* Rétrocompatibilité — classes sans html pour les cas edge */
 .light {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --background-alt: var(--surface-light-alt);
-  --foreground-secondary: var(--text-secondary-light);
-  --border-color: var(--border-light);
+  --background: #faf9f7;
+  --foreground: #111218;
+  --card: #ffffff;
+  --card-foreground: #111218;
+  --popover: #ffffff;
+  --popover-foreground: #111218;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f3f1;
+  --secondary-foreground: #1f2937;
+  --muted: #f4f3f1;
+  --muted-foreground: #6b7280;
+  --accent: #fff7ed;
+  --accent-foreground: #c2410c;
+  --destructive: #ef4444;
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #f97316;
+  --background-alt: #f4f3f1;
+  --foreground-secondary: #6b7280;
+  --border-color: #e8e6e3;
 }
 
 /* Thème sombre - Mode classe .dark */
-.dark {
-  --background: oklch(0.145 0 0);
-  --background-alt: var(--surface-dark-alt);
-  --foreground: oklch(0.985 0 0);
-  --foreground-secondary: var(--text-secondary-dark);
-  --border-color: var(--border-dark);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+/* Palette Steel-Navy IronTrack : navy profond énergique, inspire Nike/Strava, pas de noir terminal */
+/* html.dark = spécificité 0,1,1 > :root 0,0,1 → garantit la priorité sur shadcn oklch defaults */
+html.dark {
+  /* Fond principal : navy profond avec teinte bleue — donne de la profondeur sans oppresser */
+  --background: #0d1521;
+  --background-alt: #111d2e;
+
+  /* Textes */
+  --foreground: #e8edf5;
+  --foreground-secondary: #8a95aa;
+
+  /* Cartes : distinctes du fond, hiérarchie visible */
+  --card: #172033;
+  --card-foreground: #e8edf5;
+  --popover: #172033;
+  --popover-foreground: #e8edf5;
+
+  /* Brand orange inchangé */
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+
+  /* Surfaces secondaires */
+  --secondary: #1f2e45;
+  --secondary-foreground: #e8edf5;
+  --muted: #1a2840;
+  --muted-foreground: #8a95aa;
+  --accent: #1f2e45;
+  --accent-foreground: #f97316;
+
+  /* Bordures : visibles, cohérentes */
+  --border: #2a3d5a;
+  --border-color: #2a3d5a;
+  --input: #2a3d5a;
+  --ring: #f97316;
+
+  /* Destruction */
+  --destructive: #ef4444;
+
+  /* Charts */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+  /* Sidebar */
+  --sidebar: #172033;
+  --sidebar-foreground: #e8edf5;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f2e45;
+  --sidebar-accent-foreground: #e8edf5;
+  --sidebar-border: #2a3d5a;
+  --sidebar-ring: #f97316;
+}
+
+/* Rétrocompatibilité — classe .dark sans html (cas edge, spécificité inférieure) */
+.dark {
+  --background: #0d1521;
+  --background-alt: #111d2e;
+  --foreground: #e8edf5;
+  --foreground-secondary: #8a95aa;
+  --card: #172033;
+  --card-foreground: #e8edf5;
+  --popover: #172033;
+  --popover-foreground: #e8edf5;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #1f2e45;
+  --secondary-foreground: #e8edf5;
+  --muted: #1a2840;
+  --muted-foreground: #8a95aa;
+  --accent: #1f2e45;
+  --accent-foreground: #f97316;
+  --border: #2a3d5a;
+  --border-color: #2a3d5a;
+  --input: #2a3d5a;
+  --ring: #f97316;
+  --destructive: #ef4444;
+  --sidebar: #172033;
+  --sidebar-foreground: #e8edf5;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f2e45;
+  --sidebar-accent-foreground: #e8edf5;
+  --sidebar-border: #2a3d5a;
+  --sidebar-ring: #f97316;
 }
 
 /* Détection automatique thème sombre (priorité faible) */
@@ -240,9 +323,7 @@ img, video, svg, canvas {
 }
 
 body {
-  /* background: var(--background); */
-  /* color: var(--foreground); */
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 /* Optimisations tactiles Android/Samsung */
@@ -261,30 +342,6 @@ body {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
-/* Animations pour la page d'authentification */
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
 
 /* Optimisation des éléments interactifs pour mobiles */
 button, 
@@ -527,14 +584,15 @@ input[type="submit"] {
     color: var(--foreground);
   }
   
-  /* Exclure page auth du background forcé pour préserver glassmorphism */
-  body:has(.backdrop-blur-lg) {
-    background-color: transparent !important;
-  }
-  
   /* S'assurer que tous les éléments héritent correctement */
-  input, textarea, select {
+  input, textarea {
     color: inherit !important;
+  }
+
+  /* select: fond et texte explicites pour dark mode */
+  select {
+    color: inherit;
+    background-color: var(--background);
   }
   
   /* Styles adaptatifs pour les éléments de formulaire */

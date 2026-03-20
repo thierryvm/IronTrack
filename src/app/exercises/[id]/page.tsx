@@ -83,9 +83,9 @@ export default function ExerciseDetailPage() {
       <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div className="h-32 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
-            <div className="h-64 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            <div className="h-8 bg-gray-300 dark:bg-muted rounded w-1/2 mb-4"></div>
+            <div className="h-32 bg-gray-300 dark:bg-muted rounded mb-4"></div>
+            <div className="h-64 bg-gray-300 dark:bg-muted rounded"></div>
           </div>
         </div>
       </div>
@@ -96,10 +96,10 @@ export default function ExerciseDetailPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl font-bold text-foreground mb-4">
             Exercice non trouvé
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-muted-foreground mb-6">
             {error || "L'exercice demandé n'existe pas."}
           </p>
           <Link
@@ -121,7 +121,7 @@ export default function ExerciseDetailPage() {
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/exercises"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour aux exercices
@@ -130,7 +130,7 @@ export default function ExerciseDetailPage() {
           <div className="flex items-center gap-2">
             <Link
               href={`/exercises/${exerciseId}/edit-exercise`}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted transition-colors"
             >
               <Edit className="w-4 h-4" />
               Modifier
@@ -146,13 +146,13 @@ export default function ExerciseDetailPage() {
         </div>
 
         {/* Exercise Info */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-card border border-border rounded-lg shadow-sm p-6 mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             {exercise.name}
           </h1>
           
           {exercise.description && (
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               {exercise.description}
             </p>
           )}
@@ -160,31 +160,31 @@ export default function ExerciseDetailPage() {
           <div className="flex flex-wrap gap-4 text-sm">
             {exercise.muscle_groups && Array.isArray(exercise.muscle_groups) && (
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Muscles : </span>
-                <span className="text-gray-600 dark:text-gray-300">
+                <span className="font-medium text-foreground">Muscles : </span>
+                <span className="text-muted-foreground">
                   {exercise.muscle_groups.join(', ')}
                 </span>
               </div>
             )}
             {exercise.equipment && (
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Équipement : </span>
-                <span className="text-gray-600 dark:text-gray-300">{exercise.equipment}</span>
+                <span className="font-medium text-foreground">Équipement : </span>
+                <span className="text-muted-foreground">{exercise.equipment}</span>
               </div>
             )}
             {exercise.difficulty && (
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Difficulté : </span>
-                <span className="text-gray-600 dark:text-gray-300">{exercise.difficulty}</span>
+                <span className="font-medium text-foreground">Difficulté : </span>
+                <span className="text-muted-foreground">{exercise.difficulty}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Recent Performances */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
+        <div className="bg-card border border-border rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-bold text-foreground">
               Performances récentes
             </h2>
             <Link
@@ -201,31 +201,31 @@ export default function ExerciseDetailPage() {
               {performances.map((performance) => (
                 <div
                   key={performance.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
                 >
                   <div className="flex items-center gap-4">
                     {performance.weight && (
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      <span className="text-sm font-medium text-foreground">
                         {performance.weight}kg
                       </span>
                     )}
                     {performance.reps && (
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm text-muted-foreground">
                         {performance.reps} reps
                       </span>
                     )}
                     {performance.sets && (
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm text-muted-foreground">
                         {performance.sets} sets
                       </span>
                     )}
                     {performance.duration && (
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm text-muted-foreground">
                         {performance.duration}s
                       </span>
                     )}
                     {performance.distance && (
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm text-muted-foreground">
                         {performance.distance}m
                       </span>
                     )}
@@ -242,7 +242,7 @@ export default function ExerciseDetailPage() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Aucune performance enregistrée pour cet exercice
               </p>
               <Link

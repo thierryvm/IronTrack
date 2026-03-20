@@ -230,13 +230,13 @@ export default function RecipeLibrary({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col ${className}`}>
+      <div className={`bg-card rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col ${className}`}>
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <ChefHat className="h-8 w-8 text-orange-800 dark:text-orange-300" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Mes Recettes</h2>
+              <h2 className="text-2xl font-bold text-foreground">Mes Recettes</h2>
             </div>
             <div className="flex items-center space-x-3">
               <div className="text-sm text-gray-600 dark:text-safe-muted">
@@ -244,7 +244,7 @@ export default function RecipeLibrary({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 text-foreground hover:text-foreground dark:hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -254,13 +254,13 @@ export default function RecipeLibrary({
           {/* Barre de recherche et filtres */}
           <div className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-foreground" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher une recette..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
               />
             </div>
 
@@ -271,7 +271,7 @@ export default function RecipeLibrary({
                 className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                   showFavoritesOnly 
                     ? 'bg-red-100 text-red-700' 
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-muted text-foreground hover:bg-muted'
                 }`}
               >
                 <Heart className={`h-5 w-5 ${showFavoritesOnly ? 'fill-current' : ''}`} />
@@ -282,7 +282,7 @@ export default function RecipeLibrary({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'name' | 'updated_at' | 'total_calories')}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
+                className="px-3 py-1 border border-border rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
               >
                 <option value="updated_at">Plus récentes</option>
                 <option value="name">Nom A-Z</option>
@@ -306,7 +306,7 @@ export default function RecipeLibrary({
                     className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedTags.includes(tag)
                         ? 'bg-orange-100 text-orange-700'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        : 'bg-muted text-muted-foreground hover:bg-muted'
                     }`}
                   >
                     <Tag className="h-5 w-5" />
@@ -323,7 +323,7 @@ export default function RecipeLibrary({
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-orange-800 dark:text-orange-300" />
-              <span className="ml-3 text-gray-600 dark:text-gray-300">Chargement des recettes...</span>
+              <span className="ml-3 text-muted-foreground">Chargement des recettes...</span>
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-12">
@@ -333,7 +333,7 @@ export default function RecipeLibrary({
           ) : filteredRecipes.length === 0 ? (
             <div className="text-center py-12">
               <ChefHat className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucune recette trouvée</h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">Aucune recette trouvée</h3>
               <p className="text-gray-600 dark:text-safe-muted">
                 {searchQuery || selectedTags.length > 0 || showFavoritesOnly
                   ? 'Essayez de modifier vos filtres de recherche'
@@ -350,16 +350,16 @@ export default function RecipeLibrary({
                     key={recipe.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-1">
+                          <h3 className="font-medium text-foreground mb-1 line-clamp-1">
                             {recipe.name}
                           </h3>
                           {recipe.description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                            <p className="text-sm text-muted-foreground line-clamp-2">
                               {recipe.description}
                             </p>
                           )}
@@ -369,7 +369,7 @@ export default function RecipeLibrary({
                           className={`p-1 rounded-full transition-colors ${
                             recipe.is_favorite 
                               ? 'text-safe-error hover:bg-red-50' 
-                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800'
+                              : 'text-foreground hover:bg-muted'
                           }`}
                         >
                           <Heart className={`h-6 w-6 ${recipe.is_favorite ? 'fill-current' : ''}`} />
@@ -414,13 +414,13 @@ export default function RecipeLibrary({
                           {recipe.tags.slice(0, 3).map(tag => (
                             <span 
                               key={tag}
-                              className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full"
+                              className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
                             >
                               {tag}
                             </span>
                           ))}
                           {recipe.tags.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">
+                            <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                               +{recipe.tags.length - 3}
                             </span>
                           )}
@@ -441,7 +441,7 @@ export default function RecipeLibrary({
                           </button>
                           <button
                             onClick={() => onRecipeEdit?.(recipe)}
-                            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit className="h-6 w-6" />
@@ -484,20 +484,20 @@ export default function RecipeLibrary({
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                className="bg-card border border-border rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-6 border-b border-border">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{selectedRecipe.name}</h3>
+                      <h3 className="text-xl font-bold text-foreground">{selectedRecipe.name}</h3>
                       {selectedRecipe.description && (
-                        <p className="text-gray-600 dark:text-gray-300 mt-1">{selectedRecipe.description}</p>
+                        <p className="text-muted-foreground mt-1">{selectedRecipe.description}</p>
                       )}
                     </div>
                     <button
                       onClick={() => setSelectedRecipe(null)}
-                      className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+                      className="p-2 hover:bg-muted rounded-full transition-colors"
                     >
                       <X className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
                     </button>
@@ -508,46 +508,46 @@ export default function RecipeLibrary({
                   {/* Informations générales */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center space-x-2">
-                      <Users className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                      <span className="text-gray-600 dark:text-gray-300">{selectedRecipe.servings} portion{selectedRecipe.servings > 1 ? 's' : ''}</span>
+                      <Users className="h-5 w-5 text-foreground" />
+                      <span className="text-muted-foreground">{selectedRecipe.servings} portion{selectedRecipe.servings > 1 ? 's' : ''}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Clock className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                      <span className="text-gray-600 dark:text-gray-300">{formatPrepTime(selectedRecipe.preparation_time || 0)}</span>
+                      <Clock className="h-5 w-5 text-foreground" />
+                      <span className="text-muted-foreground">{formatPrepTime(selectedRecipe.preparation_time || 0)}</span>
                     </div>
                   </div>
 
                   {/* Nutrition totale */}
                   <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Valeurs nutritionnelles totales</h4>
+                    <h4 className="font-medium text-foreground mb-3">Valeurs nutritionnelles totales</h4>
                     <div className="grid grid-cols-4 gap-4 text-center">
                       <div>
                         <div className="text-lg font-bold text-orange-800 dark:text-orange-300">{selectedRecipe.total_calories}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">calories</div>
+                        <div className="text-sm text-muted-foreground">calories</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-blue-600">{selectedRecipe.total_protein}g</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">protéines</div>
+                        <div className="text-sm text-muted-foreground">protéines</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-green-600">{selectedRecipe.total_carbs}g</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">glucides</div>
+                        <div className="text-sm text-muted-foreground">glucides</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-yellow-600">{selectedRecipe.total_fat}g</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">lipides</div>
+                        <div className="text-sm text-muted-foreground">lipides</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Ingrédients */}
                   <div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Ingrédients</h4>
+                    <h4 className="font-medium text-foreground mb-3">Ingrédients</h4>
                     <div className="space-y-2">
                       {selectedRecipe.ingredients.map((ingredient, index) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <span className="font-medium">{ingredient.food_name}</span>
-                          <span className="text-sm text-gray-600 dark:text-gray-300">{ingredient.quantity}{ingredient.unit}</span>
+                          <span className="text-sm text-muted-foreground">{ingredient.quantity}{ingredient.unit}</span>
                         </div>
                       ))}
                     </div>
@@ -556,7 +556,7 @@ export default function RecipeLibrary({
                   {/* Tags */}
                   {selectedRecipe.tags && selectedRecipe.tags.length > 0 && (
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Tags</h4>
+                      <h4 className="font-medium text-foreground mb-3">Tags</h4>
                       <div className="flex flex-wrap gap-2">
                         {selectedRecipe.tags.map(tag => (
                           <span 
@@ -571,11 +571,11 @@ export default function RecipeLibrary({
                   )}
                 </div>
 
-                <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="p-6 border-t border-border">
                   <div className="flex justify-end space-x-3">
                     <button
                       onClick={() => setSelectedRecipe(null)}
-                      className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                      className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted transition-colors"
                     >
                       Fermer
                     </button>

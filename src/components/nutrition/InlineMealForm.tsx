@@ -113,7 +113,7 @@ export default function InlineMealForm({
       <Button
         variant="outline"
         onClick={() => setIsOpen(true)}
-        className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-safe-muted hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
+        className="w-full p-4 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
       >
         <Plus className="h-5 w-5" />
         <span>Ajouter un aliment</span>
@@ -122,11 +122,11 @@ export default function InlineMealForm({
   }
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-orange-50 dark:bg-orange-900/20">
+    <div className="border border-border rounded-lg p-4 bg-orange-50 dark:bg-orange-900/20">
       <div className="space-y-4">
         {/* Recherche d'aliment */}
         <div>
-          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Label className="text-sm font-medium text-foreground">
             Rechercher un aliment
           </Label>
           <FoodSearchAutocomplete
@@ -150,7 +150,7 @@ export default function InlineMealForm({
           <>
             {/* Nom personnalisé */}
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label className="text-sm font-medium text-foreground">
                 Nom du repas (optionnel)
               </Label>
               <Input
@@ -165,7 +165,7 @@ export default function InlineMealForm({
 
             {/* Quantité */}
             <div>
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label className="text-sm font-medium text-foreground">
                 Quantité (g)
               </Label>
               <Input
@@ -179,13 +179,13 @@ export default function InlineMealForm({
             </div>
 
             {/* Aperçu nutritionnel */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-lg">
-              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+            <div className="bg-card border border-border p-3 rounded-lg">
+              <h4 className="font-medium text-foreground mb-2">
                 Valeurs nutritionnelles pour {quantity}g
               </h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <span className="text-gray-600 dark:text-gray-300">Calories:</span>
+                  <span className="text-muted-foreground">Calories:</span>
                   <span className="ml-2 font-medium text-orange-800 dark:text-orange-300">
                     {Math.round(selectedFood.calories * quantity / 100)} kcal
                   </span>
@@ -218,7 +218,7 @@ export default function InlineMealForm({
           <Button
             variant="outline"
             onClick={handleCancel}
-            className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="text-foreground hover:bg-muted transition-colors"
           >
             <X className="h-4 w-4 mr-1" />
             Annuler

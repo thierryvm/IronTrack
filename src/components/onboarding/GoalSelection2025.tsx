@@ -102,7 +102,7 @@ export function GoalSelection2025({ value, onChange }: GoalSelection2025Props) {
                 relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden
                 ${isSelected 
                   ? `${goal.selectedBg} ${goal.selectedBorder} shadow-lg ring-4 ring-orange-100` 
-                  : `${goal.bgColor} ${goal.borderColor} hover:shadow-md hover:border-gray-300 dark:border-gray-600`
+                  : `${goal.bgColor} ${goal.borderColor} hover:shadow-md hover:border-border`
                 }
               `}
               onClick={() => onChange(goal.id as 'Prise de masse' | 'Perte de poids' | 'Maintien' | 'Performance')}

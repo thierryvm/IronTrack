@@ -255,28 +255,28 @@ export default function FAQPage() {
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-card border border-border  rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
               <HelpCircle className="h-8 w-8 text-safe-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Questions Fréquentes (FAQ)</h1>
-              <p className="text-gray-600 dark:text-gray-300">Trouvez rapidement les réponses à vos questions</p>
+              <h1 className="text-2xl font-bold text-foreground">Questions Fréquentes (FAQ)</h1>
+              <p className="text-muted-foreground">Trouvez rapidement les réponses à vos questions</p>
             </div>
           </div>
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-card border border-border  rounded-xl shadow-md p-6 mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-700 dark:text-gray-300" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-foreground" />
             <input
               type="text"
               placeholder="Rechercher dans les questions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -284,8 +284,8 @@ export default function FAQPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Categories Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Catégories</h3>
+            <div className="bg-card border border-border  rounded-xl shadow-md p-4">
+              <h3 className="font-semibold text-foreground mb-4">Catégories</h3>
               <nav className="space-y-2">
                 {categories.map((category) => {
                   const Icon = category.icon
@@ -297,7 +297,7 @@ export default function FAQPage() {
                       className={`w-full text-left p-3 rounded-lg transition-colors flex items-center justify-between ${
                         isActive
                           ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
-                          : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+                          : 'hover:bg-muted text-foreground'
                       }`}
                       aria-label={`Filtrer par catégorie ${category.label}`}
                       aria-pressed={isActive}
@@ -310,7 +310,7 @@ export default function FAQPage() {
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         isActive 
                           ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                          : 'bg-muted text-muted-foreground'
                       }`}>
                         {category.count}
                       </span>
@@ -323,9 +323,9 @@ export default function FAQPage() {
 
           {/* FAQ Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-md p-6">
+            <div className="bg-card border border-border  rounded-xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                <h2 className="text-xl font-bold text-foreground">
                   {selectedCategory === 'all' ? 'Toutes les questions' : categories.find(c => c.id === selectedCategory)?.label}
                 </h2>
                 <span className="text-sm text-gray-600 dark:text-safe-muted">
@@ -335,7 +335,7 @@ export default function FAQPage() {
 
               {filteredFAQ.length === 0 ? (
                 <div className="text-center py-8">
-                  <HelpCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" />
+                  <HelpCircle className="h-12 w-12 text-foreground mx-auto mb-4" />
                   <p className="text-gray-600 dark:text-safe-muted mb-4">
                     {searchQuery ? 'Aucune question trouvée pour votre recherche' : 'Aucune question dans cette catégorie'}
                   </p>
@@ -355,17 +355,17 @@ export default function FAQPage() {
                   {filteredFAQ.map((item) => {
                     const isOpen = openItems.includes(item.id)
                     return (
-                      <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                      <div key={item.id} className="border border-border rounded-lg overflow-hidden">
                         <button
                           onClick={() => toggleItem(item.id)}
-                          className="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between"
+                          className="w-full text-left p-4 hover:bg-muted transition-colors flex items-center justify-between"
                           aria-expanded={isOpen}
                           aria-controls={`faq-answer-${item.id}`}
                           aria-label={`${isOpen ? 'Masquer' : 'Afficher'} la réponse pour: ${item.question}`}
                           type="button"
                         >
                           <span 
-                            className="font-medium text-gray-900 dark:text-gray-100 pr-4" 
+                            className="font-medium text-foreground pr-4" 
                             id={`faq-question-${item.id}`}
                           >
                             {item.question}
@@ -378,12 +378,12 @@ export default function FAQPage() {
                         </button>
                         {isOpen && (
                           <div 
-                            className="px-4 pb-4 border-t border-gray-100 dark:border-gray-700"
+                            className="px-4 pb-4 border-t border-gray-100 dark:border-border"
                             id={`faq-answer-${item.id}`}
                             role="region"
                             aria-labelledby={`faq-question-${item.id}`}
                           >
-                            <div className="pt-3 text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <div className="pt-3 text-foreground leading-relaxed">
                               {item.answer}
                             </div>
                           </div>
@@ -407,7 +407,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/support"
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                className="bg-card border border-border text-orange-800 dark:text-orange-300 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
               >
                 Guide Complet
               </Link>

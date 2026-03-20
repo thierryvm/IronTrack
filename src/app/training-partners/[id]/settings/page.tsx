@@ -221,7 +221,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Partenariat non trouvé</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Partenariat non trouvé</h2>
           <button
             onClick={() => router.push('/training-partners')}
             className="text-indigo-600 hover:text-indigo-800"
@@ -244,16 +244,16 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
         <div className="mb-8">
           <button
             onClick={() => router.push('/training-partners')}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 mb-4"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour aux partenaires
           </button>
           
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Paramètres de partage
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted-foreground">
             Gérez ce que vous partagez avec{' '}
             <span className="font-semibold">
               {partner.pseudo || partner.full_name || partner.email}
@@ -274,8 +274,8 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
         )}
 
         {/* Settings Form */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+        <div className="bg-card border border-border  rounded-lg shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-6">
             Données partagées
           </h2>
 
@@ -283,7 +283,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
             {/* Workouts */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="text-sm font-medium text-foreground">
                   Entraînements
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-safe-muted">
@@ -297,14 +297,14 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                   checked={settings.share_workouts}
                   onChange={(e) => handleSettingChange('share_workouts', e.target.checked)}
                 />
-                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-700 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <div className="w-11 h-6 bg-gray-200 dark:bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-border after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
               </label>
             </div>
 
             {/* Nutrition */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="text-sm font-medium text-foreground">
                   Nutrition
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-safe-muted">
@@ -318,14 +318,14 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                   checked={settings.share_nutrition}
                   onChange={(e) => handleSettingChange('share_nutrition', e.target.checked)}
                 />
-                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-700 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <div className="w-11 h-6 bg-gray-200 dark:bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-border after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
               </label>
             </div>
 
             {/* Progress */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="text-sm font-medium text-foreground">
                   Progrès
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-safe-muted">
@@ -339,7 +339,7 @@ export default function PartnerSettingsPage({ params }: { params: Promise<{ id: 
                   checked={settings.share_progress}
                   onChange={(e) => handleSettingChange('share_progress', e.target.checked)}
                 />
-                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-700 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <div className="w-11 h-6 bg-gray-200 dark:bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-border after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
               </label>
             </div>
           </div>

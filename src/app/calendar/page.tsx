@@ -429,7 +429,7 @@ export default function CalendarPage() {
                   }
                 }}
                 variant="outline"
-                className="bg-white dark:bg-gray-800 border-white dark:border-gray-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
+                className="bg-card border-white dark:border-border text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
                 title={
                   partnersWorkouts.length === 0 
                     ? 'Aucune séance partagée disponible - Gérer mes partenaires' 
@@ -444,7 +444,7 @@ export default function CalendarPage() {
                     {partnersWorkouts.length}
                   </span>
                 ) : (
-                  <span className="bg-gray-400 dark:bg-gray-600 text-white rounded-full px-2 py-0.5 text-xs font-bold shadow-sm">
+                  <span className="bg-gray-400 dark:bg-muted text-white rounded-full px-2 py-0.5 text-xs font-bold shadow-sm">
                     0
                   </span>
                 )}
@@ -504,7 +504,7 @@ export default function CalendarPage() {
                       </Button>
                     </div>
                     
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
+                    <h2 className="text-xl sm:text-2xl font-bold text-foreground capitalize">
                       {monthName}
                     </h2>
                     
@@ -546,7 +546,7 @@ export default function CalendarPage() {
                   >
                     {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
                     {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                      <div key={day} className="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                      <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
                         {day}
                       </div>
                     ))}
@@ -651,7 +651,7 @@ export default function CalendarPage() {
                   {/* Vue liste des séances */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Séances planifiées</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Séances planifiées</h3>
                       <Button
                         onClick={() => router.push('/workouts/new')}
                         size="sm"
@@ -687,7 +687,7 @@ export default function CalendarPage() {
                         .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime());
                       
                       return allMonthWorkouts.length === 0 ? (
-                        <div className="text-center py-12 text-gray-600 dark:text-gray-500">
+                        <div className="text-center py-12 text-muted-foreground">
                           <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                           <p className="text-lg font-medium">Aucune séance planifiée</p>
                           <p className="text-sm">Créez votre première séance pour commencer</p>
@@ -695,11 +695,11 @@ export default function CalendarPage() {
                       ) : (
                         <div className="space-y-3">
                           {allMonthWorkouts.slice(0, 10).map(workout => (
-                            <div key={`${workout.isPartnerWorkout ? 'partner-' : 'personal-'}${workout.id}`} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div key={`${workout.isPartnerWorkout ? 'partner-' : 'personal-'}${workout.id}`} className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border">
                               <div className={`w-3 h-3 rounded-full ${getTypeColor(getCorrectType(workout))}`}></div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <h4 className="font-medium text-gray-900 dark:text-gray-100">{workout.name}</h4>
+                                  <h4 className="font-medium text-foreground">{workout.name}</h4>
                                   {workout.isPartnerWorkout && (
                                     <span className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20 px-2 py-1 rounded-full">
                                       <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -709,7 +709,7 @@ export default function CalendarPage() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-500">
+                                <p className="text-sm text-muted-foreground">
                                   {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
                                     weekday: 'long',
                                     day: 'numeric',
@@ -731,7 +731,7 @@ export default function CalendarPage() {
                 
                 <TabsContent value="stats" className="m-0 xl:hidden">
                   {/* Vue stats simplifiée */}
-                  <div className="text-center py-12 text-gray-600 dark:text-gray-500">
+                  <div className="text-center py-12 text-muted-foreground">
                     <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                     <p className="text-lg font-medium">Statistiques</p>
                     <p className="text-sm">Fonctionnalité disponible prochainement</p>
@@ -744,8 +744,8 @@ export default function CalendarPage() {
           {/* Panneau latéral simple */}
           <div className="space-y-6">
             {/* Statistiques mensuelles */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
-              <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+            <div className="bg-card border border-border rounded-xl shadow-md p-4 lg:p-6">
+              <h3 className="text-base lg:text-lg font-bold text-foreground mb-4">
                 Statistiques {monthName}
               </h3>
               <div className="space-y-4">
@@ -779,14 +779,14 @@ export default function CalendarPage() {
                       
                       {typeStats.length > 0 && (
                         <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Types d'entraînements</h4>
+                          <h4 className="text-sm font-medium text-foreground">Types d'entraînements</h4>
                           {typeStats.slice(0, 3).map(type => (
                             <div key={type.name} className="flex items-center justify-between">
                               <div className="flex items-center space-x-2">
                                 <div className={`w-3 h-3 rounded-full ${type.color}`}></div>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{type.name}</span>
+                                <span className="text-sm text-foreground">{type.name}</span>
                               </div>
-                              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{type.count}</span>
+                              <span className="text-sm font-medium text-foreground">{type.count}</span>
                             </div>
                           ))}
                         </div>
@@ -799,8 +799,8 @@ export default function CalendarPage() {
 
             {/* Date sélectionnée */}
             {selectedDate && (
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-md p-4 lg:p-6">
-                <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+              <div className="bg-card border border-border rounded-xl shadow-md p-4 lg:p-6">
+                <h3 className="text-base lg:text-lg font-bold text-foreground mb-4">
                   {formatDate(selectedDate)}
                 </h3>
                 <div className="space-y-3">
@@ -809,22 +809,22 @@ export default function CalendarPage() {
                     
                     if (workoutsForDate.length === 0) {
                       return (
-                        <div className="text-center py-6 text-gray-600 dark:text-gray-500">
+                        <div className="text-center py-6 text-muted-foreground">
                           <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                           <p>Aucune séance planifiée</p>
                         </div>
                       );
                     }
                     return workoutsForDate.map(workout => (
-                      <div key={workout.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex flex-col gap-1">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                      <div key={workout.id} className="p-3 bg-muted rounded-lg flex flex-col gap-1">
+                        <h4 className="font-medium text-foreground">
                           {workout.name}
                         </h4>
                         <Badge className={`text-white ${getTypeColor(getCorrectType(workout))}`}>
                           {getCorrectType(workout)}
                         </Badge>
                         {workout.duration && (
-                          <span className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
+                          <span className="flex items-center space-x-1 text-sm text-muted-foreground">
                             <Clock className="h-4 w-4" />
                             <span>{workout.duration} min</span>
                           </span>
