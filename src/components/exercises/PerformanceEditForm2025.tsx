@@ -198,7 +198,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -210,7 +210,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
 
   if (!performance) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-safe-error mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Performance introuvable</h2>
@@ -224,12 +224,12 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10"
+        className="bg-card border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -238,7 +238,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
                 variant="ghost"
                 size="icon"
                 onClick={handleCancel}
-                className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                className="text-gray-700 dark:text-gray-300 hover:text-foreground dark:hover:text-foreground"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -285,7 +285,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
         transition={{ delay: 0.1 }}
         className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">

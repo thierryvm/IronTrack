@@ -50,7 +50,7 @@ const nextConfig = {
   },
 
   // Configuration webpack minimale
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, nextRuntime }) => {
     config.ignoreWarnings = [
       /Critical dependency: the request of a dependency is an expression/,
       /Can't resolve 'next.config.compiled.js'/,
@@ -63,6 +63,14 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
+      };
+    }
+    
+    // Correction Edge Runtime pour Supabase Realtime
+    if (nextRuntime === 'edge') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'ws': false,
       };
     }
     

@@ -117,16 +117,16 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+      <div className="min-h-screen bg-background p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
+          <div className="bg-card border border-border rounded-xl shadow-md p-6">
             <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-6"></div>
+              <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+              <div className="h-4 bg-muted rounded w-2/3 mb-6"></div>
               <div className="space-y-4">
-                <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-12 bg-muted rounded"></div>
+                <div className="h-12 bg-muted rounded"></div>
+                <div className="h-24 bg-muted rounded"></div>
               </div>
             </div>
           </div>
@@ -137,15 +137,15 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+      <div className="min-h-screen bg-background p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
+          <div className="bg-card border border-border rounded-xl shadow-md p-6">
             <div className="text-center py-8">
               <AlertCircle className="w-16 h-16 text-safe-error mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-bold text-foreground mb-2">
                 Exercice non trouvé
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-muted-foreground mb-6">
                 L'exercice avec l'ID {exerciseId} n'existe pas ou n'est plus accessible.
               </p>
               <Link 
@@ -163,14 +163,14 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto">
         {/* En-tête */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <Link 
               href="/exercises"
-              className="flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="flex items-center px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour
@@ -185,7 +185,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
         </div>
 
         {/* Formulaire */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6">
+        <div className="bg-card border border-border rounded-xl shadow-md p-6">
           {message && (
             <div className={`mb-6 p-4 rounded-lg ${
               isSuccess 
@@ -210,14 +210,14 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
           <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
             {/* Nom */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Nom de l'exercice *
               </label>
               <input
                 type="text"
                 value={exercise.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                 required
               />
             </div>
@@ -225,13 +225,13 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
             {/* Type et groupe musculaire */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Type d'exercice *
                 </label>
                 <select
                   value={exercise.exercise_type}
                   onChange={(e) => handleInputChange('exercise_type', e.target.value as 'Musculation' | 'Cardio')}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                   required
                 >
                   <option value="Musculation">Musculation</option>
@@ -240,13 +240,13 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Groupe musculaire *
                 </label>
                 <select
                   value={exercise.muscle_group}
                   onChange={(e) => handleInputChange('muscle_group', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                   required
                 >
                   <option value="">Sélectionner...</option>
@@ -262,13 +262,13 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
             {/* Équipement et difficulté */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Équipement *
                 </label>
                 <select
                   value={exercise.equipment_id}
                   onChange={(e) => handleInputChange('equipment_id', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                   required
                 >
                   <option value="">Sélectionner...</option>
@@ -281,13 +281,13 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Difficulté (1-5) *
                 </label>
                 <select
                   value={exercise.difficulty}
                   onChange={(e) => handleInputChange('difficulty', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                   required
                 >
                   <option value={1}>1 - Très facile</option>
@@ -301,28 +301,28 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Description
               </label>
               <textarea
                 value={exercise.description || ''}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                 placeholder="Description de l'exercice..."
               />
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Notes personnelles
               </label>
               <textarea
                 value={exercise.notes || ''}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 bg-card text-foreground"
                 placeholder="Vos notes sur cet exercice..."
               />
             </div>
@@ -331,7 +331,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
             <div className="flex items-center justify-end space-x-4 pt-6">
               <Link
                 href="/exercises"
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="px-6 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 Annuler
               </Link>
@@ -342,7 +342,7 @@ export function ExerciseEditForm({ exerciseId }: ExerciseEditFormProps) {
               >
                 {saving ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white dark:border-gray-700/30 border-t-white rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-white border-t-white rounded-full animate-spin mr-2" />
                     Sauvegarde...
                   </>
                 ) : (

@@ -467,7 +467,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
         <div className="flex gap-3">
           <button
             onClick={onBack}
-            className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-muted transition-colors flex items-center justify-center gap-2"
           >
             <ArrowLeft className="h-6 w-6" />
             Retour
@@ -476,7 +476,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
           <button
             onClick={handleSkip}
             disabled={loading}
-            className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors disabled:opacity-50"
+            className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-muted transition-colors disabled:opacity-50"
           >
             Passer
           </button>

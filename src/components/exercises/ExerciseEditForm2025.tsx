@@ -383,7 +383,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -395,11 +395,11 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-safe-error mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Exercice introuvable</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">L'exercice demandé n'existe pas ou a été supprimé.</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Exercice introuvable</h2>
+          <p className="text-muted-foreground mb-4">L'exercice demandé n'existe pas ou a été supprimé.</p>
           <Button onClick={() => router.push('/exercises')}>
             Retour aux exercices
           </Button>
@@ -409,9 +409,9 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+      <div className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -419,12 +419,12 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                 variant="ghost"
                 size="icon"
                 onClick={handleCancel}
-                className="text-gray-700 dark:text-gray-300 hover:text-gray-600"
+                className="text-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                <h1 className="text-xl font-semibold text-foreground">
                   Modifier l'exercice
                 </h1>
                 <p className="text-sm text-gray-600 dark:text-safe-muted">{exercise.name}</p>
@@ -438,14 +438,14 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
           
           {/* Form Content */}
           <div className="p-6 space-y-6">
             
             {/* Photo Upload Section */}
-            <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="border-b border-border pb-6">
+              <h3 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
                 <Target className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 Photo de l'exercice
               </h3>
@@ -459,7 +459,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
             {/* Basic Information */}
             <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <h3 className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Dumbbell className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                 Informations de base
               </h3>
@@ -489,7 +489,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                           flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                           ${exercise.exercise_type === type
                             ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-700'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'border-border hover:border-gray-300'
                           }
                         `}
                       >
@@ -569,7 +569,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                         flex-1 p-3 border-2 rounded-lg cursor-pointer transition-all
                         ${exercise.difficulty === level
                           ? difficultyColors[level]
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          : 'border-border hover:border-gray-300'
                         }
                       `}
                     >
@@ -612,11 +612,11 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
               {/* Section Métriques Spécifiques - Nouveau */}
               {exercise && (
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
                     <Activity className="h-5 w-5 text-orange-800 dark:text-orange-300" />
                     Métriques spécifiques à l'exercice
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                  <p className="text-sm text-muted-foreground mb-6">
                     Configurez les métriques par défaut pour ce type d'exercice. Ces valeurs serviront de base pour les nouvelles performances.
                   </p>
                   <ExerciseDefaultMetricsForm
@@ -636,7 +636,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
                         type="checkbox"
                         checked={updateLastPerformance}
                         onChange={(e) => setUpdateLastPerformance(e.target.checked)}
-                        className="mt-1 h-6 w-6 text-orange-600 focus:ring-orange-500 border-gray-300 dark:border-gray-600 rounded"
+                        className="mt-1 h-6 w-6 text-orange-600 focus:ring-orange-500 border-border rounded"
                       />
                       <div className="flex-1">
                         <div className="font-medium text-blue-900">
@@ -655,7 +655,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
           </div>
 
           {/* Footer Actions - Position fixe en bas */}
-          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-lg">
+          <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 shadow-lg">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end sm:items-center">
               <Button
                 variant="secondary"

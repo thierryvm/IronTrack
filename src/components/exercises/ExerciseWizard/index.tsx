@@ -267,7 +267,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
           <div className="flex items-center justify-between mb-3">
             <button
               onClick={state.currentStep > 0 ? prevStep : handleClose}
-              className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-2 hover:bg-muted rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label={state.currentStep > 0 ? "Retourner à l'étape précédente" : "Fermer et retourner à la liste des exercices"}
               type="button"
             >
@@ -284,7 +284,7 @@ export const ExerciseWizard: React.FC<ExerciseWizardProps> = ({
             {onClose && (
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="p-2 hover:bg-muted rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Annuler et fermer la création d'exercice"
                 type="button"
               >

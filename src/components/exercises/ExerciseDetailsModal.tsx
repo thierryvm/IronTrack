@@ -168,7 +168,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-white dark:bg-gray-900" aria-describedby="exercise-details-description">
+      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-card" aria-describedby="exercise-details-description">
         <DialogHeader className="sr-only">
           <DialogTitle>
             Détails de l'exercice {exercise?.name || ''}
@@ -185,17 +185,17 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
           className="w-full h-full"
         >
           {/* Header visuel - conservé pour l'UI */}
-          <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
             <Button
               onClick={onClose}
               variant="ghost"
               size="sm"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 hover:bg-muted"
               aria-label="Retour à la liste des exercices"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </Button>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center flex-1" aria-hidden="true">
+            <h2 className="text-lg font-semibold text-foreground text-center flex-1" aria-hidden="true">
               Détails de l'exercice
             </h2>
             {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
@@ -211,7 +211,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
               <div className="space-y-6">
                 {/* Photo de l'exercice */}
                 {exercise.image_url && (
-                  <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-muted">
                     <Image
                       src={exercise.image_url}
                       alt={`Photo de ${exercise.name}`}
@@ -224,7 +224,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                 {/* Info exercice */}
                 <div>
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+                    <h3 className="text-xl font-bold text-foreground">{exercise.name}</h3>
                     {(() => {
                       // Calcul du score de complétion
                       let score = 60 // Base pour champs requis
@@ -263,8 +263,8 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                   <div className="mt-4 space-y-3">
                     {exercise.description ? (
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</h5>
-                        <p className="text-gray-600 dark:text-gray-300">{exercise.description}</p>
+                        <h5 className="text-sm font-medium text-foreground mb-1">Description</h5>
+                        <p className="text-muted-foreground">{exercise.description}</p>
                       </div>
                     ) : (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -276,8 +276,8 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                     
                     {exercise.instructions ? (
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Instructions</h5>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm whitespace-pre-line">{exercise.instructions}</p>
+                        <h5 className="text-sm font-medium text-foreground mb-1">Instructions</h5>
+                        <p className="text-muted-foreground text-sm whitespace-pre-line">{exercise.instructions}</p>
                       </div>
                     ) : (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
@@ -290,12 +290,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                 </div>
 
                 {/* Dernière performance */}
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3">
+                <div className="bg-muted rounded-lg p-4 flex items-center gap-3">
                   <Trophy className="h-6 w-6 text-safe-warning" />
                   {lastPerf ? (
-                    <span className="text-gray-800 dark:text-gray-200">
+                    <span className="text-foreground">
                       Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
-                      <span className="text-gray-700 dark:text-gray-300 ml-2">
+                      <span className="text-foreground ml-2">
                         ({new Date(lastPerf.performed_at).toLocaleDateString()})
                       </span>
                     </span>
@@ -389,7 +389,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       onClose()
                       router.push(`/exercises/${exerciseId}/edit-exercise`)
                     }}
-                    className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-muted hover:bg-muted text-foreground py-2 px-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                   >
                     <Edit3 className="h-4 w-4" />
                     Modifier l'exercice
@@ -408,7 +408,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
 
                 {/* Historique des performances */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                  <h4 className="text-lg font-semibold text-foreground mb-4">
                     Historique des performances ({performances.length})
                   </h4>
                   
@@ -423,12 +423,12 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                       {performances.map((perf) => (
                         <div
                           key={perf.id}
-                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                          className="bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-4">
-                                <span className="font-medium text-gray-900 dark:text-gray-100">
+                                <span className="font-medium text-foreground">
                                   {getPerfLabel(perf, exercise.exercise_type, exercise.name)}
                                 </span>
                                 <span className="text-sm text-gray-600 dark:text-safe-muted">
@@ -436,7 +436,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                 </span>
                               </div>
                               {perf.notes && (
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{perf.notes}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{perf.notes}</p>
                               )}
                             </div>
                             <div className="flex items-center gap-2">
@@ -445,7 +445,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                   onClose()
                                   router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
                                 }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-orange-800 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                                className="p-2 text-foreground hover:text-orange-800 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
                                 title="Modifier cette performance"
                               >
                                 <Edit3 className="h-6 w-6" />
@@ -455,7 +455,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
                                   setPerfToDelete(perf)
                                   setDeleteModalOpen(true)
                                 }}
-                                className="p-2 text-gray-700 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Supprimer"
                               >
                                 <Trash2 className="h-6 w-6" />
@@ -479,9 +479,9 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
         {/* Modal de confirmation simple - temporaire */}
         {deleteModalOpen && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]" onClick={() => setDeleteModalOpen(false)}>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4" onClick={e => e.stopPropagation()}>
+            <div className="bg-card rounded-lg p-6 max-w-md mx-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-2">Supprimer la performance</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.
               </p>
               <div className="flex space-x-3">

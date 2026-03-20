@@ -27,19 +27,20 @@ const InputGlassmorphism = React.forwardRef<HTMLInputElement, InputGlassmorphism
             // Padding adaptatif selon présence d'icône
             icon ? "pl-12 pr-4 py-3" : "px-4 py-3",
             
-            // Styles glassmorphism adaptatifs
-            "bg-background/10 dark:bg-white/10",
-            "backdrop-blur-md", 
-            "border border-foreground/20",
+            // Styles premium pour un meilleur contraste
+            "bg-slate-100/50 dark:bg-white/5",
+            "backdrop-blur-xl", 
+            "border border-slate-200 dark:border-white/10",
             "text-foreground",
+            "shadow-sm",
             
             // Placeholder adaptatif
             "placeholder:text-muted-foreground",
             
             // Focus state adaptatif
-            "focus:bg-background/20 dark:focus:bg-white/15",
-            "focus:border-foreground/30",
-            "focus:[box-shadow:0_0_0_2px_rgba(249,115,22,0.3)!important]",
+            "focus:bg-white dark:focus:bg-white/10",
+            "focus:border-orange-500/50 dark:focus:border-orange-500/50",
+            "focus:ring-4 focus:ring-orange-500/10",
             
             // État disabled
             "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",

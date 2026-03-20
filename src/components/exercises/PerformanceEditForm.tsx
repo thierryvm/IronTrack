@@ -150,7 +150,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     )
@@ -158,7 +158,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
 
   if (!performance || !exercise) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">Performance non trouvée</p>
           <button onClick={handleCancel} className="btn-primary">
@@ -170,24 +170,24 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="sticky top-0 z-10 bg-card border border-border border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={handleCancel}
-              className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+              className="p-2 hover:bg-muted rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-lg font-semibold text-foreground">
               Modifier la performance
             </h1>
           </div>
           <button
             onClick={handleCancel}
-            className="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
             <X className="w-5 h-5 text-gray-600 dark:text-safe-muted" />
           </button>
@@ -198,7 +198,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  rounded-xl shadow-lg p-6"
+          className="max-w-2xl mx-auto bg-card border border-border rounded-xl shadow-lg p-6"
         >
           {/* Info exercice */}
           <div className="flex items-center gap-3 mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
@@ -216,7 +216,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Poids (kg)
                     </label>
                     <input
@@ -225,12 +225,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       step="0.5"
                       value={performance.weight || ''}
                       onChange={(e) => setPerformance({...performance, weight: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="60"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Répétitions
                     </label>
                     <input
@@ -238,14 +238,14 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       min="1"
                       value={performance.reps || ''}
                       onChange={(e) => setPerformance({...performance, reps: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="10"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Nombre de séries
                     </label>
                     <input
@@ -254,12 +254,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       max="30"
                       value={performance.sets || ''}
                       onChange={(e) => setPerformance({...performance, sets: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="3"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Temps de repos (min)
                     </label>
                     <input
@@ -269,7 +269,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       step="0.5"
                       value={performance.rest_time || ''}
                       onChange={(e) => setPerformance({...performance, rest_time: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="2"
                     />
                   </div>
@@ -277,10 +277,10 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                 
                 {/* Métriques avancées musculation */}
                 <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Métriques avancées (optionnel)</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-3">Métriques avancées (optionnel)</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Temps sous tension (s)
                       </label>
                       <input
@@ -289,18 +289,18 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                         max="120"
                         value={performance.time_under_tension || ''}
                         onChange={(e) => setPerformance({...performance, time_under_tension: Number(e.target.value)})}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                         placeholder="30"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         RPE (1-10)
                       </label>
                       <select
                         value={performance.rpe || ''}
                         onChange={(e) => setPerformance({...performance, rpe: Number(e.target.value)})}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       >
                         <option value="">Sélectionner...</option>
                         <option value="6">6 - Très facile</option>
@@ -318,7 +318,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                 {/* Métriques de base */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Distance
                     </label>
                     <div className="flex gap-2">
@@ -328,13 +328,13 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                         step="0.1"
                         value={performance.distance || ''}
                         onChange={(e) => setPerformance({...performance, distance: Number(e.target.value)})}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                        className="flex-1 px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                         placeholder="5"
                       />
                       <select
                         value={performance.distance_unit || 'km'}
                         onChange={(e) => setPerformance({...performance, distance_unit: e.target.value})}
-                        className="w-20 sm:w-24 px-2 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                        className="w-20 sm:w-24 px-2 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                       >
                         <option value="km">km</option>
                         <option value="meters">m</option>
@@ -342,7 +342,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Durée (minutes)
                     </label>
                     <input
@@ -350,7 +350,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       min="1"
                       value={performance.duration || ''}
                       onChange={(e) => setPerformance({...performance, duration: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="30"
                     />
                   </div>
@@ -358,7 +358,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Vitesse (km/h)
                     </label>
                     <input
@@ -367,12 +367,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       step="0.1"
                       value={performance.speed || ''}
                       onChange={(e) => setPerformance({...performance, speed: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="10"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Calories brûlées
                     </label>
                     <input
@@ -380,7 +380,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                       min="0"
                       value={performance.calories || ''}
                       onChange={(e) => setPerformance({...performance, calories: Number(e.target.value)})}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                       placeholder="300"
                     />
                   </div>
@@ -389,10 +389,10 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                 {/* Métriques spécifiques selon le type d'exercice */}
                 {exercise.name.toLowerCase().includes('rameur') && (
                   <div className="border-t pt-4">
-                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-3">Métriques rameur</h4>
+                    <h4 className="text-md font-medium text-foreground mb-3">Métriques rameur</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Coups/minute (SPM)
                         </label>
                         <input
@@ -401,12 +401,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           max="36"
                           value={performance.stroke_rate || ''}
                           onChange={(e) => setPerformance({...performance, stroke_rate: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="24"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Puissance (Watts)
                         </label>
                         <input
@@ -414,7 +414,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           min="50"
                           value={performance.watts || ''}
                           onChange={(e) => setPerformance({...performance, watts: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="120"
                         />
                       </div>
@@ -424,10 +424,10 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
 
                 {(exercise.name.toLowerCase().includes('course') || exercise.name.toLowerCase().includes('tapis')) && (
                   <div className="border-t pt-4">
-                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-3">Métriques course/tapis</h4>
+                    <h4 className="text-md font-medium text-foreground mb-3">Métriques course/tapis</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Fréquence cardiaque (BPM)
                         </label>
                         <input
@@ -436,12 +436,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           max="220"
                           value={performance.heart_rate || ''}
                           onChange={(e) => setPerformance({...performance, heart_rate: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="140"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Inclinaison (%)
                         </label>
                         <input
@@ -451,7 +451,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           step="0.5"
                           value={performance.incline || ''}
                           onChange={(e) => setPerformance({...performance, incline: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="0"
                         />
                       </div>
@@ -461,10 +461,10 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
 
                 {exercise.name.toLowerCase().includes('vélo') && (
                   <div className="border-t pt-4">
-                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-3">Métriques vélo</h4>
+                    <h4 className="text-md font-medium text-foreground mb-3">Métriques vélo</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Cadence (RPM)
                         </label>
                         <input
@@ -473,12 +473,12 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           max="130"
                           value={performance.cadence || ''}
                           onChange={(e) => setPerformance({...performance, cadence: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="80"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Résistance
                         </label>
                         <input
@@ -487,7 +487,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
                           max="25"
                           value={performance.resistance || ''}
                           onChange={(e) => setPerformance({...performance, resistance: Number(e.target.value)})}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                           placeholder="5"
                         />
                       </div>
@@ -499,14 +499,14 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Notes (optionnel)
               </label>
               <textarea
                 value={performance.notes || ''}
                 onChange={(e) => setPerformance({...performance, notes: e.target.value})}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-orange-500"
                 placeholder="Commentaires sur cette performance..."
               />
             </div>
@@ -516,7 +516,7 @@ export const PerformanceEditForm: React.FC<PerformanceEditFormProps> = ({
           <div className="flex items-center justify-between mt-8">
             <button
               onClick={handleCancel}
-              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+              className="bg-muted text-foreground py-3 px-6 rounded-lg font-semibold hover:bg-muted transition-colors"
             >
               Annuler
             </button>

@@ -149,7 +149,7 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 rounded-xl bg-background/10 dark:bg-white/10 backdrop-blur-md border border-foreground/20 text-foreground placeholder:text-muted-foreground focus:bg-background/20 dark:focus:bg-white/15 focus:border-foreground/30 focus:outline-none transition-all"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl bg-slate-100/50 dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 text-foreground shadow-sm placeholder:text-muted-foreground focus:bg-white dark:focus:bg-white/10 focus:border-orange-500/50 dark:focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 focus:outline-none transition-all"
                   placeholder={isSignUp ? 'Un mot de passe sécurisé (min. 8 caractères)' : 'Ton mot de passe'}
                   required
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
@@ -188,10 +188,10 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-12 pr-12 py-3 rounded-xl backdrop-blur-md border transition-all focus:outline-none ${
+                  className={`w-full pl-12 pr-12 py-3 rounded-xl backdrop-blur-xl shadow-sm border transition-all focus:outline-none ${
                     confirmPassword && password !== confirmPassword
-                      ? 'bg-destructive/20 border-destructive/40 text-destructive-foreground placeholder:text-destructive/70'
-                      : 'bg-background/10 dark:bg-white/10 border-foreground/20 text-foreground placeholder:text-muted-foreground focus:bg-background/20 dark:focus:bg-white/15 focus:border-foreground/30'
+                      ? 'bg-red-50/50 dark:bg-red-900/20 border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 placeholder:text-red-300'
+                      : 'bg-slate-100/50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-foreground placeholder:text-muted-foreground focus:bg-white dark:focus:bg-white/10 focus:border-orange-500/50 dark:focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10'
                   }`}
                   placeholder="Répète ton mot de passe"
                   required
@@ -217,15 +217,14 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
             </div>
           )}
 
-          {/* Bouton de soumission glassmorphism */}
           <Button
             type="submit"
             disabled={isLoading || (isSignUp && password !== confirmPassword)}
-            className="w-full bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg backdrop-blur-md h-auto"
+            className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-white font-bold tracking-wide shadow-md transition-all rounded-xl text-base"
           >
             {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                 {getButtonText()}
               </div>
             ) : (
@@ -234,33 +233,33 @@ export default function EmailAuthForm({ showGoogleOption }: EmailAuthFormProps) 
           </Button>
         </form>
 
-        {/* Navigation entre les modes glassmorphism */}
-        <div className="mt-8 space-y-4 text-center text-sm">
+        {/* Navigation entre les modes */}
+        <div className="mt-6 space-y-3 text-center text-sm">
           {showForgotPassword ? (
             <Button
               variant="ghost"
               onClick={() => switchMode('signin')}
-              className="text-orange-300 hover:text-orange-200 font-medium transition-colors h-auto p-0 hover:bg-transparent"
+              className="text-muted-foreground hover:text-foreground"
             >
-              ⬅️ Retour à la connexion
+              ← Retour à la connexion
             </Button>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Button
                 variant="ghost"
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-orange-300 hover:text-orange-200 font-medium transition-colors w-full h-auto p-2 hover:bg-transparent"
+                onClick={() => { setIsSignUp(!isSignUp); resetForm() }}
+                className="w-full text-muted-foreground hover:text-foreground"
               >
-                {isSignUp ? '💡 Déjà un compte ? Se connecter' : '🆕 Pas encore de compte ? Créer un compte'}
+                {isSignUp ? 'Déjà un compte ? Se connecter' : 'Pas encore de compte ? Créer un compte'}
               </Button>
-              
+
               {!isSignUp && (
                 <Button
                   variant="ghost"
                   onClick={() => switchMode('forgot')}
-                  className="text-muted-foreground hover:text-foreground font-medium w-full transition-colors h-auto p-2 hover:bg-accent"
+                  className="w-full text-muted-foreground hover:text-foreground"
                 >
-                  🔑 Mot de passe oublié ?
+                  Mot de passe oublié ?
                 </Button>
               )}
             </div>

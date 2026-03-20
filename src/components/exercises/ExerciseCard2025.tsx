@@ -174,7 +174,7 @@ export function ExerciseCard2025({
   // Fonction pour obtenir la difficulté normalisée
   const getDifficultyDisplay = (difficulty: string | number | null | undefined) => {
     if (!difficulty && difficulty !== 0) {
-      return { text: 'Non défini', class: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' }
+      return { text: 'Non défini', class: 'bg-muted text-muted-foreground' }
     }
     
     const diffStr = String(difficulty).trim()
@@ -187,7 +187,7 @@ export function ExerciseCard2025({
     
     // Fallback: afficher la valeur brute avec style neutre
     console.warn(`🚨 Difficulté non reconnue: "${diffStr}" pour "${exercise.name}"`)
-    return { text: diffStr, class: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' }
+    return { text: diffStr, class: 'bg-muted text-muted-foreground' }
   }
   
   const { text: difficultyText, class: difficultyClass } = getDifficultyDisplay(exercise.difficulty)
@@ -279,7 +279,7 @@ export function ExerciseCard2025({
 
   // Classes selon variante pour Card ShadCN UI
   const getCardClasses = () => {
-    const base = 'hover:shadow-lg border-gray-200 dark:border-gray-600 hover:border-orange-200 dark:hover:border-orange-600 transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
+    const base = 'hover:shadow-lg border-border hover:border-orange-200 dark:hover:border-orange-600 transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
     
     switch (variant) {
       case 'compact':
@@ -332,7 +332,7 @@ export function ExerciseCard2025({
       <div className="p-6 flex flex-col flex-1">
         {/* Header avec titre et métadonnées */}
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-orange-300 transition-colors mb-2 line-clamp-2">
+          <h3 className="text-xl font-bold text-foreground group-hover:text-orange-800 dark:group-hover:text-orange-300 transition-colors mb-2 line-clamp-2">
             {exercise.name}
           </h3>
           <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-safe-muted">
@@ -352,18 +352,18 @@ export function ExerciseCard2025({
             )}
             {/* CORRIGÉ: Fallback si pas de métadonnées */}
             {!exercise.muscle_group && !exercise.equipment && (
-              <span className="text-gray-700 dark:text-gray-300 italic">Métadonnées à compléter</span>
+              <span className="text-foreground italic">Métadonnées à compléter</span>
             )}
           </div>
         </div>
 
         {/* Section performance avec design amélioré */}
-        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg flex-1">
+        <div className="mb-6 p-4 bg-muted rounded-lg flex-1">
           <div className="flex items-center space-x-2 text-sm mb-2">
             <TrendingUp className="h-6 w-6 text-orange-800 dark:text-orange-300 flex-shrink-0" />
-            <span className="text-gray-600 dark:text-gray-300 font-medium">Dernière performance</span>
+            <span className="text-muted-foreground font-medium">Dernière performance</span>
           </div>
-          <p className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
+          <p className="text-base font-semibold text-foreground mb-1 line-clamp-2">
             {formatPerformance()}
           </p>
           {lastPerformance && (
@@ -403,9 +403,9 @@ export function ExerciseCard2025({
               e.stopPropagation()
               onViewDetails(exercise.id)
             }}
-            className="px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
-                       focus:bg-gray-200 dark:focus:bg-gray-600
-                       text-gray-700 dark:text-gray-200 rounded-lg font-medium 
+            className="px-4 py-3 bg-muted hover:bg-muted
+                       focus:bg-muted
+                       text-foreground rounded-lg font-medium
                        transition-colors duration-200 
                        flex items-center gap-2
                        focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"

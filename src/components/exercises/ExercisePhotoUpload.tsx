@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { uploadExercisePhoto, SecureAttachment } from '@/utils/fileUpload'
-import { ImageCropper } from '@/components/ui/ImageCropper'
+import { ImagePicker } from '@/components/shared/ImagePicker'
 
 interface ExercisePhotoUploadProps {
   onPhotoUploaded: (attachment: SecureAttachment) => void
@@ -49,7 +49,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     success: false
   })
   const [isDragging, setIsDragging] = useState(false)
-  const [showCropper, setShowCropper] = useState(false)
+  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
 
@@ -185,22 +185,14 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
   }, [handleFileUpload])
 
   const openFileDialog = () => {
-    if (!disabled && !uploadState.isUploading && fileInputRef.current) {
-      fileInputRef.current.click()
+    if (!disabled && !uploadState.isUploading) {
+      setIsImagePickerOpen(true)
     }
   }
   
   const openCameraDialog = () => {
-    if (!disabled && !uploadState.isUploading && fileInputRef.current) {
-      // Déclencher l'input avec capture pour ouvrir la caméra
-      fileInputRef.current.setAttribute('capture', 'environment')
-      fileInputRef.current.click()
-      // Remettre capture à false après
-      setTimeout(() => {
-        if (fileInputRef.current) {
-          fileInputRef.current.removeAttribute('capture')
-        }
-      }, 100)
+    if (!disabled && !uploadState.isUploading) {
+      setIsImagePickerOpen(true)
     }
   }
 
@@ -211,40 +203,12 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
     resetUploadState()
   }
 
-  const handleCropComplete = async (croppedImageUrl: string) => {
-    try {
-      // Convert the cropped image blob URL to a File object
-      const response = await fetch(croppedImageUrl)
-      const blob = await response.blob()
-      const file = new File([blob], 'cropped-exercise-photo.jpg', { type: 'image/jpeg' })
-      
-      // Upload the cropped image
-      await handleFileUpload(file)
-      
-      // Close the cropper
-      setShowCropper(false)
-      
-      // Clean up the blob URL
-      URL.revokeObjectURL(croppedImageUrl)
-    } catch (error) {
-      console.error('Erreur lors du traitement de l\'image croppée:', error)
-      setUploadState({
-        isUploading: false,
-        progress: 0,
-        error: 'Erreur lors du traitement de l\'image',
-        success: false
-      })
-    }
-  }
 
-  const handleCropCancel = () => {
-    setShowCropper(false)
-  }
 
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
+        <h4 className="text-sm font-medium text-foreground flex items-center">
           <Camera className="h-6 w-6 mr-2" />
           Photo de l&apos;exercice
         </h4>
@@ -288,14 +252,14 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                     </button>
                     <button
                       onClick={openFileDialog}
-                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-gray-900 dark:text-gray-100 px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-card border border-border text-foreground px-3 py-3 rounded-md text-sm font-medium hover:bg-muted flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
                       <ImageIcon className="h-6 w-6 mr-1" />
                       Photos
                     </button>
                     <button
-                      onClick={() => setShowCropper(true)}
+                      onClick={() => setIsImagePickerOpen(true)}
                       className="bg-blue-500 text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-blue-600 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
@@ -307,14 +271,14 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
                   <>
                     <button
                       onClick={openFileDialog}
-                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700  text-gray-900 dark:text-gray-100 px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 flex items-center min-h-[44px] touch-manipulation"
+                      className="bg-card border border-border text-foreground px-4 py-3 rounded-md text-sm font-medium hover:bg-muted flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
                       <Camera className="h-6 w-6 mr-2" />
                       Changer
                     </button>
                     <button
-                      onClick={() => setShowCropper(true)}
+                      onClick={() => setIsImagePickerOpen(true)}
                       className="bg-blue-500 text-white px-4 py-3 rounded-md text-sm font-medium hover:bg-blue-600 flex items-center min-h-[44px] touch-manipulation"
                       disabled={disabled || uploadState.isUploading}
                     >
@@ -344,10 +308,10 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
           onClick={isMobile ? undefined : openFileDialog}
           className={`
             relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center ${isMobile ? '' : 'cursor-pointer'}
-            transition-all duration-200 hover:bg-gray-50 dark:bg-gray-800 touch-manipulation min-h-[200px] sm:min-h-[240px]
+            transition-all duration-200 hover:bg-muted touch-manipulation min-h-[200px] sm:min-h-[240px]
             ${isDragging 
               ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
-              : 'border-gray-300 dark:border-gray-600'
+              : 'border-border'
             }
             ${disabled || uploadState.isUploading
               ? 'opacity-50 cursor-not-allowed' 
@@ -401,7 +365,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               {uploadState.isUploading ? (
                 <Loader2 className="h-16 w-16 sm:h-12 sm:w-12 text-safe-info animate-spin" />
               ) : (
-                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`} />
+                <Camera className={`h-16 w-16 sm:h-12 sm:w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-muted-foreground'}`} />
               )}
             </div>
             
@@ -409,20 +373,20 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
               {uploadState.isUploading ? (
                 <div className="space-y-2">
                   <p className="text-lg font-medium text-blue-600">Upload en cours...</p>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 max-w-xs mx-auto">
+                  <div className="w-full bg-muted rounded-full h-2 max-w-xs mx-auto">
                     <div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadState.progress}%` }}
                     />
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{uploadState.progress.toFixed(0)}%</p>
+                  <p className="text-sm text-muted-foreground">{uploadState.progress.toFixed(0)}%</p>
                 </div>
               ) : (
                 <>
-                  <p className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  <p className="text-lg sm:text-xl font-medium text-foreground mb-2">
                     {isDragging ? 'Relâchez pour uploader' : 'Ajoutez une photo'}
                   </p>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-3">
+                  <p className="text-sm sm:text-base text-muted-foreground mb-3">
                     {isMobile 
                       ? <><span className="text-orange-800 dark:text-orange-300 font-medium">Tapez pour choisir</span> : caméra ou photothèque</>
                       : <>Glissez votre photo ici ou <span className="text-orange-800 dark:text-orange-300 font-medium">cliquez pour sélectionner</span></>
@@ -444,17 +408,7 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         </div>
       )}
 
-      {/* Input caché */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept={acceptedTypes}
-        onChange={handleFileSelect}
-        className="hidden"
-        disabled={disabled || uploadState.isUploading}
-        aria-label="Sélectionner photo d'exercice"
-      />
-
+      
       {/* Messages d'état */}
       <AnimatePresence>
         {uploadState.error && (
@@ -519,14 +473,16 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
         </div>
       </div>
 
-      {/* Image Cropper Modal */}
-      {showCropper && currentPhoto && (
-        <ImageCropper
-          imageUrl={currentPhoto}
-          onCropComplete={handleCropComplete}
-          onCancel={handleCropCancel}
+      {/* Image Picker Modal */}
+      {isImagePickerOpen && (
+        <ImagePicker
+          open={isImagePickerOpen}
+          onOpenChange={setIsImagePickerOpen}
+          onImageCropped={async (file) => {
+            await handleFileUpload(file);
+          }}
           aspectRatio={4/3}
-          freeMode={true}
+          cropShape="rect"
         />
       )}
     </div>

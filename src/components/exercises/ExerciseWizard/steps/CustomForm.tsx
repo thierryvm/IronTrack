@@ -390,7 +390,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
                 className={`p-3 rounded-lg border-2 font-medium transition-all duration-200 ${
                   formData.difficulty === difficulty
                     ? getDifficultyColor(difficulty)
-                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-muted'
                 }`}
               >
                 {difficulty}
@@ -517,7 +517,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
           <button
             type="button"
             onClick={onCancel || onBack}
-            className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-muted transition-colors flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
             {onCancel ? 'Annuler' : 'Retour'}

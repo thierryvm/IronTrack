@@ -25,7 +25,7 @@ export default function ClientOnlyNavigation({
   className = '',
   itemClassName = '',
   activeClassName = 'text-orange-600 dark:text-orange-400',
-  inactiveClassName = 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400',
+  inactiveClassName = 'text-gray-700 dark:text-gray-300 hover:text-foreground dark:hover:text-orange-400',
   isMobile = false,
   ariaLabel = 'Navigation principale',
 }: ClientOnlyNavigationProps) {

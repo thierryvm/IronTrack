@@ -58,7 +58,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
           </div>
           <button
             onClick={handleClose}
-            className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 transition-colors"
+            className="text-gray-700 dark:text-gray-300 hover:text-foreground dark:text-gray-300 transition-colors"
             aria-label="Fermer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
             
             <button
               onClick={handleCopyUrl}
-              className={`w-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 ${
+              className={`w-full border border-gray-300 dark:border-gray-600 hover:bg-muted text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 ${
                 copySuccess ? 'bg-green-50 border-green-300 text-green-700' : ''
               }`}
             >

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -30,6 +30,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle'
 // Import direct du hook (correction erreur hooks React)
 import { useAdminRole } from '@/hooks/useAdminRole'
 import ClientOnlyNavigation from './ClientOnlyNavigation'
+import { Logo } from '@/components/shared/Logo'
 
 export default function HeaderClient() {
   // États de menu désactivés - UI simplifiée mobile 2025
@@ -297,26 +298,12 @@ export default function HeaderClient() {
       </a>
       
       {/* HEADER DESKTOP - En haut */}
-      <header className="hidden md:block sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <header className="hidden md:block sticky top-0 z-50 bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="h-12 w-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-1 shadow-sm">
-                <Image 
-                  src="/logo-32.webp" 
-                  alt="IronTrack Logo" 
-                  width={40}
-                  height={40}
-                  className="h-full w-full object-contain"
-                  sizes="40px"
-                  quality={95}
-                  loading="lazy"
-                />
-              </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                IronTrack
-              </span>
+            <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-xl transition-transform hover:scale-[1.02]">
+              <Logo iconSize="md" />
             </Link>
 
             {/* Navigation principale desktop */}
@@ -325,7 +312,7 @@ export default function HeaderClient() {
               className="flex space-x-6"
               itemClassName="flex items-center space-x-1 text-sm font-medium transition-colors"
               activeClassName="text-orange-600 dark:text-orange-400"
-              inactiveClassName="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400"
+              inactiveClassName="text-muted-foreground hover:text-foreground"
             />
 
             {/* Actions utilisateur desktop */}
@@ -336,7 +323,7 @@ export default function HeaderClient() {
                   <div className="relative" data-notification-dropdown>
                     <button
                       onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                      className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none"
+                      className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus:outline-none"
                       aria-label={`Notifications ${notificationCount > 0 ? `(${notificationCount} nouvelles)` : ''}`}
                       aria-expanded={isNotificationOpen}
                     >
@@ -350,42 +337,42 @@ export default function HeaderClient() {
                     
                     {/* Dropdown notifications desktop */}
                     {isNotificationOpen && (
-                      <div className="absolute top-12 right-0 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-50">
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-600">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">🔔 Notifications</h3>
+                      <div className="absolute top-12 right-0 w-80 bg-card border border-border rounded-lg shadow-xl z-50">
+                        <div className="p-4 border-b border-border">
+                          <h3 className="text-sm font-semibold text-foreground">🔔 Notifications</h3>
                         </div>
                         <div className="max-h-64 overflow-y-auto">
                           {notifications.length > 0 ? (
                             notifications.map((notification) => (
-                              <div key={notification.id} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                              <div key={notification.id} className="border-b border-border last:border-b-0">
                                 {notification.href ? (
                                   <Link
                                     href={notification.href}
-                                    className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="block p-4 hover:bg-muted transition-colors"
                                     onClick={() => setIsNotificationOpen(false)}
                                   >
-                                    <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                                    <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                    <p className="text-sm text-foreground">{notification.message}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                                   </Link>
                                 ) : (
                                   <div className="p-4">
-                                    <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                                    <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                                    <p className="text-sm text-foreground">{notification.message}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                                   </div>
                                 )}
                               </div>
                             ))
                           ) : (
-                            <div className="p-4 text-center text-sm text-gray-600 dark:text-safe-muted">
+                            <div className="p-4 text-center text-sm text-muted-foreground">
                               Aucune notification
                             </div>
                           )}
                         </div>
                         {/* Lien permanent vers support/tickets */}
-                        <div className="p-3 border-t border-gray-200 dark:border-gray-600">
+                        <div className="p-3 border-t border-border">
                           <Link
                             href="/notifications"
-                            className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-safe-muted dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
+                            className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                             onClick={() => setIsNotificationOpen(false)}
                             >
                               Voir mes notifications
@@ -399,7 +386,7 @@ export default function HeaderClient() {
                   <div className="relative" data-profile-dropdown>
                     <button
                       onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                      className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="flex items-center space-x-2 p-1 rounded-lg hover:bg-muted transition-colors"
                     >
                       {userAvatar ? (
                         <Image 
@@ -417,14 +404,14 @@ export default function HeaderClient() {
                           {userInitials}
                         </div>
                       )}
-                      <ChevronDown className="w-4 h-4 text-gray-600 dark:text-safe-muted" />
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </button>
                     
                     {/* Dropdown profil desktop */}
                     {isProfileDropdownOpen && (
-                      <div className="absolute top-12 right-0 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-50">
+                      <div className="absolute top-12 right-0 w-64 bg-card border border-border rounded-lg shadow-xl z-50">
                         {/* Header utilisateur comme sur mobile */}
-                        <div className="p-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                        <div className="p-3 bg-muted border-b border-border">
                           <div className="flex items-center space-x-3">
                             {userAvatar ? (
                               <Image 
@@ -443,7 +430,7 @@ export default function HeaderClient() {
                               </div>
                             )}
                             <div className="min-w-0 flex-1">
-                              <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{userEmail}</h3>
+                              <h3 className="text-sm font-semibold text-foreground truncate">{userEmail}</h3>
                             </div>
                           </div>
                         </div>
@@ -452,17 +439,17 @@ export default function HeaderClient() {
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                              className="flex items-center space-x-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
                               onClick={() => setIsProfileDropdownOpen(false)}
                             >
                               <item.icon className="w-4 h-4" />
                               <span>{item.name}</span>
                             </Link>
                           ))}
-                          <hr className="my-2 border-gray-200 dark:border-gray-600" />
+                          <hr className="my-2 border-border" />
                           <button
                             onClick={handleLogout}
-                            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-safe-error dark:hover:bg-red-900/20 rounded-md transition-colors"
+                            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors"
                           >
                             <LogOut className="w-4 h-4" />
                             <span>Se déconnecter</span>
@@ -472,7 +459,7 @@ export default function HeaderClient() {
                     )}
                   </div>
                   
-                  <div className="w-px h-5 bg-gray-200 dark:bg-gray-600" aria-hidden="true" />
+                  <div className="w-px h-5 bg-border" aria-hidden="true" />
                   <ThemeToggle />
                 </>
               ) : (
@@ -480,7 +467,7 @@ export default function HeaderClient() {
                   <ThemeToggle />
                   <Link
                     href="/auth/login"
-                    className="flex items-center space-x-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400 transition-colors"
+                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Connexion</span>
@@ -493,35 +480,21 @@ export default function HeaderClient() {
       </header>
       
       {/* HEADER MOBILE - En haut simplifié avec support safe areas iPhone */}
-      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <header className="md:hidden sticky top-0 z-50 bg-card border-b border-border">
         <div className="flex justify-between items-center px-4 py-3 header-mobile-ios">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="h-12 w-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-1 shadow-sm">
-              <Image 
-                src="/logo-32.webp" 
-                alt="IronTrack Logo" 
-                width={32}
-                height={32}
-                className="h-full w-full object-contain"
-                sizes="32px"
-                quality={95}
-                loading="lazy"
-              />
-            </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
-              IronTrack
-            </span>
+          <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-xl">
+            <Logo iconSize="sm" />
           </Link>
 
           {/* Actions utilisateur mobile */}
           <div className="flex items-center space-x-3">
             {isLoggedIn ? (
               <>
-                {/* Notifications mobile */}
-                <button
-                  onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none"
+                {/* Notifications mobile - lien direct vers la page */}
+                <Link
+                  href="/notifications"
+                  className="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-muted hover:text-foreground transition-colors"
                   aria-label={`Notifications${notificationCount > 0 ? ` (${notificationCount} non lues)` : ''}`}
                 >
                   <Bell className="w-5 h-5" />
@@ -530,13 +503,13 @@ export default function HeaderClient() {
                       {notificationCount > 9 ? '9+' : notificationCount}
                     </span>
                   )}
-                </button>
+                </Link>
                 
                 {/* Avatar mobile - Dropdown comme desktop */}
                 <div className="relative" data-profile-dropdown>
                   <button
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    className="flex items-center p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-center p-1 rounded-lg hover:bg-muted transition-colors"
                     aria-label="Ouvrir menu profil"
                     aria-expanded={isProfileDropdownOpen}
                   >
@@ -562,10 +535,10 @@ export default function HeaderClient() {
                   {isProfileDropdownOpen && (
                     <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setIsProfileDropdownOpen(false)}>
                       <div 
-                        className="absolute top-20 left-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-2xl overflow-hidden"
+                        className="absolute top-20 left-4 right-4 bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
                         onClick={e => e.stopPropagation()}
                       >
-                        <div className="p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                        <div className="p-4 bg-muted border-b border-border">
                           <div className="flex items-center space-x-3">
                             {userAvatar ? (
                               <Image 
@@ -584,8 +557,8 @@ export default function HeaderClient() {
                               </div>
                             )}
                             <div>
-                              <h3 className="text-base font-semibold text-gray-900 dark:text-white">{userEmail}</h3>
-                              <p className="text-sm text-gray-600 dark:text-safe-muted">Votre profil</p>
+                              <h3 className="text-base font-semibold text-foreground">{userEmail}</h3>
+                              <p className="text-sm text-muted-foreground">Votre profil</p>
                             </div>
                           </div>
                         </div>
@@ -594,20 +567,20 @@ export default function HeaderClient() {
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              className="flex items-center space-x-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
                               onClick={() => setIsProfileDropdownOpen(false)}
                             >
                               <item.icon className="w-5 h-5" />
                               <span>{item.name}</span>
                             </Link>
                           ))}
-                          <hr className="my-2 border-gray-200 dark:border-gray-600" />
+                          <hr className="my-2 border-border" />
                           <button
                             onClick={() => {
                               handleLogout()
                               setIsProfileDropdownOpen(false)
                             }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:text-safe-error dark:hover:bg-red-900/20 transition-colors"
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                           >
                             <LogOut className="w-5 h-5" />
                             <span>Se déconnecter</span>
@@ -626,7 +599,7 @@ export default function HeaderClient() {
                 Connexion
               </Link>
             )}
-            <div className="w-px h-5 bg-gray-200 dark:bg-gray-600" aria-hidden="true" />
+            <div className="w-px h-5 bg-border" aria-hidden="true" />
             <ThemeToggle />
           </div>
         </div>
@@ -635,11 +608,11 @@ export default function HeaderClient() {
         {isNotificationOpen && (
           <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setIsNotificationOpen(false)}>
             <div 
-              className="absolute top-20 left-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-2xl overflow-hidden"
+              className="absolute top-20 left-4 right-4 bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-700">
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">🔔 Notifications</h3>
+              <div className="p-4 bg-muted border-b border-border">
+                <h3 className="text-base font-bold text-foreground">🔔 Notifications</h3>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
@@ -648,31 +621,31 @@ export default function HeaderClient() {
                       {notification.href ? (
                         <Link
                           href={notification.href}
-                          className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                          className="block p-4 hover:bg-muted transition-colors"
                           onClick={() => setIsNotificationOpen(false)}
                         >
-                          <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                          <p className="text-sm text-foreground">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                         </Link>
                       ) : (
                         <div className="p-4">
-                          <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
+                          <p className="text-sm text-foreground">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-sm text-gray-600 dark:text-safe-muted">
+                  <div className="p-8 text-center text-sm text-muted-foreground">
                     Aucune notification
                   </div>
                 )}
               </div>
               {/* Lien permanent vers support/tickets - Mobile */}
-              <div className="p-3 border-t border-gray-200 dark:border-gray-600">
+              <div className="p-3 border-t border-border">
                 <Link
                   href="/notifications"
-                  className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-safe-muted dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-md transition-colors"
+                  className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                   onClick={() => setIsNotificationOpen(false)}
                 >
                   Voir mes notifications
@@ -685,14 +658,14 @@ export default function HeaderClient() {
       
       {/* NAVIGATION MOBILE EN BAS - Fixe */}
       {isLoggedIn && (
-        <nav aria-label="Navigation mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50">
+        <nav aria-label="Navigation mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
           <div className="flex justify-around py-2" role="list">
             <ClientOnlyNavigation
               items={mainNav}
               className="contents"
               itemClassName="flex flex-col items-center p-2 min-w-0 transition-colors"
               activeClassName="text-orange-600 dark:text-orange-400"
-              inactiveClassName="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-orange-400"
+              inactiveClassName="text-muted-foreground hover:text-foreground"
               isMobile={true}
               ariaLabel="Navigation mobile bas de page"
             />

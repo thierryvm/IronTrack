@@ -25,8 +25,8 @@ const AuthLabel = React.forwardRef<
         // États disabled
         "group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
         "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        // COULEUR SPÉCIFIQUE GLASSMORPHISM - Blanc avec opacité
-        "text-white/90",
+        // COULEUR SPÉCIFIQUE GLASSMORPHISM - Modifiée pour contraste
+        "text-foreground font-semibold mb-1.5 ml-1",
         className
       )}
       {...props}
