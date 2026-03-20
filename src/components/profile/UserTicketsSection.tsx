@@ -132,15 +132,15 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open':
-        return 'bg-blue-100 text-blue-800 border-blue-300'
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700'
       case 'in_progress':
-        return 'bg-orange-100 text-orange-800 dark:text-orange-300 border-orange-300'
+        return 'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700'
       case 'resolved':
-        return 'bg-green-100 text-green-800 border-green-300'
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700'
       case 'closed':
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+        return 'bg-muted text-muted-foreground border-border'
       default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+        return 'bg-muted text-muted-foreground border-border'
     }
   }
 
@@ -153,7 +153,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       case 'low':
         return 'text-green-600'
       default:
-        return 'text-gray-600 dark:text-gray-300'
+        return 'text-muted-foreground'
     }
   }
 
@@ -170,14 +170,14 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
   if (loading) {
     return (
-      <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
+      <div className={`bg-card rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
           <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
+          <h3 className="text-lg font-bold text-foreground">Mes tickets de support</h3>
         </div>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-          <span className="ml-3 text-gray-600 dark:text-gray-300">Chargement de vos tickets...</span>
+          <span className="ml-3 text-muted-foreground">Chargement de vos tickets...</span>
         </div>
       </div>
     )
@@ -185,27 +185,27 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
 
   if (error) {
     return (
-      <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
+      <div className={`bg-card rounded-xl shadow-md p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
           <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
+          <h3 className="text-lg font-bold text-foreground">Mes tickets de support</h3>
         </div>
         <div className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-safe-error mx-auto mb-3" />
           <p className="text-red-600 font-medium mb-2">Erreur de chargement</p>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">{error}</p>
+          <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
+    <div className={`bg-card rounded-xl shadow-md p-6 ${className}`}>
       {/* En-tête */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <MessageCircle className="h-6 w-6 text-orange-800 dark:text-orange-300" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Mes tickets de support</h3>
+          <h3 className="text-lg font-bold text-foreground">Mes tickets de support</h3>
         </div>
         <Link
           href="/support/contact"
@@ -220,7 +220,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
       {tickets.length === 0 ? (
         <div className="text-center py-8">
           <MessageCircle className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">Aucun ticket de support</p>
+          <p className="text-muted-foreground font-medium mb-2">Aucun ticket de support</p>
           <p className="text-gray-600 dark:text-safe-muted text-sm mb-4">
             Vous n&apos;avez pas encore créé de ticket de support. 
             Notre équipe est là pour vous aider !
@@ -242,14 +242,14 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow touch-manipulation"
+                className="border border-border rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow touch-manipulation"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                    <h4 className="font-medium text-foreground truncate">
                       {ticket.title}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                       {ticket.description}
                     </p>
                   </div>
@@ -289,7 +289,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
                 </div>
 
                 {/* Action pour voir les détails */}
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                <div className="mt-3 pt-3 border-t border-border">
                   <Link 
                     href={`/support/tickets/${ticket.id}`}
                     className="text-orange-800 dark:text-orange-300 hover:text-orange-700 text-sm font-medium flex items-center gap-2 py-2 px-1 min-h-[44px] touch-manipulation w-full justify-start hover:bg-orange-50 dark:bg-orange-900/20 rounded transition-colors"
@@ -303,8 +303,8 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
           </AnimatePresence>
 
           {/* Footer avec lien vers support */}
-          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+          <div className="mt-6 pt-4 border-t border-border text-center">
+            <p className="text-sm text-muted-foreground mb-3">
               Besoin d&apos;aide supplémentaire ? Consultez notre documentation ou contactez l&apos;équipe.
             </p>
             <div className="flex justify-center gap-4">

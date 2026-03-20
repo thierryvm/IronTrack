@@ -126,7 +126,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700'
       }[config.color]
     }
-    return 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800'
+    return 'bg-card border-gray-200 dark:border-gray-600 text-foreground hover:bg-muted'
   }
 
   if (showSuccess) {
@@ -134,13 +134,13 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-8 text-center ${className}`}
+        className={`bg-card rounded-xl shadow-md p-8 text-center ${className}`}
       >
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Send className="h-8 w-8 text-safe-success" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Ticket envoyé avec succès !</h3>
-        <p className="text-gray-600 dark:text-gray-300 mb-4">
+        <h3 className="text-xl font-bold text-foreground mb-2">Ticket envoyé avec succès !</h3>
+        <p className="text-muted-foreground mb-4">
           Votre demande a été envoyée à notre équipe de support. 
           Nous vous répondrons dans les plus brefs délais.
         </p>
@@ -154,10 +154,10 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 ${className}`}>
+    <div className={`bg-card rounded-xl shadow-md p-6 ${className}`}>
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Contacter le Support</h2>
-        <p className="text-gray-600 dark:text-gray-300">
+        <h2 className="text-xl font-bold text-foreground mb-2">Contacter le Support</h2>
+        <p className="text-muted-foreground">
           Décrivez votre problème ou demande, notre équipe vous répondra rapidement.
         </p>
       </div>
@@ -165,7 +165,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Sélection de catégorie */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <label className="block text-sm font-medium text-foreground mb-3">
             Type de demande
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -195,7 +195,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
 
         {/* Titre */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
             Titre de votre demande *
           </label>
           <input
@@ -206,14 +206,14 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             required
             maxLength={200}
             placeholder="Décrivez brièvement votre problème..."
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
           <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{title.length}/200 caractères</p>
         </div>
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
             Description détaillée *
           </label>
           <textarea
@@ -223,14 +223,14 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             required
             rows={6}
             placeholder="Décrivez votre problème en détail. Plus vous donnez d'informations, plus nous pourrons vous aider efficacement..."
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
           />
           <p className="text-xs text-gray-600 dark:text-safe-muted mt-1">{description.length} caractères</p>
         </div>
 
         {/* Upload d'images */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             <Paperclip className="h-6 w-6 inline mr-1" />
             Images et captures d'écran (optionnel)
           </label>
@@ -245,21 +245,21 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
           {/* Liste des fichiers attachés */}
           {attachments.length > 0 && (
             <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <h4 className="text-sm font-medium text-foreground mb-2">
                 Fichiers attachés ({attachments.length})
               </h4>
               <div className="space-y-2">
                 {attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg p-3"
+                    className="flex items-center justify-between bg-muted rounded-lg p-3"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                         <Paperclip className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
+                        <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                           {attachment.originalName}
                         </p>
                         <p className="text-xs text-gray-600 dark:text-safe-muted">
@@ -272,7 +272,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                       onClick={() => {
                         setAttachments(prev => prev.filter(a => a.id !== attachment.id))
                       }}
-                      className="text-gray-700 dark:text-gray-300 hover:text-safe-error p-1"
+                      className="text-foreground hover:text-safe-error p-1"
                       aria-label="Supprimer fichier"
                     >
                       <Send className="h-6 w-6 rotate-45" />
@@ -285,12 +285,12 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         </div>
 
         {/* Informations automatiques */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+        <div className="bg-muted rounded-lg p-4">
           <div className="flex items-start space-x-2">
             <Info className="h-5 w-5 text-safe-info flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Informations techniques automatiques</p>
-              <p className="text-xs text-gray-600 dark:text-gray-300">
+              <p className="text-sm font-medium text-foreground mb-1">Informations techniques automatiques</p>
+              <p className="text-xs text-muted-foreground">
                 Les informations de votre navigateur, page actuelle et données techniques 
                 seront automatiquement incluses pour nous aider à diagnostiquer le problème.
               </p>

@@ -152,7 +152,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
         yellow: 'border-yellow-500 bg-yellow-100 text-yellow-700'
       }[config.color]
     }
-    return 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
+    return 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-muted'
   }
 
   if (showSuccess) {

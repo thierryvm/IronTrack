@@ -82,13 +82,13 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
         {/* Email - Modification sécurisée */}
         <Card className="cursor-pointer hover:shadow-sm transition-all" onClick={() => setShowEmailChangeModal(true)}>
           <CardContent className="p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2 flex items-center justify-between">
+          <div className="text-sm text-muted-foreground font-medium mb-2 flex items-center justify-between">
             📧 Email
-            <button className="text-xs text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className="text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
               Modifier
             </button>
           </div>
-          <div className="font-bold text-gray-800 dark:text-gray-200 text-sm break-all">
+          <div className="font-bold text-foreground text-sm break-all">
             {profile.email}
           </div>
           <div className="text-xs text-gray-600 dark:text-safe-muted mt-1">Modification sécurisée disponible</div>

@@ -234,10 +234,10 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
         onClick={openFileDialog}
         className={`
           relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
-          transition-all duration-200 hover:bg-gray-50 dark:bg-gray-800
+          transition-all duration-200 hover:bg-muted
           ${isDragging 
             ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
-            : 'border-gray-300 dark:border-gray-600'
+            : 'border-border'
           }
           ${disabled 
             ? 'opacity-50 cursor-not-allowed' 
@@ -257,14 +257,14 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
         {/* Icône et texte */}
         <div className="space-y-3">
           <div className="flex items-center justify-center">
-            <Upload className={`h-12 w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`} />
+            <Upload className={`h-12 w-12 ${isDragging ? 'text-orange-800 dark:text-orange-300' : 'text-foreground'}`} />
           </div>
           
           <div>
-            <p className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <p className="text-lg font-medium text-foreground mb-1">
               {isDragging ? 'Relâchez pour uploader' : 'Glissez vos images ici'}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+            <p className="text-sm text-muted-foreground mb-2">
               ou <span className="text-orange-800 dark:text-orange-300 font-medium">cliquez pour sélectionner</span>
             </p>
             <p className="text-xs text-gray-600 dark:text-safe-muted">
@@ -301,7 +301,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
             exit={{ opacity: 0, height: 0 }}
             className="space-y-3"
           >
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
+            <h4 className="text-sm font-medium text-foreground flex items-center">
               <FileImage className="h-6 w-6 mr-2" />
               Progression de l'upload
             </h4>
@@ -312,12 +312,12 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3"
+                className="bg-muted rounded-lg p-3"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <Image className="h-6 w-6 text-gray-600 dark:text-safe-muted" aria-label="Icône fichier" />
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
+                    <span className="text-sm font-medium text-foreground truncate max-w-[200px]">
                       {progress.fileName}
                     </span>
                   </div>
@@ -338,7 +338,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
                         e.stopPropagation()
                         removeProgressItem(progress.fileId)
                       }}
-                      className="text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 p-1"
+                      className="text-foreground hover:text-foreground dark:text-gray-300 p-1"
                       aria-label="Supprimer"
                     >
                       <X className="h-5 w-5" />
@@ -348,7 +348,7 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
                 
                 {/* Barre de progression */}
                 {progress.status === 'uploading' && (
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progress.progress}%` }}
