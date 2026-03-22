@@ -6,7 +6,9 @@ const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
 
 export async function middleware(request: NextRequest) {
   // Rate Limiting Logic
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  const xRealIp = request.headers.get('x-real-ip')
+  const ip = forwardedFor?.split(',')[0].trim() || xRealIp || 'unknown'
   const now = Date.now()
   const windowMs = 60 * 1000 // 1 minute
   const maxRequests = 100 // 100 requests per minute
