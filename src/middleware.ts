@@ -1,7 +1,44 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Rate limiting state
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
+
 export async function middleware(request: NextRequest) {
+  // Rate Limiting Logic
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  const xRealIp = request.headers.get('x-real-ip')
+  const ip = forwardedFor?.split(',')[0].trim() || xRealIp || 'unknown'
+  const now = Date.now()
+  const windowMs = 60 * 1000 // 1 minute
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
+  const maxRequests = isApiRoute ? 200 : 100
+
+  const rateLimitInfo = rateLimitMap.get(ip)
+
+  if (rateLimitInfo) {
+    if (now - rateLimitInfo.timestamp < windowMs) {
+      rateLimitInfo.count += 1
+      if (rateLimitInfo.count > maxRequests) {
+        return NextResponse.json(
+          { error: 'Too Many Requests' },
+          { status: 429 }
+        )
+      }
+    } else {
+      // Reset window
+      rateLimitMap.set(ip, { count: 1, timestamp: now })
+    }
+  } else {
+    // Initial request
+    rateLimitMap.set(ip, { count: 1, timestamp: now })
+  }
+
+  // Cleanup old entries (deterministic size limit)
+  if (rateLimitMap.size > 10000) {
+    rateLimitMap.clear()
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -136,6 +173,6 @@ export const config = {
      * - api/ (API routes handle their own auth)
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

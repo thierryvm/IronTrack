@@ -11,6 +11,9 @@ jobs:
   contrast-compliance:
     name: WCAG 2.1 AA Contrast Validation
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     
     steps:
     - name: 📥 Checkout code
@@ -101,6 +104,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: contrast-compliance
     if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
     
     steps:
     - name: 📥 Checkout code
@@ -123,6 +129,11 @@ jobs:
       
     - name: 🏗️ Test production build
       run: npm run build
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder'
+        SUPABASE_SERVICE_ROLE_KEY: 'placeholder'
+
       
     - name: 📈 Accessibility score summary
       if: always()
