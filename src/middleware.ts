@@ -11,7 +11,8 @@ export async function middleware(request: NextRequest) {
   const ip = forwardedFor?.split(',')[0].trim() || xRealIp || 'unknown'
   const now = Date.now()
   const windowMs = 60 * 1000 // 1 minute
-  const maxRequests = 100 // 100 requests per minute
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
+  const maxRequests = isApiRoute ? 200 : 100
 
   const rateLimitInfo = rateLimitMap.get(ip)
 
@@ -33,13 +34,9 @@ export async function middleware(request: NextRequest) {
     rateLimitMap.set(ip, { count: 1, timestamp: now })
   }
 
-  // Cleanup old entries (simple approach, every 100 requests)
-  if (Math.random() < 0.01) {
-    for (const [key, value] of rateLimitMap.entries()) {
-      if (now - value.timestamp > windowMs) {
-        rateLimitMap.delete(key)
-      }
-    }
+  // Cleanup old entries (deterministic size limit)
+  if (rateLimitMap.size > 10000) {
+    rateLimitMap.clear()
   }
 
   let response = NextResponse.next({
