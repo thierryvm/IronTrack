@@ -1,0 +1,32 @@
+--- src/middleware.ts
++++ src/middleware.ts
+@@ -1,5 +1,28 @@
+ import { createServerClient } from '@supabase/ssr'
+ import { NextResponse, type NextRequest } from 'next/server'
+
++// Rate limiting configuration
++const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
++const MAX_REQUESTS = 60 // 60 requests per minute
++
++// In-memory store for rate limiting
++// Note: In a distributed environment (e.g. Vercel), this will be local to each isolate.
++// For a truly global rate limit, use Redis (e.g., Upstash) or a similar service.
++const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
++
++// Cleanup old entries periodically
++setInterval(() => {
++  const now = Date.now()
++  rateLimitMap.forEach((data, ip) => {
++    if (now > data.resetTime) {
++      rateLimitMap.delete(ip)
++    }
++  })
++}, RATE_LIMIT_WINDOW)
++
+ export async function middleware(request: NextRequest) {
++  const ip = request.ip || request.headers.get('x-forwarded-for') || '127.0.0.1'
++
+   let response = NextResponse.next({
+     request: {
+       headers: request.headers,
+     },
