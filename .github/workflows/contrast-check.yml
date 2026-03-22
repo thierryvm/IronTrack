@@ -11,6 +11,9 @@ jobs:
   contrast-compliance:
     name: WCAG 2.1 AA Contrast Validation
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     
     steps:
     - name: 📥 Checkout code
