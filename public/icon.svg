@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <rect x="0" y="0" width="60" height="60" rx="14" fill="#f97316"/>
+  <!-- Barbell center bar -->
+  <line x1="16" y1="30" x2="44" y2="30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Left vertical bar -->
+  <line x1="18" y1="14" x2="18" y2="46" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Right vertical bar -->
+  <line x1="42" y1="14" x2="42" y2="46" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Left plates top -->
+  <line x1="10" y1="20" x2="26" y2="20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Left plates bottom -->
+  <line x1="10" y1="40" x2="26" y2="40" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Right plates top -->
+  <line x1="34" y1="20" x2="50" y2="20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <!-- Right plates bottom -->
+  <line x1="34" y1="40" x2="50" y2="40" stroke="white" stroke-width="4" stroke-linecap="round"/>
+</svg>

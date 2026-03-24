@@ -24,6 +24,25 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // HSTS — force HTTPS 2 ans, incluant sous-domaines
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          // Désactive fonctionnalités non utilisées (DDoS surface reduction)
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()' },
+          // Protection XSS legacy browsers
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          // CSP — sources autorisées uniquement
+          { key: 'Content-Security-Policy', value: [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: blob: https://taspdceblvmpvdjixyit.supabase.co https://iron-track-dusky.vercel.app",
+            "connect-src 'self' https://taspdceblvmpvdjixyit.supabase.co wss://taspdceblvmpvdjixyit.supabase.co https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+            "media-src 'self'",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+          ].join('; ') },
         ]
       }
     ]

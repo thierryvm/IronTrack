@@ -4,31 +4,31 @@
   "description": "Suivi de tes entraînements et nutrition comme un(e) champion(ne) !",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#0B111A",
   "theme_color": "#f97316",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-16.png",
-      "sizes": "16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-32.png", 
+      "src": "/logo-32.webp",
       "sizes": "32x32",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/logo-64.webp",
+      "sizes": "64x64",
+      "type": "image/webp"
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/logo-128.webp",
+      "sizes": "128x128",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 } 

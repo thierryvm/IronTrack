@@ -25,11 +25,11 @@ export const metadata: Metadata = {
  authors: [{ name:"IronTrack Team"}],
  icons: {
  icon: [
- { url:"/icon-16.png", sizes:"16x16", type:"image/png"},
- { url:"/icon-32.png", sizes:"32x32", type:"image/png"},
- { url:"/icon-192.png", sizes:"192x192", type:"image/png"},
+ { url:"/icon.svg", type:"image/svg+xml"},
+ { url:"/logo-32.webp", sizes:"32x32", type:"image/webp"},
+ { url:"/logo-128.webp", sizes:"128x128", type:"image/webp"},
  ],
- apple:"/icon-192.png",
+ apple:"/logo-128.webp",
 },
  manifest:"/manifest.json",
  robots: {
@@ -53,20 +53,13 @@ export const metadata: Metadata = {
  title:"IronTrack - Ton coach muscu personnel",
  description: APP_DESCRIPTION,
  siteName:"IronTrack",
- images: [
- {
- url:"/icon-512.png",
- width: 512,
- height: 512,
- alt:"IronTrack - Coach muscu personnel",
-},
- ],
+ // Image OG générée dynamiquement par src/app/opengraph-image.tsx (1200x630)
 },
  twitter: {
- card:"summary",
+ card:"summary_large_image",
  title:"IronTrack - Ton coach muscu personnel",
  description: APP_DESCRIPTION,
- images: ["/icon-512.png"],
+ // Image Twitter générée via opengraph-image.tsx
 },
 };
 
