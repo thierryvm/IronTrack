@@ -1,5 +1,7 @@
 ﻿import { NextRequest, NextResponse} from'next/server'
 import { createClient} from'@supabase/supabase-js'
+import { createServerClient, type CookieOptions} from'@supabase/ssr'
+import { cookies} from'next/headers'
 import sharp from'sharp'
 
 // Type definition for file objects from Supabase storage
@@ -20,12 +22,39 @@ const supabase = createClient(
 }
 )
 
+async function requireAdmin(): Promise<{ error: NextResponse } | { error: null }> {
+ const cookieStore = await cookies()
+ const authClient = createServerClient(
+ process.env.NEXT_PUBLIC_SUPABASE_URL!,
+ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+ {
+ cookies: {
+ get(name: string) { return cookieStore.get(name)?.value },
+ set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }) },
+ remove(name: string) { cookieStore.set({ name, value: '', maxAge: 0 }) },
+},
+}
+ )
+ const { data: { user }, error: sessionError } = await authClient.auth.getUser()
+ if (sessionError || !user) {
+ return { error: NextResponse.json({ error: 'Non authentifié' }, { status: 401 }) }
+}
+ const { data: profile } = await authClient.from('profiles').select('role').eq('id', user.id).single()
+ if (!profile || !['admin', 'super_admin'].includes(profile.role ?? '')) {
+ return { error: NextResponse.json({ error: 'Permissions admin requises' }, { status: 403 }) }
+}
+ return { error: null }
+}
+
 /**
  * API Route pour optimisation batch des images existantes
  * POST /api/optimize-images
  */
 export async function POST(request: NextRequest) {
  try {
+ const authCheck = await requireAdmin()
+ if (authCheck.error) return authCheck.error
+
  const { bucket, batchSize = 50} = await request.json()
  
  if (!bucket) {
@@ -302,6 +331,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
  try {
+ const authCheck = await requireAdmin()
+ if (authCheck.error) return authCheck.error
+
  const { searchParams} = new URL(request.url)
  const bucket = searchParams.get('bucket')
  
