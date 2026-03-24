@@ -610,7 +610,7 @@ export default function AdminUsersPage() {
  size="icon"
  onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setShowDeleteModal(true)}}
  title="Supprimer l'utilisateur"
- className="hover:text-destructive hover:bg-red-50 dark:bg-red-900/20"
+ className="hover:text-destructive hover:bg-red-50 dark:hover:bg-destructive/10"
  >
  <Trash2 className="h-6 w-6" />
  </Button>

@@ -264,7 +264,7 @@ export function ImagePicker({
  accept="image/*,.heic,.heif"
  onChange={handleFileChange}
  disabled={isLoading}
- className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:bg-purple-900/20 dark:text-purple-300"
+ className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-muted dark:file:text-foreground"
  />
  <p className="text-xs text-safe-muted">Formats : JPG, PNG, HEIC, HEIF</p>
  </div>
@@ -279,7 +279,7 @@ export function ImagePicker({
  capture="environment"
  onChange={handleFileChange}
  disabled={isLoading}
- className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:bg-purple-900/20 dark:text-purple-300"
+ className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-muted dark:file:text-foreground"
  />
  </div>
  {isLoading && <div className="text-safe-primary text-sm">Chargement...</div>}

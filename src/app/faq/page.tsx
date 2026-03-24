@@ -407,7 +407,7 @@ export default function FAQPage() {
  <div className="flex flex-col sm:flex-row gap-4 justify-center">
  <Link 
  href="/support"
- className="bg-card border border-border text-orange-800 px-6 py-2 rounded-lg font-semibold hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
+ className="bg-card border border-border text-accent-foreground px-6 py-2 rounded-lg font-semibold hover:bg-accent transition-colors"
  >
  Guide Complet
  </Link>

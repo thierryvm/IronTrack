@@ -52,7 +52,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions, isSel
  ?'border-transparent' // Pas de bordure quand sélectionné pour éviter le conflit 
  : sessions.length > 0 
  ?'border-orange-200 bg-orange-50' 
- :'border-border hover:border-border dark:border-border'
+ :'border-border hover:border-primary/30'
 }`}>
  <div className={`text-sm font-semibold mb-1 ${
  sessions.length > 0 ?'text-orange-900' :'text-gray-700'

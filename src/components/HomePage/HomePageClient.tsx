@@ -112,7 +112,7 @@ function TimerRestored({
  {!isRunning ? (
  <button
  onClick={startTimer}
- className="bg-green-500 hover:bg-green-600 dark:bg-green-700 p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform"
+ className="bg-success hover:bg-success-hover p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105"
  disabled={timeLeft === 0}
  >
  <Play className="h-5 w-5" />
@@ -120,7 +120,7 @@ function TimerRestored({
  ) : (
  <button
  onClick={pauseTimer}
- className="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-700 p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform"
+ className="bg-warning hover:bg-warning-hover p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105"
  >
  <Pause className="h-5 w-5" />
  </button>
@@ -136,9 +136,9 @@ function TimerRestored({
  <button
  onClick={() => setIsMuted(!isMuted)}
  className={`p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform ${
- isMuted 
- ?'bg-red-500 hover:bg-red-600 dark:bg-red-700' 
- :'bg-secondary hover:bg-secondary dark:bg-blue-700'
+ isMuted
+ ?'bg-destructive hover:bg-destructive-hover'
+ :'bg-secondary hover:bg-secondary/80'
 }`}
  >
  {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
@@ -200,7 +200,7 @@ function QuickTimerRestored() {
  <button
  key={time}
  onClick={() => handleTimeSelect(time)}
- className="bg-primary hover:bg-primary-hover dark:bg-orange-700 text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full min-h-touch-44"
+ className="bg-primary hover:bg-primary-hover text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full min-h-touch-44"
  style={{minWidth: 0}}
  >
  {time}s
@@ -851,7 +851,7 @@ export default function HomePageClient() {
  </div>
  </div>
  ))}
- <Button asChild size="sm" variant="secondary" className="w-full mt-2 bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/50 border border-orange-200">
+ <Button asChild size="sm" variant="secondary" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent-hover border border-border">
  <Link href="/exercises" prefetch={false}>
  Voir tous les exercices
  </Link>
@@ -892,7 +892,7 @@ export default function HomePageClient() {
  </div>
  <Link 
  href="/workouts/new" 
- className="bg-card/20 hover:bg-muted/30 dark:bg-muted/40 rounded-lg p-4 transition-colors"
+ className="bg-muted/30 hover:bg-muted/50 rounded-lg p-4 transition-colors"
  >
  <Dumbbell className="h-8 w-8" />
  </Link>

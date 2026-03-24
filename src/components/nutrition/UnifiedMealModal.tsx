@@ -109,7 +109,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
                     ? 'bg-card text-orange-800 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Search className="h-6 w-6 inline mr-2" />
@@ -120,7 +120,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
                     ? 'bg-card text-orange-800 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Edit className="h-6 w-6 inline mr-2" />
@@ -131,7 +131,7 @@ export default function UnifiedMealModal({
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
                     ? 'bg-card text-orange-800 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <ChefHat className="h-6 w-6 inline mr-2" />

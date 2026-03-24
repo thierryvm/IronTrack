@@ -121,7 +121,7 @@ export default function ExerciseDetailPage() {
  <div className="flex items-center justify-between mb-6">
  <Link
  href="/exercises"
- className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-white transition-colors"
+ className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
  >
  <ArrowLeft className="w-4 h-4" />
  Retour aux exercices

@@ -113,7 +113,7 @@ export default function InlineMealForm({
  <Button
  variant="outline"
  onClick={() => setIsOpen(true)}
- className="w-full p-4 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-orange-400 hover:text-primary dark:text-orange-300 transition-colors flex items-center justify-center space-x-2 h-auto"
+ className="w-full p-4 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary transition-colors flex items-center justify-center space-x-2 h-auto"
  >
  <Plus className="h-5 w-5" />
  <span>Ajouter un aliment</span>

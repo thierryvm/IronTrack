@@ -29,7 +29,7 @@ export default function NotFoundPage() {
  <div className="text-center">
  <button
  onClick={() => window.history.back()}
- className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground dark:text-orange-400 text-sm transition-colors"
+ className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm transition-colors"
  >
  <ArrowLeft className="w-4 h-4" />
  Retour à la page précédente

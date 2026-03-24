@@ -1104,7 +1104,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  <Camera className="h-5 w-5 text-safe-primary" />
  <span>Personnalisation</span>
  </h4>
- <Button variant="secondary" onClick={handleChangeAvatar} className="w-full justify-start p-4 h-auto mb-2 hover:bg-purple-50 dark:bg-purple-900/20 min-h-touch-44" aria-label="Modifier ma photo de profil">
+ <Button variant="secondary" onClick={handleChangeAvatar} className="w-full justify-start p-4 h-auto mb-2 hover:bg-muted min-h-touch-44" aria-label="Modifier ma photo de profil">
  <Camera className="h-5 w-5 text-safe-primary mr-2" />
  <div className="text-left">
  <p className="font-medium text-foreground">Changer mon avatar</p>
@@ -1142,14 +1142,14 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  <HelpCircle className="h-5 w-5 text-foreground" />
  <span>Support</span>
  </h4>
- <button onClick={handleSupport} className="w-full text-left p-4 border border-border rounded-lg hover:bg-blue-50 dark:bg-blue-900/20 transition-colors flex items-center space-x-2 mb-2" aria-label="Contacter le support client">
+ <button onClick={handleSupport} className="w-full text-left p-4 border border-border rounded-lg hover:bg-muted transition-colors flex items-center space-x-2 mb-2" aria-label="Contacter le support client">
  <HelpCircle className="h-5 w-5 text-safe-info" />
  <div>
  <p className="font-medium text-foreground">Aide & support</p>
  <p className="text-sm text-muted-foreground">Besoin d'un coup de main&nbsp;? IronBuddy est là&nbsp;!</p>
  </div>
  </button>
- <button onClick={handleFAQ} className="w-full text-left p-4 border border-border rounded-lg hover:bg-blue-50 dark:bg-blue-900/20 transition-colors flex items-center space-x-2" aria-label="Consulter la foire aux questions">
+ <button onClick={handleFAQ} className="w-full text-left p-4 border border-border rounded-lg hover:bg-muted transition-colors flex items-center space-x-2" aria-label="Consulter la foire aux questions">
  <HelpCircle className="h-5 w-5 text-safe-info" />
  <div>
  <p className="font-medium text-foreground">FAQ</p>

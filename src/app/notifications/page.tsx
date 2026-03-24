@@ -278,7 +278,7 @@ export default function NotificationsPage() {
  {notification.href && (
  <Link 
  href={notification.href}
- className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-brand-600 hover:text-brand-700 hover:bg-brand-50 dark:bg-brand-900/20 rounded-lg transition-colors"
+ className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-primary hover:text-primary-hover hover:bg-accent rounded-lg transition-colors"
  >
  Voir
  <ExternalLink className="w-4 h-4" />

@@ -446,7 +446,7 @@ export default function AdminTicketsPage() {
  {filteredAndSortedTickets.map((ticket) => (
  <tr 
  key={ticket.id} 
- className="hover:bg-background dark:bg-gray-800 cursor-pointer"
+ className="hover:bg-muted/50 cursor-pointer transition-colors"
  onClick={() => {
  // 🔄 REDIRECTION vers page dédiée au lieu du modal
  window.location.href = `/admin/tickets/${ticket.id}`

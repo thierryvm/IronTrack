@@ -244,7 +244,7 @@ function AdminLayoutInternal({ children}: AdminLayoutProps) {
  <Button
  variant="ghost"
  onClick={handleLogout}
- className="w-full justify-start px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:bg-red-900/20"
+ className="w-full justify-start px-4 py-2 text-sm text-destructive hover:bg-red-50 dark:hover:bg-destructive/10"
  >
  <LogOut className="h-6 w-6 mr-2" />
  Se déconnecter
@@ -275,7 +275,7 @@ function AdminLayoutInternal({ children}: AdminLayoutProps) {
  className={`flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-colors ${
  item.active
  ?'bg-accent text-accent-foreground border border-border'
- :'text-gray-700 hover:bg-background dark:bg-gray-700'
+ :'text-muted-foreground hover:bg-muted hover:text-foreground'
 }`}
  >
  <Icon className="h-5 w-5 mr-2" />
@@ -343,8 +343,8 @@ function AdminLayoutInternal({ children}: AdminLayoutProps) {
  onClick={() => setSidebarOpen(false)}
  className={`flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-colors ${
  item.active
- ?'bg-orange-50 text-orange-700 border border-orange-200'
- :'text-gray-700 hover:bg-background dark:bg-gray-800'
+ ?'bg-accent text-accent-foreground border border-border'
+ :'text-muted-foreground hover:bg-muted hover:text-foreground'
 }`}
  >
  <Icon className="h-5 w-5 mr-2" />

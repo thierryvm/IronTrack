@@ -204,7 +204,7 @@ export default function SharedNutritionPage() {
  <div className="flex items-center space-x-4">
  <button
  onClick={() => router.back()}
- className="p-2 bg-card/20 border border-border rounded-lg hover:bg-muted/30 dark:bg-muted/30 transition-colors"
+ className="p-2 bg-card/20 border border-border rounded-lg hover:bg-muted/50 transition-colors"
  aria-label="Retour à la page précédente"
  >
  <ArrowLeft className="h-5 w-5" />

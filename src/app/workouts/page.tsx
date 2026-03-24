@@ -370,7 +370,7 @@ export default function WorkoutsPage() {
 }}
  variant="ghost"
  size="sm"
- className="p-2 h-auto w-auto hover:bg-blue-50 dark:bg-blue-900/20"
+ className="p-2 h-auto w-auto hover:bg-muted"
  title="Voir détails"
  aria-label="Voir les détails de la séance"
  >
@@ -380,7 +380,7 @@ export default function WorkoutsPage() {
  asChild
  variant="ghost"
  size="sm"
- className="p-2 h-auto w-auto hover:bg-orange-50 dark:bg-orange-900/20"
+ className="p-2 h-auto w-auto hover:bg-accent"
  title="Modifier"
  aria-label="Modifier la séance"
  >

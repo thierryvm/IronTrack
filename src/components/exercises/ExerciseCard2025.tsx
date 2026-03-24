@@ -279,7 +279,7 @@ export function ExerciseCard2025({
 
  // Classes selon variante pour Card ShadCN UI
  const getCardClasses = () => {
- const base ='hover:shadow-lg border-border hover:border-orange-200 dark:border-primary transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
+ const base ='hover:shadow-lg border-border hover:border-orange-200 transition-all duration-300 overflow-hidden group flex flex-col min-h-[500px]'
  
  switch (variant) {
  case'compact':
@@ -332,7 +332,7 @@ export function ExerciseCard2025({
  <div className="p-6 flex flex-col flex-1">
  {/* Header avec titre et métadonnées */}
  <div className="mb-4">
- <h3 className="text-xl font-bold text-foreground group-hover:text-orange-800 dark:text-orange-300 transition-colors mb-2 line-clamp-2">
+ <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
  {exercise.name}
  </h3>
  <div className="flex items-center space-x-4 text-sm text-gray-600">
@@ -425,8 +425,8 @@ export function ExerciseCard2025({
 }}
  whileHover={{ scale: 1.05}}
  whileTap={{ scale: 0.95}}
- className="p-2 text-gray-600 hover:text-safe-error dark:text-safe-error hover:bg-red-50 dark:bg-red-900/20 
- focus:text-safe-error dark:text-safe-error focus:bg-red-50 dark:bg-red-900/20
+ className="p-2 text-muted-foreground hover:text-destructive hover:bg-red-50 dark:hover:bg-destructive/10
+ focus:text-destructive focus:bg-red-50 dark:focus:bg-destructive/10
  rounded-lg transition-all duration-200
  focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
  aria-label={`Supprimer ${exercise.name}`}

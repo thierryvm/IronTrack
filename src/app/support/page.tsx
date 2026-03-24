@@ -720,25 +720,25 @@ export default function SupportPage() {
  {/* NOUVEAU - Contact Support en premier */}
  <Link 
  href="/support/contact" 
- className="flex items-center space-x-2 p-4 border-2 border-orange-200 bg-orange-50 rounded-lg hover:bg-orange-100 dark:bg-orange-900/30 hover:border-orange-300 transition-colors group"
+ className="flex items-center space-x-2 p-4 border-2 border-orange-200 bg-accent rounded-lg hover:bg-accent-hover hover:border-orange-300 transition-colors group"
  >
  <MessageSquare className="h-6 w-6 text-orange-800" />
  <div className="flex-1">
  <p className="font-medium text-orange-900">✉️ Contacter le Support</p>
  <p className="text-sm text-orange-700">Signaler un problème</p>
  </div>
- <ArrowRight className="h-6 w-6 text-orange-800 group-hover:text-orange-900 dark:text-orange-200" />
+ <ArrowRight className="h-6 w-6 text-orange-800 group-hover:text-orange-900 " />
  </Link>
  <Link
  href="/training-partners"
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-orange-50 dark:bg-orange-900/20 hover:border-orange-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-orange-200 transition-colors group"
  >
  <Users className="h-6 w-6 text-orange-800" />
  <div className="flex-1">
  <p className="font-medium text-foreground">Training Partners</p>
  <p className="text-sm text-muted-foreground">Gérer vos partenaires</p>
  </div>
- <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 dark:text-orange-300" />
+ <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 " />
  </Link>
 
  <Link
@@ -779,14 +779,14 @@ export default function SupportPage() {
 
  <Link 
  href="/onboarding" 
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-orange-50 dark:bg-orange-900/20 hover:border-orange-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-orange-200 transition-colors group"
  >
  <Target className="h-6 w-6 text-orange-800" />
  <div className="flex-1">
  <p className="font-medium text-foreground">Onboarding</p>
  <p className="text-sm text-muted-foreground">Refaire la configuration</p>
  </div>
- <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 dark:text-orange-300" />
+ <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 " />
  </Link>
  </div>
  </div>

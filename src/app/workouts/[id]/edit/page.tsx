@@ -120,7 +120,7 @@ export default function EditWorkoutPage() {
  <button
  type="button"
  onClick={() => router.back()}
- className="flex items-center space-x-2 text-orange-800 hover:text-orange-900 dark:text-orange-200 font-semibold mb-4"
+ className="flex items-center space-x-2 text-accent-foreground hover:text-primary font-semibold mb-4"
  >
  <ArrowLeft className="h-5 w-5" />
  <span>Retour</span>

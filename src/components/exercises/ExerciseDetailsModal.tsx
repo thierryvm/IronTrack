@@ -445,7 +445,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  onClose()
  router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
 }}
- className="p-2 text-foreground hover:text-orange-800 dark:text-orange-300 hover:bg-orange-50 dark:bg-orange-900/20 rounded-lg transition-colors"
+ className="p-2 text-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
  title="Modifier cette performance"
  >
  <Edit3 className="h-6 w-6" />

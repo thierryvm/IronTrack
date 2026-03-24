@@ -514,7 +514,7 @@ export default function TrainingPartnersPage() {
  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
  <a 
  href="/support" 
- className="flex-1 sm:flex-none bg-card border border-border text-secondary px-6 py-2 rounded-lg font-medium hover:bg-blue-50 dark:bg-blue-900/20 transition-colors text-sm text-center min-w-[120px]"
+ className="flex-1 sm:flex-none bg-card border border-border text-foreground px-6 py-2 rounded-lg font-medium hover:bg-muted transition-colors text-sm text-center min-w-[120px]"
  >
  Guide complet
  </a>
@@ -636,7 +636,7 @@ export default function TrainingPartnersPage() {
  onClick={() => router.push(`/training-partners/${partnership.id}/settings`)}
  variant="ghost"
  size="sm"
- className="p-2 text-foreground hover:text-foreground dark:text-foreground"
+ className="p-2 text-foreground hover:bg-muted"
  title="Paramètres de partage"
  >
  <Settings className="h-5 w-5" />

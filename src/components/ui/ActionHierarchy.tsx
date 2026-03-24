@@ -73,28 +73,28 @@ export function ActionHierarchy({
  case'success':
  return'bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-400'
  case'danger':
- return'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/50 focus:ring-red-400'
+ return'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-destructive/20 focus:ring-red-400'
  case'warning':
- return'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/50 focus:ring-yellow-400'
+ return'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-warning/20 focus:ring-yellow-400'
  case'neutral':
- return'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
+ return'bg-muted text-muted-foreground hover:bg-muted/80 focus:ring-gray-400'
  default:
- return'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 focus:ring-gray-400'
+ return'bg-muted text-muted-foreground hover:bg-muted/80 focus:ring-gray-400'
 }
 }
 
  const getTertiaryVariantClasses = (variant?: string): string => {
  switch (variant) {
  case'success':
- return'text-green-600 hover:bg-green-50 dark:bg-green-900/20 focus:ring-green-300'
+ return'text-green-600 hover:bg-green-50 dark:hover:bg-success/10 focus:ring-green-300'
  case'danger':
- return'text-red-600 hover:bg-red-50 dark:bg-red-900/20 focus:ring-red-300'
+ return'text-red-600 hover:bg-red-50 dark:hover:bg-destructive/10 focus:ring-red-300'
  case'warning':
- return'text-yellow-600 hover:bg-yellow-50 dark:bg-yellow-900/20 focus:ring-yellow-300'
+ return'text-yellow-600 hover:bg-yellow-50 dark:hover:bg-warning/10 focus:ring-yellow-300'
  case'neutral':
- return'text-gray-600 hover:bg-background dark:bg-gray-800 focus:ring-gray-300'
+ return'text-muted-foreground hover:bg-muted focus:ring-gray-300'
  default:
- return'text-gray-600 hover:bg-background dark:bg-gray-800 focus:ring-gray-300'
+ return'text-muted-foreground hover:bg-muted focus:ring-gray-300'
 }
 }
 

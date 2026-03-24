@@ -289,7 +289,7 @@ export default function ExercisesPageOptimized() {
  placeholder="Rechercher un exercice..."
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- className="w-full pl-8 pr-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary dark:border-orange-400"
+ className="w-full pl-8 pr-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
  aria-label="Rechercher un exercice par nom, groupe musculaire ou équipement"
  />
  </div>
@@ -301,7 +301,7 @@ export default function ExercisesPageOptimized() {
  onClick={() => setSelectedMuscleGroup(group)}
  variant={selectedMuscleGroup === group ?"default" :"secondary"}
  size="sm"
- className={selectedMuscleGroup === group ?"bg-primary hover:bg-primary-hover text-white" :"border-orange-200 text-orange-700 hover:bg-orange-50 dark:bg-orange-900/20"}
+ className={selectedMuscleGroup === group ?"bg-primary hover:bg-primary-hover text-white" :"border-border text-primary hover:bg-accent"}
  aria-pressed={selectedMuscleGroup === group}
  aria-label={`Filtrer par ${group}${selectedMuscleGroup === group ?' (actif)' :''}`}
  >

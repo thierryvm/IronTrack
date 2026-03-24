@@ -244,7 +244,7 @@ export default function RecipeLibrary({
  </div>
  <button
  onClick={onClose}
- className="p-2 text-foreground hover:text-foreground dark:text-foreground hover:bg-muted rounded-lg transition-colors"
+ className="p-2 text-foreground hover:bg-muted rounded-lg transition-colors"
  >
  <X className="h-5 w-5" />
  </button>

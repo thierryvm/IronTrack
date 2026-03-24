@@ -309,7 +309,7 @@ export default function AdminLogsPage() {
  key={log.id}
  initial={{ opacity: 0, y: 20}}
  animate={{ opacity: 1, y: 0}}
- className="hover:bg-background dark:bg-gray-800"
+ className="hover:bg-muted/50 transition-colors"
  >
  <td className="px-6 py-4 whitespace-nowrap">
  <div className="flex items-center space-x-2">

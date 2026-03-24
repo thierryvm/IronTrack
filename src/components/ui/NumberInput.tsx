@@ -49,9 +49,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
  type="button"
  onClick={handleDecrement}
  disabled={value <= min}
- className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+ className="flex items-center justify-center w-10 h-10 bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
  >
- <Minus className="w-4 h-4 text-gray-600" />
+ <Minus className="w-4 h-4 text-muted-foreground" />
  </button>
  
  <div className="flex-1 max-w-[80px]">
@@ -69,13 +69,13 @@ export const NumberInput: React.FC<NumberInputProps> = ({
  type="button"
  onClick={handleIncrement}
  disabled={value >= max}
- className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+ className="flex items-center justify-center w-10 h-10 bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
  >
- <Plus className="w-4 h-4 text-gray-600" />
+ <Plus className="w-4 h-4 text-muted-foreground" />
  </button>
  </div>
  
- <div className="text-xs text-gray-600 text-center">
+ <div className="text-xs text-muted-foreground text-center">
  {min} - {max} {label?.toLowerCase() ||''}
  </div>
  </div>

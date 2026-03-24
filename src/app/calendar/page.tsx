@@ -429,7 +429,7 @@ export default function CalendarPage() {
 }
 }}
  variant="outline"
- className="bg-card border-white text-primary hover:bg-orange-50 dark:bg-orange-950/20 flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation"
+ className="bg-card border-border text-primary hover:bg-accent flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation"
  title={
  partnersWorkouts.length === 0 
  ?'Aucune séance partagée disponible - Gérer mes partenaires' 
@@ -451,7 +451,7 @@ export default function CalendarPage() {
  </Button>
  <Button
  onClick={() => router.push('/workouts/new')}
- className="bg-primary hover:bg-primary-hover dark:bg-orange-700 flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation text-white shadow-sm transition-colors"
+ className="bg-primary hover:bg-primary-hover flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation text-white shadow-sm transition-colors"
  >
  <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
  <span className="hidden sm:inline">Nouvelle séance</span>

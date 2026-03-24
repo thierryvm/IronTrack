@@ -1485,7 +1485,7 @@ export default function ProgressPage() {
  <span>Objectifs</span>
  </h2>
  <Button
- className="bg-primary hover:bg-primary-hover dark:bg-primary text-white font-semibold shadow-sm"
+ className="bg-primary hover:bg-primary-hover text-white font-semibold shadow-sm"
  onClick={() => setShowGoalModal(true)}
  >
  <Plus className="h-4 w-4 mr-2" /> Ajouter

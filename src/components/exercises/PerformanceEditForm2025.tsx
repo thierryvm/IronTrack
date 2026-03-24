@@ -238,7 +238,7 @@ export const PerformanceEditForm2025: React.FC<PerformanceEditForm2025Props> = (
  variant="ghost"
  size="icon"
  onClick={handleCancel}
- className="text-gray-700 hover:text-foreground dark:text-foreground"
+ className="text-muted-foreground hover:text-foreground"
  >
  <ArrowLeft className="h-5 w-5" />
  </Button>
