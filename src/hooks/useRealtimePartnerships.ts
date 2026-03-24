@@ -5,8 +5,8 @@ import { useAuth} from'./useAuth'
 export function useRealtimePartnerships() {
  const { user} = useAuth()
  const [refreshTrigger, setRefreshTrigger] = useState(0)
- const supabase = createClient()
- const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
+ const supabaseRef = useRef(createClient())
+ const channelRef = useRef<ReturnType<typeof supabaseRef.current.channel> | null>(null)
 
  // Fonction pour déclencher un rafraîchissement
  const triggerRefresh = () => {
@@ -17,6 +17,7 @@ export function useRealtimePartnerships() {
  useEffect(() => {
  if (!user) return
 
+ const supabase = supabaseRef.current
  const channel = supabase.channel('partnerships-updates')
  .on(
 'postgres_changes',
@@ -27,7 +28,6 @@ export function useRealtimePartnerships() {
  filter: `or(requester_id.eq.${user.id},partner_id.eq.${user.id})`
 },
  (_payload) => {
- // Déclencher le rafraîchissement après un petit délai pour éviter les doublons
  setTimeout(() => {
  triggerRefresh()
 }, 500)
@@ -42,7 +42,7 @@ export function useRealtimePartnerships() {
  supabase.removeChannel(channelRef.current)
 }
 }
-}, [user, supabase])
+}, [user])
 
  return {
  refreshTrigger,
