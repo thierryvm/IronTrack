@@ -23,16 +23,26 @@ export async function PATCH(
  return NextResponse.json({ error:'Non authentifié'}, { status: 401})
 }
 
- // Vérifier les permissions admin
- const { data: userRole, error: roleError} = await supabase
- .from('user_roles')
- .select('role, is_active')
- .eq('user_id', user.id)
- .eq('is_active', true)
+ // Vérifier les permissions admin via profiles.role (source de vérité canonique)
+ const { data: adminProfile, error: roleError} = await supabase
+ .from('profiles')
+ .select('role, is_banned, banned_until')
+ .eq('id', user.id)
  .single()
 
- if (roleError || !userRole || !['admin','super_admin','moderator'].includes(userRole.role)) {
+ if (roleError || !adminProfile) {
+ return NextResponse.json({ error:'Profil utilisateur introuvable'}, { status: 403})
+}
+
+ const adminRoles = ['moderator', 'admin', 'super_admin']
+ if (!adminProfile.role || !adminRoles.includes(adminProfile.role)) {
  return NextResponse.json({ error:'Permissions insuffisantes'}, { status: 403})
+}
+
+ // Vérifier si l'admin est lui-même banni
+ const now = new Date()
+ if (adminProfile.is_banned && (!adminProfile.banned_until || new Date(adminProfile.banned_until) > now)) {
+ return NextResponse.json({ error:'Compte suspendu'}, { status: 403})
 }
 
  // Vérifier que le statut est valide

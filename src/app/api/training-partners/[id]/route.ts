@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse} from'next/server'
-import { authenticateRequest} from'@/utils/auth-api'
+import { createServerSupabaseClient} from'@/utils/supabase/server'
 
 export async function PATCH(
  request: NextRequest,
  { params}: { params: Promise<{ id: string}>}
 ) {
  try {
- const { user, error: authError, supabase} = await authenticateRequest(request)
- 
- if (authError || !user || !supabase) {
- return NextResponse.json({ error: authError ||'Non autorisé'}, { status: 401})
+ const supabase = createServerSupabaseClient()
+ const { data: { user}, error: authError} = await supabase.auth.getUser()
+
+ if (authError || !user) {
+ return NextResponse.json({ error:'Non authentifié'}, { status: 401})
 }
 
  const body = await request.json()

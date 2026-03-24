@@ -132,17 +132,6 @@ function validateMimeType(file: File): boolean {
  return true
 }
  
- // Fallback pour types MIME non standards mais extensions valides
- if (file.type && file.type.startsWith('image/') && ext) {
- const imageExtensions = [
-'jpg','jpeg','png','gif','heic','heif','webp','avif','jxl', 
-'bmp','tiff','tif','svg','jfif','pjpeg','dib','ico','cur'
- ]
- if (imageExtensions.includes(ext)) {
- return true
-}
-}
- 
  return false
 }
 

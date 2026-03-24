@@ -47,18 +47,24 @@ export async function POST(request: Request) {
  return NextResponse.json({ error:'Non authentifié'}, { status: 401})
 }
 
- // 🔒 2. Vérification permissions super admin uniquement
- const { data: adminRole, error: roleError} = await supabase
- .from('user_roles')
- .select('role')
- .eq('user_id', user.id)
- .eq('is_active', true)
- .in('role', ['super_admin']) // Seuls les super admins peuvent bannir
+ // 🔒 2. Vérification permissions super admin via profiles.role (source de vérité canonique)
+ const { data: adminProfile, error: roleError} = await supabase
+ .from('profiles')
+ .select('role, is_banned, banned_until')
+ .eq('id', user.id)
  .single()
- 
- if (roleError || !adminRole) {
+
+ if (roleError || !adminProfile || adminProfile.role !== 'super_admin') {
  return NextResponse.json({ error:'Permissions super admin requises'}, { status: 403})
 }
+
+ // Vérifier si l'admin est lui-même banni
+ const now = new Date()
+ if (adminProfile.is_banned && (!adminProfile.banned_until || new Date(adminProfile.banned_until) > now)) {
+ return NextResponse.json({ error:'Compte suspendu'}, { status: 403})
+}
+
+ const adminRole = adminProfile
 
  // 🔒 3. Créer client admin avec service key pour les opérations admin
  const supabaseAdmin = createServerClient(
@@ -77,18 +83,16 @@ export async function POST(request: Request) {
 }
  )
 
- // 🔒 4. Vérifier que l'utilisateur cible n'est pas un admin
- const { data: targetUserRole} = await supabase
- .from('user_roles')
+ // 🔒 4. Vérifier que l'utilisateur cible n'est pas un admin via profiles.role
+ const { data: targetProfile} = await supabase
+ .from('profiles')
  .select('role')
- .eq('user_id', userId)
- .eq('is_active', true)
- .in('role', ['admin','super_admin','moderator'])
+ .eq('id', userId)
  .single()
 
- if (targetUserRole) {
- return NextResponse.json({ 
- error:'Impossible de bannir un utilisateur admin' 
+ if (targetProfile && ['admin', 'super_admin', 'moderator'].includes(targetProfile.role ?? '')) {
+ return NextResponse.json({
+ error:'Impossible de bannir un utilisateur admin'
 }, { status: 403})
 }
 
