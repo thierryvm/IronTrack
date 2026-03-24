@@ -1,550 +1,550 @@
-import { useState, useCallback } from 'react'
-import { safeJSONStringify } from '@/utils/json'
+import { useState, useCallback} from'react'
+import { safeJSONStringify} from'@/utils/json'
 
-import { createClient } from '@/utils/supabase/client'
+import { createClient} from'@/utils/supabase/client'
 import { 
-  SupportTicket, 
-  CreateTicketRequest, 
-  CreateResponseRequest,
-  TicketResponse
-} from '@/types/support'
+ SupportTicket, 
+ CreateTicketRequest, 
+ CreateResponseRequest,
+ TicketResponse
+} from'@/types/support'
 
 export const useSupport = () => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
+ const [loading, setLoading] = useState(false)
+ const [error, setError] = useState<string | null>(null)
+ const supabase = createClient()
 
-  // Créer un nouveau ticket de support
-  const createTicket = async (ticketData: CreateTicketRequest): Promise<SupportTicket | null> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Créer un nouveau ticket de support
+ const createTicket = async (ticketData: CreateTicketRequest): Promise<SupportTicket | null> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('Vous devez être connecté pour créer un ticket')
-      }
+ const { data: { user}} = await supabase.auth.getUser()
+ if (!user) {
+ throw new Error('Vous devez être connecté pour créer un ticket')
+}
 
-      // Collecter les informations du navigateur
-      const browser_info = {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        cookieEnabled: navigator.cookieEnabled,
-        onLine: navigator.onLine,
-        screen: {
-          width: screen.width,
-          height: screen.height,
-          colorDepth: screen.colorDepth
-        },
-        window: {
-          innerWidth: window.innerWidth,
-          innerHeight: window.innerHeight
-        }
-      }
+ // Collecter les informations du navigateur
+ const browser_info = {
+ userAgent: navigator.userAgent,
+ platform: navigator.platform,
+ language: navigator.language,
+ cookieEnabled: navigator.cookieEnabled,
+ onLine: navigator.onLine,
+ screen: {
+ width: screen.width,
+ height: screen.height,
+ colorDepth: screen.colorDepth
+},
+ window: {
+ innerWidth: window.innerWidth,
+ innerHeight: window.innerHeight
+}
+}
 
-      const { data, error } = await supabase
-        .from('support_tickets')
-        .insert({
-          user_id: user.id,
-          user_email: user.email, // Ajouter l'email directement
-          title: ticketData.title,
-          description: ticketData.description,
-          category: ticketData.category,
-          priority: ticketData.priority || 'medium',
-          url: ticketData.url || window.location.href,
-          user_agent: navigator.userAgent,
-          browser_info,
-          attachments: ticketData.attachments || []
-        })
-        .select()
-        .single()
+ const { data, error} = await supabase
+ .from('support_tickets')
+ .insert({
+ user_id: user.id,
+ user_email: user.email, // Ajouter l'email directement
+ title: ticketData.title,
+ description: ticketData.description,
+ category: ticketData.category,
+ priority: ticketData.priority ||'medium',
+ url: ticketData.url || window.location.href,
+ user_agent: navigator.userAgent,
+ browser_info,
+ attachments: ticketData.attachments || []
+})
+ .select()
+ .single()
 
-      if (error) throw error
+ if (error) throw error
 
-      return data
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la création du ticket'
-      setError(errorMessage)
-      return null
-    } finally {
-      setLoading(false)
-    }
-  }
+ return data
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la création du ticket'
+ setError(errorMessage)
+ return null
+} finally {
+ setLoading(false)
+}
+}
 
-  // Récupérer les tickets de l'utilisateur connecté
-  const getUserTickets = async (): Promise<SupportTicket[]> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Récupérer les tickets de l'utilisateur connecté
+ const getUserTickets = async (): Promise<SupportTicket[]> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return []
+ const { data: { user}} = await supabase.auth.getUser()
+ if (!user) return []
 
-      const { data, error } = await supabase
-        .from('support_tickets')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+ const { data, error} = await supabase
+ .from('support_tickets')
+ .select('*')
+ .eq('user_id', user.id)
+ .order('created_at', { ascending: false})
 
-      if (error) throw error
+ if (error) throw error
 
-      return data || []
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des tickets'
-      setError(errorMessage)
-      return []
-    } finally {
-      setLoading(false)
-    }
-  }
+ return data || []
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la récupération des tickets'
+ setError(errorMessage)
+ return []
+} finally {
+ setLoading(false)
+}
+}
 
-  // Ajouter une réponse à un ticket
-  const addResponse = async (responseData: CreateResponseRequest): Promise<TicketResponse | null> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Ajouter une réponse à un ticket
+ const addResponse = async (responseData: CreateResponseRequest): Promise<TicketResponse | null> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('Vous devez être connecté pour répondre')
-      }
+ const { data: { user}} = await supabase.auth.getUser()
+ if (!user) {
+ throw new Error('Vous devez être connecté pour répondre')
+}
 
-      const { data, error } = await supabase
-        .from('ticket_responses')
-        .insert({
-          ticket_id: responseData.ticket_id,
-          user_id: user.id,
-          message: responseData.message,
-          is_internal: responseData.is_internal || false,
-          is_solution: responseData.is_solution || false
-        })
-        .select()
-        .single()
+ const { data, error} = await supabase
+ .from('ticket_responses')
+ .insert({
+ ticket_id: responseData.ticket_id,
+ user_id: user.id,
+ message: responseData.message,
+ is_internal: responseData.is_internal || false,
+ is_solution: responseData.is_solution || false
+})
+ .select()
+ .single()
 
-      if (error) throw error
+ if (error) throw error
 
-      return data
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'ajout de la réponse'
-      setError(errorMessage)
-      return null
-    } finally {
-      setLoading(false)
-    }
-  }
+ return data
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de l\'ajout de la réponse'
+ setError(errorMessage)
+ return null
+} finally {
+ setLoading(false)
+}
+}
 
-  // Récupérer les réponses d'un ticket
-  const getTicketResponses = async (ticketId: string): Promise<TicketResponse[]> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Récupérer les réponses d'un ticket
+ const getTicketResponses = async (ticketId: string): Promise<TicketResponse[]> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      const { data, error } = await supabase
-        .from('ticket_responses')
-        .select('*')
-        .eq('ticket_id', ticketId)
-        .eq('is_internal', false) // Seules les réponses publiques pour les utilisateurs
-        .order('created_at', { ascending: true })
+ const { data, error} = await supabase
+ .from('ticket_responses')
+ .select('*')
+ .eq('ticket_id', ticketId)
+ .eq('is_internal', false) // Seules les réponses publiques pour les utilisateurs
+ .order('created_at', { ascending: true})
 
-      if (error) throw error
+ if (error) throw error
 
-      return data || []
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des réponses'
-      setError(errorMessage)
-      return []
-    } finally {
-      setLoading(false)
-    }
-  }
+ return data || []
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la récupération des réponses'
+ setError(errorMessage)
+ return []
+} finally {
+ setLoading(false)
+}
+}
 
-  // Voter sur un ticket
-  const voteTicket = async (ticketId: string, voteType: 'up' | 'down'): Promise<boolean> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Voter sur un ticket
+ const voteTicket = async (ticketId: string, voteType:'up' |'down'): Promise<boolean> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('Vous devez être connecté pour voter')
-      }
+ const { data: { user}} = await supabase.auth.getUser()
+ if (!user) {
+ throw new Error('Vous devez être connecté pour voter')
+}
 
-      // Vérifier si l'utilisateur a déjà voté
-      const { data: existingVote } = await supabase
-        .from('ticket_votes')
-        .select('id, vote_type')
-        .eq('ticket_id', ticketId)
-        .eq('user_id', user.id)
-        .maybeSingle()
+ // Vérifier si l'utilisateur a déjà voté
+ const { data: existingVote} = await supabase
+ .from('ticket_votes')
+ .select('id, vote_type')
+ .eq('ticket_id', ticketId)
+ .eq('user_id', user.id)
+ .maybeSingle()
 
-      if (existingVote) {
-        if (existingVote.vote_type === voteType) {
-          // Supprimer le vote si c'est le même
-          await supabase
-            .from('ticket_votes')
-            .delete()
-            .eq('id', existingVote.id)
-        } else {
-          // Changer le type de vote
-          await supabase
-            .from('ticket_votes')
-            .update({ vote_type: voteType })
-            .eq('id', existingVote.id)
-        }
-      } else {
-        // Créer un nouveau vote
-        await supabase
-          .from('ticket_votes')
-          .insert({
-            ticket_id: ticketId,
-            user_id: user.id,
-            vote_type: voteType
-          })
-      }
+ if (existingVote) {
+ if (existingVote.vote_type === voteType) {
+ // Supprimer le vote si c'est le même
+ await supabase
+ .from('ticket_votes')
+ .delete()
+ .eq('id', existingVote.id)
+} else {
+ // Changer le type de vote
+ await supabase
+ .from('ticket_votes')
+ .update({ vote_type: voteType})
+ .eq('id', existingVote.id)
+}
+} else {
+ // Créer un nouveau vote
+ await supabase
+ .from('ticket_votes')
+ .insert({
+ ticket_id: ticketId,
+ user_id: user.id,
+ vote_type: voteType
+})
+}
 
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du vote'
-      setError(errorMessage)
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
+ return true
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors du vote'
+ setError(errorMessage)
+ return false
+} finally {
+ setLoading(false)
+}
+}
 
-  // Récupérer tous les tickets (admin seulement) - Utilise API route sécurisée
-  const getAllTickets = useCallback(async (): Promise<SupportTicket[]> => {
-    try {
-      setLoading(true)
-      setError(null)
+ // Récupérer tous les tickets (admin seulement) - Utilise API route sécurisée
+ const getAllTickets = useCallback(async (): Promise<SupportTicket[]> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      
-      // Utiliser la nouvelle API route sécurisée
-      const response = await fetch('/api/admin/tickets', {
-        method: 'GET',
-        credentials: 'include', // Important pour les cookies de session
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+ 
+ // Utiliser la nouvelle API route sécurisée
+ const response = await fetch('/api/admin/tickets', {
+ method:'GET',
+ credentials:'include', // Important pour les cookies de session
+ headers: {
+'Content-Type':'application/json',
+},
+})
 
-      if (response.ok) {
-        const { tickets } = await response.json()
-        
-        if (tickets && tickets.length > 0) {
-          
-          // Transformer les données API au format SupportTicket  
-          const transformedTickets: SupportTicket[] = tickets.map((ticket: Record<string, unknown>) => ({
-            ...ticket,
-            // Les données de profil sont déjà intégrées par l'API
-            profiles: ticket.user_email ? {
-              email: ticket.user_email,
-              full_name: ticket.user_full_name,
-              avatar_url: ticket.user_avatar_url
-            } : undefined
-          }))
-          
-          return transformedTickets
-        }
-      }
-      
-      // Log admin sécurisé supprimé
-      
-      // SOLUTION 2: Fallback - Requêtes séparées (plus robuste)
-      const { data: ticketsData, error: ticketsError } = await supabase
-        .from('support_tickets')
-        .select('*')
-        .order('created_at', { ascending: false })
+ if (response.ok) {
+ const { tickets} = await response.json()
+ 
+ if (tickets && tickets.length > 0) {
+ 
+ // Transformer les données API au format SupportTicket 
+ const transformedTickets: SupportTicket[] = tickets.map((ticket: Record<string, unknown>) => ({
+ ...ticket,
+ // Les données de profil sont déjà intégrées par l'API
+ profiles: ticket.user_email ? {
+ email: ticket.user_email,
+ full_name: ticket.user_full_name,
+ avatar_url: ticket.user_avatar_url
+} : undefined
+}))
+ 
+ return transformedTickets
+}
+}
+ 
+ // Log admin sécurisé supprimé
+ 
+ // SOLUTION 2: Fallback - Requêtes séparées (plus robuste)
+ const { data: ticketsData, error: ticketsError} = await supabase
+ .from('support_tickets')
+ .select('*')
+ .order('created_at', { ascending: false})
 
-      if (ticketsError) {
-        // Log admin sécurisé supprimé
-        return []
-      }
+ if (ticketsError) {
+ // Log admin sécurisé supprimé
+ return []
+}
 
-      if (!ticketsData || ticketsData.length === 0) {
-        // Log admin sécurisé supprimé
-        return []
-      }
-
-
-      // Récupérer les profils utilisateur séparément
-      const userIds = [...new Set(ticketsData.map(ticket => ticket.user_id).filter(Boolean))]
-      
-      if (userIds.length > 0) {
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, email, full_name, avatar_url')
-          .in('id', userIds)
-
-        if (!profilesError && profilesData) {
-          
-          // Créer un index des profils par user_id
-          const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]))
-          
-          // Joindre les données côté client
-          const enrichedTickets: SupportTicket[] = ticketsData.map(ticket => ({
-            ...ticket,
-            profiles: ticket.user_id ? profilesMap.get(ticket.user_id) : undefined,
-            user_email: ticket.user_email || profilesMap.get(ticket.user_id)?.email
-          }))
-          
-          return enrichedTickets
-        } else {
-          // Log admin sécurisé supprimé
-        }
-      }
-      
-      // SOLUTION 3: Données minimales sans profils (dernier recours)
-      // Log admin sécurisé supprimé
-      return ticketsData
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération des tickets'
-      // Log admin sécurisé supprimé
-      setError(errorMessage)
-      return []
-    } finally {
-      setLoading(false)
-    }
-  }, [supabase])
-
-  // Mettre à jour le statut d'un ticket - Via API sécurisée
-  const updateTicketStatus = useCallback(async (ticketId: string, newStatus: string, adminNote?: string): Promise<boolean> => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const response = await fetch(`/api/admin/tickets/${ticketId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: safeJSONStringify({ 
-          status: newStatus,
-          admin_note: adminNote 
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erreur lors de la mise à jour')
-      }
-
-      return true
-    } catch (err) {
-      console.error('Erreur update ticket status:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la mise à jour du statut'
-      setError(errorMessage)
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  // Mettre à jour la priorité d'un ticket - Mémoïsé
-  const updateTicketPriority = useCallback(async (ticketId: string, newPriority: string): Promise<boolean> => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const { error } = await supabase
-        .from('support_tickets')
-        .update({ 
-          priority: newPriority,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', ticketId)
-
-      if (error) throw error
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la mise à jour de la priorité'
-      setError(errorMessage)
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [supabase])
-
-  // Ajouter une réponse admin à un ticket
-  const addTicketResponse = async (ticketId: string, message: string, isFromAdmin: boolean = false, isInternal: boolean = false): Promise<boolean> => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('Utilisateur non authentifié')
-      }
+ if (!ticketsData || ticketsData.length === 0) {
+ // Log admin sécurisé supprimé
+ return []
+}
 
 
-      const { error } = await supabase
-        .from('ticket_responses')
-        .insert({
-          ticket_id: ticketId,
-          user_id: user.id,
-          message,
-          is_internal: isInternal, // ✅ CORRECTION CRITIQUE: Séparer admin et interne !
-          is_solution: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+ // Récupérer les profils utilisateur séparément
+ const userIds = [...new Set(ticketsData.map(ticket => ticket.user_id).filter(Boolean))]
+ 
+ if (userIds.length > 0) {
+ const { data: profilesData, error: profilesError} = await supabase
+ .from('profiles')
+ .select('id, email, full_name, avatar_url')
+ .in('id', userIds)
 
-      if (error) {
-        console.error('[DEBUG] addTicketResponse - Erreur insertion:', error)
-        throw error
-      }
-      
+ if (!profilesError && profilesData) {
+ 
+ // Créer un index des profils par user_id
+ const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]))
+ 
+ // Joindre les données côté client
+ const enrichedTickets: SupportTicket[] = ticketsData.map(ticket => ({
+ ...ticket,
+ profiles: ticket.user_id ? profilesMap.get(ticket.user_id) : undefined,
+ user_email: ticket.user_email || profilesMap.get(ticket.user_id)?.email
+}))
+ 
+ return enrichedTickets
+} else {
+ // Log admin sécurisé supprimé
+}
+}
+ 
+ // SOLUTION 3: Données minimales sans profils (dernier recours)
+ // Log admin sécurisé supprimé
+ return ticketsData
+ 
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la récupération des tickets'
+ // Log admin sécurisé supprimé
+ setError(errorMessage)
+ return []
+} finally {
+ setLoading(false)
+}
+}, [supabase])
 
-      // Mettre à jour le statut du ticket - SEULEMENT POUR LES ADMINS
-      if (isFromAdmin) {
-        await updateTicketStatus(ticketId, 'waiting_user')
-      } else {
-        // Les utilisateurs normaux ne changent pas le statut - c'est aux admins de le faire
-      }
+ // Mettre à jour le statut d'un ticket - Via API sécurisée
+ const updateTicketStatus = useCallback(async (ticketId: string, newStatus: string, adminNote?: string): Promise<boolean> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'ajout de la réponse'
-      setError(errorMessage)
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
+ const response = await fetch(`/api/admin/tickets/${ticketId}/status`, {
+ method:'PATCH',
+ headers: {
+'Content-Type':'application/json',
+},
+ body: safeJSONStringify({ 
+ status: newStatus,
+ admin_note: adminNote 
+}),
+})
 
-  // Récupérer un ticket spécifique avec toutes ses données
-  const getTicketWithResponses = useCallback(async (ticketId: string): Promise<{
-    ticket: SupportTicket | null,
-    responses: TicketResponse[]
-  }> => {
-    try {
-      setLoading(true)
-      setError(null)
+ if (!response.ok) {
+ const errorData = await response.json()
+ throw new Error(errorData.error ||'Erreur lors de la mise à jour')
+}
 
-      
-      // Récupérer le ticket avec le profil utilisateur (méthode simplifiée)
-      const { data: ticketData, error: ticketError } = await supabase
-        .from('support_tickets')
-        .select('*')
-        .eq('id', ticketId)
-        .single()
+ return true
+} catch (err) {
+ console.error('Erreur update ticket status:', err)
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la mise à jour du statut'
+ setError(errorMessage)
+ return false
+} finally {
+ setLoading(false)
+}
+}, [])
 
-      if (ticketError) {
-        // Log admin sécurisé supprimé
-        throw ticketError
-      }
+ // Mettre à jour la priorité d'un ticket - Mémoïsé
+ const updateTicketPriority = useCallback(async (ticketId: string, newPriority: string): Promise<boolean> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      if (!ticketData) {
-        return { ticket: null, responses: [] }
-      }
+ const { error} = await supabase
+ .from('support_tickets')
+ .update({ 
+ priority: newPriority,
+ updated_at: new Date().toISOString()
+})
+ .eq('id', ticketId)
 
-      // Enrichir avec le profil utilisateur séparément
-      let enrichedTicket = ticketData
-      if (ticketData.user_id) {
-        const { data: userProfile } = await supabase
-          .from('profiles')
-          .select('id, full_name, email, avatar_url')
-          .eq('id', ticketData.user_id)
-          .single()
+ if (error) throw error
+ return true
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la mise à jour de la priorité'
+ setError(errorMessage)
+ return false
+} finally {
+ setLoading(false)
+}
+}, [supabase])
 
-        if (userProfile) {
-          enrichedTicket = {
-            ...ticketData,
-            profiles: userProfile,
-            user_email: userProfile.email || ticketData.user_email
-          }
-        }
-      }
+ // Ajouter une réponse admin à un ticket
+ const addTicketResponse = async (ticketId: string, message: string, isFromAdmin: boolean = false, isInternal: boolean = false): Promise<boolean> => {
+ try {
+ setLoading(true)
+ setError(null)
 
-      // ✅ CORRECTION CRITIQUE: Filtrer les notes internes pour utilisateurs normaux
-      const { data: { user } } = await supabase.auth.getUser()
-      let responseQuery = supabase
-        .from('ticket_responses')
-        .select('*')
-        .eq('ticket_id', ticketId)
-      
-      // Vérifier si l'utilisateur est admin
-      let isAdmin = false
-      if (user) {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .in('role', ['admin', 'super_admin', 'moderator'])
-          .eq('is_active', true)
-          .maybeSingle()
-        
-        isAdmin = !!roleData
-      }
-      
-      // Si utilisateur normal, filtrer les notes internes
-      if (!isAdmin) {
-        responseQuery = responseQuery.eq('is_internal', false)
-      }
-      
-      const { data: responsesData, error: responsesError } = await responseQuery
-        .order('created_at', { ascending: true })
-
-      if (responsesError) {
-        // Log admin sécurisé supprimé
-        // Continuer même si les réponses échouent
-      }
-
-      // Enrichir avec les données utilisateur si les réponses existent
-      let enrichedResponses = []
-      if (responsesData && responsesData.length > 0) {
-        // Récupérer les profils des utilisateurs ayant répondu
-        const userIds = [...new Set(responsesData.map(r => r.user_id))]
-        const { data: userProfiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, email, avatar_url')
-          .in('id', userIds)
-
-        // Créer un map pour les profils
-        const profilesMap: Record<string, { id: string; full_name?: string; email?: string; avatar_url?: string }> = {}
-        userProfiles?.forEach(profile => {
-          profilesMap[profile.id] = profile
-        })
-
-        // Enrichir les réponses avec les données utilisateur
-        enrichedResponses = responsesData.map(response => ({
-          ...response,
-          profiles: profilesMap[response.user_id],
-          user_email: profilesMap[response.user_id]?.email || 'Email non disponible'
-        }))
-      }
+ const { data: { user}} = await supabase.auth.getUser()
+ if (!user) {
+ throw new Error('Utilisateur non authentifié')
+}
 
 
-      return {
-        ticket: enrichedTicket as SupportTicket,
-        responses: enrichedResponses as TicketResponse[]
-      }
+ const { error} = await supabase
+ .from('ticket_responses')
+ .insert({
+ ticket_id: ticketId,
+ user_id: user.id,
+ message,
+ is_internal: isInternal, // ✅ CORRECTION CRITIQUE: Séparer admin et interne !
+ is_solution: false,
+ created_at: new Date().toISOString(),
+ updated_at: new Date().toISOString()
+})
 
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la récupération du ticket'
-      // Log admin sécurisé supprimé
-      setError(errorMessage)
-      return { ticket: null, responses: [] }
-    } finally {
-      setLoading(false)
-    }
-  }, [supabase])
+ if (error) {
+ console.error('[DEBUG] addTicketResponse - Erreur insertion:', error)
+ throw error
+}
+ 
+
+ // Mettre à jour le statut du ticket - SEULEMENT POUR LES ADMINS
+ if (isFromAdmin) {
+ await updateTicketStatus(ticketId,'waiting_user')
+} else {
+ // Les utilisateurs normaux ne changent pas le statut - c'est aux admins de le faire
+}
+
+ return true
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de l\'ajout de la réponse'
+ setError(errorMessage)
+ return false
+} finally {
+ setLoading(false)
+}
+}
+
+ // Récupérer un ticket spécifique avec toutes ses données
+ const getTicketWithResponses = useCallback(async (ticketId: string): Promise<{
+ ticket: SupportTicket | null,
+ responses: TicketResponse[]
+}> => {
+ try {
+ setLoading(true)
+ setError(null)
+
+ 
+ // Récupérer le ticket avec le profil utilisateur (méthode simplifiée)
+ const { data: ticketData, error: ticketError} = await supabase
+ .from('support_tickets')
+ .select('*')
+ .eq('id', ticketId)
+ .single()
+
+ if (ticketError) {
+ // Log admin sécurisé supprimé
+ throw ticketError
+}
+
+ if (!ticketData) {
+ return { ticket: null, responses: []}
+}
+
+ // Enrichir avec le profil utilisateur séparément
+ let enrichedTicket = ticketData
+ if (ticketData.user_id) {
+ const { data: userProfile} = await supabase
+ .from('profiles')
+ .select('id, full_name, email, avatar_url')
+ .eq('id', ticketData.user_id)
+ .single()
+
+ if (userProfile) {
+ enrichedTicket = {
+ ...ticketData,
+ profiles: userProfile,
+ user_email: userProfile.email || ticketData.user_email
+}
+}
+}
+
+ // ✅ CORRECTION CRITIQUE: Filtrer les notes internes pour utilisateurs normaux
+ const { data: { user}} = await supabase.auth.getUser()
+ let responseQuery = supabase
+ .from('ticket_responses')
+ .select('*')
+ .eq('ticket_id', ticketId)
+ 
+ // Vérifier si l'utilisateur est admin
+ let isAdmin = false
+ if (user) {
+ const { data: roleData} = await supabase
+ .from('user_roles')
+ .select('role')
+ .eq('user_id', user.id)
+ .in('role', ['admin','super_admin','moderator'])
+ .eq('is_active', true)
+ .maybeSingle()
+ 
+ isAdmin = !!roleData
+}
+ 
+ // Si utilisateur normal, filtrer les notes internes
+ if (!isAdmin) {
+ responseQuery = responseQuery.eq('is_internal', false)
+}
+ 
+ const { data: responsesData, error: responsesError} = await responseQuery
+ .order('created_at', { ascending: true})
+
+ if (responsesError) {
+ // Log admin sécurisé supprimé
+ // Continuer même si les réponses échouent
+}
+
+ // Enrichir avec les données utilisateur si les réponses existent
+ let enrichedResponses = []
+ if (responsesData && responsesData.length > 0) {
+ // Récupérer les profils des utilisateurs ayant répondu
+ const userIds = [...new Set(responsesData.map(r => r.user_id))]
+ const { data: userProfiles} = await supabase
+ .from('profiles')
+ .select('id, full_name, email, avatar_url')
+ .in('id', userIds)
+
+ // Créer un map pour les profils
+ const profilesMap: Record<string, { id: string; full_name?: string; email?: string; avatar_url?: string}> = {}
+ userProfiles?.forEach(profile => {
+ profilesMap[profile.id] = profile
+})
+
+ // Enrichir les réponses avec les données utilisateur
+ enrichedResponses = responsesData.map(response => ({
+ ...response,
+ profiles: profilesMap[response.user_id],
+ user_email: profilesMap[response.user_id]?.email ||'Email non disponible'
+}))
+}
 
 
-  return {
-    createTicket,
-    getUserTickets,
-    getAllTickets,
-    getTicketWithResponses,
-    addResponse,
-    getTicketResponses,
-    updateTicketStatus,
-    updateTicketPriority,
-    addTicketResponse,
-    voteTicket,
-    loading,
-    error
-  }
+ return {
+ ticket: enrichedTicket as SupportTicket,
+ responses: enrichedResponses as TicketResponse[]
+}
+
+} catch (err) {
+ const errorMessage = err instanceof Error ? err.message :'Erreur lors de la récupération du ticket'
+ // Log admin sécurisé supprimé
+ setError(errorMessage)
+ return { ticket: null, responses: []}
+} finally {
+ setLoading(false)
+}
+}, [supabase])
+
+
+ return {
+ createTicket,
+ getUserTickets,
+ getAllTickets,
+ getTicketWithResponses,
+ addResponse,
+ getTicketResponses,
+ updateTicketStatus,
+ updateTicketPriority,
+ addTicketResponse,
+ voteTicket,
+ loading,
+ error
+}
 }

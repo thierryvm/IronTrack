@@ -5,7 +5,7 @@
  */
 
 export function CriticalCSSExtractor() {
-  return null // Rendu côté serveur uniquement
+ return null // Rendu côté serveur uniquement
 }
 
 // CSS CRITIQUE complet inline - À injecter dans <head>
@@ -30,21 +30,21 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 .hidden{display:none}
 
 /* COULEURS SYSTÈME - Minimal palette */
-.bg-white dark:bg-gray-900{background-color:#fff}
-.bg-gray-50 dark:bg-gray-800{background-color:#f9fafb}
-.bg-gray-100 dark:bg-gray-800{background-color:#f3f4f6}
+.bg-card {background-color:#fff}
+.bg-background {background-color:#f9fafb}
+.bg-gray-100 {background-color:#f3f4f6}
 .bg-gray-900{background-color:#111827}
-.bg-orange-600{background-color:#ea580c}
+.bg-primary{background-color:#ea580c}
 .text-white{color:#fff}
-.text-gray-900 dark:text-gray-100{color:#111827}
-.text-gray-600 dark:text-gray-300{color:#4b5563}
+.text-foreground {color:#111827}
+.text-gray-600 {color:#4b5563}
 
 /* HEADER CRITIQUE */
 .sticky{position:sticky}
 .top-0{top:0}
 .z-40{z-index:40}
 .border-b{border-bottom-width:1px}
-.border-gray-200 dark:border-gray-600{border-color:#e5e7eb}
+.border-border {border-color:#e5e7eb}
 .backdrop-blur{backdrop-filter:blur(8px)}
 
 /* BOUTONS CRITIQUES - UX prioritaire */
@@ -71,7 +71,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 .p-6{padding:1.5rem}
 .mx-auto{margin-left:auto;margin-right:auto}
 .mb-4{margin-bottom:1rem}
-.space-y-4>:not([hidden])~:not([hidden]){margin-top:1rem}
+.space-y-md>:not([hidden])~:not([hidden]){margin-top:1rem}
 
 /* TYPOGRAPHY CRITIQUE */
 .text-xl{font-size:1.25rem;line-height:1.75rem}
@@ -82,17 +82,17 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 
 /* MOBILE CRITIQUE - Touch targets 44px+ */
 @media (max-width:768px){
-  .btn-primary,.btn-secondary{min-height:48px;padding:1rem 1.5rem}
-  .form-input{font-size:16px;padding:1rem}
-  .card{padding:1rem}
+ .btn-primary,.btn-secondary{min-height:48px;padding:1rem 1.5rem}
+ .form-input{font-size:16px;padding:1rem}
+ .card{padding:1rem}
 }
 
 /* DARK MODE - Système préférence uniquement */
 @media (prefers-color-scheme:dark){
-  body{background:#111827;color:white}
-  .bg-white dark:bg-gray-900{background:#1f2937}
-  .card{background:#1f2937;color:white}
-  .form-input{background:#374151;border-color:#4b5563;color:white}
+ body{background:#111827;color:white}
+ .bg-card {background:#1f2937}
+ .card{background:#1f2937;color:white}
+ .form-input{background:#374151;border-color:#4b5563;color:white}
 }
 
 /* ACCESSIBILITY CRITIQUE */
@@ -108,60 +108,60 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sa
 
 // Fonction utilitaire pour injecter le CSS critique
 export function injectCriticalCSS() {
-  if (typeof document === 'undefined') return
-  
-  // Éviter la double injection
-  if (document.getElementById('critical-css')) return
-  
-  const style = document.createElement('style')
-  style.id = 'critical-css'
-  style.innerHTML = CRITICAL_CSS
-  
-  // Injecter avant tout autre CSS
-  const firstLink = document.head.querySelector('link[rel="stylesheet"]')
-  if (firstLink) {
-    document.head.insertBefore(style, firstLink)
-  } else {
-    document.head.appendChild(style)
-  }
+ if (typeof document ==='undefined') return
+ 
+ // Éviter la double injection
+ if (document.getElementById('critical-css')) return
+ 
+ const style = document.createElement('style')
+ style.id ='critical-css'
+ style.innerHTML = CRITICAL_CSS
+ 
+ // Injecter avant tout autre CSS
+ const firstLink = document.head.querySelector('link[rel="stylesheet"]')
+ if (firstLink) {
+ document.head.insertBefore(style, firstLink)
+} else {
+ document.head.appendChild(style)
+}
 }
 
 // Hook pour charger le CSS non-critique après LCP
 export function useDeferredStyles() {
-  if (typeof window === 'undefined') return
-  
-  const loadDeferredCSS = () => {
-    // Charger Tailwind en différé
-    const tailwindLink = document.createElement('link')
-    tailwindLink.rel = 'stylesheet'
-    tailwindLink.href = '/_next/static/css/app.css'
-    tailwindLink.media = 'print'
-    tailwindLink.onload = function() {
-      // @ts-expect-error - this.media not typed in event handler context
-      this.media = 'all'
-    }
-    
-    // Éviter les duplications
-    if (!document.querySelector('link[href*="app.css"]')) {
-      document.head.appendChild(tailwindLink)
-    }
-  }
-  
-  // Charger après interaction utilisateur ou 2s
-  const timer = setTimeout(loadDeferredCSS, 2000)
-  
-  // Charger dès interaction
-  const handleInteraction = () => {
-    clearTimeout(timer)
-    loadDeferredCSS()
-    document.removeEventListener('click', handleInteraction)
-    document.removeEventListener('scroll', handleInteraction)
-    document.removeEventListener('touchstart', handleInteraction)
-  }
-  
-  document.addEventListener('click', handleInteraction, { passive: true })
-  document.addEventListener('scroll', handleInteraction, { passive: true })
-  document.addEventListener('touchstart', handleInteraction, { passive: true })
+ if (typeof window ==='undefined') return
+ 
+ const loadDeferredCSS = () => {
+ // Charger Tailwind en différé
+ const tailwindLink = document.createElement('link')
+ tailwindLink.rel ='stylesheet'
+ tailwindLink.href ='/_next/static/css/app.css'
+ tailwindLink.media ='print'
+ tailwindLink.onload = function() {
+ // @ts-expect-error - this.media not typed in event handler context
+ this.media ='all'
+}
+ 
+ // Éviter les duplications
+ if (!document.querySelector('link[href*="app.css"]')) {
+ document.head.appendChild(tailwindLink)
+}
+}
+ 
+ // Charger après interaction utilisateur ou 2s
+ const timer = setTimeout(loadDeferredCSS, 2000)
+ 
+ // Charger dès interaction
+ const handleInteraction = () => {
+ clearTimeout(timer)
+ loadDeferredCSS()
+ document.removeEventListener('click', handleInteraction)
+ document.removeEventListener('scroll', handleInteraction)
+ document.removeEventListener('touchstart', handleInteraction)
+}
+ 
+ document.addEventListener('click', handleInteraction, { passive: true})
+ document.addEventListener('scroll', handleInteraction, { passive: true})
+ document.addEventListener('touchstart', handleInteraction, { passive: true})
 }
 
 export default CriticalCSSExtractor

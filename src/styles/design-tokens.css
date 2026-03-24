@@ -44,15 +44,25 @@
   --input: #ffffff;
   --input-border: var(--gray-300);
   --primary: var(--orange-600);
+  --primary-hover: var(--orange-700);
   --primary-foreground: #ffffff;
   --secondary: var(--blue-600);
+  --secondary-hover: var(--blue-700);
   --secondary-foreground: #ffffff;
   --accent: var(--gray-100);
   --accent-foreground: var(--gray-900);
   --muted: var(--gray-100);
   --muted-foreground: var(--gray-500);
   --destructive: #dc2626;
+  --destructive-hover: #b91c1c;
   --destructive-foreground: #ffffff;
+  
+  --success: #16a34a;
+  --success-hover: #15803d;
+  --success-foreground: #ffffff;
+  --warning: #eab308;
+  --warning-hover: #ca8a04;
+  --warning-foreground: #ffffff;
   
   /* === PATTERNS HEADER === */
   --header-bg: #ffffff;
@@ -86,23 +96,33 @@
 
 /* === MODE SOMBRE === */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #262626;
-  --card-foreground: #fafafa;
-  --border: #404040;
-  --input: #262626;
-  --input-border: #525252;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --border: #334155;
+  --input: #1e293b;
+  --input-border: #475569;
   --primary: var(--orange-500);
+  --primary-hover: var(--orange-600);
   --primary-foreground: #ffffff;
   --secondary: var(--blue-500);
+  --secondary-hover: var(--blue-600);
   --secondary-foreground: #ffffff;
-  --accent: #404040;
-  --accent-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a1a1aa;
+  --accent: #334155;
+  --accent-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   --destructive: #ef4444;
+  --destructive-hover: #dc2626;
   --destructive-foreground: #ffffff;
+
+  --success: #22c55e;
+  --success-hover: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #facc15;
+  --warning-hover: #eab308;
+  --warning-foreground: #1e293b;
   
   /* Headers en mode sombre */
   --header-bg: #171717;

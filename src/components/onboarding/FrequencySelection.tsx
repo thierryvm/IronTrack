@@ -1,154 +1,154 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Slider } from '@/components/ui/slider'
-import { Calendar, Clock, Zap } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle} from'@/components/ui/card'
+import { Badge} from'@/components/ui/badge'
+import { Slider} from'@/components/ui/slider'
+import { Calendar, Clock, Zap} from'lucide-react'
 
 interface FrequencySelectionProps {
-  frequencyValue?: 'Faible' | 'Modérée' | 'Élevée'
-  availabilityValue?: number
-  onChange: (frequency: 'Faible' | 'Modérée' | 'Élevée', availability: number) => void
+ frequencyValue?:'Faible' |'Modérée' |'Élevée'
+ availabilityValue?: number
+ onChange: (frequency:'Faible' |'Modérée' |'Élevée', availability: number) => void
 }
 
 const frequencies = [
-  {
-    id: 'Faible' as const,
-    title: 'Faible',
-    description: "J'ai peu de temps mais je veux rester actif",
-    details: '1-2 séances par semaine',
-    icon: Clock,
-  },
-  {
-    id: 'Modérée' as const,
-    title: 'Modérée',
-    description: "Je peux m'entraîner régulièrement",
-    details: '3-4 séances par semaine',
-    icon: Calendar,
-  },
-  {
-    id: 'Élevée' as const,
-    title: 'Élevée',
-    description: "J'ai beaucoup de temps à consacrer au sport",
-    details: '5+ séances par semaine',
-    icon: Zap,
-  },
+ {
+ id:'Faible' as const,
+ title:'Faible',
+ description:"J'ai peu de temps mais je veux rester actif",
+ details:'1-2 séances par semaine',
+ icon: Clock,
+},
+ {
+ id:'Modérée' as const,
+ title:'Modérée',
+ description:"Je peux m'entraîner régulièrement",
+ details:'3-4 séances par semaine',
+ icon: Calendar,
+},
+ {
+ id:'Élevée' as const,
+ title:'Élevée',
+ description:"J'ai beaucoup de temps à consacrer au sport",
+ details:'5+ séances par semaine',
+ icon: Zap,
+},
 ]
 
-export function FrequencySelection({ frequencyValue, availabilityValue, onChange }: FrequencySelectionProps) {
-  const handleFrequencyChange = (newFrequency: 'Faible' | 'Modérée' | 'Élevée') => {
-    onChange(newFrequency, availabilityValue || 60)
-  }
+export function FrequencySelection({ frequencyValue, availabilityValue, onChange}: FrequencySelectionProps) {
+ const handleFrequencyChange = (newFrequency:'Faible' |'Modérée' |'Élevée') => {
+ onChange(newFrequency, availabilityValue || 60)
+}
 
-  const handleAvailabilityChange = (newAvailability: number[]) => {
-    onChange(frequencyValue || 'Modérée', newAvailability[0])
-  }
+ const handleAvailabilityChange = (newAvailability: number[]) => {
+ onChange(frequencyValue ||'Modérée', newAvailability[0])
+}
 
-  const formatTime = (minutes: number) => {
-    if (minutes >= 60) {
-      const hours = Math.floor(minutes / 60)
-      const remainingMinutes = minutes % 60
-      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`
-    }
-    return `${minutes}min`
-  }
+ const formatTime = (minutes: number) => {
+ if (minutes >= 60) {
+ const hours = Math.floor(minutes / 60)
+ const remainingMinutes = minutes % 60
+ return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`
+}
+ return `${minutes}min`
+}
 
-  return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-xl font-semibold text-foreground mb-1">
-          À quelle fréquence souhaitez-vous vous entraîner ?
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Nous personnaliserons votre programme selon votre disponibilité
-        </p>
-      </div>
+ return (
+ <div className="space-y-8">
+ <div className="text-center">
+ <h2 className="text-xl font-semibold text-foreground mb-1">
+ À quelle fréquence souhaitez-vous vous entraîner ?
+ </h2>
+ <p className="text-sm text-muted-foreground">
+ Nous personnaliserons votre programme selon votre disponibilité
+ </p>
+ </div>
 
-      <div className="space-y-3">
-        {frequencies.map((freq) => {
-          const Icon = freq.icon
-          const isSelected = frequencyValue === freq.id
+ <div className="space-y-2">
+ {frequencies.map((freq) => {
+ const Icon = freq.icon
+ const isSelected = frequencyValue === freq.id
 
-          return (
-            <Card
-              key={freq.id}
-              className={`cursor-pointer transition-all duration-200 hover:shadow-sm ${
-                isSelected
-                  ? 'ring-2 ring-primary border-primary bg-primary/5'
-                  : 'border-border'
-              }`}
-              onClick={() => handleFrequencyChange(freq.id)}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-lg transition-colors ${
-                    isSelected
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">{freq.title}</CardTitle>
-                    <CardDescription className="mt-0.5">{freq.description}</CardDescription>
-                    <Badge variant="secondary" className="mt-2 text-xs">{freq.details}</Badge>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          )
-        })}
-      </div>
+ return (
+ <Card
+ key={freq.id}
+ className={`cursor-pointer transition-all duration-200 hover:shadow-sm ${
+ isSelected
+ ?'ring-2 ring-primary border-primary bg-primary/5'
+ :'border-border'
+}`}
+ onClick={() => handleFrequencyChange(freq.id)}
+ >
+ <CardHeader className="pb-2">
+ <div className="flex items-center gap-4">
+ <div className={`p-2 rounded-lg transition-colors ${
+ isSelected
+ ?'bg-primary text-primary-foreground'
+ :'bg-muted text-muted-foreground'
+}`}>
+ <Icon className="h-5 w-5" />
+ </div>
+ <div className="flex-1">
+ <CardTitle className="text-base">{freq.title}</CardTitle>
+ <CardDescription className="mt-1">{freq.description}</CardDescription>
+ <Badge variant="secondary" className="mt-2 text-xs">{freq.details}</Badge>
+ </div>
+ </div>
+ </CardHeader>
+ </Card>
+ )
+})}
+ </div>
 
-      <div className="space-y-4">
-        <div className="text-center">
-          <h3 className="text-base font-semibold text-foreground mb-1">
-            Combien de temps par séance ?
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Durée moyenne souhaitée pour chaque entraînement
-          </p>
-        </div>
+ <div className="space-y-4">
+ <div className="text-center">
+ <h3 className="text-base font-semibold text-foreground mb-1">
+ Combien de temps par séance ?
+ </h3>
+ <p className="text-sm text-muted-foreground">
+ Durée moyenne souhaitée pour chaque entraînement
+ </p>
+ </div>
 
-        <Card className="bg-muted/50">
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Durée par séance</span>
-                <span className="text-lg font-semibold text-primary">
-                  {formatTime(availabilityValue || 60)}
-                </span>
-              </div>
+ <Card className="bg-muted/50">
+ <CardContent className="pt-6">
+ <div className="space-y-4">
+ <div className="flex justify-between items-center">
+ <span className="text-sm text-muted-foreground">Durée par séance</span>
+ <span className="text-lg font-semibold text-primary">
+ {formatTime(availabilityValue || 60)}
+ </span>
+ </div>
 
-              <Slider
-                value={[availabilityValue || 60]}
-                onValueChange={handleAvailabilityChange}
-                max={120}
-                min={30}
-                step={15}
-                className="w-full"
-              />
+ <Slider
+ value={[availabilityValue || 60]}
+ onValueChange={handleAvailabilityChange}
+ max={120}
+ min={30}
+ step={15}
+ className="w-full"
+ />
 
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>30min</span>
-                <span>45min</span>
-                <span>1h</span>
-                <span>1h15</span>
-                <span>1h30</span>
-                <span>2h</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+ <div className="flex justify-between text-xs text-muted-foreground">
+ <span>30min</span>
+ <span>45min</span>
+ <span>1h</span>
+ <span>1h15</span>
+ <span>1h30</span>
+ <span>2h</span>
+ </div>
+ </div>
+ </CardContent>
+ </Card>
+ </div>
 
-      {frequencyValue && availabilityValue && (
-        <div className="text-center bg-primary/5 border border-primary/20 p-3 rounded-lg">
-          <p className="text-sm font-medium text-foreground">
-            Fréquence <span className="text-primary font-semibold">{frequencyValue.toLowerCase()}</span> · Séances de <span className="text-primary font-semibold">{formatTime(availabilityValue)}</span>
-          </p>
-        </div>
-      )}
-    </div>
-  )
+ {frequencyValue && availabilityValue && (
+ <div className="text-center bg-primary/5 border border-primary/20 p-2 rounded-lg">
+ <p className="text-sm font-medium text-foreground">
+ Fréquence <span className="text-primary font-semibold">{frequencyValue.toLowerCase()}</span> · Séances de <span className="text-primary font-semibold">{formatTime(availabilityValue)}</span>
+ </p>
+ </div>
+ )}
+ </div>
+ )
 }

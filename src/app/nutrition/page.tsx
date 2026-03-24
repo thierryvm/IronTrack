@@ -1,39 +1,29 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { Plus, ChefHat, Calendar, Trash2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
-// MIGRATION SHADCN/UI NUTRITION - 100% COMPLET
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { NutritionLayout, NutritionLayoutContainer, NutritionLayoutCard, NutritionLayoutGrid, NutritionLayoutScreenLoader, NutritionLayoutBlockLoader, NutritionLayoutFooterText } from '@/components/layout/NutritionLayout'
+import { NutritionHeader } from '@/components/nutrition/NutritionHeader'
+import { NutritionProgressCards } from '@/components/nutrition/NutritionProgressCards'
+import { DailyMealsList } from '@/components/nutrition/DailyMealsList'
 
-// Lazy loading des composants lourds pour réduire le bundle initial
+// Lazy loading des composants lourds
 const RecipeLibrary = dynamic(() => import('@/components/nutrition/RecipeLibrary'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-muted h-96 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-safe-muted">Chargement de la bibliothèque...</span>
-  </div>
+  loading: () => <NutritionLayoutBlockLoader height="h-96" text="Chargement de la bibliothèque..." />
 })
 
 const UnifiedMealModal = dynamic(() => import('@/components/nutrition/UnifiedMealModal'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-safe-muted">Chargement du modal...</span>
-  </div>
+  loading: () => <NutritionLayoutBlockLoader height="h-64" text="Chargement du modal..." />
 })
 
-// Lazy loading des graphiques complets (approche component groupée)
 const NutritionCharts = dynamic(() => import('@/components/nutrition/NutritionCharts'), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg flex items-center justify-center">
-    <span className="text-gray-600 dark:text-safe-muted">Chargement des graphiques...</span>
-  </div>
+  loading: () => <NutritionLayoutBlockLoader height="h-64" text="Chargement des graphiques..." />
 })
 
 interface Meal {
@@ -54,20 +44,20 @@ export default function NutritionPage() {
   const [meals, setMeals] = useState<Meal[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [userId, setUserId] = useState<string | null>(null)
+  
   const [showMealModal, setShowMealModal] = useState(false)
   const [showRecipeLibrary, setShowRecipeLibrary] = useState(false)
   const [selectedMealType, setSelectedMealType] = useState<string>('')
+  
   const [weeklyMeals, setWeeklyMeals] = useState<Meal[]>([])
 
   const supabase = createClient()
 
-  // Charger les repas depuis la base de données
   const loadMeals = useCallback(async () => {
     if (!userId) return
 
     try {
       const dateStr = selectedDate.toISOString().split('T')[0]
-      
       const { data, error } = await supabase
         .from('nutrition_logs')
         .select('*')
@@ -75,23 +65,17 @@ export default function NutritionPage() {
         .eq('date', dateStr)
         .order('time', { ascending: true })
 
-      if (error) {
-        console.error('Erreur lors du chargement des repas:', error)
-        return
-      }
-
+      if (error) throw error
       setMeals(data || [])
     } catch (error) {
-      console.error('Erreur lors du chargement des repas:', error)
+      console.error('Erreur chargement repas:', error)
     }
   }, [userId, selectedDate, supabase])
 
-  // Charger les repas de la semaine
   const loadWeeklyMeals = useCallback(async () => {
     if (!userId) return
 
     try {
-      // Calculer le début et fin de la semaine
       const today = new Date()
       const monday = new Date(today)
       monday.setDate(today.getDate() - today.getDay() + 1)
@@ -106,102 +90,48 @@ export default function NutritionPage() {
         .gte('date', monday.toISOString().split('T')[0])
         .lte('date', sunday.toISOString().split('T')[0])
         .order('date', { ascending: true })
+        // SECURITY: Limit weekly data against abusive user loads
+        .limit(100)
 
-      if (error) {
-        console.error('Erreur lors du chargement des repas hebdomadaires:', error)
-        return
-      }
-
+      if (error) throw error
       setWeeklyMeals(data || [])
     } catch (error) {
-      console.error('Erreur lors du chargement des repas hebdomadaires:', error)
+      console.error('Erreur chargement weekly meals:', error)
     }
   }, [userId, supabase])
 
-  // Ouvrir le modal unifié
-  const openMealModal = (mealType: string) => {
-    setSelectedMealType(mealType)
-    setShowMealModal(true)
-  }
-
-  // Fermer le modal unifié
-  const closeMealModal = () => {
-    setShowMealModal(false)
-    setSelectedMealType('')
-  }
-
-  // Ouvrir la bibliothèque de recettes
-  const openRecipeLibrary = () => {
-    setShowRecipeLibrary(true)
-  }
-
-  // Fermer la bibliothèque de recettes
-  const closeRecipeLibrary = () => {
-    setShowRecipeLibrary(false)
-  }
-
-  // Callback après ajout de repas
-  const onMealAdded = () => {
-    loadMeals()
-    closeMealModal()
-  }
-
-  // Supprimer un repas
   const deleteMeal = async (mealId: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce repas ?')) return
+    if (!userId || !confirm('Supprimer ce repas ?')) return
 
     try {
       const { error } = await supabase
         .from('nutrition_logs')
         .delete()
+        // SECURITY UPDATE: IDOR protection. Force user verification on delete
         .eq('id', mealId)
+        .eq('user_id', userId)
 
-      if (error) {
-        console.error('Erreur lors de la suppression:', error)
-        return
-      }
-
+      if (error) throw error
       loadMeals()
     } catch (error) {
-      console.error('Erreur:', error)
+      console.error('Erreur de suppression:', error)
     }
   }
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const supabaseClient = createClient()
+      const { data: { user } } = await supabaseClient.auth.getUser()
       if (!user) {
         router.replace('/auth')
         return
       }
-      
-      // Vérifier si l'utilisateur a un profil
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      
-      // Permettre l'accès aux utilisateurs authentifiés avec profil ou aux admins
-      if (profile || user.email?.includes('admin')) {
-        setUserId(user.id)
-      } else {
-        // Créer automatiquement un profil basique
-        await supabase.from('profiles').insert({
-          id: user.id,
-          email: user.email,
-          role: 'user'
-        })
-        setUserId(user.id)
-      }
-      
+      setUserId(user.id)
       setLoading(false)
     }
     checkAuth()
   }, [router])
 
-  // Charger les repas quand userId ou selectedDate change
   useEffect(() => {
     if (userId) {
       loadMeals()
@@ -209,26 +139,18 @@ export default function NutritionPage() {
     }
   }, [userId, selectedDate, loadMeals, loadWeeklyMeals])
 
-  const mealTypes = [
-    { name: 'Petit-déjeuner', color: '#FF6B6B', icon: '🌅' },
-    { name: 'Déjeuner', color: '#4ECDC4', icon: '☀️' },
-    { name: 'Dîner', color: '#45B7D1', icon: '🌙' },
-    { name: 'Collation', color: '#96CEB4', icon: '🍎' },
-    { name: 'Souper', color: '#FFD700', icon: '🍲' }
-  ]
+  const todayNutrition = useMemo(() => {
+    return meals.reduce(
+      (acc, meal) => ({
+        calories: acc.calories + meal.calories,
+        protein: acc.protein + meal.protein,
+        carbs: acc.carbs + meal.carbs,
+        fat: acc.fat + meal.fat,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    )
+  }, [meals])
 
-  // Calculer les totaux nutritionnels du jour
-  const todayNutrition = meals.reduce(
-    (total, meal) => ({
-      calories: total.calories + meal.calories,
-      protein: total.protein + meal.protein,
-      carbs: total.carbs + meal.carbs,
-      fat: total.fat + meal.fat,
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  )
-
-  // Objectifs nutritionnels
   const goals = {
     calories: 2500,
     protein: 180,
@@ -236,26 +158,21 @@ export default function NutritionPage() {
     fat: 80
   }
 
-  // Filtrer les repas du jour par type
-  const todayMeals = meals.filter(meal => {
-    const mealDate = new Date(meal.date).toDateString()
+  const todayMeals = useMemo(() => {
     const selectedDateStr = selectedDate.toDateString()
-    return mealDate === selectedDateStr
-  })
+    return meals.filter(m => new Date(m.date).toDateString() === selectedDateStr)
+  }, [meals, selectedDate])
 
-  // Données pour le graphique en camembert (macronutriments)
   const macroData = useMemo(() => {
     const total = todayNutrition.protein + todayNutrition.carbs + todayNutrition.fat
     if (total === 0) return []
-    
     return [
-      { name: 'Protéines', value: todayNutrition.protein, color: '#3B82F6', percentage: Math.round((todayNutrition.protein / total) * 100) },
-      { name: 'Glucides', value: todayNutrition.carbs, color: '#10B981', percentage: Math.round((todayNutrition.carbs / total) * 100) },
-      { name: 'Lipides', value: todayNutrition.fat, color: '#F59E0B', percentage: Math.round((todayNutrition.fat / total) * 100) }
+      { name: 'Protéines', value: todayNutrition.protein, color: 'hsl(var(--safe-info))', percentage: Math.round((todayNutrition.protein / total) * 100) },
+      { name: 'Glucides', value: todayNutrition.carbs, color: 'hsl(var(--safe-success))', percentage: Math.round((todayNutrition.carbs / total) * 100) },
+      { name: 'Lipides', value: todayNutrition.fat, color: 'hsl(var(--safe-warning))', percentage: Math.round((todayNutrition.fat / total) * 100) }
     ]
   }, [todayNutrition])
 
-  // Données pour l'évolution hebdomadaire avec vraies données
   const weeklyData = useMemo(() => {
     const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
     const today = new Date()
@@ -267,25 +184,17 @@ export default function NutritionPage() {
       currentDate.setDate(monday.getDate() + index)
       const dateStr = currentDate.toISOString().split('T')[0]
       
-      // Filtrer les repas pour cette date
-      const dayMeals = weeklyMeals.filter(meal => meal.date === dateStr)
-      
-      // Calculer les totaux
-      const dayNutrition = dayMeals.reduce(
-        (total, meal) => ({
-          calories: total.calories + meal.calories,
-          protein: total.protein + meal.protein,
-        }),
-        { calories: 0, protein: 0 }
-      )
-      
-      const isToday = dateStr === today.toISOString().split('T')[0]
+      const dayMeals = weeklyMeals.filter(m => m.date === dateStr)
+      const dayNutrition = dayMeals.reduce((acc, m) => ({
+        calories: acc.calories + m.calories,
+        protein: acc.protein + m.protein,
+      }), { calories: 0, protein: 0 })
       
       return {
         day,
         calories: Math.round(dayNutrition.calories),
         protein: Math.round(dayNutrition.protein),
-        isToday,
+        isToday: dateStr === today.toISOString().split('T')[0],
         date: dateStr,
         mealsCount: dayMeals.length
       }
@@ -294,309 +203,65 @@ export default function NutritionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Chargement de la nutrition...</p>
-        </div>
-      </div>
+      <NutritionLayout>
+        <NutritionLayoutScreenLoader />
+      </NutritionLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-500 dark:from-orange-500 dark:to-red-400 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
-            <div>
-              <h1 className="text-3xl font-bold max-sm:text-2xl">Nutrition</h1>
-              <p className="text-white/90 max-sm:text-sm">Suis ton alimentation et tes objectifs</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={openRecipeLibrary}
-                variant="outline"
-                className="bg-transparent text-white border-white/20 hover:bg-muted/10"
-              >
-                <ChefHat className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
-                <span>Mes recettes</span>
-              </Button>
-              <Button
-                onClick={() => openMealModal('')}
-                className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white"
-              >
-                <Plus className="h-5 w-5 max-sm:h-4 max-sm:w-4" />
-                <span>Ajouter un repas</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <NutritionLayout>
+      <NutritionHeader 
+        onOpenRecipeLibrary={() => setShowRecipeLibrary(true)}
+        onOpenMealModal={() => { setSelectedMealType(''); setShowMealModal(true); }}
+      />
+      
+      <NutritionLayoutContainer>
+        <NutritionProgressCards todayNutrition={todayNutrition} goals={goals} />
 
-      {/* Contenu principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Objectifs nutritionnels */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          <Card className="border-l-4 border-l-orange-500">
-            <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Calories</h3>
-                <p className="text-3xl font-bold text-orange-800 dark:text-orange-300">{Math.round(todayNutrition.calories)}</p>
-                <p className="text-sm text-muted-foreground">/ {goals.calories} kcal</p>
-              </div>
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🔥</span>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-2">
-              <div 
-                className="bg-orange-600 dark:bg-orange-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((todayNutrition.calories / goals.calories) * 100, 100)}%` }}
-              ></div>
-            </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-blue-500">
-            <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Protéines</h3>
-                <p className="text-3xl font-bold text-safe-info">{Math.round(todayNutrition.protein * 10) / 10}</p>
-                <p className="text-sm text-muted-foreground">/ {goals.protein}g</p>
-              </div>
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">💪</span>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-2">
-              <div 
-                className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((todayNutrition.protein / goals.protein) * 100, 100)}%` }}
-              ></div>
-            </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-green-500">
-            <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Glucides</h3>
-                <p className="text-3xl font-bold text-safe-success">{Math.round(todayNutrition.carbs * 10) / 10}</p>
-                <p className="text-sm text-muted-foreground">/ {goals.carbs}g</p>
-              </div>
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🍞</span>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-2">
-              <div 
-                className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((todayNutrition.carbs / goals.carbs) * 100, 100)}%` }}
-              ></div>
-            </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-yellow-500">
-            <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Lipides</h3>
-                <p className="text-3xl font-bold text-safe-warning">{Math.round(todayNutrition.fat * 10) / 10}</p>
-                <p className="text-sm text-muted-foreground">/ {goals.fat}g</p>
-              </div>
-              <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🥑</span>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-2">
-              <div 
-                className="bg-yellow-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((todayNutrition.fat / goals.fat) * 100, 100)}%` }}
-              ></div>
-            </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Graphiques nutritionnels */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Répartition des macronutriments */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+        <NutritionLayoutGrid>
+          <NutritionLayoutCard title="Répartition des macronutriments">
+            <NutritionCharts macroData={macroData} weeklyData={[]} showWeekly={false} />
+          </NutritionLayoutCard>
+          
+          <NutritionLayoutCard 
+            title="Évolution hebdomadaire" 
+            headerRight={`${weeklyData.reduce((acc, d) => acc + d.mealsCount, 0)} repas`}
           >
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Répartition des macronutriments</h3>
-                <NutritionCharts macroData={macroData} weeklyData={[]} showWeekly={false} />
-              </CardContent>
-            </Card>
-          </motion.div>
+            <NutritionCharts macroData={[]} weeklyData={weeklyData} showWeekly={true} />
+            <NutritionLayoutFooterText>
+              Aperçu global de votre semaine nutritionnelle.
+            </NutritionLayoutFooterText>
+          </NutritionLayoutCard>
+        </NutritionLayoutGrid>
 
-          {/* Évolution hebdomadaire */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">Évolution hebdomadaire</h3>
-                  <div className="text-sm text-gray-600 dark:text-safe-muted">
-                    {weeklyData.reduce((total, day) => total + day.mealsCount, 0)} repas cette semaine
-                  </div>
-                </div>
-                
-                <NutritionCharts macroData={[]} weeklyData={weeklyData} showWeekly={true} />
-                
-                <div className="mt-4 text-xs text-gray-600 dark:text-safe-muted text-center">
-                  💡 Ce graphique montre vos apports nutritionnels de la semaine. Les jours avec plus de repas indiquent une meilleure régularité.
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+        <DailyMealsList 
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          todayMeals={todayMeals}
+          onOpenMealModal={(type) => { setSelectedMealType(type); setShowMealModal(true); }}
+          onDeleteMeal={deleteMeal}
+        />
+      </NutritionLayoutContainer>
 
-        {/* Repas du jour */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl shadow-md p-6"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-bold text-foreground">Repas du jour</h2>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-6 w-6 text-gray-600 dark:text-safe-muted" aria-hidden="true" />
-                <Label htmlFor="nutrition-date" className="sr-only">
-                  Sélectionner la date pour voir les repas
-                </Label>
-                <Input
-                  id="nutrition-date"
-                  type="date"
-                  value={selectedDate.toISOString().split('T')[0]}
-                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                  className="text-sm w-auto focus:ring-2 focus:ring-orange-500"
-                  aria-label="Date pour consulter les repas enregistrés"
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg text-sm font-medium">
-                <Calendar className="h-6 w-6" />
-                <span>Aujourd'hui</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">{todayMeals.length} repas enregistrés</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {mealTypes.map(mealType => (
-              <div key={mealType.name} className="border border-border rounded-lg overflow-hidden">
-                {/* Header de la section */}
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-4 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{mealType.icon}</span>
-                      <div>
-                        <h3 className="font-semibold text-foreground">{mealType.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {todayMeals.filter(meal => meal.meal_type === mealType.name).length} repas • 
-                          {Math.round(todayMeals.filter(meal => meal.meal_type === mealType.name).reduce((total, meal) => total + meal.calories, 0))} kcal
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      onClick={() => openMealModal(mealType.name)}
-                      className="bg-orange-600 dark:bg-orange-500 text-white hover:bg-orange-700 dark:hover:bg-orange-600"
-                      size="sm"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Ajouter
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Liste des repas */}
-                <div className="p-4">
-                  {todayMeals.filter(meal => meal.meal_type === mealType.name).length > 0 ? (
-                    <div className="space-y-3">
-                      {todayMeals.filter(meal => meal.meal_type === mealType.name).map((meal, index) => (
-                        <div key={`${meal.id}-${index}`} className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted transition-colors group">
-                          <div className="flex-1">
-                            <div className="font-medium text-foreground">{meal.food_name}</div>
-                            <div className="text-sm text-muted-foreground">{meal.time}</div>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <div className="text-right">
-                              <div className="font-medium text-orange-800 dark:text-orange-300">{Math.round(meal.calories)} kcal</div>
-                              <div className="text-xs text-gray-600 dark:text-safe-muted">
-                                P: {Math.round(meal.protein * 10) / 10}g • 
-                                G: {Math.round(meal.carbs * 10) / 10}g • 
-                                L: {Math.round(meal.fat * 10) / 10}g
-                              </div>
-                            </div>
-                            <Button
-                              onClick={() => deleteMeal(meal.id)}
-                              variant="ghost"
-                              size="sm"
-                              className="p-1.5 text-safe-error hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                              title="Supprimer ce repas"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-600 dark:text-safe-muted">
-                      <div className="text-4xl mb-2">🍽️</div>
-                      <p className="text-sm">Aucun repas pour {mealType.name.toLowerCase()}</p>
-                      <p className="text-xs mt-1">Cliquez sur &quot;Ajouter&quot; pour commencer</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Modal Unifié pour l'ajout de repas */}
       {showMealModal && userId && (
         <UnifiedMealModal
           isOpen={showMealModal}
-          onClose={closeMealModal}
-          onMealAdded={onMealAdded}
+          onClose={() => setShowMealModal(false)}
+          onMealAdded={() => { loadMeals(); setShowMealModal(false); }}
           mealType={selectedMealType}
           selectedDate={selectedDate}
           userId={userId}
         />
       )}
 
-      {/* Modal RecipeLibrary */}
       {showRecipeLibrary && userId && (
         <RecipeLibrary
           isOpen={showRecipeLibrary}
-          onClose={closeRecipeLibrary}
+          onClose={() => setShowRecipeLibrary(false)}
           userId={userId}
         />
       )}
-    </div>
+    </NutritionLayout>
   )
 }

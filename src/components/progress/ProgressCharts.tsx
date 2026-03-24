@@ -1,229 +1,229 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
+import { useState, useEffect} from'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from'recharts'
 
 interface ProgressData {
-  date: string
-  weight: number
-  reps: number
-  sets: number
-  exercise: string
+ date: string
+ weight: number
+ reps: number
+ sets: number
+ exercise: string
 }
 
 interface MuscleGroupData {
-  name: string
-  value: number
-  color: string
+ name: string
+ value: number
+ color: string
 }
 
 interface ProgressChartsProps {
-  progressData?: ProgressData[]
-  muscleGroupData?: MuscleGroupData[]
-  chartType: 'line' | 'pie'
-  selectedExercise?: string
+ progressData?: ProgressData[]
+ muscleGroupData?: MuscleGroupData[]
+ chartType:'line' |'pie'
+ selectedExercise?: string
 }
 
 // Composant tooltip personnalisé pour la lisibilité dark mode
-const CustomTooltip = ({ active, payload, label, isDark }: {
-  active?: boolean
-  payload?: Array<{ value: number; name: string; color: string }>
-  label?: string
-  isDark: boolean
+const CustomTooltip = ({ active, payload, label, isDark}: {
+ active?: boolean
+ payload?: Array<{ value: number; name: string; color: string}>
+ label?: string
+ isDark: boolean
 }) => {
-  if (!active || !payload || payload.length === 0) return null
+ if (!active || !payload || payload.length === 0) return null
 
-  return (
-    <div
-      style={{
-        backgroundColor: isDark ? '#1f2937' : '#ffffff',
-        border: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
-        borderRadius: '8px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.3)',
-        color: isDark ? '#f9fafb' : '#111827',
-        fontSize: '13px',
-      }}
-    >
-      {label && (
-        <p style={{ marginBottom: '4px', fontWeight: 600, color: isDark ? '#d1d5db' : '#374151' }}>
-          {label}
-        </p>
-      )}
-      {payload.map((entry, index) => (
-        <p key={index} style={{ color: entry.color || (isDark ? '#f9fafb' : '#111827'), margin: '2px 0' }}>
-          {entry.name}: <strong>{entry.value}</strong>
-        </p>
-      ))}
-    </div>
-  )
+ return (
+ <div
+ style={{
+ backgroundColor: isDark ?'#1f2937' :'#ffffff',
+ border: `1px solid ${isDark ?'#374151' :'#e5e7eb'}`,
+ borderRadius:'8px',
+ padding:'10px 14px',
+ boxShadow:'0 4px 6px -1px rgba(0,0,0,0.3)',
+ color: isDark ?'#f9fafb' :'#111827',
+ fontSize:'13px',
+}}
+ >
+ {label && (
+ <p style={{ marginBottom:'4px', fontWeight: 600, color: isDark ?'#d1d5db' :'#374151'}}>
+ {label}
+ </p>
+ )}
+ {payload.map((entry, index) => (
+ <p key={index} style={{ color: entry.color || (isDark ?'#f9fafb' :'#111827'), margin:'2px 0'}}>
+ {entry.name}: <strong>{entry.value}</strong>
+ </p>
+ ))}
+ </div>
+ )
 }
 
 // Tooltip pour le pie chart
-const CustomPieTooltip = ({ active, payload, isDark }: {
-  active?: boolean
-  payload?: Array<{ name: string; value: number; payload: { color: string } }>
-  isDark: boolean
+const CustomPieTooltip = ({ active, payload, isDark}: {
+ active?: boolean
+ payload?: Array<{ name: string; value: number; payload: { color: string}}>
+ isDark: boolean
 }) => {
-  if (!active || !payload || payload.length === 0) return null
+ if (!active || !payload || payload.length === 0) return null
 
-  const entry = payload[0]
-  return (
-    <div
-      style={{
-        backgroundColor: isDark ? '#1f2937' : '#ffffff',
-        border: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
-        borderRadius: '8px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.3)',
-        color: isDark ? '#f9fafb' : '#111827',
-        fontSize: '13px',
-      }}
-    >
-      <p style={{ fontWeight: 600, color: entry.payload.color }}>{entry.name}</p>
-      <p style={{ color: isDark ? '#d1d5db' : '#6b7280' }}>
-        {entry.value} séance{entry.value > 1 ? 's' : ''}
-      </p>
-    </div>
-  )
+ const entry = payload[0]
+ return (
+ <div
+ style={{
+ backgroundColor: isDark ?'#1f2937' :'#ffffff',
+ border: `1px solid ${isDark ?'#374151' :'#e5e7eb'}`,
+ borderRadius:'8px',
+ padding:'10px 14px',
+ boxShadow:'0 4px 6px -1px rgba(0,0,0,0.3)',
+ color: isDark ?'#f9fafb' :'#111827',
+ fontSize:'13px',
+}}
+ >
+ <p style={{ fontWeight: 600, color: entry.payload.color}}>{entry.name}</p>
+ <p style={{ color: isDark ?'#d1d5db' :'#6b7280'}}>
+ {entry.value} séance{entry.value > 1 ?'s' :''}
+ </p>
+ </div>
+ )
 }
 
 // Légende personnalisée du pie chart
-const CustomLegend = ({ data, isDark }: { data: MuscleGroupData[]; isDark: boolean }) => (
-  <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-3 px-2">
-    {data.map((entry, index) => (
-      <div key={index} className="flex items-center gap-1.5">
-        <div
-          className="w-3 h-3 rounded-full flex-shrink-0"
-          style={{ backgroundColor: entry.color }}
-        />
-        <span
-          className="text-xs font-medium"
-          style={{ color: isDark ? '#d1d5db' : '#374151' }}
-        >
-          {entry.name} ({entry.value})
-        </span>
-      </div>
-    ))}
-  </div>
+const CustomLegend = ({ data, isDark}: { data: MuscleGroupData[]; isDark: boolean}) => (
+ <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 px-2">
+ {data.map((entry, index) => (
+ <div key={index} className="flex items-center gap-1">
+ <div
+ className="w-3 h-3 rounded-full flex-shrink-0"
+ style={{ backgroundColor: entry.color}}
+ />
+ <span
+ className="text-xs font-medium"
+ style={{ color: isDark ?'#d1d5db' :'#374151'}}
+ >
+ {entry.name} ({entry.value})
+ </span>
+ </div>
+ ))}
+ </div>
 )
 
 export default function ProgressCharts({ 
-  progressData = [], 
-  muscleGroupData = [], 
-  chartType, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  selectedExercise 
+ progressData = [], 
+ muscleGroupData = [], 
+ chartType, 
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ selectedExercise 
 }: ProgressChartsProps) {
-  const [isDark, setIsDark] = useState(false)
+ const [isDark, setIsDark] = useState(false)
 
-  useEffect(() => {
-    const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
-    checkDark()
-    const observer = new MutationObserver(checkDark)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    return () => observer.disconnect()
-  }, [])
+ useEffect(() => {
+ const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
+ checkDark()
+ const observer = new MutationObserver(checkDark)
+ observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class']})
+ return () => observer.disconnect()
+}, [])
 
-  const axisColor = isDark ? '#9ca3af' : '#6b7280'
-  const gridColor = isDark ? '#374151' : '#e5e7eb'
-  
-  if (chartType === 'line') {
-    if (progressData.length === 0) {
-      return (
-        <div className="text-center py-12 text-gray-600 dark:text-safe-muted">
-          <div className="text-6xl mb-4">📈</div>
-          <p className="text-lg font-medium mb-2">Pas encore de données de progression</p>
-          <span className="block">Ajoute plus de séances pour voir ta progression !</span>
-        </div>
-      )
-    }
+ const axisColor = isDark ?'#9ca3af' :'#6b7280'
+ const gridColor = isDark ?'#374151' :'#e5e7eb'
+ 
+ if (chartType ==='line') {
+ if (progressData.length === 0) {
+ return (
+ <div className="text-center py-12 text-gray-600">
+ <div className="text-6xl mb-4">📈</div>
+ <p className="text-lg font-medium mb-2">Pas encore de données de progression</p>
+ <span className="block">Ajoute plus de séances pour voir ta progression !</span>
+ </div>
+ )
+}
 
-    return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={progressData}>
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} opacity={0.6} />
-            <XAxis 
-              dataKey="date" 
-              fontSize={12}
-              tick={{ fill: axisColor }}
-            />
-            <YAxis 
-              fontSize={12}
-              tick={{ fill: axisColor }}
-            />
-            <Tooltip
-              content={(props) => (
-                <CustomTooltip
-                  active={props.active}
-                  payload={props.payload as Array<{ value: number; name: string; color: string }>}
-                  label={props.label as string}
-                  isDark={isDark}
-                />
-              )}
-              labelFormatter={(label) => `Date: ${label}`}
-              formatter={(value) => [`${value} kg`, 'Poids']}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="weight" 
-              stroke="#f97316" 
-              strokeWidth={3}
-              dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
-              name="Poids (kg)"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    )
-  }
+ return (
+ <div className="border border-border rounded-lg p-4 bg-card">
+ <ResponsiveContainer width="100%" height={300}>
+ <LineChart data={progressData}>
+ <CartesianGrid strokeDasharray="3 3" stroke={gridColor} opacity={0.6} />
+ <XAxis 
+ dataKey="date" 
+ fontSize={12}
+ tick={{ fill: axisColor}}
+ />
+ <YAxis 
+ fontSize={12}
+ tick={{ fill: axisColor}}
+ />
+ <Tooltip
+ content={(props) => (
+ <CustomTooltip
+ active={props.active}
+ payload={props.payload as Array<{ value: number; name: string; color: string}>}
+ label={props.label as string}
+ isDark={isDark}
+ />
+ )}
+ labelFormatter={(label) => `Date: ${label}`}
+ formatter={(value) => [`${value} kg`,'Poids']}
+ />
+ <Line 
+ type="monotone" 
+ dataKey="weight" 
+ stroke="#f97316" 
+ strokeWidth={3}
+ dot={{ fill:'#f97316', strokeWidth: 2, r: 4}}
+ name="Poids (kg)"
+ />
+ </LineChart>
+ </ResponsiveContainer>
+ </div>
+ )
+}
 
-  if (chartType === 'pie') {
-    if (muscleGroupData.length === 0) {
-      return (
-        <div className="text-center py-12 text-gray-600 dark:text-safe-muted">
-          <div className="text-6xl mb-4">💪</div>
-          <p className="text-lg font-medium mb-2">Aucune donnée de groupe musculaire</p>
-          <span className="block">Commence à t&apos;entraîner pour voir la répartition !</span>
-        </div>
-      )
-    }
+ if (chartType ==='pie') {
+ if (muscleGroupData.length === 0) {
+ return (
+ <div className="text-center py-12 text-gray-600">
+ <div className="text-6xl mb-4">💪</div>
+ <p className="text-lg font-medium mb-2">Aucune donnée de groupe musculaire</p>
+ <span className="block">Commence à t&apos;entraîner pour voir la répartition !</span>
+ </div>
+ )
+}
 
-    return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-        <ResponsiveContainer width="100%" height={280}>
-          <PieChart>
-            <Pie
-              data={muscleGroupData}
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              dataKey="value"
-              stroke="none"
-              label={({ name, percent }: { name: string; percent?: number }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
-              labelLine={{ stroke: axisColor }}
-            >
-              {muscleGroupData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip
-              content={(props) => (
-                <CustomPieTooltip
-                  active={props.active}
-                  payload={props.payload as Array<{ name: string; value: number; payload: { color: string } }>}
-                  isDark={isDark}
-                />
-              )}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-        <CustomLegend data={muscleGroupData} isDark={isDark} />
-      </div>
-    )
-  }
+ return (
+ <div className="border border-border rounded-lg p-4 bg-card">
+ <ResponsiveContainer width="100%" height={280}>
+ <PieChart>
+ <Pie
+ data={muscleGroupData}
+ cx="50%"
+ cy="50%"
+ outerRadius={100}
+ dataKey="value"
+ stroke="none"
+ label={({ name, percent}: { name: string; percent?: number}) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
+ labelLine={{ stroke: axisColor}}
+ >
+ {muscleGroupData.map((entry, index) => (
+ <Cell key={`cell-${index}`} fill={entry.color} />
+ ))}
+ </Pie>
+ <Tooltip
+ content={(props) => (
+ <CustomPieTooltip
+ active={props.active}
+ payload={props.payload as Array<{ name: string; value: number; payload: { color: string}}>}
+ isDark={isDark}
+ />
+ )}
+ />
+ </PieChart>
+ </ResponsiveContainer>
+ <CustomLegend data={muscleGroupData} isDark={isDark} />
+ </div>
+ )
+}
 
-  return null
+ return null
 }
 

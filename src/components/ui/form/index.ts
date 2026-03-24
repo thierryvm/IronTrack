@@ -4,31 +4,31 @@
  */
 
 // Composants shadcn/ui standards
-export { Button } from '../button'
-export { Input } from '../input'
-export { Textarea } from '../textarea'
-export { Label } from '../label'
+export { Button} from'../button'
+export { Input} from'../input'
+export { Textarea} from'../textarea'
+export { Label} from'../label'
 export { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-  SelectSeparator
-} from '../select'
+ Select,
+ SelectContent,
+ SelectItem,
+ SelectTrigger,
+ SelectValue,
+ SelectGroup,
+ SelectLabel,
+ SelectSeparator
+} from'../select'
 
 // Composants de formulaire shadcn/ui
 export {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '../form'
+ Form,
+ FormControl,
+ FormDescription,
+ FormField,
+ FormItem,
+ FormLabel,
+ FormMessage
+} from'../form'
 
 // Composants custom locaux (si nécessaires)
-export * from './FormField'
+export * from'./FormField'

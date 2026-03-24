@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Search, Edit, ChefHat, Trash2, Save } from 'lucide-react'
+import { X, Search, Edit, ChefHat, Trash2, Save, Sunrise, Sun, Moon, Apple } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import SimpleMealBuilder from './SimpleMealBuilder'
 import FoodSearchAutocomplete from './FoodSearchAutocomplete'
@@ -15,12 +15,11 @@ interface UnifiedMealModalProps {
   userId: string
 }
 
-// Fix #34/#36 : types de repas standard
 const MEAL_TYPES = [
-  { name: 'Petit-déjeuner', icon: '🌅' },
-  { name: 'Déjeuner', icon: '☀️' },
-  { name: 'Dîner', icon: '🌙' },
-  { name: 'Collation', icon: '🍎' },
+  { name: 'Petit-déjeuner', icon: <Sunrise className="w-6 h-6 mb-1 mx-auto" /> },
+  { name: 'Déjeuner', icon: <Sun className="w-6 h-6 mb-1 mx-auto" /> },
+  { name: 'Dîner', icon: <Moon className="w-6 h-6 mb-1 mx-auto" /> },
+  { name: 'Collation', icon: <Apple className="w-6 h-6 mb-1 mx-auto" /> },
 ]
 
 export default function UnifiedMealModal({
@@ -32,7 +31,6 @@ export default function UnifiedMealModal({
   userId
 }: UnifiedMealModalProps) {
   const [addMode, setAddMode] = useState<'smart' | 'manual' | 'builder'>('smart')
-  // Fix #34/#36 : sélecteur de type quand le modal est ouvert sans type pré-sélectionné
   const [localMealType, setLocalMealType] = useState<string>(mealType)
 
   const handleClose = () => {
@@ -46,7 +44,6 @@ export default function UnifiedMealModal({
     handleClose()
   }
 
-  // Mettre à jour localMealType quand mealType change (ouverture depuis catégorie spécifique)
   const effectiveMealType = localMealType || mealType
 
   if (!isOpen) return null
@@ -60,25 +57,15 @@ export default function UnifiedMealModal({
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         onClick={handleClose}
       >
-        {/* Overlay avec effet de flou */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: 'rgba(0, 0, 0, 0.5)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)'
-          }}
-        />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
         
-        {/* Contenu de la modal */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-card border border-border  rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+          className="relative bg-card border border-border rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-foreground">
@@ -88,11 +75,10 @@ export default function UnifiedMealModal({
                 onClick={handleClose}
                 className="p-1 hover:bg-muted rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-600 dark:text-safe-muted" />
+                <X className="h-5 w-5 text-gray-600" />
               </button>
             </div>
             
-            {/* Fix #34/#36 : Sélecteur de type de repas si non pré-défini */}
             {!mealType && (
               <div className="mt-4">
                 <p className="text-sm font-medium text-foreground mb-2">
@@ -105,11 +91,11 @@ export default function UnifiedMealModal({
                       onClick={() => setLocalMealType(type.name)}
                       className={`py-2 px-2 rounded-lg text-xs font-medium transition-colors border ${
                         localMealType === type.name
-                          ? 'bg-orange-500 text-white border-orange-500'
-                          : 'bg-card text-foreground border-gray-200 dark:border-gray-600 hover:border-orange-400'
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-card text-foreground border-border hover:border-orange-400'
                       }`}
                     >
-                      <span className="block text-base mb-1">{type.icon}</span>
+                      <span className="block">{type.icon}</span>
                       {type.name}
                     </button>
                   ))}
@@ -117,14 +103,13 @@ export default function UnifiedMealModal({
               </div>
             )}
 
-            {/* Onglets de sélection du mode */}
-            <div className={`flex space-x-1 mt-4 bg-muted p-1 rounded-lg ${!mealType && !localMealType ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className={`flex space-x-2 mt-4 bg-muted p-1 rounded-lg ${!mealType && !localMealType ? 'opacity-50 pointer-events-none' : ''}`}>
               <button
                 onClick={() => setAddMode('smart')}
-                className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
-                    ? 'bg-card text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:hover:text-foreground'
+                    ? 'bg-card text-orange-800 shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
                 }`}
               >
                 <Search className="h-6 w-6 inline mr-2" />
@@ -132,10 +117,10 @@ export default function UnifiedMealModal({
               </button>
               <button
                 onClick={() => setAddMode('manual')}
-                className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
-                    ? 'bg-card text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:hover:text-foreground'
+                    ? 'bg-card text-orange-800 shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
                 }`}
               >
                 <Edit className="h-6 w-6 inline mr-2" />
@@ -143,10 +128,10 @@ export default function UnifiedMealModal({
               </button>
               <button
                 onClick={() => setAddMode('builder')}
-                className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
-                    ? 'bg-card text-orange-800 dark:text-orange-300 shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground dark:hover:text-foreground'
+                    ? 'bg-card text-orange-800 shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground dark:text-foreground'
                 }`}
               >
                 <ChefHat className="h-6 w-6 inline mr-2" />
@@ -155,12 +140,11 @@ export default function UnifiedMealModal({
             </div>
           </div>
 
-          {/* Contenu basé sur le mode sélectionné */}
-          <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+          <div className="overflow-y-auto flex-1 max-h-[calc(90vh-140px)]">
             {addMode === 'smart' && (
               <div className="p-6">
                 <div className="text-center mb-6">
-                  <div className="text-4xl mb-3">🔍</div>
+                  <div className="flex justify-center mb-2"><Search className="h-10 w-10 text-muted-foreground" /></div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Recherche intelligente</h3>
                   <p className="text-muted-foreground text-sm">
                     Trouvez rapidement des aliments avec notre base de données étendue
@@ -179,7 +163,7 @@ export default function UnifiedMealModal({
             {addMode === 'manual' && (
               <div className="p-6">
                 <div className="text-center mb-6">
-                  <div className="text-4xl mb-3">✏️</div>
+                  <div className="flex justify-center mb-2"><Edit className="h-10 w-10 text-muted-foreground" /></div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Saisie manuelle</h3>
                   <p className="text-muted-foreground text-sm">
                     Entrez manuellement les valeurs nutritionnelles de votre repas
@@ -198,7 +182,7 @@ export default function UnifiedMealModal({
             {addMode === 'builder' && (
               <div className="p-6">
                 <div className="text-center mb-6">
-                  <div className="text-4xl mb-3">👨‍🍳</div>
+                  <div className="flex justify-center mb-2"><ChefHat className="h-10 w-10 text-muted-foreground" /></div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Créateur de repas</h3>
                   <p className="text-muted-foreground text-sm">
                     Créez des repas complexes avec plusieurs ingrédients
@@ -220,7 +204,6 @@ export default function UnifiedMealModal({
   )
 }
 
-// Composant pour la saisie manuelle
 function ManualMealForm({
   mealType,
   selectedDate,
@@ -244,7 +227,6 @@ function ManualMealForm({
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<{[key: string]: string}>({})
 
-  // Fonction de sanitisation sécurisée
   const sanitizeInput = (input: string): string => {
     return input
       .trim()
@@ -346,7 +328,7 @@ function ManualMealForm({
           type="text"
           value={form.name}
           onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+          className={`w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
             errors.name ? 'border-red-500' : 'border-border'
           }`}
           placeholder="Ex: Salade de poulet"
@@ -365,7 +347,7 @@ function ManualMealForm({
               type="number"
               value={form.quantity}
               onChange={(e) => setForm(prev => ({ ...prev, quantity: e.target.value }))}
-              className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+              className={`flex-1 px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
                 errors.quantity ? 'border-red-500' : 'border-border'
               }`}
               min="1"
@@ -374,7 +356,7 @@ function ManualMealForm({
             <select
               value={form.unit}
               onChange={(e) => setForm(prev => ({ ...prev, unit: e.target.value }))}
-              className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
+              className="px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="g">g</option>
               <option value="kg">kg</option>
@@ -395,7 +377,7 @@ function ManualMealForm({
             type="number"
             value={form.calories}
             onChange={(e) => setForm(prev => ({ ...prev, calories: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+            className={`w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
               errors.calories ? 'border-red-500' : 'border-border'
             }`}
             min="1"
@@ -415,7 +397,7 @@ function ManualMealForm({
             type="number"
             value={form.protein}
             onChange={(e) => setForm(prev => ({ ...prev, protein: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+            className={`w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
               errors.protein ? 'border-red-500' : 'border-border'
             }`}
             min="0"
@@ -433,7 +415,7 @@ function ManualMealForm({
             type="number"
             value={form.carbs}
             onChange={(e) => setForm(prev => ({ ...prev, carbs: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+            className={`w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
               errors.carbs ? 'border-red-500' : 'border-border'
             }`}
             min="0"
@@ -451,7 +433,7 @@ function ManualMealForm({
             type="number"
             value={form.fat}
             onChange={(e) => setForm(prev => ({ ...prev, fat: e.target.value }))}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600 ${
+            className={`w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
               errors.fat ? 'border-red-500' : 'border-border'
             }`}
             min="0"
@@ -462,11 +444,11 @@ function ManualMealForm({
         </div>
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end space-x-2 pt-4">
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+          className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
         >
           {saving ? (
             <>
@@ -482,7 +464,6 @@ function ManualMealForm({
   )
 }
 
-// Composant pour créer des repas avec plusieurs ingrédients
 function MultiIngredientMealBuilder({
   mealType,
   selectedDate,
@@ -502,7 +483,6 @@ function MultiIngredientMealBuilder({
   }>>([])
   const [saving, setSaving] = useState(false)
 
-  // Fonction de sanitisation
   const sanitizeInput = (input: string): string => {
     return input
       .trim()
@@ -605,7 +585,7 @@ function MultiIngredientMealBuilder({
   const totalNutrition = calculateTotalNutrition()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-foreground mb-1">
@@ -615,7 +595,7 @@ function MultiIngredientMealBuilder({
             type="text"
             value={mealName}
             onChange={(e) => setMealName(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-600"
+            className="w-full px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
             placeholder="Ex: Salade mixte"
             maxLength={100}
             required
@@ -633,10 +613,10 @@ function MultiIngredientMealBuilder({
         </div>
 
         {ingredients.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <h4 className="font-medium text-foreground">Ingrédients ({ingredients.length})</h4>
             {ingredients.map((ingredient) => (
-              <div key={ingredient.id} className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+              <div key={ingredient.id} className="flex items-center space-x-2 p-2 bg-muted rounded-lg">
                 <div className="flex-1">
                   <div className="font-medium text-foreground">{ingredient.food.name}</div>
                   <div className="text-sm text-muted-foreground">
@@ -651,11 +631,11 @@ function MultiIngredientMealBuilder({
                     type="number"
                     value={ingredient.quantity}
                     onChange={(e) => updateQuantity(ingredient.id, Number(e.target.value))}
-                    className="w-20 px-2 py-1 border border-border rounded text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-600"
+                    className="w-20 px-2 py-1 border border-border rounded text-sm focus:ring-1 focus:ring-primary focus:border-primary"
                     min="1"
                     max="10000"
                   />
-                  <span className="text-sm text-gray-600 dark:text-safe-muted">g</span>
+                  <span className="text-sm text-gray-600">g</span>
                   <button
                     type="button"
                     onClick={() => removeIngredient(ingredient.id)}
@@ -667,8 +647,7 @@ function MultiIngredientMealBuilder({
               </div>
             ))}
 
-            {/* Résumé nutritionnel */}
-            <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+            <div className="bg-orange-50 p-4 rounded-lg">
               <h4 className="font-medium text-orange-900 mb-2">Total nutritionnel</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
@@ -692,11 +671,11 @@ function MultiIngredientMealBuilder({
           </div>
         )}
 
-        <div className="flex justify-end space-x-3 pt-4">
+        <div className="flex justify-end space-x-2 pt-4">
           <button
             type="submit"
             disabled={saving || !mealName.trim() || ingredients.length === 0}
-            className="px-6 py-2 bg-orange-600 dark:bg-orange-500 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
           >
             {saving ? (
               <>

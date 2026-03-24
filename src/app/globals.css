@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@source "../components";
+@source "../styles";
+@source "../lib";
+@source "../hooks";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -72,6 +76,14 @@ img, video, svg, canvas {
 
 :root {
   /* ===== SYSTÈME DE THÈME IRONTRACK ===== */
+  
+  /* === ESPACEMENTS === */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
 
   /* Surfaces principales */
   --surface-light: #faf9f7;
@@ -113,7 +125,7 @@ img, video, svg, canvas {
   --background-alt: var(--surface-light-alt);
   --foreground-secondary: var(--text-secondary-light);
   --border-color: var(--border-light);
-  --radius: 0.625rem;
+  --radius: 1rem;
   /* Fond légèrement chaud — premium, moins stérile que le blanc pur */
   --background: #faf9f7;
   --foreground: #111218;
@@ -130,7 +142,18 @@ img, video, svg, canvas {
   --muted-foreground: #6b7280;
   --accent: #fff7ed;
   --accent-foreground: #c2410c;
+  --accent-hover: #ffedd5;
   --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-foreground: #ffffff;
+  
   --border: #e8e6e3;
   --input: #e8e6e3;
   --ring: #f97316;
@@ -147,6 +170,9 @@ img, video, svg, canvas {
   --sidebar-accent-foreground: #c2410c;
   --sidebar-border: #e8e6e3;
   --sidebar-ring: #f97316;
+
+  --primary-hover: var(--brand-700);
+  --secondary-hover: #e5e5e5;
 }
 
 /* Mode clair explicite - priorité maximale via html.light */
@@ -166,7 +192,18 @@ html.light {
   --muted-foreground: #6b7280;
   --accent: #fff7ed;
   --accent-foreground: #c2410c;
+  --accent-hover: #ffedd5;
   --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-foreground: #ffffff;
+  --primary-hover: #c2410c;
+  --secondary-hover: #e5e5e5;
   --border: #e8e6e3;
   --input: #e8e6e3;
   --ring: #f97316;
@@ -204,40 +241,50 @@ html.light {
 /* Palette Steel-Navy IronTrack : navy profond énergique, inspire Nike/Strava, pas de noir terminal */
 /* html.dark = spécificité 0,1,1 > :root 0,0,1 → garantit la priorité sur shadcn oklch defaults */
 html.dark {
-  /* Fond principal : navy profond avec teinte bleue — donne de la profondeur sans oppresser */
-  --background: #0d1521;
-  --background-alt: #111d2e;
+  /* Fond principal : Navy profond (IronTrack Steel-Navy) */
+  --background: #0B111A; /* Un peu plus sombre que surface-dark pour contraster avec les cartes */
+  --background-alt: #0d1521; /* --surface-dark */
 
   /* Textes */
-  --foreground: #e8edf5;
-  --foreground-secondary: #8a95aa;
+  --foreground: #fafafa;
+  --foreground-secondary: #a1a1aa;
 
-  /* Cartes : distinctes du fond, hiérarchie visible */
-  --card: #172033;
-  --card-foreground: #e8edf5;
-  --popover: #172033;
-  --popover-foreground: #e8edf5;
+  /* Cartes : Fond Navy plus clair pour détacher du background */
+  --card: #111d2e; /* --surface-dark-alt */
+  --card-foreground: #fafafa;
+  --popover: #111d2e;
+  --popover-foreground: #fafafa;
 
-  /* Brand orange inchangé */
+  /* Brand orange inchangé - Sert d'accent lumineux, pas de fond massif */
   --primary: #f97316;
   --primary-foreground: #ffffff;
 
-  /* Surfaces secondaires */
-  --secondary: #1f2e45;
-  --secondary-foreground: #e8edf5;
-  --muted: #1a2840;
-  --muted-foreground: #8a95aa;
-  --accent: #1f2e45;
+  /* Surfaces secondaires - Navy discret */
+  --secondary: #1a273b; /* Légèrement plus clair que card */
+  --secondary-foreground: #fafafa;
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: #a1a1aa;
+  --accent: rgba(255, 255, 255, 0.06);
   --accent-foreground: #f97316;
 
-  /* Bordures : visibles, cohérentes */
-  --border: #2a3d5a;
-  --border-color: #2a3d5a;
-  --input: #2a3d5a;
+  /* Bordures : subtiles et adaptées au Navy */
+  --border: rgba(255, 255, 255, 0.08); /* ou #233147 */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --input: #1a273b; /* Même chose que secondary pour les inputs */
   --ring: #f97316;
 
-  /* Destruction */
   --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-foreground: #111218;
+  --primary-hover: #ea580c;
+  --secondary-hover: #1a2840;
+  --accent-hover: #1a2840;
 
   /* Charts */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -259,27 +306,38 @@ html.dark {
 
 /* Rétrocompatibilité — classe .dark sans html (cas edge, spécificité inférieure) */
 .dark {
-  --background: #0d1521;
-  --background-alt: #111d2e;
-  --foreground: #e8edf5;
-  --foreground-secondary: #8a95aa;
-  --card: #172033;
-  --card-foreground: #e8edf5;
-  --popover: #172033;
-  --popover-foreground: #e8edf5;
+  --background: #09090b;
+  --background-alt: #000000;
+  --foreground: #fafafa;
+  --foreground-secondary: #a1a1aa;
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: #fafafa;
+  --popover: rgba(25, 25, 25, 0.6);
+  --popover-foreground: #fafafa;
   --primary: #f97316;
   --primary-foreground: #ffffff;
-  --secondary: #1f2e45;
-  --secondary-foreground: #e8edf5;
-  --muted: #1a2840;
-  --muted-foreground: #8a95aa;
-  --accent: #1f2e45;
+  --secondary: rgba(255, 255, 255, 0.05);
+  --secondary-foreground: #fafafa;
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: #a1a1aa;
+  --accent: rgba(255, 255, 255, 0.06);
   --accent-foreground: #f97316;
-  --border: #2a3d5a;
-  --border-color: #2a3d5a;
-  --input: #2a3d5a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
   --ring: #f97316;
   --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-foreground: #111218;
+  --primary-hover: #ea580c;
+  --secondary-hover: #1a2840;
+  --accent-hover: #1a2840;
   --sidebar: #172033;
   --sidebar-foreground: #e8edf5;
   --sidebar-primary: #f97316;
@@ -536,10 +594,25 @@ input[type="submit"] {
 }
 
 @theme inline {
+  --spacing-touch-44: 44px;
+  --spacing-touch-48: 48px;
+  --spacing-touch-56: 56px;
+
+  /* Spacing tokens retirés car ils écrasent les échelles par défaut (ex: max-w-2xl) */
+
+  --breakpoint-xs: 375px;
+  --breakpoint-2xs: 320px;
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 1920px;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-4xl: 2.5rem;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -547,12 +620,27 @@ input[type="submit"] {
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-foreground: var(--warning-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
