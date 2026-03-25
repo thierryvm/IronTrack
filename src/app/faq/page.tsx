@@ -257,7 +257,7 @@ export default function FAQPage() {
  {/* Header */}
  <div className="bg-card border border-border rounded-xl shadow-md p-6 mb-6">
  <div className="flex items-center space-x-4">
- <div className="p-2 bg-purple-100 rounded-xl">
+ <div className="p-2 bg-primary/10 rounded-xl">
  <HelpCircle className="h-8 w-8 text-safe-primary" />
  </div>
  <div>
@@ -276,7 +276,7 @@ export default function FAQPage() {
  placeholder="Rechercher dans les questions..."
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
- className="w-full pl-8 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+ className="w-full pl-8 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
  />
  </div>
  </div>
@@ -296,7 +296,7 @@ export default function FAQPage() {
  onClick={() => setSelectedCategory(category.id)}
  className={`w-full text-left p-2 rounded-lg transition-colors flex items-center justify-between ${
  isActive
- ?'bg-purple-50 text-purple-700 border border-purple-200'
+ ?'bg-primary/10 text-primary border border-primary/20'
  :'hover:bg-muted text-foreground'
 }`}
  aria-label={`Filtrer par catégorie ${category.label}`}
@@ -309,7 +309,7 @@ export default function FAQPage() {
  </div>
  <span className={`text-xs px-2 py-1 rounded-full ${
  isActive 
- ?'bg-purple-100 text-purple-700'
+ ?'bg-primary/10 text-primary'
  :'bg-muted text-muted-foreground'
 }`}>
  {category.count}
@@ -328,7 +328,7 @@ export default function FAQPage() {
  <h2 className="text-xl font-bold text-foreground">
  {selectedCategory ==='all' ?'Toutes les questions' : categories.find(c => c.id === selectedCategory)?.label}
  </h2>
- <span className="text-sm text-gray-600">
+ <span className="text-sm text-muted-foreground">
  {filteredFAQ.length} question{filteredFAQ.length > 1 ?'s' :''}
  </span>
  </div>
@@ -336,13 +336,13 @@ export default function FAQPage() {
  {filteredFAQ.length === 0 ? (
  <div className="text-center py-8">
  <HelpCircle className="h-12 w-12 text-foreground mx-auto mb-4" />
- <p className="text-gray-600 mb-4">
+ <p className="text-muted-foreground mb-4">
  {searchQuery ?'Aucune question trouvée pour votre recherche' :'Aucune question dans cette catégorie'}
  </p>
  {searchQuery && (
  <button
  onClick={() => setSearchQuery('')}
- className="text-purple-600 hover:text-purple-700 font-medium"
+ className="text-primary hover:text-primary font-medium"
  aria-label="Effacer la recherche et afficher toutes les questions"
  type="button"
  >
@@ -371,9 +371,9 @@ export default function FAQPage() {
  {item.question}
  </span>
  {isOpen ? (
- <ChevronUp className="h-5 w-5 text-gray-600 flex-shrink-0" aria-hidden="true" />
+ <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" aria-hidden="true" />
  ) : (
- <ChevronDown className="h-5 w-5 text-gray-600 flex-shrink-0" aria-hidden="true" />
+ <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" aria-hidden="true" />
  )}
  </button>
  {isOpen && (
@@ -398,7 +398,7 @@ export default function FAQPage() {
  </div>
 
  {/* Help Section */}
- <div className="mt-8 bg-gradient-to-r from-orange-600 to-red-500 rounded-xl shadow-md p-6 text-white">
+ <div className="mt-8 bg-primary rounded-xl shadow-md p-6 text-white">
  <div className="text-center">
  <h3 className="text-xl font-bold mb-2">Vous ne trouvez pas votre réponse ?</h3>
  <p className="text-white/90 mb-4">
@@ -413,7 +413,7 @@ export default function FAQPage() {
  </Link>
  <Link 
  href="/support/contact"
- className="bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-800 transition-colors border border-orange-400"
+ className="bg-primary/80 text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary/60 transition-colors border border-primary/40"
  >
  ✉️ Contacter le Support
  </Link>

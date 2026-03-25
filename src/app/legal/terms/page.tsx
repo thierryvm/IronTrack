@@ -3,36 +3,40 @@
 import { motion} from'framer-motion'
 import { FileText, AlertTriangle, CheckCircle, ArrowLeft} from'lucide-react'
 import { useRouter} from'next/navigation'
+import { Button} from'@/components/ui/button'
 
 export default function TermsOfService() {
  const router = useRouter()
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-orange-600 via-red-500 to-purple-600 py-8 sm:py-12">
+ <div className="min-h-screen bg-background py-8 sm:py-12">
  <div className="max-w-4xl mx-auto px-4">
  <motion.div
  initial={{ opacity: 0, y: 20}}
  animate={{ opacity: 1, y: 0}}
- className="bg-card border border-border rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8"
+ className="bg-card border border-border rounded-2xl shadow-sm p-4 sm:p-6 lg:p-8"
  >
  {/* Bouton de retour */}
- <button
+ <Button
+ variant="ghost"
  onClick={() => router.back()}
- className="flex items-center text-gray-600 hover:text-orange-800 transition-colors mb-6"
+ className="gap-2 mb-6 text-muted-foreground hover:text-foreground -ml-2"
  >
- <ArrowLeft className="h-5 w-5 mr-2" />
- <span className="text-sm sm:text-base">Retour</span>
- </button>
+ <ArrowLeft className="h-4 w-4" />
+ Retour
+ </Button>
 
- <div className="flex items-center mb-6 sm:mb-8">
- <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-800 mr-2" />
+ <div className="flex items-center gap-2 mb-6 sm:mb-8">
+ <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+ <FileText className="h-5 w-5 text-primary" />
+ </div>
  <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Conditions d'Utilisation</h1>
  </div>
- 
- <div className="space-y-6 sm:space-y-xl text-gray-700 text-sm sm:text-base">
+
+ <div className="space-y-6 sm:space-y-xl text-muted-foreground text-sm sm:text-base">
  <section>
  <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-4">1. Informations générales</h2>
- <div className="bg-orange-50 p-2 sm:p-4 rounded-lg">
+ <div className="bg-muted p-2 sm:p-4 rounded-lg">
  <p className="font-medium">Application : IronTrack</p>
  <p>Service de coaching sportif personnel</p>
  <p>Dernière mise à jour : {new Date().toLocaleDateString('fr-BE')}</p>
@@ -54,11 +58,14 @@ export default function TermsOfService() {
  IronTrack est une application de coaching sportif personnel qui permet :
  </p>
  <ul className="list-disc list-inside space-y-2 mt-4">
- <li>La création et le suivi de programmes d'entraînement</li>
- <li>L'enregistrement de séances de musculation</li>
- <li>Le suivi de la progression et des statistiques</li>
- <li>La gestion de profils utilisateurs</li>
+ <li>La création et le suivi de programmes d&apos;entraînement (musculation et cardio)</li>
+ <li>L&apos;enregistrement de séances avec métriques avancées (poids, répétitions, SPM, watts, cadence…)</li>
+ <li>Le suivi de la progression, statistiques et objectifs personnels</li>
+ <li>La gestion nutritionnelle : journaux alimentaires, recettes, objectifs caloriques</li>
+ <li>Les Training Partners : connexion avec d&apos;autres utilisateurs, partage de séances et de données nutritionnelles</li>
+ <li>La gestion de profils utilisateurs avec photo de profil et données physiques</li>
  <li>La synchronisation des données entre appareils</li>
+ <li>L&apos;upload de fichiers (photos d&apos;exercices, photos de profil)</li>
  </ul>
  </section>
 
@@ -88,10 +95,10 @@ export default function TermsOfService() {
  <section>
  <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-4">5. Utilisation autorisée</h2>
  <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
- <div className="bg-green-50 p-2 sm:p-4 rounded-lg">
+ <div className="bg-success/10 p-2 sm:p-4 rounded-lg">
  <div className="flex items-center mb-2">
  <CheckCircle className="h-5 w-5 text-safe-success mr-2" />
- <h3 className="font-medium text-green-900">Autorisé</h3>
+ <h3 className="font-medium text-foreground">Autorisé</h3>
  </div>
  <ul className="text-sm space-y-1">
  <li>Usage personnel de l'application</li>
@@ -100,10 +107,10 @@ export default function TermsOfService() {
  <li>Sauvegarde de vos données</li>
  </ul>
  </div>
- <div className="bg-red-50 p-2 sm:p-4 rounded-lg">
+ <div className="bg-destructive/10 p-2 sm:p-4 rounded-lg">
  <div className="flex items-center mb-2">
  <AlertTriangle className="h-5 w-5 text-safe-error mr-2" />
- <h3 className="font-medium text-red-900">Interdit</h3>
+ <h3 className="font-medium text-foreground">Interdit</h3>
  </div>
  <ul className="text-sm space-y-1">
  <li>Usage commercial sans autorisation</li>
@@ -118,10 +125,10 @@ export default function TermsOfService() {
 
  <section>
  <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-4">6. Avertissements santé</h2>
- <div className="bg-yellow-50 border-l-4 border-yellow-400 p-2 sm:p-4">
+ <div className="bg-warning/10 border-l-4 border-warning p-2 sm:p-4">
  <div className="flex items-center mb-2">
  <AlertTriangle className="h-5 w-5 text-safe-warning mr-2" />
- <h3 className="font-medium text-yellow-900">Important</h3>
+ <h3 className="font-medium text-foreground">Important</h3>
  </div>
  <ul className="text-sm space-y-2">
  <li>Consultez un professionnel de santé avant de commencer un programme d'entraînement</li>

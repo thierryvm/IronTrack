@@ -15,6 +15,8 @@ const DEPENDENCY_CATALOG = [
   { name: '@supabase/supabase-js', current: '2.50.5', latest: '2.50.5', status: 'ok', category: 'database', label: 'Supabase JS' },
   { name: '@supabase/ssr', current: '0.6.1', latest: '0.6.1', status: 'ok', category: 'database', label: 'Supabase SSR' },
   { name: '@supabase/auth-helpers-nextjs', current: '0.10.0', latest: 'DÉPRÉCIÉ', status: 'critical', category: 'database', label: 'Auth Helpers Next.js', action: 'Package déprécié — remplacer les imports par @supabase/ssr (déjà installé)' },
+  { name: '@supabase/auth-ui-react', current: '0.4.7', latest: '0.4.7', status: 'warning', category: 'database', label: 'Supabase Auth UI', action: 'Maintenance minimale — formulaires auth custom recommandés à terme' },
+  { name: '@supabase/auth-ui-shared', current: '0.1.8', latest: '0.1.8', status: 'ok', category: 'database', label: 'Supabase Auth UI Shared' },
   // UI
   { name: 'framer-motion', current: '12.23.0', latest: '12.23.0', status: 'ok', category: 'ui', label: 'Framer Motion' },
   { name: 'lucide-react', current: '0.525.0', latest: '0.525.0', status: 'ok', category: 'ui', label: 'Lucide React' },

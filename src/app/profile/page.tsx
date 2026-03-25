@@ -14,11 +14,9 @@ export default async function ProfilePage() {
 }
 
  // 1. Fetch Profile
- let { data: profileData, error: profileError} = await supabase
- .from('profiles')
- .select('*')
- .eq('id', user.id)
- .single()
+ const profileQuery = await supabase.from('profiles').select('*').eq('id', user.id).single()
+ const profileError = profileQuery.error
+ let profileData = profileQuery.data
 
  if (profileError || !profileData) {
  // Création automatique du profil si absent

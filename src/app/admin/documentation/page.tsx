@@ -20,10 +20,24 @@ export default function AdminDocumentationPage() {
 
  const sections = [
  {
+ title:'Santé du Système',
+ icon: Activity,
+ color:'text-primary',
+ bg:'bg-primary/10',
+ items: [
+'Dashboard visuel avec score global /100 : anneau SVG animé et 3 catégories (Dépendances, Sécurité, Runtime)',
+'Vérification en temps réel : ping base de données avec mesure de latence ms',
+'20 dépendances surveillées : statuts OK / Attention / Critique, versions actuelles et recommandations',
+'8 contrôles de sécurité : CSP, HSTS, RLS Supabase, Rate Limiting, sessions SSR…',
+'Alerte bannière rouge automatique si un problème critique est détecté',
+'Bouton Rafraîchir — accessible aux super_admin uniquement via onglet Configuration',
+ ]
+},
+ {
  title:'Gestion des tickets',
  icon: MessageSquare,
  color:'text-secondary',
- bg:'bg-blue-50',
+ bg:'bg-accent',
  items: [
 'Consulter et filtrer les tickets par statut, catégorie et date',
 'Répondre aux tickets via la page de détail (cliquer sur la ligne)',
@@ -35,8 +49,8 @@ export default function AdminDocumentationPage() {
  {
  title:'Gestion des utilisateurs',
  icon: Users,
- color:'text-green-600',
- bg:'bg-green-50',
+ color:'text-success',
+ bg:'bg-success/10',
  items: [
 'Lister et rechercher tous les utilisateurs',
 'Consulter le profil détaillé (activité, séances, rôle)',
@@ -49,7 +63,7 @@ export default function AdminDocumentationPage() {
  title:'Exports de données',
  icon: Download,
  color:'text-primary',
- bg:'bg-orange-50',
+ bg:'bg-primary/10',
  items: [
 'Exporter utilisateurs, séances, nutrition, exercices',
 'Formats disponibles : JSON et CSV',
@@ -61,8 +75,8 @@ export default function AdminDocumentationPage() {
  {
  title:'Logs & Audit',
  icon: Activity,
- color:'text-purple-600',
- bg:'bg-purple-50',
+ color:'text-muted-foreground',
+ bg:'bg-accent',
  items: [
 'Journal complet de toutes les actions administrateur',
 'Filtrer par période : 1h, 24h, 7 jours, 30 jours',
@@ -74,7 +88,7 @@ export default function AdminDocumentationPage() {
  {
  title:'Configuration système',
  icon: Settings,
- color:'text-gray-600',
+ color:'text-muted-foreground',
  bg:'bg-background',
  items: [
 'Accessible aux super_admin uniquement',
@@ -87,8 +101,8 @@ export default function AdminDocumentationPage() {
  {
  title:'Sécurité & Permissions',
  icon: Lock,
- color:'text-red-600',
- bg:'bg-red-50',
+ color:'text-destructive',
+ bg:'bg-destructive/10',
  items: [
 'Trois niveaux : moderator < admin < super_admin',
 'Toutes les actions admin sont tracées dans les logs',
@@ -106,18 +120,18 @@ export default function AdminDocumentationPage() {
  <div className="bg-card border border-border rounded-xl shadow-md p-6 mb-6">
  <div className="flex items-center justify-between">
  <div className="flex items-center space-x-4">
- <div className="p-2 bg-indigo-100 rounded-xl">
- <FileText className="h-8 w-8 text-indigo-600" />
+ <div className="p-2 bg-primary/10 rounded-xl">
+ <FileText className="h-8 w-8 text-primary" />
  </div>
  <div>
  <h1 className="text-2xl font-bold text-foreground">Documentation Admin</h1>
- <p className="text-gray-600">
+ <p className="text-muted-foreground">
  Guide d&apos;utilisation du panel d&apos;administration IronTrack
  </p>
  </div>
  </div>
  <div className="flex items-center space-x-2">
- <Shield className="h-5 w-5 text-gray-400" />
+ <Shield className="h-5 w-5 text-muted-foreground" />
  <Badge variant="secondary" className="capitalize">
  {user?.role?.replace('_','') ||'Admin'}
  </Badge>
@@ -126,8 +140,8 @@ export default function AdminDocumentationPage() {
  </div>
 
  {/* Introduction */}
- <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6">
- <p className="text-indigo-800 text-sm leading-relaxed">
+ <div className="bg-accent border border-border rounded-xl p-4 mb-6">
+ <p className="text-foreground text-sm leading-relaxed">
  Ce guide couvre toutes les fonctionnalités du panel d&apos;administration IronTrack.
  Les sections ci-dessous décrivent les droits requis et les bonnes pratiques pour chaque module.
  En cas de problème, consultez les <strong>Logs Système</strong> pour retracer les actions récentes.
@@ -151,8 +165,8 @@ export default function AdminDocumentationPage() {
  <CardContent>
  <ul className="space-y-2">
  {section.items.map((item, i) => (
- <li key={i} className="flex items-start space-x-2 text-sm text-gray-600">
- <ChevronRight className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
+ <li key={i} className="flex items-start space-x-2 text-sm text-muted-foreground">
+ <ChevronRight className="h-4 w-4 text-muted-foreground mt-1 shrink-0" />
  <span>{item}</span>
  </li>
  ))}
@@ -165,7 +179,7 @@ export default function AdminDocumentationPage() {
 
  {/* Footer */}
  <div className="mt-6 text-center text-xs text-muted-foreground">
- IronTrack Admin — Documentation v1.0 — Pour toute question, ouvrez un ticket support.
+ IronTrack Admin — Documentation v2.0 — Pour toute question, ouvrez un ticket support.
  </div>
  </div>
  </div>

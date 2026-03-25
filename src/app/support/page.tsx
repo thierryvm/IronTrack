@@ -13,7 +13,7 @@ export default function SupportPage() {
  {/* Header */}
  <div className="bg-card border border-border rounded-xl shadow-md p-6 mb-6">
  <div className="flex items-center space-x-4">
- <div className="p-2 bg-blue-100 rounded-xl">
+ <div className="p-2 bg-primary/10 rounded-xl">
  <HelpCircle className="h-8 w-8 text-safe-info" />
  </div>
  <div>
@@ -43,7 +43,7 @@ export default function SupportPage() {
  onClick={() => setActiveSection(section.id as'partners' |'general' |'account' |'progression' |'onboarding')}
  className={`w-full text-left p-2 rounded-lg transition-colors flex items-start space-x-2 ${
  activeSection === section.id
- ?'bg-orange-50 text-orange-700 border border-orange-200'
+ ?'bg-primary/10 text-primary border border-primary/20'
  :'hover:bg-muted text-foreground'
 }`}
  >
@@ -67,7 +67,7 @@ export default function SupportPage() {
  {activeSection ==='partners' && (
  <div>
  <div className="flex items-center space-x-2 mb-6">
- <Users className="h-6 w-6 text-orange-800" />
+ <Users className="h-6 w-6 text-primary" />
  <h2 className="text-xl font-bold text-foreground">Training Partners - Guide Complet</h2>
  </div>
 
@@ -75,8 +75,8 @@ export default function SupportPage() {
  {/* Introduction */}
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">🎯 Qu'est-ce que Training Partners ?</h3>
- <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
- <p className="text-blue-800">
+ <div className="bg-accent p-4 rounded-lg border border-border mb-4">
+ <p className="text-foreground">
  <strong>Training Partners</strong> vous permet de vous connecter avec d'autres utilisateurs IronTrack 
  pour partager vos séances d'entraînement, vous motiver mutuellement et voir les calendriers de vos partenaires.
  </p>
@@ -129,8 +129,8 @@ export default function SupportPage() {
  <li>L'invitation est envoyée ! 🎉</li>
  </ol>
  </div>
- <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
- <p className="text-yellow-800 text-sm">
+ <div className="bg-warning/10 p-2 rounded-lg border border-warning/20">
+ <p className="text-foreground text-sm">
  <strong>💡 Astuce :</strong> Si la personne n'apparaît pas, vérifiez qu'elle utilise bien IronTrack et demandez-lui son pseudo exact.
  </p>
  </div>
@@ -141,19 +141,19 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">📩 Étape 3 : Gérer les Invitations</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="border border-green-200 rounded-lg p-4 bg-green-50">
- <h4 className="font-medium text-green-900 mb-2">Invitations Reçues</h4>
- <ul className="space-y-1 text-green-800 text-sm">
+ <div className="border border-success/20 rounded-lg p-4 bg-success/10">
+ <h4 className="font-medium text-foreground mb-2">Invitations Reçues</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• Vous recevez une notification</li>
  <li>• Allez dans l'onglet <strong>&quot;Invitations&quot;</strong></li>
- <li>• Cliquez <Check className="h-5 w-5 inline text-green-600" /> <strong>&quot;Accepter&quot;</strong> ou <X className="h-5 w-5 inline text-red-600" /> <strong>&quot;Refuser&quot;</strong></li>
+ <li>• Cliquez <Check className="h-5 w-5 inline text-success" /> <strong>&quot;Accepter&quot;</strong> ou <X className="h-5 w-5 inline text-destructive" /> <strong>&quot;Refuser&quot;</strong></li>
  </ul>
  </div>
- <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
- <h4 className="font-medium text-blue-900 mb-2">Invitations Envoyées</h4>
- <ul className="space-y-1 text-blue-800 text-sm">
+ <div className="border border-border rounded-lg p-4 bg-accent">
+ <h4 className="font-medium text-foreground mb-2">Invitations Envoyées</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• Statut <Clock className="h-5 w-5 inline text-safe-warning" /> <strong>&quot;En attente&quot;</strong></li>
- <li>• Vous pouvez annuler avec <X className="h-5 w-5 inline text-red-600" /></li>
+ <li>• Vous pouvez annuler avec <X className="h-5 w-5 inline text-destructive" /></li>
  <li>• Notification quand acceptée</li>
  </ul>
  </div>
@@ -164,17 +164,17 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">🏋️ Étape 4 : Voir les Séances des Partenaires</h3>
  <div className="space-y-4">
- <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
- <h4 className="font-medium text-orange-900 mb-2">Dans le Calendrier</h4>
- <ol className="list-decimal list-inside space-y-1 text-orange-800 text-sm">
+ <div className="border border-primary/20 rounded-lg p-4 bg-primary/10">
+ <h4 className="font-medium text-foreground mb-2">Dans le Calendrier</h4>
+ <ol className="list-decimal list-inside space-y-1 text-primary text-sm">
  <li>Allez dans <strong>&quot;Calendrier&quot;</strong></li>
  <li>Cliquez sur le bouton <Users className="h-5 w-5 inline text-safe-info" /> <strong>&quot;Partenaires&quot;</strong> en haut</li>
  <li>Les séances de vos partenaires apparaissent avec leurs avatars</li>
  <li>Distinction visuelle : vos séances vs celles des partenaires</li>
  </ol>
  </div>
- <div className="bg-purple-50 p-2 rounded-lg border border-purple-200">
- <p className="text-purple-800 text-sm">
+ <div className="bg-accent p-2 rounded-lg border border-border">
+ <p className="text-foreground text-sm">
  <strong>🔒 Sécurité :</strong> Seuls vos partenaires acceptés peuvent voir vos séances. Vous contrôlez totalement qui voit quoi.
  </p>
  </div>
@@ -191,7 +191,7 @@ export default function SupportPage() {
  <div>
  <p className="text-sm text-foreground mb-2">Actions disponibles :</p>
  <ul className="space-y-1 text-sm text-muted-foreground">
- <li>• <Settings className="h-5 w-5 inline text-gray-600" /> Paramètres de partage</li>
+ <li>• <Settings className="h-5 w-5 inline text-muted-foreground" /> Paramètres de partage</li>
  <li>• <X className="h-5 w-5 inline text-safe-error" /> Supprimer le partenariat</li>
  <li>• Voir la date de connexion</li>
  </ul>
@@ -213,18 +213,18 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">💡 Conseils et Bonnes Pratiques</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="bg-green-50 p-4 rounded-lg border border-green-200">
- <h4 className="font-medium text-green-900 mb-2">✅ À Faire</h4>
- <ul className="space-y-1 text-sm text-green-800">
+ <div className="bg-success/10 p-4 rounded-lg border border-success/20">
+ <h4 className="font-medium text-foreground mb-2">✅ À Faire</h4>
+ <ul className="space-y-1 text-sm text-foreground">
  <li>• Invitez vos amis réels qui utilisent IronTrack</li>
  <li>• Utilisez des pseudos reconnaissables</li>
  <li>• Planifiez des séances ensemble</li>
  <li>• Motivez-vous mutuellement</li>
  </ul>
  </div>
- <div className="bg-red-50 p-4 rounded-lg border border-red-200">
- <h4 className="font-medium text-red-900 mb-2">❌ À Éviter</h4>
- <ul className="space-y-1 text-sm text-red-800">
+ <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20">
+ <h4 className="font-medium text-foreground mb-2">❌ À Éviter</h4>
+ <ul className="space-y-1 text-sm text-foreground">
  <li>• Inviter des inconnus au hasard</li>
  <li>• Partager des informations sensibles</li>
  <li>• Laisser des invitations en attente longtemps</li>
@@ -332,7 +332,7 @@ export default function SupportPage() {
  {activeSection ==='progression' && (
  <div>
  <div className="flex items-center space-x-2 mb-6">
- <TrendingUp className="h-6 w-6 text-orange-800" />
+ <TrendingUp className="h-6 w-6 text-primary" />
  <h2 className="text-xl font-bold text-foreground">Progression & Badges - Guide Complet</h2>
  </div>
 
@@ -340,8 +340,8 @@ export default function SupportPage() {
  {/* Introduction */}
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">🎯 Comprendre le système de progression</h3>
- <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
- <p className="text-blue-800">
+ <div className="bg-accent p-4 rounded-lg border border-border mb-4">
+ <p className="text-foreground">
  IronTrack suit automatiquement votre progression en analysant vos performances d'entraînement.
  Le système calcule vos statistiques, records personnels et débloques des badges selon vos objectifs.
  </p>
@@ -370,18 +370,18 @@ export default function SupportPage() {
  <h3 className="text-lg font-semibold text-foreground mb-2">⚖️ Poids Initial vs Poids Actuel</h3>
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="border border-green-200 rounded-lg p-4 bg-green-50">
- <h4 className="font-medium text-green-900 mb-2">Poids Initial</h4>
- <ul className="space-y-1 text-green-800 text-sm">
+ <div className="border border-success/20 rounded-lg p-4 bg-success/10">
+ <h4 className="font-medium text-foreground mb-2">Poids Initial</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• <strong>Référence fixe</strong> pour calculer votre progression</li>
  <li>• Poids au début de votre programme</li>
  <li>• Sert à calculer gain/perte de poids</li>
  <li>• Se définit une seule fois dans le profil</li>
  </ul>
  </div>
- <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
- <h4 className="font-medium text-blue-900 mb-2">Poids Actuel</h4>
- <ul className="space-y-1 text-blue-800 text-sm">
+ <div className="border border-border rounded-lg p-4 bg-accent">
+ <h4 className="font-medium text-foreground mb-2">Poids Actuel</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• <strong>Poids corporel</strong> du moment</li>
  <li>• Utilisé pour calculer l'IMC</li>
  <li>• Peut être mis à jour régulièrement</li>
@@ -389,8 +389,8 @@ export default function SupportPage() {
  </ul>
  </div>
  </div>
- <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
- <p className="text-yellow-800 text-sm">
+ <div className="bg-warning/10 p-2 rounded-lg border border-warning/20">
+ <p className="text-foreground text-sm">
  <strong>💡 Exemple :</strong> Poids initial = 70kg, Poids actuel = 73kg → Progression = +3kg
  </p>
  </div>
@@ -401,9 +401,9 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">📊 Ajouter des performances</h3>
  <div className="space-y-4">
- <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
- <h4 className="font-medium text-orange-900 mb-2">Comment ça marche</h4>
- <ol className="list-decimal list-inside space-y-1 text-orange-800 text-sm">
+ <div className="border border-primary/20 rounded-lg p-4 bg-primary/10">
+ <h4 className="font-medium text-foreground mb-2">Comment ça marche</h4>
+ <ol className="list-decimal list-inside space-y-1 text-primary text-sm">
  <li>Créez une séance d'entraînement dans &quot;Séances&quot;</li>
  <li>Ajoutez vos exercices avec poids/répétitions prévus</li>
  <li>Réalisez votre entraînement</li>
@@ -412,8 +412,8 @@ export default function SupportPage() {
  <li>Les performances sont automatiquement enregistrées</li>
  </ol>
  </div>
- <div className="bg-purple-50 p-2 rounded-lg border border-purple-200">
- <p className="text-purple-800 text-sm">
+ <div className="bg-accent p-2 rounded-lg border border-border">
+ <p className="text-foreground text-sm">
  <strong>🔄 Automatique :</strong> Pas besoin de bouton &quot;Ajouter performance&quot;. 
  Tout se fait via vos séances d'entraînement terminées.
  </p>
@@ -438,17 +438,17 @@ export default function SupportPage() {
  </ol>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="bg-green-50 p-2 rounded-lg border border-green-200">
- <h4 className="font-medium text-green-900 mb-2">Types d'objectifs Musculation</h4>
- <ul className="space-y-1 text-green-800 text-sm">
+ <div className="bg-success/10 p-2 rounded-lg border border-success/20">
+ <h4 className="font-medium text-foreground mb-2">Types d'objectifs Musculation</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• <strong>Poids (kg) :</strong> 100kg développé couché</li>
  <li>• <strong>Répétitions :</strong> 20 pompes d'affilée</li>
  <li>• <strong>Durée :</strong> 2 min de gainage</li>
  </ul>
  </div>
- <div className="bg-blue-50 p-2 rounded-lg border border-blue-200">
- <h4 className="font-medium text-blue-900 mb-2">Types d'objectifs Cardio</h4>
- <ul className="space-y-1 text-blue-800 text-sm">
+ <div className="bg-accent p-2 rounded-lg border border-border">
+ <h4 className="font-medium text-foreground mb-2">Types d'objectifs Cardio</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• <strong>Distance :</strong> 5km de course</li>
  <li>• <strong>Vitesse :</strong> 12 km/h sur tapis</li>
  <li>• <strong>Calories :</strong> 300 kcal brûlées</li>
@@ -462,9 +462,9 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">🏅 Système de badges</h3>
  <div className="space-y-4">
- <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
- <h4 className="font-medium text-yellow-900 mb-2">Fonctionnement automatique</h4>
- <div className="space-y-2 text-yellow-800 text-sm">
+ <div className="border border-warning/20 rounded-lg p-4 bg-warning/10">
+ <h4 className="font-medium text-foreground mb-2">Fonctionnement automatique</h4>
+ <div className="space-y-2 text-foreground text-sm">
  <p><strong>1. Création :</strong> Créez un objectif → Badge &quot;En cours&quot; généré</p>
  <p><strong>2. Validation :</strong> Atteignez l'objectif → Badge passe à &quot;Validé&quot;</p>
  <p><strong>3. Affichage :</strong> Badge validé apparaît dans votre profil</p>
@@ -496,17 +496,17 @@ export default function SupportPage() {
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">📈 Statistiques et records</h3>
  <div className="space-y-4">
- <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
- <h4 className="font-medium text-blue-900 mb-2">Calculs automatiques</h4>
- <ul className="space-y-1 text-blue-800 text-sm">
+ <div className="border border-border rounded-lg p-4 bg-accent">
+ <h4 className="font-medium text-foreground mb-2">Calculs automatiques</h4>
+ <ul className="space-y-1 text-foreground text-sm">
  <li>• <strong>Records personnels :</strong> Poids max et reps max par exercice</li>
  <li>• <strong>Progression :</strong> Évolution du poids corporel</li>
  <li>• <strong>Statistiques :</strong> Séances totales, poids total soulevé</li>
  <li>• <strong>Tendances :</strong> Amélioration par exercice</li>
  </ul>
  </div>
- <div className="bg-green-50 p-2 rounded-lg border border-green-200">
- <p className="text-green-800 text-sm">
+ <div className="bg-success/10 p-2 rounded-lg border border-success/20">
+ <p className="text-foreground text-sm">
  <strong>💪 Astuce :</strong> Plus vous complétez de séances, plus vos statistiques sont précises et détaillées !
  </p>
  </div>
@@ -614,9 +614,9 @@ export default function SupportPage() {
  <p className="text-foreground mb-4">
  L'onboarding vous guide lors de votre première connexion pour configurer votre profil et vos préférences d'entraînement.
  </p>
- <div className="bg-green-50 border border-green-200 rounded-lg p-4">
- <h4 className="font-medium text-green-800 mb-2">Comment refaire l'onboarding ?</h4>
- <p className="text-sm text-green-700">
+ <div className="bg-success/10 border border-success/20 rounded-lg p-4">
+ <h4 className="font-medium text-foreground mb-2">Comment refaire l'onboarding ?</h4>
+ <p className="text-sm text-foreground">
  Accédez à <strong>/onboarding</strong> ou cliquez sur le bouton &quot;Refaire l'onboarding&quot; dans les actions rapides.
  </p>
  </div>
@@ -626,8 +626,8 @@ export default function SupportPage() {
  <h3 className="text-lg font-semibold text-foreground mb-2">📝 Étapes de Configuration</h3>
  <div className="space-y-2">
  <div className="flex items-start space-x-2">
- <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
- <span className="text-sm font-bold text-orange-800">1</span>
+ <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+ <span className="text-sm font-bold text-primary">1</span>
  </div>
  <div>
  <h4 className="font-medium text-foreground">Objectif d'entraînement</h4>
@@ -635,8 +635,8 @@ export default function SupportPage() {
  </div>
  </div>
  <div className="flex items-start space-x-2">
- <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
- <span className="text-sm font-bold text-orange-800">2</span>
+ <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+ <span className="text-sm font-bold text-primary">2</span>
  </div>
  <div>
  <h4 className="font-medium text-foreground">Niveau d'expérience</h4>
@@ -644,8 +644,8 @@ export default function SupportPage() {
  </div>
  </div>
  <div className="flex items-start space-x-2">
- <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
- <span className="text-sm font-bold text-orange-800">3</span>
+ <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+ <span className="text-sm font-bold text-primary">3</span>
  </div>
  <div>
  <h4 className="font-medium text-foreground">Fréquence d'entraînement</h4>
@@ -653,8 +653,8 @@ export default function SupportPage() {
  </div>
  </div>
  <div className="flex items-start space-x-2">
- <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
- <span className="text-sm font-bold text-orange-800">4</span>
+ <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+ <span className="text-sm font-bold text-primary">4</span>
  </div>
  <div>
  <h4 className="font-medium text-foreground">Informations physiques</h4>
@@ -666,12 +666,12 @@ export default function SupportPage() {
 
  <section>
  <h3 className="text-lg font-semibold text-foreground mb-2">🔄 Mise à jour des Données</h3>
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h4 className="font-medium text-blue-800 mb-2">Synchronisation automatique</h4>
- <p className="text-sm text-blue-700 mb-2">
+ <div className="bg-accent border border-border rounded-lg p-4">
+ <h4 className="font-medium text-foreground mb-2">Synchronisation automatique</h4>
+ <p className="text-sm text-foreground mb-2">
  Après l'onboarding, vos données sont automatiquement synchronisées avec votre profil.
  </p>
- <ul className="text-sm text-blue-700 space-y-1">
+ <ul className="text-sm text-foreground space-y-1">
  <li>• <strong>Préférences d'entraînement</strong> : Mises à jour systématiquement</li>
  <li>• <strong>Données physiques</strong> : Taille, poids, âge mis à jour</li>
  <li>• <strong>Poids initial</strong> : Préservé pour maintenir l'historique de progression</li>
@@ -720,30 +720,30 @@ export default function SupportPage() {
  {/* NOUVEAU - Contact Support en premier */}
  <Link 
  href="/support/contact" 
- className="flex items-center space-x-2 p-4 border-2 border-orange-200 bg-accent rounded-lg hover:bg-accent-hover hover:border-orange-300 transition-colors group"
+ className="flex items-center space-x-2 p-4 border-2 border-primary/20 bg-accent rounded-lg hover:bg-accent-hover hover:border-primary/40 transition-colors group"
  >
- <MessageSquare className="h-6 w-6 text-orange-800" />
+ <MessageSquare className="h-6 w-6 text-primary" />
  <div className="flex-1">
- <p className="font-medium text-orange-900">✉️ Contacter le Support</p>
- <p className="text-sm text-orange-700">Signaler un problème</p>
+ <p className="font-medium text-foreground">✉️ Contacter le Support</p>
+ <p className="text-sm text-primary">Signaler un problème</p>
  </div>
- <ArrowRight className="h-6 w-6 text-orange-800 group-hover:text-orange-900 " />
+ <ArrowRight className="h-6 w-6 text-primary group-hover:text-foreground " />
  </Link>
  <Link
  href="/training-partners"
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-orange-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-primary/20 transition-colors group"
  >
- <Users className="h-6 w-6 text-orange-800" />
+ <Users className="h-6 w-6 text-primary" />
  <div className="flex-1">
  <p className="font-medium text-foreground">Training Partners</p>
  <p className="text-sm text-muted-foreground">Gérer vos partenaires</p>
  </div>
- <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 " />
+ <ArrowRight className="h-6 w-6 text-foreground group-hover:text-primary " />
  </Link>
 
  <Link
  href="/faq" 
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-border transition-colors group"
  >
  <HelpCircle className="h-6 w-6 text-safe-info" />
  <div className="flex-1">
@@ -755,7 +755,7 @@ export default function SupportPage() {
 
  <Link 
  href="/progress" 
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-border transition-colors group"
  >
  <TrendingUp className="h-6 w-6 text-safe-primary" />
  <div className="flex-1">
@@ -767,7 +767,7 @@ export default function SupportPage() {
 
  <Link 
  href="/profile" 
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-green-50 hover:border-green-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-success/10 hover:border-success/20 transition-colors group"
  >
  <Settings className="h-6 w-6 text-safe-success" />
  <div className="flex-1">
@@ -779,14 +779,14 @@ export default function SupportPage() {
 
  <Link 
  href="/onboarding" 
- className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-orange-200 transition-colors group"
+ className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-accent hover:border-primary/20 transition-colors group"
  >
- <Target className="h-6 w-6 text-orange-800" />
+ <Target className="h-6 w-6 text-primary" />
  <div className="flex-1">
  <p className="font-medium text-foreground">Onboarding</p>
  <p className="text-sm text-muted-foreground">Refaire la configuration</p>
  </div>
- <ArrowRight className="h-6 w-6 text-foreground group-hover:text-orange-800 " />
+ <ArrowRight className="h-6 w-6 text-foreground group-hover:text-primary " />
  </Link>
  </div>
  </div>
