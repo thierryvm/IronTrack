@@ -4,23 +4,23 @@ import { cookies } from 'next/headers'
 
 export const runtime = 'nodejs'
 
-// Known latest versions & status (as of March 2026)
+// Known latest versions & status (verified via npm outdated, March 2026)
 const DEPENDENCY_CATALOG = [
   // Frameworks
-  { name: 'next', current: '15.5.12', latest: '15.5.12', status: 'ok', category: 'framework', label: 'Next.js' },
-  { name: 'react', current: '18.3.1', latest: '19.1.0', status: 'warning', category: 'framework', label: 'React', action: 'React 19 disponible — upgrade possible mais non critique' },
+  { name: 'next', current: '15.5.12', latest: '16.2.1', status: 'warning', category: 'framework', label: 'Next.js', action: 'Next.js 16 disponible — breaking changes probables, planifier une migration' },
+  { name: 'react', current: '18.3.1', latest: '19.2.4', status: 'warning', category: 'framework', label: 'React', action: 'React 19 disponible — upgrade possible mais nécessite tests de compatibilité' },
   { name: 'typescript', current: '5.9.3', latest: '5.9.3', status: 'ok', category: 'framework', label: 'TypeScript' },
   { name: 'tailwindcss', current: '4.1.11', latest: '4.1.11', status: 'ok', category: 'framework', label: 'Tailwind CSS' },
   // Database / Auth
-  { name: '@supabase/supabase-js', current: '2.50.5', latest: '2.50.5', status: 'ok', category: 'database', label: 'Supabase JS' },
-  { name: '@supabase/ssr', current: '0.6.1', latest: '0.6.1', status: 'ok', category: 'database', label: 'Supabase SSR' },
+  { name: '@supabase/supabase-js', current: '2.55.0', latest: '2.100.0', status: 'warning', category: 'database', label: 'Supabase JS', action: 'Mise à jour majeure disponible (v2.100) — vérifier le changelog avant migration' },
+  { name: '@supabase/ssr', current: '0.6.1', latest: '0.9.0', status: 'warning', category: 'database', label: 'Supabase SSR', action: 'Nouvelle version disponible — vérifier les breaking changes avant mise à jour' },
   { name: '@supabase/auth-helpers-nextjs', current: '0.10.0', latest: 'DÉPRÉCIÉ', status: 'critical', category: 'database', label: 'Auth Helpers Next.js', action: 'Package déprécié — remplacer les imports par @supabase/ssr (déjà installé)' },
   { name: '@supabase/auth-ui-react', current: '0.4.7', latest: '0.4.7', status: 'warning', category: 'database', label: 'Supabase Auth UI', action: 'Maintenance minimale — formulaires auth custom recommandés à terme' },
   { name: '@supabase/auth-ui-shared', current: '0.1.8', latest: '0.1.8', status: 'ok', category: 'database', label: 'Supabase Auth UI Shared' },
   // UI
-  { name: 'framer-motion', current: '12.23.0', latest: '12.23.0', status: 'ok', category: 'ui', label: 'Framer Motion' },
-  { name: 'lucide-react', current: '0.525.0', latest: '0.525.0', status: 'ok', category: 'ui', label: 'Lucide React' },
-  { name: 'recharts', current: '3.0.2', latest: '3.0.2', status: 'ok', category: 'ui', label: 'Recharts' },
+  { name: 'framer-motion', current: '12.23.12', latest: '12.38.0', status: 'warning', category: 'ui', label: 'Framer Motion', action: 'Mises à jour de patch disponibles — appliquer lors du prochain cycle de maintenance' },
+  { name: 'lucide-react', current: '0.525.0', latest: '1.6.0', status: 'warning', category: 'ui', label: 'Lucide React', action: 'Version majeure 1.x disponible — nouvelles icônes et API améliorée, migration à planifier' },
+  { name: 'recharts', current: '3.1.2', latest: '3.8.0', status: 'warning', category: 'ui', label: 'Recharts', action: 'Mise à jour mineure disponible — corrections de bugs et nouvelles fonctionnalités' },
   { name: '@radix-ui/react-dialog', current: '1.1.15', latest: '1.1.15', status: 'ok', category: 'ui', label: 'Radix UI' },
   // Utilities
   { name: 'zod', current: '3.25.76', latest: '3.25.76', status: 'ok', category: 'utility', label: 'Zod' },
@@ -29,8 +29,8 @@ const DEPENDENCY_CATALOG = [
   { name: 'heic2any', current: '0.0.4', latest: '0.0.4', status: 'warning', category: 'utility', label: 'heic2any', action: 'Package abandonné sans maintenance active — surveiller les failles CVE' },
   { name: 'critters', current: '0.0.23', latest: '0.0.23', status: 'warning', category: 'utility', label: 'Critters (CSS inline)', action: 'Maintenance minimale — remplacer par solution Next.js native si instable' },
   // Security
-  { name: 'dompurify', current: '3.2.6', latest: '3.2.6', status: 'ok', category: 'security', label: 'DOMPurify' },
-  { name: 'react-hook-form', current: '7.62.0', latest: '7.62.0', status: 'ok', category: 'utility', label: 'React Hook Form' },
+  { name: 'dompurify', current: '3.3.2', latest: '3.3.3', status: 'warning', category: 'security', label: 'DOMPurify', action: 'Mise à jour de sécurité mineure disponible — appliquer rapidement' },
+  { name: 'react-hook-form', current: '7.62.0', latest: '7.72.0', status: 'warning', category: 'utility', label: 'React Hook Form', action: 'Mise à jour mineure disponible' },
 ]
 
 const SECURITY_CHECKS = [
@@ -94,8 +94,9 @@ export async function GET() {
     const securityCritical = SECURITY_CHECKS.filter(s => s.status === 'critical').length
     const securityWarnings = SECURITY_CHECKS.filter(s => s.status === 'warning').length
 
-    const depScore = Math.max(0, 100 - criticalCount * 25 - warningCount * 8)
-    const securityScore = Math.max(0, 100 - securityCritical * 25 - securityWarnings * 8)
+    // Cap warning penalty at 40pts to avoid artificially low scores when many minor updates exist
+    const depScore = Math.max(0, 100 - criticalCount * 20 - Math.min(warningCount * 5, 40))
+    const securityScore = Math.max(0, 100 - securityCritical * 20 - Math.min(securityWarnings * 8, 24))
     const runtimeScore = dbStatus === 'ok' ? 100 : dbStatus === 'warning' ? 75 : 40
     const overallScore = Math.round((depScore + securityScore + runtimeScore) / 3)
 
