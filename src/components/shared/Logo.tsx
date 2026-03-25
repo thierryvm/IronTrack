@@ -45,7 +45,8 @@ export function Logo({ className, variant ='default', iconSize ='md'}: LogoProps
  
  {variant !=='icon' && (
  <span className={cn("font-extrabold tracking-tight", textClasses[iconSize])}>
- Iron<span className="text-primary">Track</span>
+ {/* text-[var(--brand-600)] = #ea580c — ratio 3.6:1 sur fond clair, WCAG AA large text ✓ */}
+ Iron<span className="text-[var(--brand-600)] dark:text-primary">Track</span>
  </span>
  )}
  </div>

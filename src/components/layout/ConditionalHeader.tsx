@@ -6,14 +6,10 @@ import Header from'./Header'
 export default function ConditionalHeader() {
  const pathname = usePathname()
  
- // Pages où le header doit être masqué
- const authPages = [
-'/auth',
-'/auth/auth-code-error'
- ]
- 
- // Masquer le header sur les pages d'authentification
- const shouldHideHeader = authPages.includes(pathname)
+ // Masquer le header sur auth et admin (admin a son propre layout de navigation)
+ const shouldHideHeader =
+   pathname.startsWith('/auth') ||
+   pathname.startsWith('/admin')
  
  if (shouldHideHeader) {
  return null
