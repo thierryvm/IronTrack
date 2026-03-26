@@ -29,7 +29,7 @@ export function RealtimeNotificationToast({
  const getColors = (type: string) => {
  switch (type) {
  case'partnership_request':
- return'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-l-blue-700 shadow-blue-100'
+ return'bg-gradient-to-r from-tertiary to-tertiary-hover text-white border-l-blue-700 shadow-blue-100'
  case'partnership_accepted':
  return'bg-gradient-to-r from-green-500 to-green-600 text-white border-l-green-700 shadow-green-100'
  case'partnership_declined':

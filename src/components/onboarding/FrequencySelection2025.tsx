@@ -33,14 +33,14 @@ export function FrequencySelection2025({ frequencyValue, availabilityValue, onCh
  description:'Je peux m\'entraîner régulièrement',
  details:'3-4 séances par semaine',
  icon: Calendar,
- gradient:'from-blue-400 to-cyan-500',
- bgColor:'bg-gradient-to-br from-blue-50 to-cyan-50',
- borderColor:'border-blue-200',
- selectedBg:'bg-gradient-to-br from-blue-100 to-cyan-100',
+ gradient:'from-tertiary to-cyan-500',
+ bgColor:'bg-gradient-to-br from-tertiary/8 to-cyan-50',
+ borderColor:'border-tertiary/25',
+ selectedBg:'bg-gradient-to-br from-tertiary/12 to-cyan-100',
  selectedBorder:'border-secondary',
- iconBg:'bg-blue-100',
+ iconBg:'bg-tertiary/12',
  iconColor:'text-secondary',
- badgeColor:'bg-blue-100 text-blue-700 border-blue-200'
+ badgeColor:'bg-tertiary/12 text-tertiary border-tertiary/25'
 },
  {
  id:'Élevée',

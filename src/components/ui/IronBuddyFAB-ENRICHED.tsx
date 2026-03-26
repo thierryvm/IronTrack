@@ -32,8 +32,8 @@ const mascotConfig = {
  bot: {
  icon: Bot,
  name:'RoboCoach',
- bgColor:'bg-gradient-to-br from-blue-400 to-blue-600',
- hoverColor:'hover:from-blue-500 hover:to-blue-700',
+ bgColor:'bg-gradient-to-br from-tertiary to-tertiary-hover',
+ hoverColor:'hover:from-tertiary hover:to-tertiary',
  emoji:'🤖'
 },
  star: {
@@ -511,7 +511,7 @@ export function IronBuddyFAB({ defaultOpen = false}: IronBuddyFABProps) {
  description:'Besoin d\'assistance',
  href:'/support/contact?category=help',
  icon: HelpCircle,
- color:'text-secondary bg-blue-100'
+ color:'text-secondary bg-tertiary/12'
 },
  {
  title:'Suggérer une amélioration',
@@ -837,10 +837,10 @@ export function IronBuddyFAB({ defaultOpen = false}: IronBuddyFABProps) {
  resetTimer();
  console.log('Nouveau message:', selectedAdvice);
 }}
- className="flex items-center space-x-2 p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
+ className="flex items-center space-x-2 p-2 bg-tertiary/8 hover:bg-tertiary/12 rounded-lg transition-colors group"
  >
  <Sparkles className="h-6 w-6 text-secondary group-hover:scale-110 transition-transform" />
- <span className="text-sm font-medium text-blue-800">Conseil</span>
+ <span className="text-sm font-medium text-tertiary">Conseil</span>
  </button>
  
  <button

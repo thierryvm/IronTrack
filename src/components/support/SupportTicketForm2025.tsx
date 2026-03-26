@@ -146,7 +146,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
  return {
  red:'border-red-500 bg-red-100 text-red-700',
  green:'border-green-500 bg-green-100 text-green-700',
- blue:'border-secondary bg-blue-100 text-blue-700',
+ blue:'border-secondary bg-tertiary/12 text-tertiary',
  purple:'border-purple-500 bg-purple-100 text-purple-700',
  orange:'border-primary bg-orange-100 text-orange-700',
  yellow:'border-yellow-500 bg-yellow-100 text-yellow-700'
@@ -346,12 +346,12 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
  </div>
 
  {/* Informations automatiques */}
- <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-xl p-4">
  <div className="flex items-start space-x-2">
  <Info className="h-5 w-5 text-safe-info flex-shrink-0 mt-1" />
  <div>
- <p className="text-sm font-semibold text-blue-900 mb-1">Informations techniques automatiques</p>
- <p className="text-xs text-blue-700 leading-relaxed">
+ <p className="text-sm font-semibold text-foreground mb-1">Informations techniques automatiques</p>
+ <p className="text-xs text-tertiary leading-relaxed">
  Les informations de votre navigateur, page actuelle et données techniques 
  seront automatiquement incluses pour nous aider à diagnostiquer le problème.
  </p>

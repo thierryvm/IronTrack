@@ -3,7 +3,6 @@
 import { createClient} from'@/utils/supabase/client'
 import InAppBrowserWarning from'@/components/auth/InAppBrowserWarning'
 import EmailAuthForm from'@/components/auth/EmailAuthForm'
-import ThemeToggle from'@/components/ui/ThemeToggle'
 import { Dumbbell, CheckCircle2, TrendingUp, Timer, BarChart3} from'lucide-react'
 import Link from'next/link'
 import { Button} from'@/components/ui/button'
@@ -87,13 +86,11 @@ export default function AuthPage() {
  {/* Panneau droit — Formulaire */}
  <div className="flex-1 flex flex-col p-6 lg:p-12">
  {/* Barre top : logo mobile + theme toggle */}
- <div className="flex items-center justify-between mb-8 lg:justify-end">
+ <div className="flex items-center mb-8 lg:justify-end">
  {/* Logo mobile uniquement */}
  <div className="flex lg:hidden items-center">
  <Logo iconSize="md" />
  </div>
- {/* Theme toggle — toujours visible */}
- <ThemeToggle />
  </div>
 
  <div className="flex-1 flex flex-col items-center justify-center">

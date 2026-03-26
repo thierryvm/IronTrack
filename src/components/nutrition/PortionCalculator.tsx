@@ -186,7 +186,7 @@ const PortionCalculator: React.FC<PortionCalculatorProps> = ({
  <div className="text-lg font-bold text-secondary">
  {calculatedNutrition.protein}g
  </div>
- <div className="text-xs text-blue-700">Protéines</div>
+ <div className="text-xs text-tertiary">Protéines</div>
  </div>
  <div className="text-center">
  <div className="text-lg font-bold text-yellow-600">

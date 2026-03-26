@@ -155,7 +155,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail}: EmailChangeMo
  <div className="relative bg-card border border-border rounded-xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-2">
- <div className="p-2 bg-blue-100 rounded-lg">
+ <div className="p-2 bg-tertiary/12 rounded-lg">
  <Shield className="h-6 w-6 text-secondary" />
  </div>
  <div>
@@ -268,7 +268,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail}: EmailChangeMo
 
  {step ==='verification' && (
  <div className="text-center space-y-4">
- <div className="p-4 bg-blue-50 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+ <div className="p-4 bg-tertiary/8 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
  <Mail className="h-10 w-10 text-secondary" />
  </div>
  
@@ -279,7 +279,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail}: EmailChangeMo
  <p className="text-sm text-muted-foreground mb-4">
  Un email de confirmation a été envoyé à :
  </p>
- <p className="font-medium text-secondary bg-blue-50 p-2 rounded-lg text-sm">
+ <p className="font-medium text-secondary bg-tertiary/8 p-2 rounded-lg text-sm">
  {newEmail}
  </p>
  </div>
@@ -295,7 +295,7 @@ export function EmailChangeModal({ isOpen, onClose, currentEmail}: EmailChangeMo
  <button
  onClick={handleResendVerification}
  disabled={loading}
- className="px-4 py-2 text-secondary bg-blue-50 hover:bg-muted rounded-lg font-medium transition-colors disabled:opacity-50"
+ className="px-4 py-2 text-secondary bg-tertiary/8 hover:bg-muted rounded-lg font-medium transition-colors disabled:opacity-50"
  >
  {loading ?'Envoi...' :'Renvoyer l\'email'}
  </button>

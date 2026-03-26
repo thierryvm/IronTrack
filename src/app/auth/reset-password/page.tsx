@@ -80,7 +80,7 @@ function ResetPasswordForm() {
  return (
  <div className="min-h-screen relative overflow-hidden">
  {/* Arrière-plan animé */}
- <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-purple-600 to-blue-700">
+ <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-purple-600 to-tertiary">
  <div className="absolute inset-0 bg-black/20" />
  <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
  <div className="absolute top-0 -right-4 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />

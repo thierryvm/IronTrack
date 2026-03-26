@@ -240,7 +240,7 @@ export default function SessionTimerModal({
  size="sm"
  variant="secondary"
  onClick={() => handleEditStep(index)}
- className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 border border-blue-200"
+ className="bg-tertiary/12 text-tertiary hover:bg-tertiary/20 bg-tertiary/10 border border-tertiary/25"
  >
  <Edit3 className="h-4 w-4" />
  </Button>

@@ -445,8 +445,8 @@ export const CustomForm: React.FC<CustomFormProps> = ({
  />
  </div>
  
- <div className="bg-blue-50 p-2 rounded-lg border border-blue-200">
- <p className="text-sm text-blue-700">
+ <div className="bg-tertiary/8 p-2 rounded-lg border border-tertiary/25">
+ <p className="text-sm text-tertiary">
  Ces valeurs seront suggérées par défaut aux utilisateurs lors de leurs séances.
  </p>
  </div>
@@ -572,15 +572,15 @@ export const CustomForm: React.FC<CustomFormProps> = ({
  initial={{ opacity: 0}}
  animate={{ opacity: 1}}
  transition={{ delay: 0.9}}
- className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200"
+ className="mt-8 p-4 bg-tertiary/8 rounded-lg border border-tertiary/25"
  >
  <div className="flex items-center gap-2 mb-2">
  <Target className="w-5 h-5 text-secondary" />
- <h4 className="font-semibold text-blue-800">💡 Conseil</h4>
+ <h4 className="font-semibold text-tertiary">💡 Conseil</h4>
  </div>
  
  {completionScore < 80 ? (
- <div className="space-y-2 text-sm text-blue-700">
+ <div className="space-y-2 text-sm text-tertiary">
  <p className="font-medium">🚀 Pour créer un exercice plus complet :</p>
  <ul className="space-y-1 ml-4">
  {!formData.description && (
@@ -598,7 +598,7 @@ export const CustomForm: React.FC<CustomFormProps> = ({
  </p>
  </div>
  ) : (
- <p className="text-sm text-blue-700">
+ <p className="text-sm text-tertiary">
  ✨ Excellent ! Ton exercice est bien détaillé. Les utilisateurs auront toutes les informations 
  nécessaires pour bien l'exécuter.
  </p>

@@ -49,7 +49,7 @@ export default function PWAGuidePage() {
  id:'ios',
  name:'iPhone / iPad (Safari)',
  icon: <Smartphone className="h-6 w-6" />,
- color:'from-blue-500 to-blue-600',
+ color:'from-tertiary to-tertiary-hover',
  requirements: [
 'iOS 11.3 ou plus récent',
 'Safari (navigateur par défaut)',
@@ -329,7 +329,7 @@ export default function PWAGuidePage() {
  ]
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50">
+ <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-tertiary/8">
  {/* Header */}
  <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white">
  <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
@@ -437,14 +437,14 @@ export default function PWAGuidePage() {
  </div>
 
  {/* Prérequis */}
- <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+ <div className="mb-8 p-4 bg-tertiary/8 rounded-lg border border-tertiary/25">
  <div className="flex items-center mb-2">
  <AlertCircle className="h-5 w-5 text-secondary mr-2" />
- <h4 className="font-semibold text-blue-900">Prérequis</h4>
+ <h4 className="font-semibold text-foreground">Prérequis</h4>
  </div>
  <ul className="space-y-1">
  {selectedGuide.requirements.map((req, index) => (
- <li key={index} className="text-blue-800 text-sm flex items-center">
+ <li key={index} className="text-tertiary text-sm flex items-center">
  <CheckCircle className="h-6 w-6 text-secondary mr-2 flex-shrink-0" />
  {req}
  </li>

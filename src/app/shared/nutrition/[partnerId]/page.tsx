@@ -120,7 +120,7 @@ export default function SharedNutritionPage() {
  const colors: Record<string, string> = {
 'Petit-déjeuner':'bg-yellow-100 text-yellow-800 border-yellow-200',
 'Déjeuner':'bg-orange-100 text-orange-800 border-orange-200',
-'Dîner':'bg-blue-100 text-blue-800 border-blue-200',
+'Dîner':'bg-tertiary/12 text-tertiary border-tertiary/25',
 'Souper':'bg-purple-100 text-purple-800 border-purple-200',
 'Collation':'bg-green-100 text-green-800 border-green-200'
 }
@@ -289,7 +289,7 @@ export default function SharedNutritionPage() {
  </div>
 
  <div className="grid grid-cols-3 gap-2">
- <div className="text-center p-2 bg-blue-50 rounded-lg">
+ <div className="text-center p-2 bg-tertiary/8 rounded-lg">
  <div className="text-lg font-semibold text-secondary">
  {Math.round(selectedDayStats.totalProtein)}g
  </div>

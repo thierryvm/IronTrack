@@ -809,7 +809,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  
  <div className="space-y-6">
  <div className="grid grid-cols-2 gap-4">
- <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
+ <div className="text-center p-4 bg-tertiary/8 rounded-lg group relative">
  <Trophy className="h-8 w-8 text-foreground mx-auto mb-2" />
  <p className="text-2xl font-bold text-foreground">{stats?.totalWorkouts || 0}</p>
  <p className="text-sm text-muted-foreground">Séances totales</p>
@@ -818,7 +818,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  </div>
  </div>
  
- <div className="text-center p-4 bg-blue-50 rounded-lg group relative">
+ <div className="text-center p-4 bg-tertiary/8 rounded-lg group relative">
  <Calendar className="h-8 w-8 text-safe-info mx-auto mb-2" />
  <p className="text-2xl font-bold text-foreground">{stats?.currentStreak || 0}</p>
  <p className="text-sm text-muted-foreground">Jours consécutifs</p>
@@ -885,7 +885,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  </span>
  </div>
  {!progressionStats.initial_weight && progressionStats.current_weight && (
- <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-700">
+ <div className="mt-2 p-2 bg-tertiary/8 rounded text-xs text-tertiary">
  💡 Définissez votre poids initial pour suivre votre progression
  </div>
  )}
@@ -951,7 +951,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  return unique;
 }, [] as Achievement[])
  .map(achievement => (
- <div key={achievement.id} className="text-center p-4 rounded-lg bg-blue-50 border border-blue-200">
+ <div key={achievement.id} className="text-center p-4 rounded-lg bg-tertiary/8 border border-tertiary/25">
  <span className="h-8 w-8 mx-auto mb-2 flex items-center justify-center text-3xl">{achievement.icon ||'🏆'}</span>
  <h3 className="font-medium text-foreground">{achievement.name}</h3>
  <p className="text-sm text-muted-foreground">{achievement.description}</p>
@@ -986,7 +986,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  {userBadges.length > 0 ? (
  <div className="grid grid-cols-2 gap-4">
  {userBadges.map((badge) => (
- <div key={badge.name} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+ <div key={badge.name} className="bg-gradient-to-r from-purple-50 to-tertiary/8 rounded-lg p-4 border border-purple-200">
  <div className="flex items-center space-x-2">
  <div className="text-2xl">{badge.icon}</div>
  <div>
@@ -1111,7 +1111,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  <p className="text-sm text-muted-foreground">Un nouveau look pour de nouveaux PRs&nbsp;!</p>
  </div>
  </Button>
- <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior:'smooth'})} className="w-full text-left p-4 border border-border rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-2 mb-2" aria-label="Accéder aux paramètres de la mascotte">
+ <button onClick={() => mascotSectionRef.current?.scrollIntoView({ behavior:'smooth'})} className="w-full text-left p-4 border border-border rounded-lg hover:bg-tertiary/8 transition-colors flex items-center space-x-2 mb-2" aria-label="Accéder aux paramètres de la mascotte">
  <Dumbbell className="h-5 w-5 text-orange-400" />
  <div>
  <p className="font-medium text-foreground">Choisir ma mascotte</p>
@@ -1201,7 +1201,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  className={`flex flex-col items-center px-2 sm:px-2 py-2 rounded-lg border-2 transition-all ${selectedMascot ==='bot' ?'border-primary bg-primary/10' :'border-border bg-card'}`}
  onClick={() => setSelectedMascot('bot')}
  >
- <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 animate-spin-slow" />
+ <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-tertiary animate-spin-slow" />
  <span className="mt-1 text-xs font-bold text-center text-foreground">RoboCoach</span>
  </button>
  <button

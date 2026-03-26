@@ -267,7 +267,7 @@ export default function PartnerSettingsPage({ params}: { params: Promise<{ id: s
  notification.type ==='success' ?'bg-green-50 text-green-800' :
  notification.type ==='error' ?'bg-red-50 text-red-800' :
  notification.type ==='warning' ?'bg-yellow-50 text-yellow-800' :
-'bg-blue-50 text-blue-800'
+'bg-tertiary/8 text-tertiary'
 }`}>
  {notification.message}
  </div>
@@ -362,11 +362,11 @@ export default function PartnerSettingsPage({ params}: { params: Promise<{ id: s
  </div>
 
  {/* Privacy Note */}
- <div className="mt-6 p-4 bg-blue-50 rounded-lg">
- <h3 className="text-sm font-medium text-blue-900 mb-2">
+ <div className="mt-6 p-4 bg-tertiary/8 rounded-lg">
+ <h3 className="text-sm font-medium text-foreground mb-2">
  Note sur la confidentialité
  </h3>
- <p className="text-sm text-blue-800">
+ <p className="text-sm text-tertiary">
  Ces paramètres contrôlent uniquement ce que vous partagez avec ce partenaire spécifique. 
  Vous pouvez modifier ces paramètres à tout moment.
  </p>

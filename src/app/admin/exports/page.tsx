@@ -291,7 +291,7 @@ export default function AdminExportsPage() {
  {/* En-tête */}
  <div className="bg-card border border-border rounded-xl shadow-md p-6">
  <div className="flex items-center space-x-2 mb-4">
- <div className="p-2 bg-blue-100 rounded-lg">
+ <div className="p-2 bg-tertiary/12 rounded-lg">
  <Download className="h-6 w-6 text-safe-info" />
  </div>
  <div>
@@ -314,13 +314,13 @@ export default function AdminExportsPage() {
  </div>
  </CardContent>
  </Card>
- <Card className="bg-blue-50 border-blue-200">
+ <Card className="bg-tertiary/8 border-tertiary/25">
  <CardContent className="p-4">
  <div className="flex items-center space-x-2">
  <Users className="h-8 w-8 text-safe-info" />
  <div>
  <div className="text-2xl font-bold text-secondary">{stats.users}</div>
- <div className="text-sm text-blue-700">Utilisateurs avec rôles</div>
+ <div className="text-sm text-tertiary">Utilisateurs avec rôles</div>
  </div>
  </div>
  </CardContent>

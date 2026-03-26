@@ -127,7 +127,7 @@ export default function AdminLogsPage() {
  if (action.includes('unauthorized') || action.includes('failed')) return'text-red-600 bg-red-100'
  if (action.includes('success') || action.includes('access')) return'text-green-600 bg-green-100'
  if (action.includes('warning')) return'text-yellow-600 bg-yellow-100'
- return'text-secondary bg-blue-100'
+ return'text-secondary bg-tertiary/12'
 }
 
  const getActionIcon = (action: string) => {

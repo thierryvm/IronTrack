@@ -269,7 +269,7 @@ const CalendarDayCell: React.FC<CalendarDayCellProps> = ({ date, sessions, isSel
  <span className="px-2 py-1 rounded bg-orange-100 text-orange-700 font-semibold">{mobileSessionDetail.type}</span>
  )}
  {mobileSessionDetail.status && (
- <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold">{mobileSessionDetail.status}</span>
+ <span className="px-2 py-1 rounded bg-tertiary/12 text-tertiary font-semibold">{mobileSessionDetail.status}</span>
  )}
  {mobileSessionDetail.duration && (
  <span className="flex items-center gap-1">

@@ -342,9 +342,9 @@ export default function AdminUsersPage() {
 
  {/* Statistiques rapides */}
  <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
- <div className="bg-blue-50 rounded-lg p-4">
+ <div className="bg-tertiary/8 rounded-lg p-4">
  <div className="text-2xl font-bold text-secondary">{getActiveUsers().length}</div>
- <div className="text-sm text-blue-700">Utilisateurs actifs</div>
+ <div className="text-sm text-tertiary">Utilisateurs actifs</div>
  </div>
  <div className="bg-red-50 rounded-lg p-4">
  <div className="text-2xl font-bold text-red-600">{getBannedUsers().length}</div>
@@ -707,12 +707,12 @@ export default function AdminUsersPage() {
  </div>
 
  {/* Statistiques */}
- <div className="bg-blue-50 rounded-lg p-4">
+ <div className="bg-tertiary/8 rounded-lg p-4">
  <h3 className="text-sm font-medium text-foreground mb-2">Activité</h3>
  <div className="grid grid-cols-2 gap-4">
  <div className="text-center">
  <div className="text-2xl font-bold text-secondary">{selectedUser.total_workouts}</div>
- <div className="text-xs text-blue-700">Séances</div>
+ <div className="text-xs text-tertiary">Séances</div>
  </div>
  <div className="text-center">
  <div className="text-2xl font-bold text-green-600">

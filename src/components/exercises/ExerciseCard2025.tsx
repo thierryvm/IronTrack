@@ -204,7 +204,7 @@ export function ExerciseCard2025({
  if (equipment.includes('rameur') || exerciseName.includes('rameur')) {
  return {
  icon: Activity,
- gradient:'from-blue-100 to-blue-200',
+ gradient:'from-tertiary/12 to-tertiary/20',
  iconColor:'text-safe-info'
 }
 }

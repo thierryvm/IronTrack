@@ -344,13 +344,13 @@ export function ExerciseForm({ exerciseType, initialData, onComplete, onBack}: E
  initial={{ opacity: 0}}
  animate={{ opacity: 1}}
  transition={{ delay: 0.3}}
- className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200"
+ className="mt-8 p-4 bg-tertiary/8 rounded-lg border border-tertiary/25"
  >
  <div className="flex items-center gap-2 mb-2">
  <AlertCircle className="w-5 h-5 text-secondary" />
- <h4 className="font-semibold text-blue-800">Bon à savoir</h4>
+ <h4 className="font-semibold text-tertiary">Bon à savoir</h4>
  </div>
- <p className="text-sm text-blue-700">
+ <p className="text-sm text-tertiary">
  {exerciseType ==='Musculation' 
  ?'Un exercice de musculation utilise typiquement des poids, répétitions et séries. À l\'étape suivante, tu pourras enregistrer ta première performance.'
  :'Un exercice cardio se mesure principalement en durée et distance. Tu pourras ensuite ajouter tes métriques spécialisées (SPM, watts, etc.).'

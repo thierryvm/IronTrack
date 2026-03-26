@@ -223,7 +223,7 @@ export default function AdminDashboard() {
  const getActionColor = (color: string) => {
  const colors = {
  orange:'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 dark:bg-orange-900/30',
- blue:'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30',
+ blue:'bg-tertiary/8 border-tertiary/25 text-tertiary hover:bg-tertiary/12 bg-tertiary/10',
  green:'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 dark:bg-green-900/30',
  purple:'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30',
  indigo:'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30',
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
  <div className="flex items-center justify-between mb-2 sm:mb-4">
  <div className={`p-2 sm:p-2 rounded-lg ${
  stat.color ==='orange' ?'bg-orange-100' :
- stat.color ==='blue' ?'bg-blue-100' :
+ stat.color ==='blue' ?'bg-tertiary/12' :
  stat.color ==='green' ?'bg-green-100' :
 'bg-purple-100'
 }`}>
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
  <h2 className="text-lg font-semibold text-foreground flex items-center">
  <Activity className="h-5 w-5 mr-2" />
  Activité Récente
- <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+ <span className="ml-2 px-2 py-1 text-xs bg-tertiary/12 text-tertiary rounded-full">
  Dernière heure
  </span>
  </h2>

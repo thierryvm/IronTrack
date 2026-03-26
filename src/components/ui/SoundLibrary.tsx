@@ -156,7 +156,7 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
  </button>
  <button
  onClick={() => setShowAddExternal(v => !v)}
- className="flex items-center gap-2 px-2 py-2 bg-secondary hover:bg-secondary text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+ className="flex items-center gap-2 px-2 py-2 bg-secondary hover:bg-secondary text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-tertiary/35"
  >
  <Plus className="h-6 w-6" /> Lien externe
  </button>
@@ -171,7 +171,7 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
  />
  </div>
  {showAddExternal && (
- <div className="mb-4 flex flex-col sm:flex-row items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-200">
+ <div className="mb-4 flex flex-col sm:flex-row items-center gap-2 bg-tertiary/8 p-2 rounded-lg border border-tertiary/25">
  <input
  type="text"
  placeholder="Nom du son"
@@ -227,7 +227,7 @@ export default function SoundLibrary({ userId, selectedSoundId, onSoundAdded, on
  )}
  </div>
  <div className="flex flex-row flex-wrap gap-2 mt-4 w-full justify-center items-center min-h-[48px]">
- <button onClick={() => handlePlay(sound)} className="text-safe-info hover:text-secondary-hover bg-blue-50 rounded-full p-2 shadow flex-shrink-0" title="Écouter" aria-label="Écouter le son" style={{minWidth:40, minHeight:40}}>
+ <button onClick={() => handlePlay(sound)} className="text-safe-info hover:text-secondary-hover bg-tertiary/8 rounded-full p-2 shadow flex-shrink-0" title="Écouter" aria-label="Écouter le son" style={{minWidth:40, minHeight:40}}>
  <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
  </button>
  <button onClick={() => { setRenamingId(sound.id); setNewName(sound.name);}} className="text-safe-warning hover:text-yellow-600 bg-card border border-border border border-yellow-200 rounded-full p-2 shadow flex-shrink-0" title="Renommer" aria-label="Renommer le son" style={{minWidth:40, minHeight:40}}>

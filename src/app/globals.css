@@ -75,8 +75,8 @@ img, video, svg, canvas {
 }
 
 :root {
-  /* ===== SYSTÈME DE THÈME IRONTRACK ===== */
-  
+  /* ===== FORGED IRON — DARK ONLY ===== */
+
   /* === ESPACEMENTS === */
   --spacing-xs: 0.25rem;   /* 4px */
   --spacing-sm: 0.5rem;    /* 8px */
@@ -85,114 +85,81 @@ img, video, svg, canvas {
   --spacing-xl: 2rem;      /* 32px */
   --spacing-2xl: 3rem;     /* 48px */
 
-  /* Surfaces principales */
-  --surface-light: #faf9f7;
-  --surface-light-alt: #f4f3f1;
-  --surface-dark: #0d1521;
-  --surface-dark-alt: #111d2e;
-
-  /* Brand - Orange IronTrack */
-  --brand-500: #f97316;
-  --brand-600: #ea580c;
-  --brand-700: #c2410c;
+  /* === BRAND PALETTE — FORGED IRON === */
+  --brand-500: #FF6B00;
+  --brand-600: #E55F00;
+  --brand-700: #BF5200;
   --brand-800: #9a3412;
   --brand-900: #7c2d12;
 
-  /* États système */
+  /* === SURFACES === */
+  --surface-dark: #0A0A0B;
+  --surface-dark-alt: #111111;
+
+  /* === ÉTATS SYSTÈME === */
   --success-50: #ecfdf5;
   --success-500: #10b981;
   --success-600: #059669;
-
   --warning-50: #fffbeb;
   --warning-500: #f59e0b;
   --warning-600: #d97706;
-
   --danger-50: #fef2f2;
   --danger-500: #ef4444;
   --danger-600: #dc2626;
 
-  /* Textes adaptatifs */
-  --text-primary-light: #0d0d0d;
-  --text-secondary-light: #6b6b6b;
-  --text-primary-dark: #f4f4f4;
-  --text-secondary-dark: #a1a1aa;
+  /* === RÉFÉRENCES TEXTES & BORDURES === */
+  --text-primary-dark: #F5F5F5;
+  --text-secondary-dark: #8E8E93;
+  --border-dark: rgba(255, 255, 255, 0.10);
 
-  /* Bordures adaptatifs */
-  --border-light: #e5e7eb;
-  --border-dark: #374151;
-
-  /* Variables dynamiques (changent avec le thème) */
-  --background-alt: var(--surface-light-alt);
-  --foreground-secondary: var(--text-secondary-light);
-  --border-color: var(--border-light);
+  /* === RAYON === */
   --radius: 1rem;
-  /* Fond légèrement chaud — premium, moins stérile que le blanc pur */
-  --background: #faf9f7;
-  --foreground: #111218;
-  /* Carte blanche sur fond chaud = séparation nette */
-  --card: #ffffff;
-  --card-foreground: #111218;
-  --popover: #ffffff;
-  --popover-foreground: #111218;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f3f1;
-  --secondary-foreground: #1f2937;
-  --muted: #f4f3f1;
-  --muted-foreground: #4b5563; /* WCAG AA: 5.9:1 sur bg-muted (#f4f3f1) */
-  --accent: #fff7ed;
-  --accent-foreground: #c2410c;
-  --accent-hover: #ffedd5;
-  --destructive: #ef4444;
-  --destructive-hover: #dc2626;
-  --destructive-foreground: #ffffff;
 
-  --success: #10b981;
-  --success-hover: #059669;
-  --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-hover: #d97706;
-  --warning-foreground: #ffffff;
-  
-  --border: #e8e6e3;
-  --input: #e8e6e3;
-  --ring: #f97316;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #f4f3f1;
-  --sidebar-foreground: #111218;
-  --sidebar-primary: #f97316;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff7ed;
-  --sidebar-accent-foreground: #c2410c;
-  --sidebar-border: #e8e6e3;
-  --sidebar-ring: #f97316;
+  /* ===== TOKENS DE THÈME ===== */
 
-  --primary-hover: var(--brand-700);
-  --secondary-hover: #e5e5e5;
-}
+  /* Fond */
+  --background: #0A0A0B;
+  --background-alt: #111111;
+  --foreground: #F5F5F5;
+  --foreground-secondary: #8E8E93;
 
-/* Mode clair explicite - priorité maximale via html.light */
-/* html.light = spécificité 0,1,1 → garantit la priorité sur tout */
-html.light {
-  --background: #faf9f7;
-  --foreground: #111218;
-  --card: #ffffff;
-  --card-foreground: #111218;
-  --popover: #ffffff;
-  --popover-foreground: #111218;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f3f1;
-  --secondary-foreground: #1f2937;
-  --muted: #f4f3f1;
-  --muted-foreground: #4b5563; /* WCAG AA: 5.9:1 sur bg-muted */
-  --accent: #fff7ed;
-  --accent-foreground: #c2410c;
-  --accent-hover: #ffedd5;
+  /* Cartes */
+  --card: #141414;
+  --card-foreground: #F5F5F5;
+  --popover: #1C1C1E;
+  --popover-foreground: #F5F5F5;
+
+  /* Primary — Orange Forged Iron */
+  --primary: #FF6B00;
+  --primary-hover: #E55F00;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary — Surface neutre */
+  --secondary: #1C1C1E;
+  --secondary-hover: #262628;
+  --secondary-foreground: #F5F5F5;
+
+  /* Tertiary — Blue info */
+  --tertiary: #049EFF;
+  --tertiary-hover: #0385D4;
+  --tertiary-foreground: #FFFFFF;
+
+  /* Muted */
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: #8E8E93;
+
+  /* Accent */
+  --accent: rgba(255, 107, 0, 0.08);
+  --accent-hover: rgba(255, 107, 0, 0.14);
+  --accent-foreground: #FF6B00;
+
+  /* Bordures & Inputs */
+  --border: rgba(255, 255, 255, 0.10);
+  --border-color: rgba(255, 255, 255, 0.10);
+  --input: #1C1C1E;
+  --ring: #FF6B00;
+
+  /* États sémantiques */
   --destructive: #ef4444;
   --destructive-hover: #dc2626;
   --destructive-foreground: #ffffff;
@@ -201,90 +168,7 @@ html.light {
   --success-foreground: #ffffff;
   --warning: #f59e0b;
   --warning-hover: #d97706;
-  --warning-foreground: #ffffff;
-  --primary-hover: #c2410c;
-  --secondary-hover: #e5e5e5;
-  --border: #e8e6e3;
-  --input: #e8e6e3;
-  --ring: #f97316;
-  --background-alt: #f4f3f1;
-  --foreground-secondary: #4b5563;
-  --border-color: #e8e6e3;
-}
-
-/* Rétrocompatibilité — classes sans html pour les cas edge */
-.light {
-  --background: #faf9f7;
-  --foreground: #111218;
-  --card: #ffffff;
-  --card-foreground: #111218;
-  --popover: #ffffff;
-  --popover-foreground: #111218;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f3f1;
-  --secondary-foreground: #1f2937;
-  --muted: #f4f3f1;
-  --muted-foreground: #4b5563; /* WCAG AA: 5.9:1 sur bg-muted */
-  --accent: #fff7ed;
-  --accent-foreground: #c2410c;
-  --destructive: #ef4444;
-  --border: #e8e6e3;
-  --input: #e8e6e3;
-  --ring: #f97316;
-  --background-alt: #f4f3f1;
-  --foreground-secondary: #4b5563;
-  --border-color: #e8e6e3;
-}
-
-/* Thème sombre - Mode classe .dark */
-/* Palette Steel-Navy IronTrack : navy profond énergique, inspire Nike/Strava, pas de noir terminal */
-/* html.dark = spécificité 0,1,1 > :root 0,0,1 → garantit la priorité sur shadcn oklch defaults */
-html.dark {
-  /* Fond principal : Navy profond (IronTrack Steel-Navy) */
-  --background: #0B111A; /* Un peu plus sombre que surface-dark pour contraster avec les cartes */
-  --background-alt: #0d1521; /* --surface-dark */
-
-  /* Textes */
-  --foreground: #fafafa;
-  --foreground-secondary: #a1a1aa;
-
-  /* Cartes : Fond Navy plus clair pour détacher du background */
-  --card: #111d2e; /* --surface-dark-alt */
-  --card-foreground: #fafafa;
-  --popover: #111d2e;
-  --popover-foreground: #fafafa;
-
-  /* Brand orange inchangé - Sert d'accent lumineux, pas de fond massif */
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-
-  /* Surfaces secondaires - Navy discret */
-  --secondary: #1a273b; /* Légèrement plus clair que card */
-  --secondary-foreground: #fafafa;
-  --muted: rgba(255, 255, 255, 0.04);
-  --muted-foreground: #a1a1aa;
-  --accent: rgba(255, 255, 255, 0.06);
-  --accent-foreground: #f97316;
-
-  /* Bordures : subtiles et adaptées au Navy */
-  --border: rgba(255, 255, 255, 0.08); /* ou #233147 */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --input: #1a273b; /* Même chose que secondary pour les inputs */
-  --ring: #f97316;
-
-  --destructive: #ef4444;
-  --destructive-hover: #dc2626;
-  --destructive-foreground: #ffffff;
-  --success: #10b981;
-  --success-hover: #059669;
-  --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-hover: #d97706;
-  --warning-foreground: #111218;
-  --primary-hover: #ea580c;
-  --secondary-hover: #1a2840;
-  --accent-hover: #1a2840;
+  --warning-foreground: #0A0A0B;
 
   /* Charts */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -294,69 +178,17 @@ html.dark {
   --chart-5: oklch(0.645 0.246 16.439);
 
   /* Sidebar */
-  --sidebar: #172033;
-  --sidebar-foreground: #e8edf5;
-  --sidebar-primary: #f97316;
+  --sidebar: #111111;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #FF6B00;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1f2e45;
-  --sidebar-accent-foreground: #e8edf5;
-  --sidebar-border: #2a3d5a;
-  --sidebar-ring: #f97316;
-}
+  --sidebar-accent: #1C1C1E;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #FF6B00;
 
-/* Rétrocompatibilité — classe .dark sans html (cas edge, spécificité inférieure) */
-.dark {
-  --background: #09090b;
-  --background-alt: #000000;
-  --foreground: #fafafa;
-  --foreground-secondary: #a1a1aa;
-  --card: rgba(255, 255, 255, 0.03);
-  --card-foreground: #fafafa;
-  --popover: rgba(25, 25, 25, 0.6);
-  --popover-foreground: #fafafa;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(255, 255, 255, 0.05);
-  --secondary-foreground: #fafafa;
-  --muted: rgba(255, 255, 255, 0.04);
-  --muted-foreground: #a1a1aa;
-  --accent: rgba(255, 255, 255, 0.06);
-  --accent-foreground: #f97316;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #f97316;
-  --destructive: #ef4444;
-  --destructive-hover: #dc2626;
-  --destructive-foreground: #ffffff;
-  --success: #10b981;
-  --success-hover: #059669;
-  --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-hover: #d97706;
-  --warning-foreground: #111218;
-  --primary-hover: #ea580c;
-  --secondary-hover: #1a2840;
-  --accent-hover: #1a2840;
-  --sidebar: #172033;
-  --sidebar-foreground: #e8edf5;
-  --sidebar-primary: #f97316;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1f2e45;
-  --sidebar-accent-foreground: #e8edf5;
-  --sidebar-border: #2a3d5a;
-  --sidebar-ring: #f97316;
-}
-
-/* Détection automatique thème sombre (priorité faible) */
-@media (prefers-color-scheme: dark) {
-  :root:not(.dark):not(.light) {
-    --background: var(--surface-dark);
-    --background-alt: var(--surface-dark-alt);
-    --foreground: var(--text-primary-dark);
-    --foreground-secondary: var(--text-secondary-dark);
-    --border-color: var(--border-dark);
-  }
+  /* Header */
+  --header-bg: var(--card);
 }
 
 /* Classes utilitaires CSS pour usage facile */
@@ -625,6 +457,9 @@ input[type="submit"] {
   --color-secondary: var(--secondary);
   --color-secondary-hover: var(--secondary-hover);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-hover: var(--tertiary-hover);
+  --color-tertiary-foreground: var(--tertiary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);

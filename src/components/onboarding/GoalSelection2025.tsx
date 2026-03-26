@@ -28,12 +28,12 @@ export function GoalSelection2025({ value, onChange}: GoalSelection2025Props) {
  title:'Perte de poids', 
  description:'Perdre du poids et améliorer ma composition corporelle',
  icon: Target,
- gradient:'from-blue-400 to-cyan-500',
- bgColor:'bg-gradient-to-br from-blue-50 to-cyan-50',
- borderColor:'border-blue-200',
- selectedBg:'bg-gradient-to-br from-blue-100 to-cyan-100',
+ gradient:'from-tertiary to-cyan-500',
+ bgColor:'bg-gradient-to-br from-tertiary/8 to-cyan-50',
+ borderColor:'border-tertiary/25',
+ selectedBg:'bg-gradient-to-br from-tertiary/12 to-cyan-100',
  selectedBorder:'border-secondary',
- iconBg:'bg-blue-100',
+ iconBg:'bg-tertiary/12',
  iconColor:'text-secondary'
 },
  {

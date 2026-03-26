@@ -73,9 +73,9 @@ export const ExerciseDuplicateModal: React.FC<ExerciseDuplicateModalProps> = ({
  {/* Content */}
  <div className="p-6 space-y-6">
  {/* Exercice proposé */}
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
- <h3 className="font-semibold text-blue-900 mb-2">Exercice que vous voulez créer :</h3>
- <p className="text-blue-800 font-medium">"{proposedName}"</p>
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-lg p-4">
+ <h3 className="font-semibold text-foreground mb-2">Exercice que vous voulez créer :</h3>
+ <p className="text-tertiary font-medium">"{proposedName}"</p>
  </div>
 
  {/* Correspondances exactes */}

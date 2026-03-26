@@ -69,10 +69,7 @@ export const viewport: Viewport = {
  maximumScale: 5, // WCAG compliance - minimum 5x zoom
  userScalable: true, // Accessibilité requise pour zoom
  viewportFit:"cover", // Support iPhone safe areas
- themeColor: [
- { media:"(prefers-color-scheme: light)", color:"#f97316"},
- { media:"(prefers-color-scheme: dark)", color:"#ea580c"},
- ],
+ themeColor: "#FF6B00",
 };
 
 export default function RootLayout({
@@ -81,7 +78,7 @@ export default function RootLayout({
  children: React.ReactNode;
 }>) {
  return (
- <html lang="fr" className={`h-full ${inter.variable}`} suppressHydrationWarning>
+ <html lang="fr" className={`dark h-full ${inter.variable}`}>
  <head>
  <meta name="mobile-web-app-capable" content="yes" />
  <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -91,11 +88,6 @@ export default function RootLayout({
  <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" crossOrigin="anonymous" />
  <link rel="preconnect" href="https://vitals.vercel-insights.com" crossOrigin="anonymous" />
  <link rel="dns-prefetch" href="//vercel.app" />
-
- {/* Theme init - Garde dans head pour éviter le flash */}
- <script dangerouslySetInnerHTML={{
- __html: `(function(){try{var s=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.remove('dark','light');(s==='dark'||(s!=='light'&&d))?document.documentElement.classList.add('dark'):document.documentElement.classList.add('light')}catch(e){}})();`
-}} />
  </head>
  <body className="antialiased min-h-screen overflow-x-hidden" suppressHydrationWarning>
  <ClientProviders>

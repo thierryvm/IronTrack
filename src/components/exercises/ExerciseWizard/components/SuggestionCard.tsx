@@ -17,7 +17,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
 }
  if (score >= 60) return { 
  text:'Populaire', 
- color:'bg-blue-100 text-blue-800 border-blue-200',
+ color:'bg-tertiary/12 text-tertiary border-tertiary/25',
  icon: <Zap className="w-3 h-3" />
 }
  return { 

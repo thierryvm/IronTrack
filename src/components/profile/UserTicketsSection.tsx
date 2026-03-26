@@ -132,7 +132,7 @@ export const UserTicketsSection: React.FC<UserTicketsSectionProps> = ({
  const getStatusColor = (status: string) => {
  switch (status) {
  case'open':
- return'bg-blue-100 text-blue-800 border-blue-300'
+ return'bg-tertiary/12 text-tertiary border-tertiary/35'
  case'in_progress':
  return'bg-orange-100 text-orange-800 border-orange-300'
  case'resolved':

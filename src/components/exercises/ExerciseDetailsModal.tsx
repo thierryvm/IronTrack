@@ -234,7 +234,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  
  const getScoreColor = (s: number) => {
  if (s >= 95) return'text-green-600 bg-green-50 border-green-200'
- if (s >= 80) return'text-secondary bg-blue-50 border-blue-200'
+ if (s >= 80) return'text-secondary bg-tertiary/8 border-tertiary/25'
  if (s >= 60) return'text-orange-800 bg-orange-50 border-orange-200'
  return'text-red-600 bg-red-50 border-red-200'
 }
@@ -252,7 +252,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
  {exercise.muscle_group}
  </span>
- <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+ <span className="bg-tertiary/12 text-tertiary px-2 py-1 rounded-full">
  {exercise.equipment}
  </span>
  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -267,8 +267,8 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  <p className="text-muted-foreground">{exercise.description}</p>
  </div>
  ) : (
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
- <p className="text-sm text-blue-700">
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-lg p-2">
+ <p className="text-sm text-tertiary">
  💡 <strong>Améliore ton exercice :</strong> Ajoute une description pour le rendre plus facile à identifier
  </p>
  </div>

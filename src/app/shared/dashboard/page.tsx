@@ -198,12 +198,12 @@ export default function SharedDashboardPage() {
  </div>
  
  {/* Indicateur de partage */}
- <div className="mb-4 p-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+ <div className="mb-4 p-2 bg-gradient-to-r from-tertiary/8 to-primary/8 rounded-lg border border-tertiary/25">
  <div className="flex items-center space-x-2 mb-2">
  <div className="w-2 h-2 bg-secondary rounded-full"></div>
- <span className="text-sm font-medium text-blue-800">Consulter les données de {partnerName}</span>
+ <span className="text-sm font-medium text-tertiary">Consulter les données de {partnerName}</span>
  </div>
- <p className="text-xs text-blue-700">Cliquez sur les sections ci-dessous pour accéder aux données partagées</p>
+ <p className="text-xs text-tertiary">Cliquez sur les sections ci-dessous pour accéder aux données partagées</p>
  </div>
 
  <div className="space-y-2">
@@ -238,7 +238,7 @@ export default function SharedDashboardPage() {
  {/* Progress */}
  <button
  onClick={() => router.push(`/shared/progress/${partnerId}`)}
- className="w-full flex items-center justify-between p-2 bg-blue-50 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+ className="w-full flex items-center justify-between p-2 bg-tertiary/8 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
  disabled
  >
  <div className="flex items-center space-x-2">
@@ -291,9 +291,9 @@ export default function SharedDashboardPage() {
  )}
 
  {/* Aide */}
- <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
- <h3 className="text-lg font-semibold text-blue-900 mb-4">💡 Comment ça marche ?</h3>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-800">
+ <div className="mt-8 bg-gradient-to-r from-tertiary/8 to-indigo-50 border border-tertiary/25 rounded-xl p-6">
+ <h3 className="text-lg font-semibold text-foreground mb-4">💡 Comment ça marche ?</h3>
+ <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-tertiary">
  <div>
  <h4 className="font-medium mb-2">🏃‍♂️ Entraînements</h4>
  <p>Voir les séances partagées directement dans votre calendrier avec le préfixe 👥.</p>

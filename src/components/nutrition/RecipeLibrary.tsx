@@ -434,7 +434,7 @@ export default function RecipeLibrary({
  <div className="flex space-x-2">
  <button
  onClick={() => setSelectedRecipe(recipe)}
- className="p-2 text-secondary hover:bg-blue-50 rounded-lg transition-colors"
+ className="p-2 text-secondary hover:bg-tertiary/8 rounded-lg transition-colors"
  title="Voir les détails"
  >
  <Eye className="h-6 w-6" />

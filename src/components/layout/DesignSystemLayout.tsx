@@ -1,5 +1,4 @@
 import * as React from "react"
-import ThemeToggle from "@/components/ui/ThemeToggle"
 import { Logo } from "@/components/shared/Logo"
 
 interface DesignSystemLayoutProps {
@@ -17,19 +16,13 @@ export function DesignSystemLayout({ children }: DesignSystemLayoutProps) {
         
         {/* Header (Intro) */}
         <div className="space-y-4">
-          <div className="flex justify-between items-start gap-4">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl text-foreground">
-                Design System
-              </h1>
-              <p className="text-xl text-muted-foreground mt-2 max-w-2xl">
-                Ce guide visuel regroupe l'ensemble des composants standards de l'application IronTrack, respectant strictement la norme V5.
-              </p>
-            </div>
-            {/* Theme Toggle existant */}
-            <div className="shrink-0 mt-1">
-              <ThemeToggle />
-            </div>
+          <div>
+            <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl text-foreground">
+              Design System
+            </h1>
+            <p className="text-xl text-muted-foreground mt-2 max-w-2xl">
+              Ce guide visuel regroupe l'ensemble des composants standards de l'application IronTrack, respectant strictement la norme V5.
+            </p>
           </div>
         </div>
 

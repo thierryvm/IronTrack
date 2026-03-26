@@ -376,14 +376,14 @@ export const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
  </AnimatePresence>
 
  {/* Informations de sécurité */}
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-lg p-4">
  <div className="flex items-start space-x-2">
  <Shield className="h-5 w-5 text-safe-info flex-shrink-0 mt-1" />
  <div>
- <h4 className="text-sm font-semibold text-blue-900 mb-2">
+ <h4 className="text-sm font-semibold text-foreground mb-2">
  🔒 Sécurité des fichiers
  </h4>
- <ul className="text-xs text-blue-800 space-y-1">
+ <ul className="text-xs text-tertiary space-y-1">
  <li>• Validation multi-couches (type, taille, contenu)</li>
  <li>• Scan anti-malware automatique</li>
  <li>• Noms de fichiers UUID générés</li>

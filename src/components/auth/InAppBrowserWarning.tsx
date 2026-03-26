@@ -93,7 +93,7 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
  <ol className="space-y-2">
  {instructions.steps.map((step, index) => (
  <li key={index} className="flex items-start gap-2 text-sm text-gray-600">
- <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-secondary rounded-full flex items-center justify-center text-xs font-medium">
+ <span className="flex-shrink-0 w-5 h-5 bg-tertiary/12 text-secondary rounded-full flex items-center justify-center text-xs font-medium">
  {index + 1}
  </span>
  {step}

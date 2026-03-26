@@ -155,13 +155,13 @@ export const SuggestionsList: React.FC<SuggestionsListProps> = ({
  initial={{ opacity: 0}}
  animate={{ opacity: 1}}
  transition={{ delay: 0.4}}
- className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200"
+ className="mt-6 p-4 bg-tertiary/8 rounded-lg border border-tertiary/25"
  >
  <div className="flex items-center gap-2 mb-2">
  <Target className="w-5 h-5 text-secondary" />
- <h4 className="font-semibold text-blue-800">💡 Conseil</h4>
+ <h4 className="font-semibold text-tertiary">💡 Conseil</h4>
  </div>
- <p className="text-sm text-blue-700">
+ <p className="text-sm text-tertiary">
  Les suggestions sont adaptées à ton niveau et tes objectifs. 
  Commence par les exercices <strong>recommandés</strong> pour des résultats optimaux.
  </p>

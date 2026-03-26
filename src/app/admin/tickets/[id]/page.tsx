@@ -346,7 +346,7 @@ export default function AdminTicketPage() {
  <span className={`px-2 py-1 rounded-full text-sm font-medium ${
  ticket.priority ==='critical' ?'bg-red-100 text-red-700' :
  ticket.priority ==='high' ?'bg-amber-100 text-amber-700' :
- ticket.priority ==='medium' ?'bg-blue-100 text-blue-700' :
+ ticket.priority ==='medium' ?'bg-tertiary/12 text-tertiary' :
 'bg-gray-100 text-gray-700'
 }`}>
  {getPriorityLabel(ticket.priority)}
@@ -354,7 +354,7 @@ export default function AdminTicketPage() {
  <span className={`px-2 py-1 rounded-full text-sm font-medium ${
  ticket.status ==='resolved' ?'bg-green-100 text-green-700' :
  ticket.status ==='in_progress' ?'bg-amber-100 text-amber-700' :
- ticket.status ==='open' ?'bg-blue-100 text-blue-700' :
+ ticket.status ==='open' ?'bg-tertiary/12 text-tertiary' :
  ticket.status ==='closed' ?'bg-gray-100 text-gray-700' :
  ticket.status ==='waiting_user' ?'bg-yellow-100 text-yellow-700' :
 'bg-gray-100 text-gray-700'
@@ -382,7 +382,7 @@ export default function AdminTicketPage() {
  <div className="flex items-start space-x-2">
  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
  response.is_internal ?'bg-amber-100' :
- response.user_id === ticket.user_id ?'bg-blue-100' :'bg-green-100'
+ response.user_id === ticket.user_id ?'bg-tertiary/12' :'bg-green-100'
 }`}>
  {response.is_internal ?'🔒' :
  response.user_id === ticket.user_id ?'👤' :'🛠️'}

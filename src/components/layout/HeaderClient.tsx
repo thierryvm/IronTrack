@@ -24,8 +24,6 @@ import {
  Activity
 } from'lucide-react'
 
-// Import statique pour éviter les bailouts SSR
-import ThemeToggle from'@/components/ui/ThemeToggle'
 
 // Import direct du hook (correction erreur hooks React)
 import { useAdminRole} from'@/hooks/useAdminRole'
@@ -459,12 +457,9 @@ export default function HeaderClient() {
  )}
  </div>
  
- <div className="w-px h-5 bg-border" aria-hidden="true" />
- <ThemeToggle />
  </>
  ) : (
  <>
- <ThemeToggle />
  <Link
  href="/auth/login"
  className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -599,11 +594,9 @@ export default function HeaderClient() {
  Connexion
  </Link>
  )}
- <div className="w-px h-5 bg-border" aria-hidden="true" />
- <ThemeToggle />
  </div>
  </div>
- 
+
  {/* Modal notifications mobile */}
  {isNotificationOpen && (
  <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setIsNotificationOpen(false)}>

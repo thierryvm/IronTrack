@@ -624,7 +624,7 @@ export default function CalendarPage() {
  onClick={() => setSelectedDate(day.date)}
  className={`w-full cursor-pointer transition-all touch-manipulation min-h-[44px] rounded-lg ${
  isSelectedDay 
- ?'ring-2 ring-secondary bg-blue-50' 
+ ?'ring-2 ring-secondary bg-tertiary/8' 
  : isCurrentDay 
  ?'ring-2 ring-primary' 
  :''

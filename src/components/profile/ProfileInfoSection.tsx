@@ -125,7 +125,7 @@ export function ProfileInfoSection({ profile, onProfileUpdate, onProgressionRelo
  </Card>
 
  {/* Niveau d'expérience */}
- <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+ <Card className="bg-gradient-to-br from-tertiary/8 to-tertiary/12 border-tertiary/25">
  <CardContent className="p-0">
  <InlineEditField
  label="🏆 Niveau d'expérience"

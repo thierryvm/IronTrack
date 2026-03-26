@@ -1328,7 +1328,7 @@ export default function ProgressPage() {
  <p className="text-sm font-medium text-muted-foreground">Poids moyen</p>
  <p className="text-2xl font-bold text-foreground">{averageWeight > 0 ? `${averageWeight.toFixed(1)} kg` :'Poids du corps'}</p>
  </div>
- <div className="p-2 bg-blue-100 rounded-full">
+ <div className="p-2 bg-tertiary/12 rounded-full">
  <BarChart3 className="h-6 w-6 text-safe-info" />
  </div>
  </div>

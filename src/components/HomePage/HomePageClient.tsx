@@ -624,7 +624,7 @@ export default function HomePageClient() {
  value: stats.thisWeek,
  icon: Calendar,
  color:'text-secondary',
- bgColor:'bg-blue-100'
+ bgColor:'bg-tertiary/12'
 },
  {
  title:'Série en cours',

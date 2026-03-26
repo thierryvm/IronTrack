@@ -184,9 +184,9 @@ function ContactSupportPageContent() {
  </div>
 
  {/* Conseils */}
- <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
- <h3 className="text-lg font-semibold text-blue-900 mb-4">💡 Conseils pour une réponse rapide</h3>
- <ul className="space-y-2 text-sm text-blue-800">
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-xl p-6">
+ <h3 className="text-lg font-semibold text-foreground mb-4">💡 Conseils pour une réponse rapide</h3>
+ <ul className="space-y-2 text-sm text-tertiary">
  <li>• Soyez précis dans votre description</li>
  <li>• Mentionnez les étapes pour reproduire le problème</li>
  <li>• Précisez votre navigateur et appareil</li>

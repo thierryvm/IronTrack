@@ -25,6 +25,11 @@ export default {
           hover: "var(--secondary-hover)",
           foreground: "var(--secondary-foreground)",
         },
+        tertiary: {
+          DEFAULT: "var(--tertiary)",
+          hover: "var(--tertiary-hover)",
+          foreground: "var(--tertiary-foreground)",
+        },
         destructive: {
           DEFAULT: "var(--destructive)",
           hover: "var(--destructive-hover)",
@@ -68,9 +73,9 @@ export default {
           200: '#fed7aa',
           300: '#fdba74',
           400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
+          500: '#FF6B00',
+          600: '#E55F00',
+          700: '#BF5200',
           800: '#9a3412',
           900: '#7c2d12',
         }

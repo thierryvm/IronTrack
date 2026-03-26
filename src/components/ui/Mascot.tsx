@@ -58,7 +58,7 @@ const mascotNames: Record<MascotKey, string> = {
 const mascotBg: Record<MascotKey, string> = {
  ironbuddy:'bg-yellow-300',
  cat:'bg-pink-200',
- bot:'bg-blue-200',
+ bot:'bg-tertiary/20',
  star:'bg-purple-200'
 };
 

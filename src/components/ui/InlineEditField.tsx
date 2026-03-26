@@ -141,7 +141,7 @@ export function InlineEditField({
  value={editValue}
  onChange={(e) => setEditValue(e.target.value)}
  onKeyDown={handleKeyPress}
- className="flex-1 px-2 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary bg-card border border-border relative z-50"
+ className="flex-1 px-2 py-2 border border-tertiary/35 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary bg-card border border-border relative z-50"
  disabled={loading}
  >
  <option value="">Sélectionner...</option>
@@ -162,7 +162,7 @@ export function InlineEditField({
  min={min}
  max={max}
  step={step}
- className="flex-1 px-2 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary bg-card border border-border relative z-50"
+ className="flex-1 px-2 py-2 border border-tertiary/35 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary bg-card border border-border relative z-50"
  disabled={loading}
  placeholder={placeholder}
  />

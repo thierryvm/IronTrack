@@ -94,7 +94,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange}: WorkoutModalP
  )}
 
  <div className="flex items-center space-x-2">
- <Badge variant={isCompleted ?"default" :"secondary"} className={isCompleted ?"bg-green-100 text-green-800 hover:bg-green-200" :"bg-blue-100 text-blue-800 hover:bg-blue-200"}>
+ <Badge variant={isCompleted ?"default" :"secondary"} className={isCompleted ?"bg-green-100 text-green-800 hover:bg-green-200" :"bg-tertiary/12 text-tertiary hover:bg-tertiary/20"}>
  {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
  </Badge>
  </div>
@@ -357,7 +357,7 @@ export default function WorkoutsPage() {
  {/* Section actions - fixe en bas */}
  <div className="flex items-center justify-between mt-auto mb-4">
  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
- isCompleted ?'bg-green-100 text-green-800' :'bg-blue-100 text-blue-800'
+ isCompleted ?'bg-green-100 text-green-800' :'bg-tertiary/12 text-tertiary'
 }`}>
  {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
  </span>

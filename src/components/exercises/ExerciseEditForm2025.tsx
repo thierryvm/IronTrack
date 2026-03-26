@@ -630,7 +630,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  />
  
  {/* Option de mise à jour de la dernière performance */}
- <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+ <div className="mt-6 p-4 bg-tertiary/8 border border-tertiary/25 rounded-lg">
  <label className="flex items-start gap-2 cursor-pointer">
  <input
  type="checkbox"
@@ -639,10 +639,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  className="mt-1 h-6 w-6 text-primary focus:ring-primary border-border rounded"
  />
  <div className="flex-1">
- <div className="font-medium text-blue-900">
+ <div className="font-medium text-foreground">
  Mettre à jour aussi la dernière performance
  </div>
- <div className="text-sm text-blue-700 mt-1">
+ <div className="text-sm text-tertiary mt-1">
  💡 Cochez cette option si vous corrigez une erreur de saisie dans vos métriques. 
  Laissez décoché si vous configurez simplement les valeurs par défaut pour de futures performances.
  </div>

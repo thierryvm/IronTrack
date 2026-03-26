@@ -458,7 +458,7 @@ export default function TrainingPartnersPage() {
  notification.type ==='success' ?'bg-green-50/90 border-green-200 text-green-800' :
  notification.type ==='error' ?'bg-red-50/90 border-red-200 text-red-800' :
  notification.type ==='warning' ?'bg-yellow-50/90 border-yellow-200 text-yellow-800' :
-'bg-blue-50/90 border-blue-200 text-blue-800'
+'bg-tertiary/8 border-tertiary/25 text-tertiary'
 }`}
  >
  <div className="flex items-start justify-between">
@@ -485,7 +485,7 @@ export default function TrainingPartnersPage() {
  <div className="max-w-4xl mx-auto px-4">
  {/* Welcome Message */}
  {showWelcome && (
- <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-md p-6 mb-6 text-white">
+ <div className="bg-gradient-to-r from-tertiary to-purple-500 rounded-xl shadow-md p-6 mb-6 text-white">
  <div className="flex items-start justify-between">
  <div className="flex items-start space-x-4">
  <div className="p-2 bg-card/20 border border-white/30 rounded-xl backdrop-blur-sm">
@@ -621,7 +621,7 @@ export default function TrainingPartnersPage() {
  src={partner.avatar_url}
  alt={`Avatar de ${getDisplayName(partner)}`}
  size="md"
- className="border-2 border-blue-200"
+ className="border-2 border-tertiary/25"
  priority={false}
  />
  <div>
@@ -672,14 +672,14 @@ export default function TrainingPartnersPage() {
  ) : (
  <div className="space-y-4">
  {pendingInvitations.map((invitation) => (
- <div key={invitation.id} className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+ <div key={invitation.id} className="p-4 bg-tertiary/8 border border-tertiary/25 rounded-lg">
  <div className="flex items-center justify-between">
  <div className="flex items-center space-x-4">
  <OptimizedAvatar
  src={invitation.requester.avatar_url}
  alt={`Avatar de ${getDisplayName(invitation.requester)}`}
  size="md"
- className="border-2 border-blue-200"
+ className="border-2 border-tertiary/25"
  priority={false}
  />
  <div>
@@ -690,7 +690,7 @@ export default function TrainingPartnersPage() {
  Invitation envoyée le {new Date(invitation.created_at).toLocaleDateString()}
  </p>
  {invitation.message && (
- <p className="text-sm text-blue-700 mt-1 italic">
+ <p className="text-sm text-tertiary mt-1 italic">
  &ldquo;{invitation.message}&rdquo;
  </p>
  )}
@@ -807,9 +807,9 @@ export default function TrainingPartnersPage() {
  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-safe-muted" />
  </div>
  </div>
- <Alert id="search-help" className="mt-2 bg-blue-50/80 border-blue-200">
+ <Alert id="search-help" className="mt-2 bg-tertiary/8 border-tertiary/25">
  <Info className="h-5 w-5 text-safe-info" />
- <AlertDescription className="text-blue-700">
+ <AlertDescription className="text-tertiary">
  <p className="font-medium mb-1">Recherche sécurisée :</p>
  <ul className="list-disc list-inside space-y-1 text-xs">
  <li>Email complet : exemple@domain.com</li>

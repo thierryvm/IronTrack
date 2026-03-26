@@ -442,14 +442,14 @@ export const ExercisePhotoUpload: React.FC<ExercisePhotoUploadProps> = ({
 
  {/* Informations sur le format HEIC et optimisation */}
  <div className="space-y-2">
- <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+ <div className="bg-tertiary/8 border border-tertiary/25 rounded-lg p-2">
  <div className="flex items-start space-x-2">
  <Smartphone className="h-6 w-6 text-safe-info flex-shrink-0 mt-1" />
  <div>
- <h5 className="text-sm font-medium text-blue-900 mb-1">
+ <h5 className="text-sm font-medium text-foreground mb-1">
  📱 Compatible iPhone/iPad - HEIC vers JPEG
  </h5>
- <p className="text-xs text-blue-800">
+ <p className="text-xs text-tertiary">
  Les photos HEIC d&apos;Apple sont automatiquement converties en JPEG pour compatibilité. 
  La conversion préserve la qualité tout en optimisant la taille.
  </p>

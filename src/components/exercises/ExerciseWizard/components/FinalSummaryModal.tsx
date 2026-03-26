@@ -119,14 +119,14 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
 
  {/* Performance Summary */}
  {performance && (
- <div className="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-200">
- <h3 className="text-lg font-semibold text-blue-800 mb-4">Performance ajoutée</h3>
+ <div className="bg-tertiary/8 rounded-xl p-6 mb-6 border border-tertiary/25">
+ <h3 className="text-lg font-semibold text-tertiary mb-4">Performance ajoutée</h3>
  
  <div className="grid grid-cols-2 gap-4 text-sm">
  {(('type' in exercise ? exercise.type : exercise.exercise_type) ==='Cardio') ? (
  <>
  {performance.distance && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">📏</span>
  <span>
  {performance.distance}
@@ -135,55 +135,55 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
  </div>
  )}
  {performance.duration && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">⏱️</span>
  <span>{performance.duration} min</span>
  </div>
  )}
  {performance.speed && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🏃</span>
  <span>{performance.speed} km/h</span>
  </div>
  )}
  {performance.calories && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🔥</span>
  <span>{performance.calories} kcal</span>
  </div>
  )}
  {performance.stroke_rate && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🚣</span>
  <span>{performance.stroke_rate} SPM</span>
  </div>
  )}
  {performance.watts && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">⚡</span>
  <span>{performance.watts} watts</span>
  </div>
  )}
  {performance.heart_rate && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">❤️</span>
  <span>{performance.heart_rate} BPM</span>
  </div>
  )}
  {performance.incline && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">📈</span>
  <span>{performance.incline}% inclinaison</span>
  </div>
  )}
  {performance.cadence && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🚴</span>
  <span>{performance.cadence} RPM</span>
  </div>
  )}
  {performance.resistance && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">💪</span>
  <span>Résistance {performance.resistance}</span>
  </div>
@@ -192,37 +192,37 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
  ) : (
  <>
  {performance.weight && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🏋️</span>
  <span>{performance.weight} kg</span>
  </div>
  )}
  {performance.reps && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">🔢</span>
  <span>{performance.reps} répétitions</span>
  </div>
  )}
  {performance.sets && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">📊</span>
  <span>{performance.sets} séries</span>
  </div>
  )}
  {performance.rest_time && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">⏸️</span>
  <span>{performance.rest_time} min repos</span>
  </div>
  )}
  {performance.time_under_tension && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">⏱️</span>
  <span>{performance.time_under_tension}s TUT</span>
  </div>
  )}
  {performance.rpe && (
- <div className="flex items-center gap-2 text-blue-700">
+ <div className="flex items-center gap-2 text-tertiary">
  <span className="font-medium">📈</span>
  <span>RPE {performance.rpe}/10</span>
  </div>
@@ -232,8 +232,8 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
  </div>
  
  {performance.notes && (
- <div className="mt-4 p-2 bg-card border border-border rounded-lg border border-blue-200">
- <div className="flex items-start gap-2 text-blue-700">
+ <div className="mt-4 p-2 bg-card border border-border rounded-lg border border-tertiary/25">
+ <div className="flex items-start gap-2 text-tertiary">
  <span className="font-medium">💭</span>
  <span className="italic">{performance.notes}</span>
  </div>
@@ -268,8 +268,8 @@ export const FinalSummaryModal: React.FC<FinalSummaryModalProps> = ({
  </div>
 
  {/* Note d'aide */}
- <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
- <p className="text-blue-700 text-sm">
+ <div className="mt-6 p-4 bg-tertiary/8 rounded-lg border border-tertiary/25">
+ <p className="text-tertiary text-sm">
  💡 <strong>Astuce :</strong> Vous pourrez toujours ajouter des performances plus tard depuis la page de l'exercice.
  </p>
  </div>

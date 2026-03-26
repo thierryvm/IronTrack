@@ -51,16 +51,16 @@ export function NutritionProgressCards({ todayNutrition, goals }: NutritionProgr
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold text-foreground">Protéines</h3>
-              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{Math.round(todayNutrition.protein * 10) / 10}</p>
+              <p className="text-3xl font-bold text-tertiary">{Math.round(todayNutrition.protein * 10) / 10}</p>
               <p className="text-sm text-muted-foreground">/ {goals.protein}g</p>
             </div>
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center">
-              <Dumbbell className="w-8 h-8 text-blue-500" />
+            <div className="w-16 h-16 bg-tertiary/12 rounded-full flex items-center justify-center">
+              <Dumbbell className="w-8 h-8 text-tertiary" />
             </div>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
             <div 
-              className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+              className="bg-tertiary h-2 rounded-full transition-all duration-500"
               style={ { width: `${Math.min((todayNutrition.protein / goals.protein) * 100, 100)}%` } }
             />
           </div>

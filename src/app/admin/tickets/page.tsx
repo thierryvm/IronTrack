@@ -218,7 +218,7 @@ export default function AdminTicketsPage() {
  const getPriorityColor = (priority: SupportTicketPriority) => {
  const colors = {
 'low':'bg-gray-100 text-gray-700',
-'medium':'bg-blue-100 text-blue-700',
+'medium':'bg-tertiary/12 text-tertiary',
 'high':'bg-amber-100 text-amber-700',
 'critical':'bg-red-100 text-red-700'
 }
@@ -559,7 +559,7 @@ export default function AdminTicketsPage() {
  setSelectedTicket(ticket)
  setShowDetails(true)
 }}
- className="p-2 h-auto hover:text-safe-info hover:bg-blue-50"
+ className="p-2 h-auto hover:text-safe-info hover:bg-tertiary/8"
  title="Voir les détails"
  >
  <Eye className="h-4 w-4" />
@@ -701,7 +701,7 @@ export default function AdminTicketsPage() {
  variant="ghost"
  size="sm"
  onClick={() => window.open(attachment.url,'_blank')}
- className="p-2 h-auto hover:text-safe-info hover:bg-blue-50"
+ className="p-2 h-auto hover:text-safe-info hover:bg-tertiary/8"
  title="Télécharger"
  >
  <Download className="h-4 w-4" />

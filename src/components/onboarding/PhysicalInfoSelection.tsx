@@ -76,7 +76,7 @@ export function PhysicalInfoSelection({ value, onChange}: PhysicalInfoSelectionP
  <Card className="p-4">
  <CardHeader className="pb-2">
  <div className="flex items-center gap-2">
- <div className="p-2 rounded-lg bg-blue-50 text-secondary">
+ <div className="p-2 rounded-lg bg-tertiary/8 text-secondary">
  <Ruler className="h-5 w-5" />
  </div>
  <CardTitle className="text-lg">Taille</CardTitle>

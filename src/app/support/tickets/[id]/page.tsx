@@ -205,7 +205,7 @@ export default function TicketDetailPage() {
  const getStatusColor = (status: string) => {
  switch (status) {
  case'pending': return'bg-yellow-100 text-yellow-800 border-yellow-300'
- case'open': return'bg-blue-100 text-blue-800 border-blue-300'
+ case'open': return'bg-tertiary/12 text-tertiary border-tertiary/35'
  case'in_progress': return'bg-orange-100 text-orange-800 border-orange-300'
  case'resolved': return'bg-green-100 text-green-800 border-green-300'
  case'closed': return'bg-muted text-muted-foreground border-border'
@@ -366,19 +366,19 @@ export default function TicketDetailPage() {
  className={`p-4 rounded-lg border transition-all duration-200 ${
  response.user_id === ticket?.user_id
  ?'bg-orange-50 border-orange-200 ml-0 mr-8'
- :'bg-blue-50 border-blue-200 ml-8 mr-0'
+ :'bg-tertiary/8 border-tertiary/25 ml-8 mr-0'
 }`}
  >
  <div className="flex items-center gap-2 mb-2">
  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
  response.user_id === ticket?.user_id
  ?'bg-orange-100'
- :'bg-blue-100'
+ :'bg-tertiary/12'
 }`}>
  {response.user_id === ticket?.user_id ? (
  <User className="h-6 w-6 text-orange-700" />
  ) : (
- <Shield className="h-6 w-6 text-blue-700" />
+ <Shield className="h-6 w-6 text-tertiary" />
  )}
  </div>
  <div className="flex-1">
@@ -386,7 +386,7 @@ export default function TicketDetailPage() {
  <span className={`font-medium text-sm ${
  response.user_id === ticket?.user_id
  ?'text-orange-900'
- :'text-blue-900'
+ :'text-foreground'
 }`}>
  {response.user_id === ticket?.user_id 
  ?'Vous'
@@ -394,7 +394,7 @@ export default function TicketDetailPage() {
 }
  </span>
  {response.is_internal && (
- <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+ <span className="px-2 py-1 bg-tertiary/12 text-tertiary text-xs rounded-full">
  Note interne
  </span>
  )}

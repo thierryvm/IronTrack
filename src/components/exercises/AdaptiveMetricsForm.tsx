@@ -112,11 +112,11 @@ export function AdaptiveMetricsForm({
  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 items-start">
  {/* Split Time - Most important rowing metric */}
  <div>
- <div className="p-2 bg-blue-50 rounded-lg">
+ <div className="p-2 bg-tertiary/8 rounded-lg">
  <label className="block text-sm font-medium text-gray-700 mb-1">
  Split Time (/500m)
  </label>
- <div className="text-lg font-semibold text-blue-900">
+ <div className="text-lg font-semibold text-foreground">
  {cardioData.distance && cardioData.duration_seconds && cardioData.distance > 0
  ? `${Math.floor((cardioData.duration_seconds / (cardioData.distance / 500)) / 60)}:${String(Math.floor((cardioData.duration_seconds / (cardioData.distance / 500)) % 60)).padStart(2,'0')}`
  :'--:--'

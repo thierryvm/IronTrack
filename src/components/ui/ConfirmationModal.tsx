@@ -48,7 +48,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
  default:
  return {
  icon: AlertTriangle,
- iconBg:'bg-blue-100',
+ iconBg:'bg-tertiary/12',
  iconColor:'text-secondary',
  confirmBg:'bg-secondary hover:bg-secondary',
  confirmText:'text-white'

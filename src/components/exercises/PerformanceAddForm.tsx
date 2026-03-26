@@ -372,8 +372,8 @@ export function PerformanceAddForm({ exercise, onComplete, onBack}: PerformanceA
 
  {/* Métriques spécialisées selon l'équipement */}
  {equipmentType ==='rowing' && (
- <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
- <h4 className="font-semibold text-blue-800 mb-2">Métriques rameur</h4>
+ <div className="p-4 bg-tertiary/8 rounded-lg border border-tertiary/25">
+ <h4 className="font-semibold text-tertiary mb-2">Métriques rameur</h4>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div className="space-y-2">
  <Label htmlFor="rowing-cadence">Cadence (SPM)</Label>
