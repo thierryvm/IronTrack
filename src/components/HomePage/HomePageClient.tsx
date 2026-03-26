@@ -200,7 +200,7 @@ function QuickTimerRestored() {
  <button
  key={time}
  onClick={() => handleTimeSelect(time)}
- className="bg-primary hover:bg-primary-hover text-white py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full min-h-touch-44"
+ className="bg-primary hover:bg-primary-hover text-primary-foreground py-2 px-0 rounded-lg transition-colors text-sm font-bold w-full min-h-touch-44"
  style={{minWidth: 0}}
  >
  {time}s
@@ -853,7 +853,7 @@ export default function HomePageClient() {
  </p>
  </div>
  <div className="text-right">
- <p className="text-sm font-semibold text-primary">
+ <p className="text-sm font-semibold text-foreground">
  {exercise.displayValue}
  </p>
  <p className="text-xs text-muted-foreground">

@@ -168,7 +168,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
 
  return (
  <Dialog open={isOpen} onOpenChange={onClose}>
- <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-card" aria-describedby="exercise-details-description">
+ <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-card">
  <DialogHeader className="sr-only">
  <DialogTitle>
  Détails de l'exercice {exercise?.name ||''}
@@ -195,7 +195,7 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  >
  <ArrowLeft className="w-5 h-5 text-gray-600" />
  </Button>
- <h2 className="text-lg font-semibold text-foreground text-center flex-1" aria-hidden="true">
+ <h2 className="text-lg font-semibold text-foreground text-center flex-1">
  Détails de l'exercice
  </h2>
  {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
@@ -476,22 +476,16 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  </div>
  </motion.div>
  
- {/* Modal de confirmation simple - temporaire */}
- {deleteModalOpen && (
- <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]" onClick={() => setDeleteModalOpen(false)}>
- <div className="bg-card rounded-lg p-6 max-w-md mx-4" onClick={e => e.stopPropagation()}>
- <h3 className="text-lg font-semibold mb-2">Supprimer la performance</h3>
- <p className="text-muted-foreground mb-4">
+ {/* Modal de confirmation - Dialog shadcn pour accessibilité ARIA correcte */}
+ <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+ <DialogContent className="max-w-sm">
+ <DialogHeader>
+ <DialogTitle>Supprimer la performance</DialogTitle>
+ <DialogDescription>
  Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.
- </p>
- <div className="flex space-x-2">
- <Button
- onClick={() => perfToDelete && handleDeletePerformance(perfToDelete)}
- variant="destructive"
- className="flex-1"
- >
- Supprimer
- </Button>
+ </DialogDescription>
+ </DialogHeader>
+ <DialogFooter className="flex gap-2 sm:gap-2">
  <Button
  onClick={() => setDeleteModalOpen(false)}
  variant="outline"
@@ -499,10 +493,16 @@ export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
  >
  Annuler
  </Button>
- </div>
- </div>
- </div>
- )}
+ <Button
+ onClick={() => perfToDelete && handleDeletePerformance(perfToDelete)}
+ variant="destructive"
+ className="flex-1"
+ >
+ Supprimer
+ </Button>
+ </DialogFooter>
+ </DialogContent>
+ </Dialog>
  </DialogContent>
  </Dialog>
  )
