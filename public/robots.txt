@@ -6,27 +6,80 @@ Allow: /faq
 Allow: /legal/privacy
 Allow: /legal/terms
 Allow: /pwa-guide
+Allow: /support
 Allow: /llms.txt
 
 # Pages privées non indexables
-Disallow: /admin/*
-Disallow: /api/*
-Disallow: /auth/*
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
 Disallow: /profile
-# Allow: /exercises - Page publique pour SEO/démo
 Disallow: /workouts
-# Allow: /calendar - Page publique pour démo/SEO
 Disallow: /progress
 Disallow: /nutrition
 Disallow: /notifications
-Disallow: /support
 Disallow: /training-partners
-Disallow: /shared/*
+Disallow: /shared/
 Disallow: /onboarding
+Disallow: /calendar
+Disallow: /exercises
 
-# Ressources techniques
-Disallow: /_next/*
-Disallow: /static/*
+# --- Règles spécifiques pour LLMs / AI crawlers ---
+# Anthropic (Claude)
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# OpenAI (ChatGPT / SearchGPT)
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# Google AI (Gemini / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# CCBot (Common Crawl — utilisé pour l'entraînement LLM)
+User-agent: CCBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
 
 # Sitemap
 Sitemap: https://iron-track-dusky.vercel.app/sitemap.xml

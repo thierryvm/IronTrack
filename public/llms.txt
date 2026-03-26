@@ -1,7 +1,9 @@
 # IronTrack - Application de Musculation Complète
 
 ## Description
-IronTrack est une application web moderne de suivi d'entraînement de musculation développée avec Next.js 15, TypeScript et Supabase. Elle offre une solution complète pour planifier, suivre et analyser ses séances de musculation avec une interface responsive optimisée mobile-first.
+IronTrack est une application web moderne de suivi d'entraînement de musculation développée avec Next.js 15, TypeScript et Supabase. Elle offre une solution complète pour planifier, suivre et analyser ses séances de musculation avec une interface responsive mobile-first.
+
+IronTrack est destinée aux pratiquants belges et francophones, mais accessible à tous.
 
 ## Fonctionnalités Principales
 
@@ -12,10 +14,11 @@ IronTrack est une application web moderne de suivi d'entraînement de musculatio
 - Contrôles intuitifs (play, pause, suivant, précédent, reset)
 
 ### Gestion des Exercices
-- Base de données complète d'exercices de musculation
-- Création et modification d'exercices personnalisés
+- Base de données complète d'exercices de musculation et cardio
+- Création et modification d'exercices personnalisés via wizard IA
 - Suivi des performances avec historique détaillé
-- Catégorisation par groupes musculaires
+- Catégorisation par groupes musculaires et équipement
+- Métriques avancées cardio : SPM (rameur), watts, rythme cardiaque, inclinaison, cadence
 
 ### Calendrier et Planification
 - Calendrier interactif pour planifier les séances
@@ -23,11 +26,11 @@ IronTrack est une application web moderne de suivi d'entraînement de musculatio
 - Séances partagées avec partenaires d'entraînement
 - Rappels et notifications
 
-### Système de Partenaires
-- Connexion avec d'autres utilisateurs
-- Partage de séances et programmes
+### Système de Partenaires d'Entraînement
+- Connexion avec d'autres utilisateurs via recherche par pseudo/email
+- Partage sélectif de séances et programmes
 - Motivation et suivi collectif
-- Tableau de bord partagé
+- Partage des données nutritionnelles entre partenaires
 
 ### Suivi Nutritionnel
 - Base de données d'aliments et recettes
@@ -36,29 +39,30 @@ IronTrack est une application web moderne de suivi d'entraînement de musculatio
 - Partage de recettes entre partenaires
 
 ### Analyse et Progression
-- Graphiques détaillés de progression
-- Statistiques avancées par exercice
+- Graphiques détaillés de progression par exercice
+- Statistiques avancées et comparaisons temporelles
 - Suivi du volume d'entraînement
-- Comparaisons temporelles
+- Export des données personnelles (RGPD)
 
-## Technologies Utilisées
-- **Frontend**: Next.js 15 avec App Router, TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Authentication, Real-time)
-- **UI/UX**: shadcn/ui, Framer Motion, Lucide Icons
+### Tableau de Bord Santé Système (Admin)
+- Surveillance en temps réel des dépendances et versions
+- Score de santé global avec indicateurs visuels
+- Vérifications de sécurité automatisées
+- Monitoring du runtime applicatif
+
+## Technologies
+- **Frontend**: Next.js 15 avec App Router, TypeScript strict, Tailwind CSS v4
+- **Backend**: Supabase (PostgreSQL, Authentication SSR, Real-time WebSocket)
+- **UI/UX**: shadcn/ui, Framer Motion, Lucide Icons, design system tokens
 - **Déploiement**: Vercel avec optimisations automatiques
+- **PWA**: Progressive Web App installable sur iOS et Android
 
 ## Public Cible
 - Pratiquants de musculation débutants à avancés
 - Coachs sportifs et préparateurs physiques
 - Groupes d'entraînement et clubs de fitness
 - Personnes cherchant un suivi structuré de leur progression
-
-## Avantages Concurrentiels
-- Interface moderne et intuitive
-- Optimisation mobile parfaite
-- Fonctionnalités collaboratives uniques
-- Timer de session le plus avancé du marché
-- Intégration nutrition-entraînement
+- Utilisateurs belges et francophones
 
 ## Cas d'Usage Typiques
 1. **Débutant**: Utilise les programmes pré-définis et le timer guidé
@@ -68,27 +72,35 @@ IronTrack est une application web moderne de suivi d'entraînement de musculatio
 5. **Groupe**: S'entraîne ensemble avec des séances partagées
 
 ## Sécurité et Protection des Données
-- **Authentification sécurisée**: OAuth 2.0, 2FA disponible
-- **Chiffrement**: HTTPS obligatoire, données chiffrées en base
-- **RGPD compliant**: Gestion complète du consentement et suppression de données
-- **Row Level Security (RLS)**: Isolation des données utilisateurs
-- **Protection XSS/CSRF**: Validation stricte des entrées utilisateur
-- **Audit de sécurité**: Tests réguliers et mise à jour des dépendances
-- **Données sensibles**: Aucune donnée de santé médicale stockée
-- **Backup sécurisé**: Sauvegardes chiffrées automatiques
+- **Authentification sécurisée**: OAuth 2.0 via Supabase Auth
+- **HTTPS obligatoire**: Toutes les communications chiffrées
+- **RGPD compliant**: Conforme au RGPD et à la loi belge (APD)
+  - Droit d'accès, de rectification et de suppression des données
+  - Export des données personnelles disponible
+  - Conservation limitée : comptes inactifs supprimés après 3 ans
+- **Row Level Security (RLS)**: Isolation stricte des données utilisateurs
+- **Politique CSP**: Content Security Policy stricte en production
+- **Aucune donnée médicale**: Pas de données de santé au sens médical
 
 ## Accessibilité et Performance
-- Score Lighthouse >95 sur tous les critères
 - Conformité WCAG 2.1 AA
 - Support PWA pour installation mobile
 - Optimisation Core Web Vitals
 - Compatible tous navigateurs modernes
 
+## Pages Publiques
+- `/` — Page d'accueil
+- `/faq` — Questions fréquentes
+- `/support` — Centre d'aide et documentation
+- `/pwa-guide` — Guide d'installation PWA
+- `/legal/privacy` — Politique de confidentialité
+- `/legal/terms` — Conditions générales d'utilisation
+
 ## Contact et Support
-- Support technique intégré à l'application
-- Documentation complète disponible
+- Support technique intégré à l'application (tickets)
+- Documentation complète disponible dans l'application
 - Communauté active d'utilisateurs
 
 ---
-Dernière mise à jour: 2025-01-09
-Version: 1.0.0
+Dernière mise à jour: 2026-03-26
+Version: 2.0
