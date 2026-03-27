@@ -285,7 +285,7 @@ export default function AdminTicketsPage() {
  return (
  <div className="space-y-6">
  {/* En-tête */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6">
+ <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px]">
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
  <div>
  <div className="flex items-center space-x-2">
@@ -409,7 +409,7 @@ export default function AdminTicketsPage() {
  </div>
 
  {/* Liste des tickets */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden">
+ <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px]">
  {filteredAndSortedTickets.length === 0 ? (
  <div className="text-center py-12">
  <MessageSquare className="h-12 w-12 text-gray-700 mx-auto mb-4" />

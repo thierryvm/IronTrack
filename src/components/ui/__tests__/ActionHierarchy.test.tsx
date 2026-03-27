@@ -67,13 +67,13 @@ describe('ActionHierarchy', () => {
  const primaryBtn = screen.getByTestId('add-action')
  expect(primaryBtn).toHaveClass('bg-gradient-to-r','from-green-500','to-green-600')
 
- // Action secondaire avec fond plat
+ // Action secondaire avec fond plat (variant neutral → bg-muted)
  const secondaryBtn = screen.getByTestId('view-action')
- expect(secondaryBtn).toHaveClass('bg-gray-100','text-gray-700')
+ expect(secondaryBtn).toHaveClass('bg-muted','text-muted-foreground')
 
- // Action tertiaire minimaliste
+ // Action tertiaire minimaliste (variant neutral → text-muted-foreground hover:bg-muted)
  const tertiaryBtn = screen.getByTestId('edit-action')
- expect(tertiaryBtn).toHaveClass('text-gray-600','','hover:bg-background')
+ expect(tertiaryBtn).toHaveClass('text-muted-foreground','hover:bg-muted')
 })
 
  it('applique les couleurs selon le variant', () => {
@@ -283,7 +283,7 @@ describe('useStandardActions', () => {
 
  // Vérifier les types d'actions
  expect(screen.getByText('Performance').closest('button')).toHaveClass('bg-gradient-to-r')
- expect(screen.getByText('Détails').closest('button')).toHaveClass('bg-gray-100')
+ expect(screen.getByText('Détails').closest('button')).toHaveClass('bg-muted')
  expect(screen.getByText('Supprimer').closest('button')).toHaveClass('text-red-600')
 })
 

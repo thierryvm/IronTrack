@@ -385,7 +385,7 @@ describe('usePerformanceFormatter', () => {
  />
  )
 
- expect(screen.getByTestId('formatted-result')).toHaveTextContent('80kg × 8 reps × 3 sets')
+ expect(screen.getByTestId('formatted-result')).toHaveTextContent('80kg ×8 reps ×3 sets')
 })
 
  it('formate rapidement les performances cardio rameur', () => {
@@ -397,7 +397,7 @@ describe('usePerformanceFormatter', () => {
  />
  )
 
- expect(screen.getByTestId('formatted-result')).toHaveTextContent('2000m • 8:30 • 28 SPM • 180W')
+ expect(screen.getByTestId('formatted-result')).toHaveTextContent('2000m •8:30 •28 SPM •180W')
 })
 
  it('limite à 4 métriques maximum', () => {

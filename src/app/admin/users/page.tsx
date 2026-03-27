@@ -278,10 +278,35 @@ export default function AdminUsersPage() {
 
  if (loading) {
  return (
- <div className="flex items-center justify-center min-h-[400px]">
- <div className="text-center">
- <div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
- <p className="text-gray-600">Chargement des utilisateurs...</p>
+ <div className="space-y-6">
+ {/* Header skeleton */}
+ <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px] animate-pulse">
+ <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+ <div className="flex items-center space-x-2">
+ <div className="w-10 h-10 bg-muted rounded-lg" />
+ <div>
+ <div className="h-7 w-56 bg-muted rounded mb-2" />
+ <div className="h-4 w-32 bg-muted rounded" />
+ </div>
+ </div>
+ <div className="h-9 w-24 bg-muted rounded-lg" />
+ </div>
+ </div>
+ {/* Table card skeleton */}
+ <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px] animate-pulse">
+ <div className="h-12 bg-muted/40 border-b border-border" />
+ {[...Array(8)].map((_, i) => (
+ <div key={i} className="h-16 border-b border-border last:border-0 flex items-center px-6 gap-4">
+ <div className="w-10 h-10 bg-muted rounded-full shrink-0" />
+ <div className="flex-1 space-y-1">
+ <div className="h-4 w-32 bg-muted rounded" />
+ <div className="h-3 w-48 bg-muted rounded" />
+ </div>
+ <div className="h-6 w-20 bg-muted rounded-full" />
+ <div className="h-4 w-16 bg-muted rounded" />
+ <div className="h-4 w-24 bg-muted rounded" />
+ </div>
+ ))}
  </div>
  </div>
  )
@@ -304,7 +329,7 @@ export default function AdminUsersPage() {
  return (
  <div className="space-y-6">
  {/* En-tête */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6">
+ <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px]">
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
  <div>
  <div className="flex items-center space-x-2">
@@ -428,7 +453,7 @@ export default function AdminUsersPage() {
  </div>
 
  {/* Liste des utilisateurs */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden">
+ <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px]">
  {filteredAndSortedUsers.length === 0 ? (
  <div className="text-center py-12">
  <Users className="h-12 w-12 text-gray-700 mx-auto mb-4" />

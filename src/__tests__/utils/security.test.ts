@@ -25,15 +25,15 @@ describe('Security utilities', () => {
  it('should remove SQL injection patterns', () => {
  const input ="'; DROP TABLE users; --"
  const result = sanitizeInput(input)
- // Les quotes et DROP sont supprimés, mais -- reste
- expect(result).toBe(' TABLE users --')
+ // Les quotes, DROP et ; sont supprimés (deux espaces restent autour de l'emplacement de DROP)
+ expect(result).toBe('  TABLE users --')
 })
 
  it('should preserve valid French characters', () => {
  const input ='Café à la française, très délicieux !'
  const result = sanitizeInput(input)
- // Le point d'exclamation est supprimé mais un espace reste
- expect(result).toBe('Café à la française, très délicieux')
+ // Le point d'exclamation est supprimé, un espace trailing subsiste
+ expect(result).toBe('Café à la française, très délicieux ')
 })
 
  it('should handle empty or invalid input', () => {

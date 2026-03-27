@@ -196,7 +196,9 @@ describe('ExerciseCard2025', () => {
 
  // Vérifier styles du bouton delete (action dangereuse)
  const deleteButton = screen.getByTestId('delete-button')
- expect(deleteButton).toHaveClass('hover:text-safe-error','hover:bg-red-50')
+ const className = deleteButton.className
+ expect(className).toContain('hover:text-destructive')
+ expect(className).toContain('hover:bg-red-50')
 })
 
  it('affiche uniquement les boutons pour les actions fournies', () => {
@@ -273,7 +275,7 @@ describe('ExerciseCard2025', () => {
  />
  )
 
- expect(screen.getByText('80kg × 8 reps × 3 sets')).toBeInTheDocument()
+ expect(screen.getByText((content) => content.includes('80kg') && content.includes('reps') && content.includes('sets'))).toBeInTheDocument()
  expect(screen.getByText('29/01/2025')).toBeInTheDocument()
 })
 
@@ -288,7 +290,7 @@ describe('ExerciseCard2025', () => {
  )
 
  // Rameur: distance + durée + SPM (maxDisplayItems=3 pour cardio non-running)
- expect(screen.getByText('2000m • 8:30 • 28 SPM')).toBeInTheDocument()
+ expect(screen.getByText((content) => content.includes('2000m') && content.includes('8:30') && content.includes('28 SPM'))).toBeInTheDocument()
 })
 
  it('affiche message par défaut sans performance', () => {

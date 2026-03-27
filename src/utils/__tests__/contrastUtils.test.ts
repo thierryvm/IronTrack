@@ -322,11 +322,11 @@ describe('🎯 Integration & Real-world Usage', () => {
  test('🎨 Cohérence des couleurs principales', () => {
  // Orange theme consistency
  expect(SAFE_COLORS.TEXT_ORANGE).toContain('orange-800')
- expect(SAFE_COLORS.BG_ORANGE).toContain('orange-600')
+ expect(SAFE_COLORS.BG_ORANGE).toContain('primary')
  expect(SAFE_COLORS.BORDER_ORANGE).toContain('orange-700')
  
  // Gradation cohérente des grays
- expect(SAFE_COLORS.TEXT_PRIMARY).toContain('gray-900')
+ expect(SAFE_COLORS.TEXT_PRIMARY).toContain('foreground')
  expect(SAFE_COLORS.TEXT_SECONDARY).toContain('gray-700')
  expect(SAFE_COLORS.TEXT_MUTED).toContain('gray-600')
 })

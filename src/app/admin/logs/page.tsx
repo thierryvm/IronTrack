@@ -270,11 +270,19 @@ export default function AdminLogsPage() {
  </div>
 
  {/* Liste des logs avec pagination */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden">
+ <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px]">
  {loading ? (
- <div className="p-8 text-center">
- <RefreshCw className="h-8 w-8 text-safe-primary animate-spin mx-auto mb-4" />
- <p className="text-gray-600">Chargement des logs...</p>
+ <div className="animate-pulse">
+ <div className="h-10 bg-muted/40 border-b border-border" />
+ {[...Array(8)].map((_, i) => (
+ <div key={i} className="h-14 border-b border-border last:border-0 flex items-center px-6 gap-4">
+ <div className="h-8 w-8 bg-muted rounded-lg shrink-0" />
+ <div className="h-4 w-32 bg-muted rounded" />
+ <div className="h-4 w-24 bg-muted rounded" />
+ <div className="h-4 w-20 bg-muted rounded" />
+ <div className="h-4 flex-1 bg-muted rounded" />
+ </div>
+ ))}
  </div>
  ) : logs.length === 0 ? (
  <div className="p-8 text-center">

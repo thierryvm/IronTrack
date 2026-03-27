@@ -22,17 +22,30 @@ jest.mock('next/navigation', () => ({
 }))
 jest.mock('framer-motion', () => ({
  motion: {
- MotionWrapper: ({ children, className, ...props}: any) => {
- const { whileHover, whileTap, ...cleanProps} = props
- return <div {...cleanProps}>{children}</div>
-}
+ div: ({ children, className, whileHover, whileTap, transition, ...props}: any) => (
+ <div className={className} {...props}>{children}</div>
+ ),
+ button: ({ children, className, whileHover, whileTap, transition, ...props}: any) => (
+ <button className={className} {...props}>{children}</button>
+ ),
+ span: ({ children, className, whileHover, whileTap, transition, ...props}: any) => (
+ <span className={className} {...props}>{children}</span>
+ ),
 }
 }))
 jest.mock('@/components/exercises/ExercisePhotoUpload', () => ({
- ImagePicker: ({ onPhotoUploaded, onPhotoRemoved, currentPhoto, disabled, ...props}: any) => (
+ ExercisePhotoUpload: ({ onPhotoUploaded, onPhotoRemoved, currentPhoto, disabled, ...props}: any) => (
  <div data-testid="exercise-photo-upload">
  <span>Photo Upload Component</span>
  {currentPhoto && <span>Current: {currentPhoto}</span>}
+ </div>
+ )
+}))
+
+jest.mock('@/components/exercises/ExerciseDefaultMetricsForm', () => ({
+ ExerciseDefaultMetricsForm: ({ exerciseType, cardioData, setCardioData, strengthData, setStrengthData, disabled}: any) => (
+ <div data-testid="exercise-default-metrics-form">
+ <span>Metrics Form - {exerciseType}</span>
  </div>
  )
 }))

@@ -284,11 +284,11 @@ function AdminLayoutInternal({ children}: AdminLayoutProps) {
  <Shield className="h-8 w-8 text-foreground mr-2" />
  <span className="text-xl font-bold text-foreground">IronTrack Admin</span>
  </div>
- 
- <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+
+ <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto min-h-[300px]">
  {navigationItems.map((item) => {
  if (!hasPermission(item.permission as'moderator' |'admin' |'super_admin')) return null
- 
+
  const Icon = item.icon
  return (
  <Link
