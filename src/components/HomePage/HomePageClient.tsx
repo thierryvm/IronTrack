@@ -91,36 +91,39 @@ function TimerRestored({
  const progress = ((initialTime - timeLeft) / initialTime) * 100
 
  return (
- <div className="relative">
- <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-2xl p-6 text-white shadow-lg">
- <div className="absolute top-0 left-0 right-0 h-2 bg-orange-700/30 rounded-t-2xl overflow-hidden">
+ <div className="relative bg-card border border-border rounded-2xl overflow-hidden shadow-lg">
+ {/* Barre de progression fine en haut */}
+ <div className="h-0.5 bg-border w-full">
  <div
- className="h-full bg-yellow-300 transition-all duration-1000 ease-in-out"
- style={{ width: `${progress}%`}}
+ className="h-full bg-primary transition-all duration-1000 ease-in-out"
+ style={{ width: `${progress}%` }}
  />
  </div>
 
- <div className="text-center mb-4">
- <div className="text-4xl font-bold transition-all duration-300">
+ <div className="p-6">
+ <div className="text-center mb-6">
+ <div className="text-5xl font-bold tabular-nums tracking-tight text-foreground transition-all duration-300">
  {formatTime(timeLeft)}
  </div>
- <p className="text-white/90 text-sm">Temps de repos</p>
+ <p className="text-muted-foreground text-sm mt-2 font-medium uppercase tracking-widest">Temps de repos</p>
  </div>
 
  {showControls && (
- <div className="flex justify-center space-x-4">
+ <div className="flex justify-center items-center gap-3">
  {!isRunning ? (
  <button
  onClick={startTimer}
- className="bg-success hover:bg-success-hover p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105"
  disabled={timeLeft === 0}
+ className="bg-primary hover:bg-primary-hover text-primary-foreground p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center disabled:opacity-40"
+ aria-label="Démarrer"
  >
  <Play className="h-5 w-5" />
  </button>
  ) : (
  <button
  onClick={pauseTimer}
- className="bg-warning hover:bg-warning-hover p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105"
+ className="bg-primary hover:bg-primary-hover text-primary-foreground p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+ aria-label="Pause"
  >
  <Pause className="h-5 w-5" />
  </button>
@@ -128,30 +131,32 @@ function TimerRestored({
 
  <button
  onClick={resetTimer}
- className="bg-muted hover:bg-muted/80 p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform"
+ className="bg-secondary hover:bg-secondary-hover text-secondary-foreground p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+ aria-label="Réinitialiser"
  >
- <RotateCcw className="h-5 w-5" />
+ <RotateCcw className="h-4 w-4" />
  </button>
 
  <button
  onClick={() => setIsMuted(!isMuted)}
- className={`p-2 rounded-full transition-colors min-h-[44px] min-w-[44px] hover:scale-105 transition-transform ${
+ className={`p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
  isMuted
- ?'bg-destructive hover:bg-destructive-hover'
- :'bg-secondary hover:bg-secondary/80'
-}`}
+ ? 'bg-destructive hover:bg-destructive-hover text-destructive-foreground'
+ : 'bg-secondary hover:bg-secondary-hover text-secondary-foreground'
+ }`}
+ aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
  >
- {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+ {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
  </button>
  </div>
  )}
  </div>
 
  {showNotification && (
- <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-pulse">
- <div className="flex items-center space-x-2">
- <div className="w-2 h-2 bg-card rounded-full animate-pulse" />
- <span className="font-semibold">Temps écoulé !</span>
+ <div className="absolute inset-0 flex items-center justify-center bg-card/95 rounded-2xl">
+ <div className="text-center">
+ <div className="text-success text-3xl font-bold">✓</div>
+ <p className="text-foreground font-semibold mt-1">Temps écoulé !</p>
  </div>
  </div>
  )}

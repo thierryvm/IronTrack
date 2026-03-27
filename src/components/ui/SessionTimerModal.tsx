@@ -102,16 +102,15 @@ export default function SessionTimerModal({
 
  if (isRunning) {
  return (
- <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
- <div className="w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto relative rounded-2xl !bg-slate-100">
- <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-2 rounded-t-2xl" style={{ background:'linear-gradient(to bottom, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.8))', backdropFilter:'blur(8px)'}}>
- <h3 className="text-lg font-bold text-white">Session en cours</h3>
+ <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2 sm:p-4 backdrop-blur-sm">
+ <div className="w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto relative rounded-2xl bg-card border border-border">
+ <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-3 rounded-t-2xl bg-card/95 border-b border-border backdrop-blur-sm">
+ <h3 className="text-base font-semibold text-foreground">Session en cours</h3>
  <div className="flex gap-2">
  <Button
- variant="secondary"
+ variant="destructive"
  size="sm"
  onClick={() => setIsRunning(false)}
- className="bg-red-500/20 text-red-200 hover:bg-red-500/30 border border-red-400/30 font-semibold backdrop-blur"
  >
  Arrêter
  </Button>
@@ -119,7 +118,6 @@ export default function SessionTimerModal({
  variant="secondary"
  size="sm"
  onClick={onClose}
- className="bg-slate-500/20 text-muted-foreground hover:bg-slate-500/30 border border-slate-400/30 backdrop-blur"
  >
  <X className="h-4 w-4" />
  </Button>
@@ -140,20 +138,20 @@ export default function SessionTimerModal({
 }
 
  return (
- <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
- <div className="bg-card rounded-xl p-2 sm:p-6 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+ <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2 sm:p-4 backdrop-blur-sm">
+ <div className="bg-card border border-border rounded-xl p-2 sm:p-6 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
  <div className="flex justify-between items-start sm:items-center mb-4 sm:mb-6">
  <div className="flex-1 min-w-0">
  <h3 className="text-lg sm:text-2xl font-bold text-foreground flex items-center gap-2">
  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
  <span className="truncate">Timer de session</span>
  </h3>
- <p className="text-xs sm:text-sm text-gray-600 mt-1">
+ <p className="text-xs sm:text-sm text-muted-foreground mt-1">
  <span className="sm:hidden">
  {formatTime(totalDuration)} • {steps.length} étapes
  </span>
  <span className="hidden sm:inline">
- Durée totale: {formatTime(totalDuration)} • {steps.length} étapes
+ Durée totale : {formatTime(totalDuration)} • {steps.length} étapes
  </span>
  </p>
  </div>
@@ -161,15 +159,15 @@ export default function SessionTimerModal({
  variant="secondary"
  size="sm"
  onClick={onClose}
- className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 border border-orange-200 flex-shrink-0 ml-2"
+ className="flex-shrink-0 ml-2"
  >
  <X className="h-4 w-4" />
  </Button>
  </div>
 
- <div className="space-y-4 mb-6">
+ <div className="space-y-2 mb-6">
  {steps.map((step, index) => (
- <div key={index} className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg border border-border">
+ <div key={index} className="flex items-center gap-4 p-4 bg-secondary/40 rounded-lg border border-border">
  {editingStep === index ? (
  <div className="flex-1 flex gap-2">
  <input
@@ -231,7 +229,7 @@ export default function SessionTimerModal({
  <>
  <div className="flex-1">
  <h4 className="font-semibold text-foreground">{step.name}</h4>
- <p className="text-sm text-gray-700">
+ <p className="text-sm text-muted-foreground">
  Étape {index + 1} • {formatTime(step.duration)}
  </p>
  </div>
@@ -240,7 +238,6 @@ export default function SessionTimerModal({
  size="sm"
  variant="secondary"
  onClick={() => handleEditStep(index)}
- className="bg-tertiary/12 text-tertiary hover:bg-tertiary/20 bg-tertiary/10 border border-tertiary/25"
  >
  <Edit3 className="h-4 w-4" />
  </Button>
@@ -249,7 +246,6 @@ export default function SessionTimerModal({
  size="sm"
  variant="destructive"
  onClick={() => handleDeleteStep(index)}
- className="bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/50 border border-red-200"
  >
  <Trash2 className="h-4 w-4" />
  </Button>
@@ -263,7 +259,7 @@ export default function SessionTimerModal({
 
  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
  <Button
- className="flex-1 bg-primary hover:bg-primary-hover dark:bg-orange-700 text-white font-semibold"
+ className="flex-1 font-semibold"
  onClick={handleStartTimer}
  >
  <Play className="h-4 w-4 mr-2" />
@@ -273,7 +269,7 @@ export default function SessionTimerModal({
  <Button
  variant="secondary"
  onClick={handleAddStep}
- className="bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/50 border border-green-200 sm:w-auto"
+ className="sm:w-auto"
  >
  <Plus className="h-4 w-4 mr-0 sm:mr-2" />
  <span className="hidden sm:inline">Ajouter étape</span>

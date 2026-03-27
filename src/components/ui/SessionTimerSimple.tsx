@@ -172,98 +172,104 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
  if (!currentStepInfo) return null
 
  return (
- <div className="!bg-gradient-to-br !from-slate-800 !to-slate-900 rounded-2xl pt-12 px-2 sm:px-6 pb-2 sm:pb-6 text-white shadow-xl border border-slate-700" data-timer="v2">
- {/* Barre de progression */}
- <div className="absolute top-12 left-2 right-2 sm:left-6 sm:right-6 bg-slate-700 rounded-full h-2 sm:h-3 mt-2">
+ <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xl" data-timer="v2">
+ {/* Barre de progression fine */}
+ <div className="h-0.5 bg-border w-full">
  <div
- className="bg-orange-700 h-2 sm:h-3 rounded-full transition-all duration-1000"
- style={{ width: `${progressPercent}%`}}
+ className="h-full bg-primary transition-all duration-1000 ease-in-out"
+ style={{ width: `${progressPercent}%` }}
  />
  </div>
 
+ <div className="pt-10 px-2 sm:px-6 pb-2 sm:pb-6">
  {/* Informations de l'étape courante */}
- <div className="text-center mb-4 sm:mb-6 mt-8">
- <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2 text-muted-foreground px-2">{currentStepInfo.name}</h3>
- <p className="text-muted-foreground mb-2 sm:mb-4 text-sm sm:text-base">
- Étape {currentStep + 1} sur {steps.length}
+ <div className="text-center mb-4 sm:mb-6">
+ <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2 text-foreground px-2">{currentStepInfo.name}</h3>
+ <p className="text-muted-foreground text-xs sm:text-sm uppercase tracking-widest mb-2 sm:mb-4">
+ Étape {currentStep + 1} / {steps.length}
  </p>
- 
- <div className="text-4xl sm:text-6xl font-bold mb-2 sm:mb-4 text-muted-foreground">
+
+ <div className="text-5xl sm:text-7xl font-bold tabular-nums tracking-tight text-foreground mb-2 sm:mb-4">
  {formatTime(timeLeft)}
  </div>
- 
+
  {showNotification && (
- <div className="bg-green-600 text-white px-2 sm:px-4 py-2 rounded-lg mb-2 sm:mb-4 animate-pulse border border-green-500 text-sm sm:text-base">
- {currentStep === steps.length - 1 ?'Session terminée !' :'Étape suivante...'}
+ <div className="bg-success/15 text-success border border-success/30 px-3 sm:px-4 py-2 rounded-lg mb-2 sm:mb-4 text-sm sm:text-base font-medium">
+ {currentStep === steps.length - 1 ? 'Session terminée !' : 'Étape suivante...'}
  </div>
  )}
  </div>
 
- {/* Contrôles - En grille pour mobile */}
- <div className="grid grid-cols-5 gap-2 sm:flex sm:justify-center sm:items-center sm:gap-4 mb-4 sm:mb-0">
+ {/* Contrôles */}
+ <div className="grid grid-cols-5 gap-2 sm:flex sm:justify-center sm:items-center sm:gap-4 mb-4 sm:mb-6">
  <button
  onClick={handlePrevious}
  disabled={currentStep === 0}
- className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-2 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
+ className="bg-secondary hover:bg-secondary-hover text-secondary-foreground disabled:opacity-30 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors flex items-center justify-center min-h-[44px] min-w-[44px]"
+ aria-label="Étape précédente"
  >
- <SkipBack className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+ <SkipBack className="h-4 w-4 sm:h-5 sm:w-5" />
  </button>
 
  <button
  onClick={handlePlayPause}
- className="bg-primary hover:bg-primary-hover p-2 sm:p-4 rounded-full transition-colors shadow-lg flex items-center justify-center col-span-1"
+ className="bg-primary hover:bg-primary-hover text-primary-foreground p-3 sm:p-4 rounded-full transition-colors shadow-lg flex items-center justify-center col-span-1 min-h-[44px] min-w-[44px]"
+ aria-label={isRunning ? 'Pause' : 'Démarrer'}
  >
- {isRunning ? <Pause className="h-5 w-5 sm:h-7 sm:w-7 text-white" /> : <Play className="h-5 w-5 sm:h-7 sm:w-7 text-white" />}
+ {isRunning ? <Pause className="h-5 w-5 sm:h-6 sm:w-6" /> : <Play className="h-5 w-5 sm:h-6 sm:w-6" />}
  </button>
 
  <button
  onClick={handleNext}
  disabled={currentStep === steps.length - 1}
- className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed p-2 sm:p-2 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
+ className="bg-secondary hover:bg-secondary-hover text-secondary-foreground disabled:opacity-30 disabled:cursor-not-allowed p-2 sm:p-3 rounded-full transition-colors flex items-center justify-center min-h-[44px] min-w-[44px]"
+ aria-label="Étape suivante"
  >
- <SkipForward className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+ <SkipForward className="h-4 w-4 sm:h-5 sm:w-5" />
  </button>
 
  <button
  onClick={handleReset}
- className="bg-slate-700 hover:bg-slate-600 p-2 sm:p-2 rounded-full transition-colors border border-slate-600 flex items-center justify-center"
+ className="bg-secondary hover:bg-secondary-hover text-secondary-foreground p-2 sm:p-3 rounded-full transition-colors flex items-center justify-center min-h-[44px] min-w-[44px]"
+ aria-label="Réinitialiser"
  >
- <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+ <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
  </button>
 
  <button
  onClick={() => setIsMuted(!isMuted)}
- className={`p-2 sm:p-2 rounded-full transition-colors border flex items-center justify-center ${
- isMuted 
- ?'bg-red-600 hover:bg-red-700 border-red-500' 
- :'bg-slate-700 hover:bg-slate-600 border-slate-600'
-}`}
+ className={`p-2 sm:p-3 rounded-full transition-colors flex items-center justify-center min-h-[44px] min-w-[44px] ${
+ isMuted
+ ? 'bg-destructive hover:bg-destructive-hover text-destructive-foreground'
+ : 'bg-secondary hover:bg-secondary-hover text-secondary-foreground'
+ }`}
+ aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
  >
- {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5 text-white" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />}
+ {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />}
  </button>
  </div>
 
- {/* Liste des étapes - Collapsible sur mobile */}
- <div className="mt-4 sm:mt-6">
+ {/* Liste des étapes */}
+ <div>
  <div className="sm:hidden mb-2">
  <details className="group">
- <summary className="flex justify-between items-center p-2 bg-slate-700/50 rounded-lg cursor-pointer list-none">
- <span className="font-medium text-muted-foreground">Voir toutes les étapes</span>
- <span className="text-muted-foreground group-open:rotate-180 transition-transform">▼</span>
+ <summary className="flex justify-between items-center p-2 bg-secondary/50 rounded-lg cursor-pointer list-none">
+ <span className="font-medium text-muted-foreground text-sm">Toutes les étapes</span>
+ <span className="text-muted-foreground group-open:rotate-180 transition-transform text-xs">▼</span>
  </summary>
- <div className="mt-2 space-y-2">
+ <div className="mt-2 space-y-1.5">
  {steps.map((step, index) => (
  <div
  key={index}
  className={`flex justify-between items-center p-2 rounded-lg transition-colors text-sm ${
- index === currentStep 
- ?'bg-primary/20 border border-orange-700/50' 
- : index < currentStep 
- ?'bg-green-600/20 border border-green-500/50'
- :'bg-slate-700/50 border border-slate-600'
-}`}
+ index === currentStep
+ ? 'bg-primary/10 border border-primary/30'
+ : index < currentStep
+ ? 'bg-success/10 border border-success/20'
+ : 'bg-secondary/40 border border-border'
+ }`}
  >
- <span className="font-medium text-muted-foreground truncate pr-2">{step.name}</span>
+ <span className={`font-medium truncate pr-2 ${index === currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>{step.name}</span>
  <span className="text-xs text-muted-foreground whitespace-nowrap">
  {formatTime(step.duration)}
  </span>
@@ -272,26 +278,26 @@ export default function SessionTimerSimple({ steps, autoStart = false, onComplet
  </div>
  </details>
  </div>
- 
- {/* Liste complète sur desktop */}
- <div className="hidden sm:block space-y-2">
+
+ <div className="hidden sm:block space-y-1.5">
  {steps.map((step, index) => (
  <div
  key={index}
- className={`flex justify-between items-center p-2 rounded-lg transition-colors ${
- index === currentStep 
- ?'bg-primary/20 border border-orange-700/50' 
- : index < currentStep 
- ?'bg-green-600/20 border border-green-500/50'
- :'bg-slate-700/50 border border-slate-600'
-}`}
+ className={`flex justify-between items-center px-3 py-2 rounded-lg transition-colors ${
+ index === currentStep
+ ? 'bg-primary/10 border border-primary/30'
+ : index < currentStep
+ ? 'bg-success/10 border border-success/20'
+ : 'bg-secondary/40 border border-border'
+ }`}
  >
- <span className="font-medium text-muted-foreground">{step.name}</span>
+ <span className={`font-medium text-sm ${index === currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>{step.name}</span>
  <span className="text-sm text-muted-foreground">
  {formatTime(step.duration)}
  </span>
  </div>
  ))}
+ </div>
  </div>
  </div>
  </div>
