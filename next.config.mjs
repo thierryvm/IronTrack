@@ -1,7 +1,6 @@
 // Configuration Next.js optimisée - Sprint 2
 const nextConfig = {
   experimental: {
-    optimizeCss: true,
     cpus: 1,
     webpackBuildWorker: false,
     optimizePackageImports: [

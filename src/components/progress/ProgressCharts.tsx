@@ -157,7 +157,7 @@ export default function ProgressCharts({
  content={(props) => (
  <CustomTooltip
  active={props.active}
- payload={props.payload as Array<{ value: number; name: string; color: string}>}
+ payload={props.payload as unknown as Array<{ value: number; name: string; color: string}>}
  label={props.label as string}
  isDark={isDark}
  />
@@ -201,7 +201,7 @@ export default function ProgressCharts({
  outerRadius={100}
  dataKey="value"
  stroke="none"
- label={({ name, percent}: { name: string; percent?: number}) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
+ label={({ name, percent}: { name?: string; percent?: number}) => `${name ?? ''} (${((percent ?? 0) * 100).toFixed(0)}%)`}
  labelLine={{ stroke: axisColor}}
  >
  {muscleGroupData.map((entry, index) => (
@@ -212,7 +212,7 @@ export default function ProgressCharts({
  content={(props) => (
  <CustomPieTooltip
  active={props.active}
- payload={props.payload as Array<{ name: string; value: number; payload: { color: string}}>}
+ payload={props.payload as unknown as Array<{ name: string; value: number; payload: { color: string}}>}
  isDark={isDark}
  />
  )}

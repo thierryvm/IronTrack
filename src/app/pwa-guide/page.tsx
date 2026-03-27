@@ -3,11 +3,11 @@
 import { useState} from'react'
 import { motion} from'framer-motion'
 import { 
- Smartphone, 
- Download, 
- Share, 
- Plus, 
- Chrome,
+ Smartphone,
+ Download,
+ Share,
+ Plus,
+ Globe,
  ArrowRight,
  CheckCircle,
  AlertCircle,
@@ -60,7 +60,7 @@ export default function PWAGuidePage() {
  step: 1,
  title:'Ouvrir Safari',
  description:'Lancez Safari et accédez à iron-track-dusky.vercel.app',
- icon: <Chrome className="h-5 w-5" />,
+ icon: <Globe className="h-5 w-5" />,
  details: [
 'Assurez-vous d\'utiliser Safari (pas Chrome ou Firefox)',
 'Tapez l\'URL complète dans la barre d\'adresse',
@@ -123,7 +123,7 @@ export default function PWAGuidePage() {
  step: 1,
  title:'Ouvrir Chrome',
  description:'Lancez Chrome et accédez à iron-track-dusky.vercel.app',
- icon: <Chrome className="h-5 w-5" />,
+ icon: <Globe className="h-5 w-5" />,
  details: [
 'Utilisez Google Chrome ou Samsung Internet',
 'Tapez l\'URL complète dans la barre d\'adresse',
@@ -187,7 +187,7 @@ export default function PWAGuidePage() {
  step: 1,
  title:'Samsung Internet',
  description:'Ouvrez Samsung Internet et naviguez vers iron-track-dusky.vercel.app',
- icon: <Chrome className="h-5 w-5" />,
+ icon: <Globe className="h-5 w-5" />,
  details: [
 'Utilisez le navigateur Samsung Internet (icône bleue)',
 'Tapez l\'URL complète dans la barre d\'adresse',
