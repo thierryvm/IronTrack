@@ -138,7 +138,6 @@ export async function middleware(request: NextRequest) {
       .single()
 
     if (roleError || !adminProfile) {
-      console.error('[MIDDLEWARE] Admin profile check failed:', roleError)
       return NextResponse.redirect(new URL('/', request.url))
     }
 
@@ -146,16 +145,14 @@ export async function middleware(request: NextRequest) {
     const now = new Date()
     const bannedUntil = adminProfile.banned_until ? new Date(adminProfile.banned_until) : null
     const isReallyBanned = bannedUntil ? bannedUntil > now : adminProfile.is_banned
-    
+
     if (isReallyBanned) {
-      console.error('[MIDDLEWARE] Admin account is banned')
       return NextResponse.redirect(new URL('/', request.url))
     }
 
     // Vérifier si le rôle est admin/super_admin/moderator
     const adminRoles = ['moderator', 'admin', 'super_admin']
     if (!adminProfile.role || !adminRoles.includes(adminProfile.role)) {
-      console.error('[MIDDLEWARE] Insufficient permissions for admin access:', adminProfile.role)
       return NextResponse.redirect(new URL('/', request.url))
     }
   }
