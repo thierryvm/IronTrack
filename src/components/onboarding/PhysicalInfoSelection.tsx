@@ -1,8 +1,11 @@
 'use client'
 
 import { useState} from'react'
+import { Calendar, Ruler, Scale, User } from'lucide-react'
+
 import { Card, CardContent, CardHeader, CardTitle} from'@/components/ui/card'
-import { User, Scale, Ruler, Calendar} from'lucide-react'
+import { Input } from'@/components/ui/input'
+import { Label } from'@/components/ui/label'
 
 interface PhysicalInfoSelectionProps {
  value?: {
@@ -10,13 +13,13 @@ interface PhysicalInfoSelectionProps {
  weight?: number
  age?: number
  initial_weight?: number
-}
+ }
  onChange: (info: {
  height: number
  weight: number
  age: number
  initial_weight: number
-}) => void
+ }) => void
 }
 
 export function PhysicalInfoSelection({ value, onChange}: PhysicalInfoSelectionProps) {
@@ -39,9 +42,8 @@ export function PhysicalInfoSelection({ value, onChange}: PhysicalInfoSelectionP
  case'initial_weight':
  setInitialWeight(inputValue)
  break
-}
+ }
 
- // Valider et envoyer les données si tous les champs sont remplis
  const newHeight = field ==='height' ? parseFloat(inputValue) : parseFloat(height)
  const newWeight = field ==='weight' ? parseFloat(inputValue) : parseFloat(weight)
  const newAge = field ==='age' ? parseInt(inputValue) : parseInt(age)
@@ -52,146 +54,146 @@ export function PhysicalInfoSelection({ value, onChange}: PhysicalInfoSelectionP
  height: newHeight,
  weight: newWeight,
  age: newAge,
- initial_weight: newInitialWeight
-})
-}
-}
+ initial_weight: newInitialWeight,
+ })
+ }
+ }
 
- const isComplete = height && weight && age && initialWeight &&
- !isNaN(parseFloat(height)) && !isNaN(parseFloat(weight)) && 
- !isNaN(parseInt(age)) && !isNaN(parseFloat(initialWeight))
+ const isComplete = Boolean(
+ height &&
+ weight &&
+ age &&
+ initialWeight &&
+ !isNaN(parseFloat(height)) &&
+ !isNaN(parseFloat(weight)) &&
+ !isNaN(parseInt(age)) &&
+ !isNaN(parseFloat(initialWeight))
+ )
+
+ const fields = [
+ {
+ key:'height',
+ label:'Taille',
+ helper:'Indique ta taille actuelle en centimètres.',
+ unit:'cm',
+ icon: Ruler,
+ inputMode:'decimal' as const,
+ value: height,
+ placeholder:'170…',
+ min:'100',
+ max:'250',
+ step:'0.1',
+ color:'text-primary',
+ onChangeValue: (inputValue: string) => handleInputChange('height', inputValue),
+ },
+ {
+ key:'weight',
+ label:'Poids actuel',
+ helper:'Repère de départ pour personnaliser tes objectifs.',
+ unit:'kg',
+ icon: Scale,
+ inputMode:'decimal' as const,
+ value: weight,
+ placeholder:'70…',
+ min:'30',
+ max:'200',
+ step:'0.1',
+ color:'text-safe-success',
+ onChangeValue: (inputValue: string) => handleInputChange('weight', inputValue),
+ },
+ {
+ key:'age',
+ label:'Âge',
+ helper:'Utilisé pour calibrer les recommandations.',
+ unit:'ans',
+ icon: Calendar,
+ inputMode:'numeric' as const,
+ value: age,
+ placeholder:'25…',
+ min:'13',
+ max:'100',
+ color:'text-safe-info',
+ onChangeValue: (inputValue: string) => handleInputChange('age', inputValue),
+ },
+ {
+ key:'initial_weight',
+ label:'Poids initial',
+ helper:'Poids au début de ton parcours fitness.',
+ unit:'kg',
+ icon: User,
+ inputMode:'decimal' as const,
+ value: initialWeight,
+ placeholder:'75…',
+ min:'30',
+ max:'200',
+ step:'0.1',
+ color:'text-primary',
+ onChangeValue: (inputValue: string) => handleInputChange('initial_weight', inputValue),
+ },
+ ]
 
  return (
  <div className="space-y-6">
- <div className="text-center">
- <h2 className="text-xl font-semibold text-foreground mb-2">
+ <div className="space-y-2 text-center">
+ <h2 className="text-xl font-semibold text-foreground text-balance">
  Informations physiques
  </h2>
- <p className="text-gray-600">
- Ces informations nous aideront à personnaliser vos programmes et suivre votre progression
+ <p className="text-sm leading-6 text-safe-muted">
+ Ces données servent à personnaliser les recommandations et à créer un vrai point de départ pour ton suivi.
  </p>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <Card className="p-4">
- <CardHeader className="pb-2">
- <div className="flex items-center gap-2">
- <div className="p-2 rounded-lg bg-tertiary/8 text-secondary">
- <Ruler className="h-5 w-5" />
- </div>
- <CardTitle className="text-lg">Taille</CardTitle>
- </div>
- </CardHeader>
- <CardContent className="pt-0">
- <div className="flex items-center gap-2">
- <input
- type="number"
- step="0.1"
- min="100"
- max="250"
- value={height}
- onChange={(e) => handleInputChange('height', e.target.value)}
- className="flex-1 px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
- placeholder="170"
- />
- <span className="text-gray-600 font-medium">cm</span>
- </div>
- </CardContent>
- </Card>
+ <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+ {fields.map((field) => {
+ const Icon = field.icon
 
- <Card className="p-4">
+ return (
+ <Card key={field.key} className="border-border">
  <CardHeader className="pb-2">
- <div className="flex items-center gap-2">
- <div className="p-2 rounded-lg bg-green-50 text-green-600">
- <Scale className="h-5 w-5" />
+ <div className="flex items-center gap-3">
+ <div className={`rounded-xl border border-border bg-muted/35 p-2 ${field.color}`}>
+ <Icon className="h-5 w-5" aria-hidden="true" />
  </div>
- <CardTitle className="text-lg">Poids actuel</CardTitle>
+ <div>
+ <CardTitle className="text-lg">{field.label}</CardTitle>
+ <p className="text-sm text-safe-muted">{field.helper}</p>
  </div>
- </CardHeader>
- <CardContent className="pt-0">
- <div className="flex items-center gap-2">
- <input
- type="number"
- step="0.1"
- min="30"
- max="200"
- value={weight}
- onChange={(e) => handleInputChange('weight', e.target.value)}
- className="flex-1 px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
- placeholder="70"
- />
- <span className="text-gray-600 font-medium">kg</span>
- </div>
- </CardContent>
- </Card>
-
- <Card className="p-4">
- <CardHeader className="pb-2">
- <div className="flex items-center gap-2">
- <div className="p-2 rounded-lg bg-purple-50 text-purple-600">
- <Calendar className="h-5 w-5" />
- </div>
- <CardTitle className="text-lg">Âge</CardTitle>
- </div>
- </CardHeader>
- <CardContent className="pt-0">
- <div className="flex items-center gap-2">
- <input
- type="number"
- min="13"
- max="100"
- value={age}
- onChange={(e) => handleInputChange('age', e.target.value)}
- className="flex-1 px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
- placeholder="25"
- />
- <span className="text-gray-600 font-medium">ans</span>
- </div>
- </CardContent>
- </Card>
-
- <Card className="p-4">
- <CardHeader className="pb-2">
- <div className="flex items-center gap-2">
- <div className="p-2 rounded-lg bg-orange-50 text-orange-800">
- <User className="h-5 w-5" />
- </div>
- <CardTitle className="text-lg">Poids initial</CardTitle>
  </div>
  </CardHeader>
  <CardContent className="pt-0">
  <div className="space-y-2">
+ <Label htmlFor={field.key}>{field.label}</Label>
  <div className="flex items-center gap-2">
- <input
+ <Input
+ id={field.key}
+ name={field.key}
  type="number"
- step="0.1"
- min="30"
- max="200"
- value={initialWeight}
- onChange={(e) => handleInputChange('initial_weight', e.target.value)}
- className="flex-1 px-2 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
- placeholder="75"
+ inputMode={field.inputMode}
+ autoComplete="off"
+ min={field.min}
+ max={field.max}
+ step={field.step}
+ value={field.value}
+ onChange={(event) => field.onChangeValue(event.target.value)}
+ placeholder={field.placeholder}
+ className="h-12"
  />
- <span className="text-gray-600 font-medium">kg</span>
+ <span className="min-w-10 text-sm font-semibold text-safe-muted">{field.unit}</span>
  </div>
- <p className="text-xs text-gray-600">
- Votre poids au début de votre parcours fitness
- </p>
  </div>
  </CardContent>
  </Card>
+ )
+ })}
  </div>
 
  {isComplete && (
- <div className="text-center bg-green-50 p-4 rounded-lg border border-green-200">
- <div className="flex items-center justify-center gap-2 mb-2">
- <span className="text-xl">📊</span>
- <p className="text-sm font-medium text-green-800">
- Informations enregistrées !
+ <div className="rounded-2xl border border-success/25 bg-success/10 p-4 text-center" role="status" aria-live="polite">
+ <p className="text-sm font-medium text-foreground">
+ Informations physiques prêtes.
  </p>
- </div>
- <p className="text-sm text-green-700">
- Nous utiliserons ces données pour calculer votre IMC et suivre votre progression
+ <p className="mt-1 text-sm text-safe-muted">
+ Ces repères serviront à personnaliser tes recommandations et à suivre ta progression dans le temps.
  </p>
  </div>
  )}

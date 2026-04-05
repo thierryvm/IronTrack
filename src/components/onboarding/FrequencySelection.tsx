@@ -1,9 +1,11 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle} from'@/components/ui/card'
+import { Calendar, Clock, Zap } from'lucide-react'
+
 import { Badge} from'@/components/ui/badge'
+import { Button } from'@/components/ui/button'
+import { Card, CardContent } from'@/components/ui/card'
 import { Slider} from'@/components/ui/slider'
-import { Calendar, Clock, Zap} from'lucide-react'
 
 interface FrequencySelectionProps {
  frequencyValue?:'Faible' |'Modérée' |'Élevée'
@@ -18,86 +20,88 @@ const frequencies = [
  description:"J'ai peu de temps mais je veux rester actif",
  details:'1-2 séances par semaine',
  icon: Clock,
-},
+ },
  {
  id:'Modérée' as const,
  title:'Modérée',
  description:"Je peux m'entraîner régulièrement",
  details:'3-4 séances par semaine',
  icon: Calendar,
-},
+ },
  {
  id:'Élevée' as const,
  title:'Élevée',
  description:"J'ai beaucoup de temps à consacrer au sport",
  details:'5+ séances par semaine',
  icon: Zap,
-},
+ },
 ]
 
 export function FrequencySelection({ frequencyValue, availabilityValue, onChange}: FrequencySelectionProps) {
  const handleFrequencyChange = (newFrequency:'Faible' |'Modérée' |'Élevée') => {
  onChange(newFrequency, availabilityValue || 60)
-}
+ }
 
  const handleAvailabilityChange = (newAvailability: number[]) => {
  onChange(frequencyValue ||'Modérée', newAvailability[0])
-}
+ }
 
  const formatTime = (minutes: number) => {
  if (minutes >= 60) {
  const hours = Math.floor(minutes / 60)
  const remainingMinutes = minutes % 60
  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`
-}
+ }
+
  return `${minutes}min`
-}
+ }
 
  return (
  <div className="space-y-8">
- <div className="text-center">
- <h2 className="text-xl font-semibold text-foreground mb-1">
- À quelle fréquence souhaitez-vous vous entraîner ?
+ <div className="space-y-2 text-center">
+ <h2 className="text-xl font-semibold text-foreground text-balance">
+ À quel rythme veux-tu t&apos;entraîner ?
  </h2>
- <p className="text-sm text-muted-foreground">
- Nous personnaliserons votre programme selon votre disponibilité
+ <p className="text-sm leading-6 text-safe-muted">
+ On ajuste le volume du programme pour qu&apos;il reste réaliste dans ton agenda.
  </p>
  </div>
 
- <div className="space-y-2">
+ <div className="space-y-3" role="group" aria-label="Choix de la fréquence d’entraînement">
  {frequencies.map((freq) => {
  const Icon = freq.icon
  const isSelected = frequencyValue === freq.id
 
  return (
- <Card
+ <Button
+ type="button"
  key={freq.id}
- className={`cursor-pointer transition-all duration-200 hover:shadow-sm ${
- isSelected
- ?'ring-2 ring-primary border-primary bg-primary/5'
- :'border-border'
-}`}
+ variant="outline"
+ aria-pressed={isSelected}
  onClick={() => handleFrequencyChange(freq.id)}
- >
- <CardHeader className="pb-2">
- <div className="flex items-center gap-4">
- <div className={`p-2 rounded-lg transition-colors ${
+ className={`h-auto min-h-[120px] justify-start rounded-2xl p-5 text-left transition-all ${
  isSelected
- ?'bg-primary text-primary-foreground'
- :'bg-muted text-muted-foreground'
-}`}>
- <Icon className="h-5 w-5" />
+ ? 'border-primary bg-primary/10 shadow-sm'
+ : 'border-border bg-card hover:border-primary/40 hover:bg-accent/30'
+ }`}
+ >
+ <div className="flex w-full items-start gap-4">
+ <div className={`rounded-lg p-2 transition-colors ${
+ isSelected
+ ? 'bg-primary text-primary-foreground'
+ : 'bg-muted text-muted-foreground'
+ }`}>
+ <Icon className="h-5 w-5" aria-hidden="true" />
  </div>
- <div className="flex-1">
- <CardTitle className="text-base">{freq.title}</CardTitle>
- <CardDescription className="mt-1">{freq.description}</CardDescription>
- <Badge variant="secondary" className="mt-2 text-xs">{freq.details}</Badge>
+ <div className="flex-1 space-y-2">
+ <p className="text-base font-semibold text-foreground">{freq.title}</p>
+ <p className="text-sm leading-6 text-safe-muted">{freq.description}</p>
+ <Badge variant="secondary" className="text-xs">{freq.details}</Badge>
  </div>
  </div>
- </CardHeader>
- </Card>
+ </Button>
  )
-})}
+ })}
  </div>
 
  <div className="space-y-4">
@@ -105,8 +109,8 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
  <h3 className="text-base font-semibold text-foreground mb-1">
  Combien de temps par séance ?
  </h3>
- <p className="text-sm text-muted-foreground">
- Durée moyenne souhaitée pour chaque entraînement
+ <p className="text-sm leading-6 text-safe-muted">
+ Durée moyenne souhaitée pour chaque entraînement.
  </p>
  </div>
 
@@ -114,13 +118,14 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
  <CardContent className="pt-6">
  <div className="space-y-4">
  <div className="flex justify-between items-center">
- <span className="text-sm text-muted-foreground">Durée par séance</span>
+ <span className="text-sm text-safe-muted">Durée par séance</span>
  <span className="text-lg font-semibold text-primary">
  {formatTime(availabilityValue || 60)}
  </span>
  </div>
 
  <Slider
+ aria-label="Durée moyenne par séance"
  value={[availabilityValue || 60]}
  onValueChange={handleAvailabilityChange}
  max={120}
@@ -129,7 +134,7 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
  className="w-full"
  />
 
- <div className="flex justify-between text-xs text-muted-foreground">
+ <div className="flex justify-between text-xs text-safe-muted">
  <span>30min</span>
  <span>45min</span>
  <span>1h</span>
@@ -143,7 +148,7 @@ export function FrequencySelection({ frequencyValue, availabilityValue, onChange
  </div>
 
  {frequencyValue && availabilityValue && (
- <div className="text-center bg-primary/5 border border-primary/20 p-2 rounded-lg">
+ <div className="rounded-2xl border border-primary/20 bg-primary/8 p-3 text-center" role="status" aria-live="polite">
  <p className="text-sm font-medium text-foreground">
  Fréquence <span className="text-primary font-semibold">{frequencyValue.toLowerCase()}</span> · Séances de <span className="text-primary font-semibold">{formatTime(availabilityValue)}</span>
  </p>
