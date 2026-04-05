@@ -31,18 +31,28 @@ jobs:
       run: npm ci
     
     - name: 🎨 Run contrast compliance tests
+      id: contrast_tests
       run: npm run test:contrast:ci
       
     - name: 🧪 Run unit tests for contrast utilities
+      id: contrast_unit_tests
       run: npm test -- --testPathPatterns="contrastUtils.test.ts" --passWithNoTests
       
     - name: 📊 Generate contrast report
       if: always()
+      env:
+        CONTRAST_TESTS_RESULT: ${{ steps.contrast_tests.outcome }}
+        CONTRAST_UNIT_TESTS_RESULT: ${{ steps.contrast_unit_tests.outcome }}
       run: |
+        RESULT="success"
+        if [ "$CONTRAST_TESTS_RESULT" != "success" ] || [ "$CONTRAST_UNIT_TESTS_RESULT" != "success" ]; then
+          RESULT="failure"
+        fi
+
         echo "## 🎨 Contrast Compliance Report" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Status" >> $GITHUB_STEP_SUMMARY
-        if [ $? -eq 0 ]; then
+        if [ "$RESULT" = "success" ]; then
           echo "✅ **WCAG 2.1 AA Compliant** - All components pass contrast requirements" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ **Non-compliant** - Some components need contrast improvements" >> $GITHUB_STEP_SUMMARY
@@ -63,14 +73,19 @@ jobs:
     - name: 💬 Comment PR with results
       if: github.event_name == 'pull_request' && always()
       uses: actions/github-script@v7
+      env:
+        CONTRAST_TESTS_RESULT: ${{ steps.contrast_tests.outcome }}
+        CONTRAST_UNIT_TESTS_RESULT: ${{ steps.contrast_unit_tests.outcome }}
       with:
         script: |
-          const fs = require('fs');
-          
-          // Générer commentaire PR basé sur le résultat
+          const marker = '<!-- irontrack-contrast-ci -->';
+          const isSuccess =
+            process.env.CONTRAST_TESTS_RESULT === 'success' &&
+            process.env.CONTRAST_UNIT_TESTS_RESULT === 'success';
+
           let body = '## 🎨 Contrast Compliance Check Results\n\n';
-          
-          if (process.env.GITHUB_JOB_STATUS === 'success') {
+
+          if (isSuccess) {
             body += '✅ **All contrast requirements met!**\n\n';
             body += 'This PR maintains WCAG 2.1 AA compliance.\n\n';
             body += '### Standards Verified:\n';
@@ -89,10 +104,31 @@ jobs:
             body += '- [Contrast Utils](src/utils/contrastUtils.ts)\n';
             body += '- Run `npm run test:contrast` locally\n';
           }
-          
-          body += '\n---\n*Automated check by IronTrack Contrast CI*';
-          
-          github.rest.issues.createComment({
+
+          body += `\n\n---\n*Automated check by IronTrack Contrast CI*\n${marker}`;
+
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 100
+          });
+
+          const existingComment = comments.find(comment =>
+            comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker)
+          );
+
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body
+            });
+            return;
+          }
+
+          await github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
