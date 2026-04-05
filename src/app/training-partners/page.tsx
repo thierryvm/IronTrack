@@ -73,7 +73,7 @@ export default function TrainingPartnersPage() {
 } = useRealtimeNotifications()
 
  // Hook pour la mise à jour automatique
- const { refreshTrigger} = useRealtimePartnerships()
+const { refreshTrigger} = useRealtimePartnerships()
  const lastAuthStateRef = useRef<{ isAuthenticated: boolean; userId: string | null}>({
  isAuthenticated: false,
  userId: null
@@ -132,35 +132,34 @@ export default function TrainingPartnersPage() {
  lastAuthStateRef.current.isAuthenticated !== isAuthenticated ||
  lastAuthStateRef.current.userId !== currentUserId
 
- if (authStateChanged && isAuthenticated && user) {
+ if (!authStateChanged) {
+ return
+}
+
  lastAuthStateRef.current = {
  isAuthenticated,
  userId: currentUserId
 }
 
- // Débouncer le chargement pour éviter les appels multiples
  if (loadingTimeoutRef.current) {
  clearTimeout(loadingTimeoutRef.current)
 }
 
- loadingTimeoutRef.current = setTimeout(() => {
- loadPartnerships()
-}, 200)
+ if (!isAuthenticated || !currentUserId) {
+ setPartnerships([])
+ return
 }
+
+ loadingTimeoutRef.current = setTimeout(() => {
+ void loadPartnerships()
+}, 150)
 
  return () => {
  if (loadingTimeoutRef.current) {
  clearTimeout(loadingTimeoutRef.current)
 }
 }
-}, [isAuthenticated, user, loadPartnerships])
-
- // Chargement initial unique
- useEffect(() => {
- if (isAuthenticated && user && partnerships.length === 0) {
- loadPartnerships()
-}
-}, [isAuthenticated, user, partnerships.length, loadPartnerships])
+}, [isAuthenticated, user?.id, loadPartnerships])
 
  const searchUsers = async () => {
  if (searchQuery.length < 2) {
@@ -249,7 +248,7 @@ export default function TrainingPartnersPage() {
  if (searchQuery.length >= 2 && isAuthenticated && user) {
  searchUsers()
 }
-}, 1500) // 1.5 secondes pour éviter le spam
+ }, 600) // Plus réactif sur mobile sans spammer l'API
 
  // Cleanup
  return () => {
@@ -327,36 +326,9 @@ export default function TrainingPartnersPage() {
  // Rafraîchissement amélioré pour l'acceptation
  if (action ==='accept') {
  showNotification(actionMessages[action] ||'Action effectuée','success','Mise à jour des données...')
- 
- // Attendre un peu pour permettre la création des partner_sharing_settings
- await new Promise(resolve => setTimeout(resolve, 800))
- 
- // Rafraîchissement avec tentatives multiples
- let attempts = 0
- const maxAttempts = 3
- 
- const refreshWithRetry = async () => {
- attempts++
+ await new Promise(resolve => setTimeout(resolve, 400))
  await loadPartnerships()
- 
- // Vérifier si le partenariat apparaît bien comme accepté
- const updatedPartnerships = await new Promise<Partnership[]>(resolve => {
- // Simuler un délai pour permettre au state de se mettre à jour
- setTimeout(() => {
- resolve(partnerships)
-}, 200)
-})
- 
- const isAccepted = updatedPartnerships.some(p => p.id === partnershipId && p.status ==='accepted')
- 
- if (!isAccepted && attempts < maxAttempts) {
- setTimeout(refreshWithRetry, 800)
-} else if (isAccepted) {
- showNotification('Partenariat activé avec succès !','success','Vous pouvez maintenant configurer vos paramètres de partage.')
-}
-}
- 
- await refreshWithRetry()
+ showNotification('Partenariat activé avec succès !','success','Tu peux maintenant configurer le partage de données.')
 } else {
  await loadPartnerships()
  showNotification(actionMessages[action] ||'Action effectuée','success')

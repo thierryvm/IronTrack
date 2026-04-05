@@ -1,23 +1,14 @@
 // Test de la nouvelle navigation mobile en bas
 import { test, expect } from '@playwright/test';
+import { getE2EBaseUrl, loginAs } from './helpers/auth';
+
+const BASE_URL = getE2EBaseUrl();
 
 test.describe('Navigation Mobile en Bas', () => {
   test.beforeEach(async ({ page }) => {
     // Configuration mobile iPhone
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://localhost:3000');
-    
-    // Se connecter pour voir la navigation mobile
-    await page.getByRole('link', { name: 'Connexion' }).click();
-    await page.waitForURL('**/auth');
-    
-    // Remplir formulaire de connexion
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-    await page.fill('input[type="password"]', 'Lucas24052405@');
-    await page.click('button[type="submit"]');
-    
-    // Attendre redirection après connexion
-    await page.waitForURL('http://localhost:3000/', { timeout: 10000 });
+    await loginAs(page, 'admin');
   });
 
   test('Navigation mobile visible en bas d\'écran', async ({ page }) => {
@@ -69,7 +60,7 @@ test.describe('Navigation Mobile en Bas', () => {
     await page.getByRole('link', { name: 'Exercices' }).first().click();
     
     // Attendre navigation
-    await page.waitForURL('**/exercises', { timeout: 10000 });
+    await page.waitForURL(`${BASE_URL}/exercises`, { timeout: 10000 });
     
     // Vérifier que nous sommes sur la page exercices
     await expect(page.url()).toContain('/exercises');

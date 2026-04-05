@@ -105,6 +105,7 @@ export default function CalendarPage() {
  const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
  const [, setSharePlanning] = useState(false)
  const [viewMode, setViewMode] = useState<'calendar' |'list' |'stats'>('calendar')
+ const [isMobileViewport, setIsMobileViewport] = useState(false)
  
  // État pour la navigation swipe
  const [isSwipeTransition, setIsSwipeTransition] = useState(false)
@@ -173,6 +174,36 @@ export default function CalendarPage() {
  delete calendarRef.current.dataset.startY
  delete calendarRef.current.dataset.startTime
 }, [handleSwipeNavigation, isSwipeTransition])
+
+ useEffect(() => {
+ if (typeof window ==='undefined') return
+
+ const mediaQuery = window.matchMedia('(max-width: 767px)')
+ const syncViewportMode = (matches: boolean) => {
+ setIsMobileViewport(matches)
+ setViewMode(currentMode => {
+ if (!matches && currentMode ==='list') {
+ return'calendar'
+}
+
+ if (matches && currentMode ==='calendar') {
+ return'list'
+}
+
+ return currentMode
+})
+}
+
+ syncViewportMode(mediaQuery.matches)
+
+ const handleViewportChange = (event: MediaQueryListEvent) => {
+ syncViewportMode(event.matches)
+ }
+
+ mediaQuery.addEventListener('change', handleViewportChange)
+
+ return () => mediaQuery.removeEventListener('change', handleViewportChange)
+ }, [])
 
  // Charger les séances personnelles
  const loadWorkouts = useCallback(async () => {
@@ -469,17 +500,17 @@ export default function CalendarPage() {
  <Card className="p-2 sm:p-6">
  {/* ShadCN UI Tabs Component - 3 onglets sur mobile */}
  <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as'calendar' |'list' |'stats')} className="w-full">
- <TabsList className="grid w-full grid-cols-2 xl:grid-cols-2 md:grid-cols-3 mb-6">
+ <TabsList className="grid w-full grid-cols-3 md:grid-cols-3 xl:grid-cols-2 mb-6">
  <TabsTrigger value="calendar" className="flex items-center space-x-2">
  <CalendarIcon className="h-4 w-4" />
- <span>Calendrier</span>
+ <span>{isMobileViewport ?'Mois' :'Calendrier'}</span>
  </TabsTrigger>
  <TabsTrigger value="list" className="flex items-center space-x-2">
  <List className="h-4 w-4" />
  <span>Liste</span>
  </TabsTrigger>
  {/* Troisième onglet Stats pour mobile/tablette */}
- <TabsTrigger value="stats" className="xl:hidden flex items-center space-x-2">
+ <TabsTrigger value="stats" className="flex xl:hidden items-center space-x-2">
  <Activity className="h-4 w-4" />
  <span>Stats</span>
  </TabsTrigger>
@@ -546,7 +577,7 @@ export default function CalendarPage() {
  >
  {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
  {['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(day => (
- <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
+ <div key={day} className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-muted-foreground">
  {day}
  </div>
  ))}

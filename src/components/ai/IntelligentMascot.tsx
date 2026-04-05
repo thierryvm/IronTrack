@@ -126,7 +126,7 @@ const CONTEXTUAL_MOTIVATION = {
 "🚀 WOOOOH ! Tu détruis tout sur ton passage ! Les haltères tremblent quand tu arrives !",
 "👑 Statut: LÉGENDE EN MARCHE ! Continue comme ça, tu vas finir par faire peur à Chuck Norris !",
 "⚡ Energy level: OVER 9000 ! Ton aura de détermination se voit depuis l'espace !",
-"🏆 Breaking news: Local hero spotted crushing personal records. More at 11!"
+"🏆 Breaking news: local hero spotted crushing personal records. Le replay est déjà validé !"
  ],
 
  consistent_effort: [

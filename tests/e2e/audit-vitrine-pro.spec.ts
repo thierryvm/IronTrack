@@ -5,20 +5,21 @@
  * Tests critiques pour validation professionnelle
  */
 const { test, expect } = require('@playwright/test');
+const { getE2EBaseUrl, getE2EEmail } = require('./helpers/auth');
 
 // Configuration des comptes de test
 const ACCOUNTS = {
   admin: {
-    email: 'thierryvm@hotmail.com',
-    password: 'Lucas24052405@'
+    email: getE2EEmail('admin'),
+    password: process.env.E2E_ADMIN_PASSWORD || ''
   },
   user: {
-    email: 'thierryvm@gmail.com', 
-    password: 'Lucas24052405@'
+    email: getE2EEmail('user'), 
+    password: process.env.E2E_USER_PASSWORD || ''
   }
 };
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = getE2EBaseUrl();
 
 test.describe('🏠 PARCOURS VISITEUR - Première découverte', () => {
   

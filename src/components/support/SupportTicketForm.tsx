@@ -74,7 +74,6 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
 
  // Mettre à jour la catégorie sélectionnée quand initialCategory change
  useEffect(() => {
- console.log('[DEBUG] SupportTicketForm - initialCategory changed:', initialCategory)
  setSelectedCategory(initialCategory)
 }, [initialCategory])
 

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse} from'next/server'
 const rateLimitMap = new Map<string, { count: number; timestamp: number}>()
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
 const MAX_REQUESTS = 30 // 30 requêtes par minute
+const OPEN_FOOD_FACTS_FIELDS ='product_name,brands,nutriments,quantity,image_front_url,categories,countries_tags,lang'
+const BELGIAN_COUNTRY_TAGS = ['en:belgium','fr:belgique','nl:belgie']
 
 function checkRateLimit(ip: string): boolean {
  const now = Date.now()
@@ -25,6 +27,8 @@ function checkRateLimit(ip: string): boolean {
 // Interface pour les données OpenFoodFacts (basée sur la vraie réponse API)
 interface OpenFoodFactsProduct {
  product_name?: string
+ countries_tags?: string[]
+ lang?: string
  nutriments?: {
 'energy-kcal_100g'?: number
 'proteins_100g'?: number
@@ -66,10 +70,40 @@ function sanitizeQuery(query: string): string {
  // Garder les apostrophes et caractères de ponctuation utiles pour la recherche
  .replace(/[^a-zA-Z0-9\s\u00C0-\u017F\-'.,]/g,'')
  // Normaliser les espaces multiples en espaces simples
- .replace(/\s+/g,'')
+ .replace(/\s+/g,' ')
  .trim()
  // Limiter la longueur
  .substring(0, 100)
+}
+
+function getFallbackIngredient(query: string): string | null {
+ const tokens = query.split(/\s+/).filter(Boolean)
+ const knownIngredients = [
+'poulet','boeuf','bœuf','porc','poisson','saumon','thon','oeuf','œuf',
+'fromage','lait','yaourt','riz','pâtes','pates','pain','salade','tomate','avocat'
+]
+
+ return tokens.find(token => knownIngredients.includes(token)) || null
+}
+
+function buildOpenFoodFactsUrl(query: string, countryTag?: string): string {
+ const params = new URLSearchParams({
+ search_terms: query,
+ search_simple:'1',
+ action:'process',
+ json:'1',
+ page_size:'10',
+ fields: OPEN_FOOD_FACTS_FIELDS,
+ sort_by:'unique_scans_n'
+})
+
+ if (countryTag) {
+ params.set('tagtype_0','countries')
+ params.set('tag_contains_0','contains')
+ params.set('tag_0', countryTag)
+ }
+
+ return `https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`
 }
 
 // Fonction de validation des données nutritionnelles
@@ -334,6 +368,23 @@ function transformProduct(product: OpenFoodFactsProduct): NutritionSearchResult 
 }
 }
 
+function scoreProduct(product: NutritionSearchResult): number {
+ const normalizedBrand = product.brand?.toLowerCase() ||''
+ const normalizedCategories = product.categories?.toLowerCase() ||''
+ const belgianSignals = ['belg', 'delhaize', 'colruyt', 'carrefour', 'okay', 'spar', 'boni', 'everyday']
+ const hasBelgianSignal = belgianSignals.some(signal => normalizedBrand.includes(signal) || normalizedCategories.includes(signal))
+
+ return (
+ (product.calories_per_100g > 0 ? 1 : 0) +
+ (product.protein_per_100g > 0 ? 1 : 0) +
+ (product.carbs_per_100g > 0 ? 1 : 0) +
+ (product.fat_per_100g > 0 ? 1 : 0) +
+ (product.brand ? 1 : 0) +
+ (product.image_url ? 1 : 0) +
+ (hasBelgianSignal ? 2 : 0)
+ )
+}
+
 export async function GET(request: NextRequest) {try {
  // Récupérer l'IP du client
  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') ||'unknown'
@@ -364,14 +415,21 @@ export async function GET(request: NextRequest) {try {
 }, { status: 400})
 }
 
- // Construire l'URL OpenFoodFacts avec paramètres sécurisés et optimisés
- const searchUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(sanitizedQuery)}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,brands,nutriments,quantity,image_front_url,categories&sort_by=unique_scans_n`
-
  // Effectuer la requête avec timeout
  const controller = new AbortController()
  const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 secondes timeout (#33/#37)
 
  try {
+ // Rechercher d'abord dans les aliments locaux
+ const localResults = searchLocalFoods(sanitizedQuery)
+ const searchUrls = [
+ ...BELGIAN_COUNTRY_TAGS.map(countryTag => buildOpenFoodFactsUrl(sanitizedQuery, countryTag)),
+ buildOpenFoodFactsUrl(sanitizedQuery)
+ ]
+
+ const openFoodFactsResults: NutritionSearchResult[] = []
+
+ for (const searchUrl of searchUrls) {
  const response = await fetch(searchUrl, {
  signal: controller.signal,
  headers: {
@@ -379,51 +437,35 @@ export async function GET(request: NextRequest) {try {
 }
 })
 
- clearTimeout(timeoutId)
-
  if (!response.ok) {
  throw new Error(`API OpenFoodFacts error: ${response.status}`)
-}
+ }
 
  const data: OpenFoodFactsResponse = await response.json()
-
- // Rechercher d'abord dans les aliments locaux
- const localResults = searchLocalFoods(sanitizedQuery)
- 
- // Debug: afficher les résultats locaux
- if (process.env.NODE_ENV ==='development') {
- if (process.env.NODE_ENV ==='development') {
-
- console.log('Local results for query:', sanitizedQuery, localResults.length)
-
-}
-}
-
- // Transformer et filtrer les produits OpenFoodFacts
- let products = (data.products || [])
+ const transformedProducts = (data.products || [])
  .map(transformProduct)
  .filter((product): product is NutritionSearchResult => product !== null)
- // Filtrer les produits avec au moins quelques données nutritionnelles valides
  .filter(product => 
  product.calories_per_100g >= 0 && 
  product.protein_per_100g >= 0 && 
  product.carbs_per_100g >= 0 && 
  product.fat_per_100g >= 0 &&
- // S'assurer qu'au moins une valeur nutritionnelle est présente
  (product.calories_per_100g > 0 || product.protein_per_100g > 0)
  )
 
- // Combiner les résultats locaux en premier, puis OpenFoodFacts
- products = [...localResults, ...products]
+ openFoodFactsResults.push(...transformedProducts)
+ }
 
- // Si aucun résultat et le terme semble être un plat composé, essayer les ingrédients individuels
- if (products.length === 0 && sanitizedQuery.includes('')) {
- const mainIngredient = sanitizedQuery.split('').find(word => 
- ['poulet','boeuf','porc','poisson','saumon','thon','oeuf','fromage','lait','yaourt','riz','pâtes','pain','salade','tomate','avocat'].includes(word)
- )
+ clearTimeout(timeoutId)
+
+ let products = [...localResults, ...openFoodFactsResults]
+
+ // Si aucun résultat pertinent et le terme semble être un plat composé, essayer l'ingrédient principal
+ if (products.length === 0 && sanitizedQuery.includes(' ')) {
+ const mainIngredient = getFallbackIngredient(sanitizedQuery)
  
  if (mainIngredient) {
- const fallbackUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(mainIngredient)}&search_simple=1&action=process&json=1&page_size=5&fields=product_name,brands,nutriments,quantity,image_front_url,categories&sort_by=unique_scans_n`
+ const fallbackUrl = buildOpenFoodFactsUrl(mainIngredient)
  
  try {
  const fallbackResponse = await fetch(fallbackUrl)
@@ -439,32 +481,25 @@ export async function GET(request: NextRequest) {try {
  product.fat_per_100g >= 0 &&
  (product.calories_per_100g > 0 || product.protein_per_100g > 0)
  )
- .slice(0, 3) // Limiter à 3 résultats pour la recherche de fallback
-}
-} catch (fallbackError) {
- if (process.env.NODE_ENV ==='development') {
+ .slice(0, 3)
+ }
+} catch {}
+ }
+ }
 
- console.error('Erreur recherche fallback:', fallbackError)
+ const uniqueProducts = products.filter((product, index, currentProducts) => {
+ const duplicateIndex = currentProducts.findIndex(candidate =>
+ candidate.name.toLowerCase() === product.name.toLowerCase() &&
+ (candidate.brand ||'') === (product.brand ||'')
+ )
 
-}
-}
-}
-}
+ return duplicateIndex === index
+ })
 
  // Trier par pertinence : produits avec le plus de données d'abord
- products = products.sort((a, b) => {
- const scoreA = (a.calories_per_100g > 0 ? 1 : 0) + 
- (a.protein_per_100g > 0 ? 1 : 0) + 
- (a.carbs_per_100g > 0 ? 1 : 0) + 
- (a.fat_per_100g > 0 ? 1 : 0) +
- (a.brand ? 1 : 0) +
- (a.image_url ? 1 : 0)
- const scoreB = (b.calories_per_100g > 0 ? 1 : 0) + 
- (b.protein_per_100g > 0 ? 1 : 0) + 
- (b.carbs_per_100g > 0 ? 1 : 0) + 
- (b.fat_per_100g > 0 ? 1 : 0) +
- (b.brand ? 1 : 0) +
- (b.image_url ? 1 : 0)
+ products = uniqueProducts.sort((a, b) => {
+ const scoreA = scoreProduct(a)
+ const scoreB = scoreProduct(b)
  return scoreB - scoreA
 })
  // Limiter à 8 résultats les plus pertinents

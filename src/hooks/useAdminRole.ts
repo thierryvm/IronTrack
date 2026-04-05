@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback} from'react'
+import { hasAdminPermission, isUserCurrentlyBanned} from'@/lib/admin-security'
 import { createClient} from'@/utils/supabase/client'
 
 /**
@@ -36,14 +37,11 @@ export const useAdminRole = () => {
  return
 }
 
-
- // Vérifier le rôle admin (sans redirection)
+ // Vérifier le rôle admin via profiles, aligné avec middleware + API
  const { data: roleData, error: roleError} = await supabase
- .from('user_roles')
- .select('role, is_active, expires_at')
- .eq('user_id', user.id)
- .in('role', ['admin','super_admin','moderator'])
- .eq('is_active', true)
+ .from('profiles')
+ .select('role, is_banned, banned_until')
+ .eq('id', user.id)
  .maybeSingle()
 
 
@@ -53,23 +51,20 @@ export const useAdminRole = () => {
  return
 }
 
-
- // Vérifier expiration
- if (roleData.expires_at && new Date(roleData.expires_at) < new Date()) {
+ if (isUserCurrentlyBanned(roleData.is_banned, roleData.banned_until)) {
  setIsAdmin(false)
  setIsModerator(false)
  return
 }
 
  // Définir les rôles
- const hasAdminRole = roleData.role ==='admin' || roleData.role ==='super_admin'
- const hasModeratorRole = ['moderator','admin','super_admin'].includes(roleData.role)
+ const hasAdminRole = hasAdminPermission(roleData.role, 'admin')
+ const hasModeratorRole = hasAdminPermission(roleData.role, 'moderator')
 
  setIsAdmin(hasAdminRole)
  setIsModerator(hasModeratorRole)
 
 } catch (error) {
- console.error('[ADMIN_ROLE] Check failed:', error)
  setIsAdmin(false)
  setIsModerator(false)
 } finally {

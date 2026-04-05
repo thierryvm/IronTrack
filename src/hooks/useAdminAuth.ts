@@ -4,6 +4,7 @@
 // Gestion des permissions admin avec vérification multi-couches
 
 import { useState, useEffect, useCallback} from'react'
+import { hasAdminPermission, isUserCurrentlyBanned} from'@/lib/admin-security'
 import { createClient} from'@/utils/supabase/client'
 import { useRouter} from'next/navigation'
 
@@ -37,33 +38,29 @@ export const useAdminAuth = () => {
 
  // Vérifier les permissions admin - DÉPENDANCES STABILISÉES
  const checkAdminPermissions = useCallback(async (userId: string): Promise<AdminUser | null> => {
- // Timeout pour éviter loading infini sur admin
- const controller = new AbortController()
- const timeoutId = setTimeout(() => controller.abort(), 8000) // 8s max
- 
  try {
- // 1. Vérifier le rôle dans la table user_roles avec timeout
+ // 1. Vérifier le rôle via profiles pour rester aligné avec le middleware et les routes API
  const { data: roleData, error: roleError} = await supabase
- .from('user_roles')
- .select('role, granted_at, is_active, expires_at')
- .eq('user_id', userId)
- .in('role', ['admin','super_admin','moderator'])
- .eq('is_active', true)
+ .from('profiles')
+ .select('role, is_banned, banned_until')
+ .eq('id', userId)
  .maybeSingle()
 
  if (roleError) {
- // Erreur de vérification des rôles admin
  throw new Error('Erreur lors de la vérification des permissions')
 }
 
  if (!roleData) {
- // Aucun rôle admin trouvé pour cet utilisateur
  throw new Error('Permissions administrateur insuffisantes')
 }
 
- // 2. Vérifier si le rôle n\'est pas expiré
- if (roleData.expires_at && new Date(roleData.expires_at) < new Date()) {
- throw new Error('Permissions administrateur expirées')
+ // 2. Vérifier bannissement + rôle minimum
+ if (isUserCurrentlyBanned(roleData.is_banned, roleData.banned_until)) {
+ throw new Error('Compte administrateur temporairement bloqué')
+}
+
+ if (!hasAdminPermission(roleData.role, 'moderator')) {
+ throw new Error('Permissions administrateur insuffisantes')
 }
 
  // 3. Récupérer les infos utilisateur
@@ -94,15 +91,12 @@ export const useAdminAuth = () => {
  id: userId,
  email: authUser.email,
  role: roleData.role as'admin' |'super_admin' |'moderator',
- granted_at: roleData.granted_at,
- is_active: roleData.is_active
+ granted_at:'',
+ is_active: true
 }
- 
- clearTimeout(timeoutId)
+
  return adminUser
 } catch {
- clearTimeout(timeoutId)
- // Vérification des permissions échouée ou timeout
  return null
 }
 }, []) // ✅ VIDE - supabase est stable via useState
@@ -142,7 +136,6 @@ export const useAdminAuth = () => {
 
  setUser(adminUser)
 } catch {
- console.error('💥 [ADMIN AUTH] Erreur:', error)
  setError('Erreur d\'authentification admin')
  // Éviter redirection en boucle sur erreur
  if (typeof window !=='undefined' && window.location.pathname !=='/') {

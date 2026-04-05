@@ -46,7 +46,7 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
  // Garder les apostrophes et caractères utiles pour la recherche
  .replace(/[^a-zA-Z0-9\s\u00C0-\u017F\-'.,]/g,'')
  // Normaliser les espaces multiples en espaces simples
- .replace(/\s+/g,'')
+ .replace(/\s+/g,' ')
  .trim()
  .substring(0, 100)
 }, [])
@@ -88,7 +88,6 @@ const FoodSearchAutocomplete: React.FC<FoodSearchAutocompleteProps> = ({
  throw new Error(data.error ||'Erreur de recherche')
 }
 } catch (err) {
- console.error('Erreur recherche nutrition:', err)
  setError(err instanceof Error ? err.message :'Erreur de recherche')
  setResults([])
  setIsOpen(false)

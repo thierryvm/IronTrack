@@ -1,86 +1,161 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Rate limiting state
+import { hasAdminPermission, isUserCurrentlyBanned } from '@/lib/admin-security'
+
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
 
-export async function middleware(request: NextRequest) {
-  // Rate Limiting Logic
+const PROTECTED_ROUTES = [
+  '/calendar',
+  '/exercises',
+  '/notifications',
+  '/nutrition',
+  '/profile',
+  '/progress',
+  '/support',
+  '/training-partners',
+  '/workouts',
+]
+
+function getClientIp(request: NextRequest): string {
   const forwardedFor = request.headers.get('x-forwarded-for')
   const xRealIp = request.headers.get('x-real-ip')
-  const ip = forwardedFor?.split(',')[0].trim() || xRealIp || 'unknown'
-  const now = Date.now()
-  const windowMs = 60 * 1000 // 1 minute
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
-  const maxRequests = isApiRoute ? 200 : 100
 
+  return forwardedFor?.split(',')[0].trim() || xRealIp || 'unknown'
+}
+
+function getMaxRequests(pathname: string): number {
+  if (pathname.startsWith('/api/auth') || pathname.startsWith('/auth')) {
+    return 20
+  }
+
+  if (pathname.startsWith('/api/admin') || pathname.startsWith('/admin')) {
+    return 60
+  }
+
+  if (pathname.startsWith('/api/')) {
+    return 120
+  }
+
+  return 180
+}
+
+function applySecurityHeaders(response: NextResponse, pathname: string): NextResponse {
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('Permissions-Policy', 'camera=(), geolocation=(), microphone=(), payment=(), usb=()')
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
+  response.headers.set('Cross-Origin-Resource-Policy', 'same-site')
+  response.headers.set('Origin-Agent-Cluster', '?1')
+  response.headers.set('X-DNS-Prefetch-Control', 'off')
+
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Strict-Transport-Security', 'max-age=15552000; includeSubDomains')
+  }
+
+  if (pathname.startsWith('/api/')) {
+    response.headers.set('Cache-Control', 'no-store')
+  }
+
+  return response
+}
+
+function buildRedirectResponse(request: NextRequest, pathname: string): NextResponse {
+  return applySecurityHeaders(NextResponse.redirect(new URL(pathname, request.url)), request.nextUrl.pathname)
+}
+
+function buildRateLimitResponse(pathname: string, retryAfterSeconds: number): NextResponse {
+  const response = NextResponse.json(
+    { error: 'Too Many Requests' },
+    {
+      status: 429,
+      headers: {
+        'Retry-After': String(retryAfterSeconds),
+      },
+    }
+  )
+
+  return applySecurityHeaders(response, pathname)
+}
+
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const ip = getClientIp(request)
+  const now = Date.now()
+  const windowMs = 60 * 1000
+  const maxRequests = getMaxRequests(pathname)
   const rateLimitInfo = rateLimitMap.get(ip)
 
-  if (rateLimitInfo) {
-    if (now - rateLimitInfo.timestamp < windowMs) {
-      rateLimitInfo.count += 1
-      if (rateLimitInfo.count > maxRequests) {
-        return NextResponse.json(
-          { error: 'Too Many Requests' },
-          { status: 429 }
-        )
-      }
-    } else {
-      // Reset window
-      rateLimitMap.set(ip, { count: 1, timestamp: now })
+  if (rateLimitInfo && now - rateLimitInfo.timestamp < windowMs) {
+    rateLimitInfo.count += 1
+
+    if (rateLimitInfo.count > maxRequests) {
+      return buildRateLimitResponse(pathname, Math.ceil(windowMs / 1000))
     }
   } else {
-    // Initial request
     rateLimitMap.set(ip, { count: 1, timestamp: now })
   }
 
-  // Cleanup old entries (deterministic size limit)
   if (rateLimitMap.size > 10000) {
     rateLimitMap.clear()
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  let response = applySecurityHeaders(
+    NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    }),
+    pathname
+  )
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get: (name: string) => {
+        get(name: string) {
           return request.cookies.get(name)?.value
         },
-        set: (name: string, value: string, options: Record<string, unknown>) => {
+        set(name: string, value: string, options: Record<string, unknown>) {
           request.cookies.set({
             name,
             value,
             ...options,
           })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
+
+          response = applySecurityHeaders(
+            NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            }),
+            pathname
+          )
+
           response.cookies.set({
             name,
             value,
             ...options,
           })
         },
-        remove: (name: string, options: Record<string, unknown>) => {
+        remove(name: string, options: Record<string, unknown>) {
           request.cookies.set({
             name,
             value: '',
             ...options,
           })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
+
+          response = applySecurityHeaders(
+            NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            }),
+            pathname
+          )
+
           response.cookies.set({
             name,
             value: '',
@@ -91,46 +166,29 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Rafraîchir la session si elle expire bientôt
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Gestion des routes d'authentification
-  if (request.nextUrl.pathname.startsWith('/auth')) {
+  if (pathname.startsWith('/auth')) {
     if (user) {
-      // Utilisateur connecté, rediriger vers dashboard
-      return NextResponse.redirect(new URL('/', request.url))
+      return buildRedirectResponse(request, '/')
     }
+
     return response
   }
 
-  // Routes protégées - redirection si non connecté
-  const protectedRoutes = [
-    '/exercises',
-    '/nutrition',
-    '/training-partners',
-    '/progress',
-    '/profile',
-    '/calendar',
-    '/workouts'
-  ]
-
-  const isProtectedRoute = protectedRoutes.some(route => 
-    request.nextUrl.pathname.startsWith(route)
-  )
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
 
   if (isProtectedRoute && !user) {
-    return NextResponse.redirect(new URL('/auth', request.url))
+    return buildRedirectResponse(request, '/auth')
   }
 
-  // Routes admin - vérification des permissions spécifiques
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/auth', request.url))
+      return buildRedirectResponse(request, '/auth')
     }
 
-    // Vérifier les permissions admin via profiles.role (alignement avec les routes API)
     const { data: adminProfile, error: roleError } = await supabase
       .from('profiles')
       .select('role, is_banned, banned_until')
@@ -138,38 +196,30 @@ export async function middleware(request: NextRequest) {
       .single()
 
     if (roleError || !adminProfile) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return buildRedirectResponse(request, '/')
     }
 
-    // Vérifier si l'admin est banni (temps réel)
-    const now = new Date()
-    const bannedUntil = adminProfile.banned_until ? new Date(adminProfile.banned_until) : null
-    const isReallyBanned = bannedUntil ? bannedUntil > now : adminProfile.is_banned
-
-    if (isReallyBanned) {
-      return NextResponse.redirect(new URL('/', request.url))
+    if (isUserCurrentlyBanned(adminProfile.is_banned, adminProfile.banned_until)) {
+      return buildRedirectResponse(request, '/')
     }
 
-    // Vérifier si le rôle est admin/super_admin/moderator
-    const adminRoles = ['moderator', 'admin', 'super_admin']
-    if (!adminProfile.role || !adminRoles.includes(adminProfile.role)) {
-      return NextResponse.redirect(new URL('/', request.url))
+    if (!hasAdminPermission(adminProfile.role)) {
+      return buildRedirectResponse(request, '/')
     }
   }
+
+  const rateLimitState = rateLimitMap.get(ip)
+  const remainingRequests = Math.max(0, maxRequests - (rateLimitState?.count ?? 1))
+
+  response.headers.set('RateLimit-Limit', String(maxRequests))
+  response.headers.set('RateLimit-Remaining', String(remainingRequests))
+  response.headers.set('RateLimit-Reset', String(Math.ceil((now + windowMs) / 1000)))
 
   return response
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - api/ (API routes handle their own auth)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

@@ -658,8 +658,7 @@ export default function HomePageClient() {
  if (!error && data) setUserSounds(data);
 };
 
- function handleSoundDeleted() {
- console.log('🎵 Son supprimé de la playlist')
+function handleSoundDeleted() {
 }
 
  if (loading || profileLoading) {
@@ -708,21 +707,21 @@ export default function HomePageClient() {
  <p className="text-white/90 text-lg">
  {stats.thisWeek === 0 
  ?"Commence ta première séance de la semaine !" 
- : `Tu as déjà fait ${stats.thisWeek} séance${stats.thisWeek > 1 ?'s' :''} cette semaine 💪`
+ : `Tu as déjà fait ${stats.thisWeek} séance${stats.thisWeek > 1 ?'s' :''} cette semaine`
 }
  </p>
  </div>
  <div className="flex flex-col sm:flex-row gap-4">
- <Button asChild variant="ghost" size="lg" className="bg-gray-900 text-white font-semibold hover:bg-muted transition-colors border border-border">
- <Link href="/workouts/new" prefetch={false}>
- <Dumbbell className="h-6 w-6" />
- Commencer ma séance
+ <Button asChild size="lg" className="bg-white text-orange-600 font-bold hover:bg-white/90 transition-colors gap-2 shadow-md">
+ <Link href="/workouts/new" prefetch={false} className="flex items-center gap-2">
+ <Dumbbell className="h-5 w-5 flex-shrink-0" />
+ <span>Commencer ma séance</span>
  </Link>
  </Button>
- <Button asChild variant="ghost" size="lg" className="border border-white text-white hover:bg-muted hover:border-border transition-colors">
- <Link href="/calendar" prefetch={false}>
- <Calendar className="h-5 w-5" />
- Voir le planning
+ <Button asChild size="lg" className="bg-white/15 border border-white/60 text-white font-semibold hover:bg-white/25 hover:border-white transition-colors gap-2 backdrop-blur-sm">
+ <Link href="/calendar" prefetch={false} className="flex items-center gap-2">
+ <Calendar className="h-5 w-5 flex-shrink-0" />
+ <span>Voir le planning</span>
  </Link>
  </Button>
  </div>

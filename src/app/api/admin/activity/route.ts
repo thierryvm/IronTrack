@@ -6,6 +6,7 @@
 import { createServerClient, type CookieOptions} from'@supabase/ssr'
 import { NextResponse} from'next/server'
 import { cookies} from'next/headers'
+import { hasAdminPermission, isUserCurrentlyBanned, maskAdminIdentifier} from'@/lib/admin-security'
 
 // ULTRAHARDCORE: Force Node.js runtime pour éviter Edge Runtime
 export const runtime ='nodejs'
@@ -43,14 +44,12 @@ export async function GET() {
 
  // 🔒 2. Vérification permissions admin
  const { data: adminRole, error: roleError} = await supabase
- .from('user_roles')
- .select('role')
- .eq('user_id', user.id)
- .eq('is_active', true)
- .in('role', ['admin','super_admin']) // Seuls admin+ peuvent voir l'activité
+ .from('profiles')
+ .select('role, is_banned, banned_until')
+ .eq('id', user.id)
  .single()
  
- if (roleError || !adminRole) {
+ if (roleError || !adminRole || isUserCurrentlyBanned(adminRole.is_banned, adminRole.banned_until) || !hasAdminPermission(adminRole.role, 'admin')) {
  return NextResponse.json({ error:'Permissions admin requises'}, { status: 403})
 }
 
@@ -108,18 +107,16 @@ export async function GET() {
  return NextResponse.json({ error:'Erreur récupération activité'}, { status: 500})
 }
 
- // 🔒 4. Enrichir avec les emails admin de manière sécurisée
- // Utiliser une requête sur user_roles au lieu de getUserById
+ // 🔒 4. Enrichir avec les rôles admin de manière sécurisée
  const adminIds = [...new Set(recentActivity?.map(log => log.admin_id) || [])]
  
  const { data: adminUsers, error: usersError} = await supabase
- .from('user_roles')
+ .from('profiles')
  .select(`
- user_id,
+ id,
  role
  `)
- .in('user_id', adminIds)
- .eq('is_active', true)
+ .in('id', adminIds)
 
  if (usersError) {
  if (process.env.NODE_ENV ==='development') {
@@ -130,10 +127,9 @@ export async function GET() {
  // Créer un mapping sécurisé (sans exposer les emails complets)
  const adminMap = new Map()
  adminUsers?.forEach(admin => {
- // Masquer partiellement l'email pour la sécurité
- adminMap.set(admin.user_id, {
+ adminMap.set(admin.id, {
  role: admin.role,
- email_masked: `admin_${admin.user_id.slice(0, 8)}...` // Email masqué
+ email_masked: maskAdminIdentifier(admin.id)
 })
 })
 
