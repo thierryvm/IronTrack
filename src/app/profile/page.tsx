@@ -5,6 +5,8 @@ import type { UserProfile} from'@/types/user-profile'
 import type { UserStats} from'@/types/user-stats'
 import type { Achievement} from'@/types/achievement'
 
+export const dynamic ='force-dynamic'
+
 export default async function ProfilePage() {
  const supabase = createServerSupabaseClient()
  const { data: { user}, error: userError} = await supabase.auth.getUser()

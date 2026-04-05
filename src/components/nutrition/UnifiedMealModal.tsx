@@ -72,22 +72,27 @@ export default function UnifiedMealModal({
                 {effectiveMealType ? `Ajouter un repas — ${effectiveMealType}` : 'Ajouter un repas'}
               </h2>
               <button
+                type="button"
+                aria-label="Fermer la fenêtre d’ajout de repas"
                 onClick={handleClose}
                 className="p-1 hover:bg-muted rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
             
             {!mealType && (
               <div className="mt-4">
                 <p className="text-sm font-medium text-foreground mb-2">
-                  Type de repas <span className="text-red-500">*</span>
+                  Type de repas <span className="text-safe-error">*</span>
                 </p>
                 <div className="grid grid-cols-4 gap-2">
                   {MEAL_TYPES.map(type => (
                     <button
                       key={type.name}
+                      type="button"
+                      aria-pressed={localMealType === type.name}
+                      aria-label={`Choisir ${type.name}`}
                       onClick={() => setLocalMealType(type.name)}
                       className={`py-2 px-2 rounded-lg text-xs font-medium transition-colors border ${
                         localMealType === type.name
@@ -105,6 +110,8 @@ export default function UnifiedMealModal({
 
             <div className={`flex space-x-2 mt-4 bg-muted p-1 rounded-lg ${!mealType && !localMealType ? 'opacity-50 pointer-events-none' : ''}`}>
               <button
+                type="button"
+                aria-pressed={addMode === 'smart'}
                 onClick={() => setAddMode('smart')}
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'smart' 
@@ -116,6 +123,8 @@ export default function UnifiedMealModal({
                 Recherche intelligente
               </button>
               <button
+                type="button"
+                aria-pressed={addMode === 'manual'}
                 onClick={() => setAddMode('manual')}
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'manual' 
@@ -127,6 +136,8 @@ export default function UnifiedMealModal({
                 Saisie manuelle
               </button>
               <button
+                type="button"
+                aria-pressed={addMode === 'builder'}
                 onClick={() => setAddMode('builder')}
                 className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors ${
                   addMode === 'builder' 
@@ -306,13 +317,13 @@ function ManualMealForm({
         .insert([nutritionData])
 
       if (error) {
-        console.error('Erreur lors de la sauvegarde:', error)
+        setErrors({ submit: 'Impossible de sauvegarder ce repas pour le moment' })
         return
       }
 
       onMealAdded()
-    } catch (error) {
-      console.error('Erreur:', error)
+    } catch {
+      setErrors({ submit: 'Une erreur est survenue pendant la sauvegarde' })
     } finally {
       setSaving(false)
     }
@@ -444,6 +455,10 @@ function ManualMealForm({
         </div>
       </div>
 
+      {errors.submit && (
+        <p aria-live="polite" className="text-safe-error text-sm">{errors.submit}</p>
+      )}
+
       <div className="flex justify-end space-x-2 pt-4">
         <button
           type="submit"
@@ -570,13 +585,12 @@ function MultiIngredientMealBuilder({
         .insert([nutritionData])
 
       if (error) {
-        console.error('Erreur lors de la sauvegarde:', error)
         return
       }
 
       onMealAdded()
-    } catch (error) {
-      console.error('Erreur:', error)
+    } catch {
+      return
     } finally {
       setSaving(false)
     }
@@ -635,9 +649,10 @@ function MultiIngredientMealBuilder({
                     min="1"
                     max="10000"
                   />
-                  <span className="text-sm text-gray-600">g</span>
+                  <span className="text-sm text-muted-foreground">g</span>
                   <button
                     type="button"
+                    aria-label={`Supprimer ${ingredient.food.name}`}
                     onClick={() => removeIngredient(ingredient.id)}
                     className="p-1 text-safe-error hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   >

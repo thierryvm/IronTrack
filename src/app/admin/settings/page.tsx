@@ -25,14 +25,19 @@ import { HealthDashboard } from '@/components/admin/HealthDashboard'
 // --- Toast component ---
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   return (
-    <div className={`fixed top-4 right-4 z-50 flex items-center space-x-2 px-4 py-2 rounded-lg shadow-lg border ${
+    <div aria-live="polite" className={`fixed top-4 right-4 z-50 flex items-center space-x-2 px-4 py-2 rounded-lg shadow-lg border ${
       type === 'success'
         ? 'bg-card border-emerald-500/30 text-foreground'
         : 'bg-card border-red-500/30 text-foreground'
     }`}>
-      <CheckCircle className={`h-5 w-5 shrink-0 ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`} />
+      <CheckCircle className={`h-5 w-5 shrink-0 ${type === 'success' ? 'text-emerald-500' : 'text-safe-error'}`} />
       <span className="text-sm font-medium">{message}</span>
-      <button onClick={onClose} className="ml-2 min-h-[32px] min-w-[32px] flex items-center justify-center">
+      <button
+        type="button"
+        aria-label="Fermer la notification"
+        onClick={onClose}
+        className="ml-2 min-h-[32px] min-w-[32px] flex items-center justify-center"
+      >
         <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
       </button>
     </div>
@@ -397,6 +402,8 @@ export default function AdminSettingsPage() {
               return (
                 <button
                   key={tab.id}
+                  type="button"
+                  aria-pressed={activeTab === tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                     activeTab === tab.id

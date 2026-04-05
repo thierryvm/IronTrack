@@ -1194,7 +1194,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  className={`flex flex-col items-center px-2 sm:px-2 py-2 rounded-lg border-2 transition-all ${selectedMascot ==='cat' ?'border-primary bg-primary/10' :'border-border bg-card'}`}
  onClick={() => setSelectedMascot('cat')}
  >
- <Cat className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500 animate-pulse" />
+ <Cat className="h-6 w-6 sm:h-8 sm:w-8 text-safe-warning animate-pulse" />
  <span className="mt-1 text-xs font-bold text-center text-foreground">Félix</span>
  </button>
  <button
@@ -1208,7 +1208,7 @@ export function ProfileClientWrapper({ initialProfile, initialStats, initialAchi
  className={`flex flex-col items-center px-2 sm:px-2 py-2 rounded-lg border-2 transition-all ${selectedMascot ==='star' ?'border-primary bg-primary/10' :'border-border bg-card'}`}
  onClick={() => setSelectedMascot('star')}
  >
- <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 animate-ping" />
+ <Star className="h-6 w-6 sm:h-8 sm:w-8 text-safe-primary animate-ping" />
  <span className="mt-1 text-xs font-bold text-center text-foreground">SuperStar</span>
  </button>
  </div>
