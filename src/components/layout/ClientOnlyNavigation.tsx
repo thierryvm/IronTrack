@@ -8,6 +8,7 @@ interface NavItem {
  name: string
  href: string
  icon: React.ComponentType<{ className?: string}>
+ mobileLabel?: string
 }
 
 interface ClientOnlyNavigationProps {
@@ -44,10 +45,16 @@ export default function ClientOnlyNavigation({
  className={`${itemClassName} ${isActive ? activeClassName : inactiveClassName}`}
  >
  <item.icon
- className={isMobile ?"w-6 h-6 mb-1 flex-shrink-0" :"w-4 h-4"}
+ className={isMobile ?"w-5 h-5 flex-shrink-0" :"w-4 h-4"}
  aria-hidden="true"
  />
- <span className={isMobile ?"text-xs font-medium truncate" :""}>{item.name}</span>
+ {isMobile ? (
+ <span className="max-w-full truncate text-[11px] font-medium leading-none">
+ {item.mobileLabel ?? item.name}
+ </span>
+ ) : (
+ <span>{item.name}</span>
+ )}
  </Link>
  )
 })}

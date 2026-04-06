@@ -1,55 +1,54 @@
 # IronTrack
 
-Application de suivi fitness et musculation — Next.js 15 + Supabase + Vercel.
+IronTrack is a fitness, strength training, nutrition, and coaching platform built with Next.js, Supabase, and Vercel.
 
-**Production** : [iron-track-dusky.vercel.app](https://iron-track-dusky.vercel.app)
+Production: [iron-track-dusky.vercel.app](https://iron-track-dusky.vercel.app)
 
----
+## Current Status
 
-## Fonctionnalités
+This repository is actively being hardened and redesigned in iterative PRs.
 
-| Module | Description |
-|---|---|
-| **Exercices** | Bibliothèque personnalisée avec assistant de création intelligent |
-| **Performances** | Historique détaillé — séries, répétitions, poids, métriques cardio |
-| **Cardio avancé** | Rameur (SPM, watts), tapis (inclinaison, vitesse), vélo (cadence, résistance) |
-| **Nutrition** | Suivi alimentaire et calculs nutritionnels |
-| **Progression** | Graphiques de progression par exercice et période |
-| **Calendrier** | Planification des séances d'entraînement |
-| **Partenaires** | Partage de programmes avec d'autres utilisateurs |
-| **Notifications** | Rappels d'entraînement |
-| **Support** | Système de tickets intégré |
-| **Admin** | Panneau d'administration (utilisateurs, logs, exports) |
-| **PWA** | Installable comme application native sur mobile/desktop |
+- security hardening baseline delivered in the `feature-security-hardening-phase1` line
+- UX/UI overhaul roadmap tracked through GitHub Epic `#4`
+- accessibility target upgraded to `WCAG 2.2 AA`
+- current product priorities: mobile-first navigation, calendar/workouts UX, onboarding, admin mobile workflows, dark mode consistency, Belgian nutrition relevance
 
----
+## Core Modules
 
-## Stack technique
+| Module | Scope |
+| --- | --- |
+| Authentication | Supabase Auth, protected routes, onboarding flows |
+| Exercises | Exercise library, creation/edit flows, cardio-specific metrics |
+| Workouts | Workout planning, creation, editing, progression tracking |
+| Calendar | Monthly planning, mobile list view, shared sessions |
+| Nutrition | Food logging, Belgian-oriented search improvements, recipes |
+| Training Partners | Shared planning and partner collaboration |
+| Progress | Metrics, charts, exercise history |
+| Support | User tickets and internal handling workflows |
+| Admin | Users, logs, tickets, exports, platform operations |
 
-| Couche | Technologie |
-|---|---|
-| Framework | Next.js 15.5 — App Router |
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Framework | Next.js 15 App Router |
 | Language | TypeScript strict |
-| UI | React 18 + Tailwind CSS + shadcn/ui |
-| Animations | Framer Motion |
-| Base de données | Supabase (PostgreSQL + RLS) |
-| Authentification | Supabase Auth |
-| IA | OpenAI API (suggestions d'exercices) |
-| Déploiement | Vercel (auto-deploy sur push `main`) |
-| Tests | Jest + Playwright |
+| UI | React, Tailwind CSS, shadcn/ui |
+| Motion | Framer Motion |
+| Data | Supabase PostgreSQL + RLS |
+| Auth | Supabase Auth |
+| Deployment | Vercel |
+| Testing | Jest, Playwright, contrast checks |
 
----
-
-## Installation
+## Local Setup
 
 ```bash
 npm install
 cp .env.example .env.local
-# Remplir .env.local avec vos clés (voir ci-dessous)
 npm run dev
 ```
 
-### Variables d'environnement requises
+Required environment variables:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
@@ -59,66 +58,72 @@ OPENAI_API_KEY=<openai-key>
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
----
+E2E authentication credentials are no longer hardcoded. Use dedicated local variables such as:
 
-## Scripts
+```env
+E2E_ADMIN_EMAIL=<test-admin-email>
+E2E_ADMIN_PASSWORD=<test-admin-password>
+E2E_USER_EMAIL=<test-user-email>
+E2E_USER_PASSWORD=<test-user-password>
+```
+
+## Commands
 
 ```bash
-npm run dev                  # Développement (port 3000)
-npm run build                # Build production
-npm run lint                 # ESLint
-npm run typecheck            # TypeScript
-npm run test                 # Tests unitaires (Jest)
-npm run test:e2e             # Tests end-to-end (Playwright)
-npm run test:contrast        # Tests contraste WCAG
-npm run test:regression      # Tests anti-régression
-npm run db:push              # Push migrations Supabase
-npm run db:refresh-cache     # Rafraîchir cache PostgREST
+npm run dev
+npm run build
+npm run lint
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run test:contrast
+npm run test:regression
 ```
 
----
+## Delivery Process
 
-## Structure
+The repository follows a traceable GitHub workflow:
 
-```
-src/
-├── app/                    # Routes Next.js (App Router)
-│   ├── (auth)/             # Pages publiques
-│   ├── exercises/          # Gestion exercices
-│   ├── workouts/           # Séances
-│   ├── nutrition/          # Nutrition
-│   ├── progress/           # Progression
-│   ├── calendar/           # Calendrier
-│   ├── training-partners/  # Partenaires
-│   ├── admin/              # Administration
-│   └── api/                # API Routes
-├── components/             # Composants React
-├── hooks/                  # Custom hooks
-├── lib/                    # Utilitaires partagés
-└── utils/supabase/         # Client Supabase
-```
+- issues for each phase and delivery slice
+- focused feature branches
+- draft PRs for preview and review
+- required validation before merge: typecheck, build, accessibility/contrast, preview deployment
 
----
+Recommended branch naming:
 
-## Sécurité
+- `main` for protected production history
+- `develop` for integration when used
+- `feature/<scope>`
+- `hotfix/<scope>`
 
-- Row Level Security (RLS) activé sur toutes les tables
-- Validation Zod sur toutes les entrées utilisateur
-- Middleware d'authentification sur toutes les routes protégées
-- Protection CSRF intégrée (Next.js)
-- Conformité RGPD (utilisateurs belges)
+Commit convention:
 
----
+- `feat(scope): description`
+- `fix(scope): description`
+- `refactor(scope): description`
+- `docs(scope): description`
+- `security(scope): description`
 
-## Déploiement
+## Quality & Security Baseline
 
-Push sur `main` → déploiement automatique Vercel.
+- strict server-side validation on protected flows
+- role-aware admin protections
+- hardened middleware and security headers
+- contrast validation in CI
+- ongoing migration from WCAG 2.1 checks to `WCAG 2.2 AA`
+- ongoing OWASP-focused hardening for auth, rate limiting, and operational surfaces
 
-```bash
-# Déploiement manuel si besoin
-npx vercel deploy --prod --token "$VERCEL_TOKEN"
-```
+## Documentation
 
----
+Start here:
 
-**IronTrack** — Belgique 🇧🇪
+- [docs/README.md](./docs/README.md)
+- [docs/INDEX.md](./docs/INDEX.md)
+- [docs/AUDIT_UX_UI_WCAG22_MOBILE_FIRST_5_AVRIL_2026.md](./docs/AUDIT_UX_UI_WCAG22_MOBILE_FIRST_5_AVRIL_2026.md)
+- [docs/GUIDE_ADMINISTRATION_SYSTEME.md](./docs/GUIDE_ADMINISTRATION_SYSTEME.md)
+- [docs/SECURITE_IRONTRACK.md](./docs/SECURITE_IRONTRACK.md)
+
+## Notes
+
+- The roadmap is intentionally incremental to keep previews reviewable and the repo clean.
+- Some admin and shell files may be under active local work; avoid mixing unrelated edits in the same PR.

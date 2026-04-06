@@ -45,12 +45,12 @@ export default function HeaderClient() {
 
  // MENU PRINCIPAL - Navigation en bas mobile, en haut desktop
  const mainNav = [
- { name:'Calendrier', href:'/calendar', icon: Calendar},
- { name:'Exercices', href:'/exercises', icon: Dumbbell},
- { name:'Séances', href:'/workouts', icon: Activity},
- { name:'Partenaires', href:'/training-partners', icon: Users},
- { name:'Nutrition', href:'/nutrition', icon: Apple},
- { name:'Progression', href:'/progress', icon: BarChart3},
+ { name:'Calendrier', href:'/calendar', icon: Calendar, mobileLabel:'Agenda'},
+ { name:'Exercices', href:'/exercises', icon: Dumbbell, mobileLabel:'Exos'},
+ { name:'Séances', href:'/workouts', icon: Activity, mobileLabel:'Séances'},
+ { name:'Partenaires', href:'/training-partners', icon: Users, mobileLabel:'Team'},
+ { name:'Nutrition', href:'/nutrition', icon: Apple, mobileLabel:'Nutrition'},
+ { name:'Progression', href:'/progress', icon: BarChart3, mobileLabel:'Stats'},
  ]
 
  // MENU SECONDAIRE - Profil et administration
@@ -489,7 +489,7 @@ export default function HeaderClient() {
  {/* Notifications mobile - lien direct vers la page */}
  <Link
  href="/notifications"
- className="relative p-2 rounded-lg text-gray-600 hover:bg-muted hover:text-foreground transition-colors"
+ className="relative rounded-lg p-2 text-safe-muted transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
  aria-label={`Notifications${notificationCount > 0 ? ` (${notificationCount} non lues)` :''}`}
  >
  <Bell className="w-5 h-5" />
@@ -504,7 +504,7 @@ export default function HeaderClient() {
  <div className="relative" data-profile-dropdown>
  <button
  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
- className="flex items-center p-1 rounded-lg hover:bg-muted transition-colors"
+ className="flex items-center rounded-lg p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
  aria-label="Ouvrir menu profil"
  aria-expanded={isProfileDropdownOpen}
  >
@@ -651,14 +651,17 @@ export default function HeaderClient() {
  
  {/* NAVIGATION MOBILE EN BAS - Fixe */}
  {isLoggedIn && (
- <nav aria-label="Navigation mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
- <div className="flex justify-around py-2" role="list">
+ <nav
+ aria-label="Navigation mobile"
+ className="safe-area-bottom md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85"
+ >
+ <div className="mx-auto flex max-w-screen-sm items-center gap-1 overflow-x-auto px-2 pb-2 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" role="list">
  <ClientOnlyNavigation
  items={mainNav}
  className="contents"
- itemClassName="flex flex-col items-center p-2 min-w-0 transition-colors"
- activeClassName="text-primary"
- inactiveClassName="text-muted-foreground hover:text-foreground"
+ itemClassName="group flex min-w-[68px] flex-1 snap-center flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+ activeClassName="bg-muted text-foreground shadow-sm"
+ inactiveClassName="text-safe-muted hover:bg-muted/60 hover:text-foreground"
  isMobile={true}
  ariaLabel="Navigation mobile bas de page"
  />

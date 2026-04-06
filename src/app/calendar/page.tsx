@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef} from'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo} from'react'
 import Head from'next/head'
 
 // Import directs des icônes pour éviter les erreurs webpack
@@ -11,7 +11,8 @@ import {
  Activity, 
  ChevronLeft, 
  ChevronRight,
- Clock 
+ Clock,
+ Users
 } from'lucide-react'
 
 
@@ -415,6 +416,80 @@ export default function CalendarPage() {
 
  const days = getDaysInMonth(currentDate)
  const monthName = currentDate.toLocaleDateString('fr-FR', { month:'long', year:'numeric'})
+ const currentMonthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}`
+ const todayYmd = formatDateToYMD(new Date())
+
+ const currentMonthWorkouts = useMemo(
+ () => workouts.filter(workout => workout.scheduled_date.startsWith(currentMonthKey)),
+ [workouts, currentMonthKey]
+ )
+
+ const currentMonthPartnerWorkouts = useMemo(
+ () => partnersWorkouts.filter(workout => workout.scheduled_date.startsWith(currentMonthKey)),
+ [partnersWorkouts, currentMonthKey]
+ )
+
+ const visibleMonthPartnerWorkouts = useMemo(
+ () => (showPartnersWorkouts ? currentMonthPartnerWorkouts : []),
+ [currentMonthPartnerWorkouts, showPartnersWorkouts]
+ )
+
+ const combinedMonthWorkouts = useMemo(
+ () => [
+ ...currentMonthWorkouts.map(workout => ({ ...workout, isPartnerWorkout: false})),
+ ...visibleMonthPartnerWorkouts.map(workout => ({ ...workout, isPartnerWorkout: true})),
+ ].sort((a, b) => {
+ const dateDiff = a.scheduled_date.localeCompare(b.scheduled_date)
+ if (dateDiff !== 0) return dateDiff
+ return (a.start_time ||'').localeCompare(b.start_time ||'')
+}),
+ [currentMonthWorkouts, visibleMonthPartnerWorkouts]
+ )
+
+ const completedWorkouts = useMemo(
+ () => currentMonthWorkouts.filter(workout => workout.status ==='Terminé' || workout.status ==='Réalisé').length,
+ [currentMonthWorkouts]
+ )
+
+ const plannedWorkouts = useMemo(
+ () => currentMonthWorkouts.filter(workout => workout.status ==='Planifié' || workout.status ==='Planifie').length,
+ [currentMonthWorkouts]
+ )
+
+ const monthlyTypeStats = useMemo(
+ () => workoutTypes
+ .map(type => ({
+ ...type,
+ count: currentMonthWorkouts.filter(workout => getCorrectType(workout) === type.name).length,
+}))
+ .filter(type => type.count > 0),
+ [currentMonthWorkouts]
+ )
+
+ const nextPlannedWorkout = useMemo(() => {
+ const plannedSessions = [...currentMonthWorkouts]
+ .filter(workout => workout.status ==='Planifié' || workout.status ==='Planifie')
+ .sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date) || (a.start_time ||'').localeCompare(b.start_time ||''))
+
+ return plannedSessions.find(workout => workout.scheduled_date >= todayYmd) ?? plannedSessions[0] ?? null
+ }, [currentMonthWorkouts, todayYmd])
+
+ const selectedDateYmd = selectedDate ? formatDateToYMD(selectedDate) : null
+
+ const selectedDateWorkouts = useMemo(() => {
+ if (!selectedDateYmd) return []
+
+ return [
+ ...workouts
+ .filter(workout => workout.scheduled_date === selectedDateYmd)
+ .map(workout => ({ ...workout, isPartnerWorkout: false})),
+ ...(showPartnersWorkouts
+ ? partnersWorkouts
+ .filter(workout => workout.scheduled_date === selectedDateYmd)
+ .map(workout => ({ ...workout, isPartnerWorkout: true}))
+ : []),
+ ]
+ }, [partnersWorkouts, selectedDateYmd, showPartnersWorkouts, workouts])
 
  // Fonction pour corriger automatiquement le type basé sur le nom
  const getCorrectType = (workout: Workout): string => {
@@ -443,14 +518,40 @@ export default function CalendarPage() {
  </Head>
  <div className="min-h-screen bg-background" suppressHydrationWarning>
  {/* Header */}
- <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
- <div>
- <h1 className="text-2xl sm:text-3xl font-bold text-white">Calendrier</h1>
- <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
+ <div className="border-b border-border bg-background/95">
+ <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+ <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+ <div className="space-y-4">
+ <Badge variant="outline" className="w-fit border-primary/30 bg-primary/10 text-primary">
+ Planning mobile-first
+ </Badge>
+ <div className="space-y-2">
+ <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Calendrier</h1>
+ <p className="max-w-2xl text-sm leading-6 text-safe-muted sm:text-base">
+ Planifie tes séances, visualise les partages utiles et garde un accès rapide aux actions importantes, surtout sur mobile.
+ </p>
  </div>
- <div className="flex items-center space-x-2 sm:space-x-md">
+ <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+ <div className="rounded-2xl border border-border bg-card/80 px-4 py-3 shadow-sm">
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Ce mois-ci</p>
+ <p className="mt-2 text-2xl font-semibold text-foreground">{currentMonthWorkouts.length}</p>
+ <p className="text-sm text-safe-muted">séances personnelles</p>
+ </div>
+ <div className="rounded-2xl border border-border bg-card/80 px-4 py-3 shadow-sm">
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Terminées</p>
+ <p className="mt-2 text-2xl font-semibold text-success">{completedWorkouts}</p>
+ <p className="text-sm text-safe-muted">dans la vue courante</p>
+ </div>
+ <div className="rounded-2xl border border-border bg-card/80 px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Partages visibles</p>
+ <p className="mt-2 text-2xl font-semibold text-foreground">{visibleMonthPartnerWorkouts.length}</p>
+ <p className="text-sm text-safe-muted">
+ {showPartnersWorkouts ?'séances partenaires affichées' :'active le partage pour les voir ici'}
+ </p>
+ </div>
+ </div>
+ </div>
+ <div className="flex flex-col gap-2 sm:flex-row xl:flex-col xl:items-stretch">
  <Button
  onClick={() => {
  if (partnersWorkouts.length === 0) {
@@ -460,33 +561,35 @@ export default function CalendarPage() {
 }
 }}
  variant="outline"
- className="bg-card border-border text-primary hover:bg-accent flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation"
+ className="min-h-[48px] justify-between gap-3 border-border bg-card text-foreground hover:bg-accent touch-manipulation"
  title={
  partnersWorkouts.length === 0 
  ?'Aucune séance partagée disponible - Gérer mes partenaires' 
  : (showPartnersWorkouts ?'Masquer les séances des partenaires' :'Afficher les séances des partenaires')
 }
  >
- <span className="text-sm font-bold">👥</span>
- <span className="hidden sm:inline">Partenaires</span>
- <span className="sm:hidden">Part.</span>
- {partnersWorkouts.length > 0 ? (
- <span className="bg-primary text-white rounded-full px-2 py-1 text-xs font-semibold shadow-sm">
+ <span className="flex items-center gap-2">
+ <Users className="h-4 w-4 text-primary" aria-hidden="true" />
+ <span className="text-sm font-medium">
+ {partnersWorkouts.length === 0
+ ?'Gérer mes partenaires'
+ : showPartnersWorkouts
+ ?'Masquer les partages'
+ :'Afficher les partages'}
+ </span>
+ </span>
+ {partnersWorkouts.length > 0 && (
+ <Badge className="bg-primary text-white hover:bg-primary">
  {partnersWorkouts.length}
- </span>
- ) : (
- <span className="bg-gray-400 text-white rounded-full px-2 py-1 text-xs font-bold shadow-sm">
- 0
- </span>
+ </Badge>
  )}
  </Button>
  <Button
  onClick={() => router.push('/workouts/new')}
- className="bg-primary hover:bg-primary-hover flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation text-white shadow-sm transition-colors"
+ className="min-h-[48px] gap-2 bg-primary text-white shadow-sm transition-colors hover:bg-primary-hover touch-manipulation"
  >
  <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
- <span className="hidden sm:inline">Nouvelle séance</span>
- <span className="sm:hidden">Nouveau</span>
+ <span>Nouvelle séance</span>
  </Button>
  </div>
  </div>
@@ -663,7 +766,7 @@ export default function CalendarPage() {
  role="button"
  tabIndex={0}
  onKeyDown={(e) => {
- if (e.key ==='Enter' || e.key ==='') {
+ if (e.key ==='Enter' || e.key ===' ') {
  e.preventDefault();
  setSelectedDate(day.date);
 }
@@ -694,30 +797,7 @@ export default function CalendarPage() {
  </div>
  
 {(() => {
- // Combiner séances personnelles et partenaires avec identification
- // Afficher toutes les séances planifiées du mois courant pour cohérence avec les statistiques
- const currentDate = new Date();
- 
- const personalWorkouts = workouts
- .filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-})
- .map(workout => ({ ...workout, isPartnerWorkout: false}));
- 
- const partnerWorkouts = partnersWorkouts
- .filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-})
- .map(workout => ({ ...workout, isPartnerWorkout: true}));
- 
- const allMonthWorkouts = [...personalWorkouts, ...partnerWorkouts]
- .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime());
- 
- return allMonthWorkouts.length === 0 ? (
+ return combinedMonthWorkouts.length === 0 ? (
  <div className="text-center py-12 text-muted-foreground">
  <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
  <p className="text-lg font-medium">Aucune séance planifiée</p>
@@ -725,7 +805,7 @@ export default function CalendarPage() {
  </div>
  ) : (
  <div className="space-y-2">
- {allMonthWorkouts.slice(0, 10).map(workout => (
+ {combinedMonthWorkouts.slice(0, 10).map(workout => (
  <div key={`${workout.isPartnerWorkout ?'partner-' :'personal-'}${workout.id}`} className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border">
  <div className={`w-3 h-3 rounded-full ${getTypeColor(getCorrectType(workout))}`}></div>
  <div className="flex-1">
@@ -761,11 +841,72 @@ export default function CalendarPage() {
  </TabsContent>
  
  <TabsContent value="stats" className="m-0 xl:hidden">
- {/* Vue stats simplifiée */}
- <div className="text-center py-12 text-muted-foreground">
- <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
- <p className="text-lg font-medium">Statistiques</p>
- <p className="text-sm">Fonctionnalité disponible prochainement</p>
+ <div className="space-y-4">
+ <div className="grid grid-cols-2 gap-3">
+ <Card className="p-4">
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Planifiées</p>
+ <p className="mt-2 text-2xl font-semibold text-foreground">{plannedWorkouts}</p>
+ <p className="text-sm text-safe-muted">à venir ce mois-ci</p>
+ </Card>
+ <Card className="p-4">
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Partages</p>
+ <p className="mt-2 text-2xl font-semibold text-foreground">{visibleMonthPartnerWorkouts.length}</p>
+ <p className="text-sm text-safe-muted">visibles sur mobile</p>
+ </Card>
+ </div>
+
+ <Card className="p-4">
+ <div className="flex items-start justify-between gap-3">
+ <div>
+ <p className="text-xs font-semibold uppercase tracking-[0.16em] text-safe-muted">Prochaine séance</p>
+ <h3 className="mt-2 text-lg font-semibold text-foreground">
+ {nextPlannedWorkout ? nextPlannedWorkout.name :'Aucune séance planifiée'}
+ </h3>
+ <p className="mt-1 text-sm text-safe-muted">
+ {nextPlannedWorkout
+ ? `${new Date(nextPlannedWorkout.scheduled_date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long'})}${nextPlannedWorkout.start_time ? ` • ${nextPlannedWorkout.start_time}` :''}`
+ :'Crée une séance pour remplir ton planning.'}
+ </p>
+ </div>
+ <Button size="sm" onClick={() => router.push('/workouts/new')} className="shrink-0">
+ <Plus className="mr-1 h-4 w-4" />
+ Ajouter
+ </Button>
+ </div>
+ </Card>
+
+ {selectedDate && (
+ <Card className="p-4">
+ <h3 className="text-base font-semibold text-foreground">{formatDate(selectedDate)}</h3>
+ <div className="mt-4 space-y-2">
+ {selectedDateWorkouts.length === 0 ? (
+ <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center text-sm text-safe-muted">
+ Aucune séance planifiée pour cette date.
+ </div>
+ ) : (
+ selectedDateWorkouts.map(workout => (
+ <div key={`${workout.isPartnerWorkout ?'partner-' :'personal-'}${workout.id}`} className="rounded-xl border border-border bg-muted/30 p-3">
+ <div className="flex items-center justify-between gap-3">
+ <div className="min-w-0">
+ <p className="truncate font-medium text-foreground">{workout.name}</p>
+ <p className="text-sm text-safe-muted">
+ {getCorrectType(workout)}
+ {workout.duration ? ` • ${workout.duration} min` :''}
+ {workout.start_time ? ` • ${workout.start_time}` :''}
+ </p>
+ </div>
+ {workout.isPartnerWorkout && (
+ <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+ Partenaire
+ </Badge>
+ )}
+ </div>
+ </div>
+ ))
+ )}
+ </div>
+ </Card>
+ )}
  </div>
  </TabsContent>
  </Tabs>
@@ -773,7 +914,7 @@ export default function CalendarPage() {
  </div>
 
  {/* Panneau latéral simple */}
- <div className="space-y-6">
+ <div className="hidden xl:block space-y-6">
  {/* Statistiques mensuelles */}
  <div className="bg-card border border-border rounded-xl shadow-md p-4 lg:p-6">
  <h3 className="text-base lg:text-lg font-bold text-foreground mb-4">
@@ -781,20 +922,6 @@ export default function CalendarPage() {
  </h3>
  <div className="space-y-4">
  {(() => {
- const currentMonthWorkouts = workouts.filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-});
- 
- const completedWorkouts = currentMonthWorkouts.filter(w => w.status ==='Terminé' || w.status ==='Réalisé').length;
- const plannedWorkouts = currentMonthWorkouts.filter(w => w.status ==='Planifié' || w.status ==='Planifie').length;
- 
- const typeStats = workoutTypes.map(type => ({
- ...type,
- count: currentMonthWorkouts.filter(w => getCorrectType(w) === type.name).length
-})).filter(type => type.count > 0);
-
  return (
  <>
  <div className="grid grid-cols-2 gap-2">
@@ -808,10 +935,10 @@ export default function CalendarPage() {
  </div>
  </div>
  
- {typeStats.length > 0 && (
+ {monthlyTypeStats.length > 0 && (
  <div className="space-y-2">
  <h4 className="text-sm font-medium text-foreground">Types d'entraînements</h4>
- {typeStats.slice(0, 3).map(type => (
+ {monthlyTypeStats.slice(0, 3).map(type => (
  <div key={type.name} className="flex items-center justify-between">
  <div className="flex items-center space-x-2">
  <div className={`w-3 h-3 rounded-full ${type.color}`}></div>
@@ -836,9 +963,7 @@ export default function CalendarPage() {
  </h3>
  <div className="space-y-2">
  {(() => {
- const workoutsForDate = getWorkoutsForDate(selectedDate);
- 
- if (workoutsForDate.length === 0) {
+ if (selectedDateWorkouts.length === 0) {
  return (
  <div className="text-center py-6 text-muted-foreground">
  <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
@@ -846,7 +971,7 @@ export default function CalendarPage() {
  </div>
  );
 }
- return workoutsForDate.map(workout => (
+ return selectedDateWorkouts.map(workout => (
  <div key={workout.id} className="p-2 bg-muted rounded-lg flex flex-col gap-1">
  <h4 className="font-medium text-foreground">
  {workout.name}
@@ -860,17 +985,22 @@ export default function CalendarPage() {
  <span>{workout.duration} min</span>
  </span>
  )}
+ {workout.isPartnerWorkout && (
+ <Badge variant="outline" className="w-fit border-primary/30 bg-primary/10 text-primary">
+ Partenaire
+ </Badge>
+ )}
  </div>
  ));
 })()}
  </div>
- <button
+ <Button
  onClick={() => router.push('/workouts/new')}
- className="w-full mt-4 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
+ className="mt-4 min-h-[44px] w-full"
  >
  <Plus className="h-5 w-5" />
  <span>Ajouter une séance</span>
- </button>
+ </Button>
  </div>
  )}
  </div>

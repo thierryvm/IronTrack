@@ -1,12 +1,19 @@
 # Guide d'Administration Système IronTrack
 
-**Version**: 1.0.0  
-**Dernière mise à jour**: 2025-01-29  
+**Version**: 1.1.0  
+**Dernière mise à jour**: 6 avril 2026  
 **Public**: Administrateurs système et super-administrateurs  
 
 ## 🎯 Vue d'ensemble
 
 Ce guide est destiné aux administrateurs qui gèrent le système IronTrack en production. Il couvre les outils d'administration, la maintenance et les procédures opérationnelles.
+
+## État Opérationnel 2026
+
+- le back-office reste utilisable en production
+- les workflows mobiles admin sont en cours d'amélioration dans le chantier UX/UI 2026
+- sur mobile, privilégier les actions rapides et la consultation
+- pour les opérations denses (modération, logs, exports), desktop reste la référence tant que la phase admin mobile n'est pas clôturée
 
 ## 🔐 Accès Administration
 
@@ -21,6 +28,11 @@ Ce guide est destiné aux administrateurs qui gèrent le système IronTrack en p
 - **Support tickets**: Système de support intégré
 - **Logs système**: Audit trails et monitoring
 - **Optimisation images**: Outils de performance (nouveau)
+
+### Support et traitement tickets
+- utiliser les vues tickets pour traiter les urgences, puis documenter la décision
+- éviter les actions sensibles depuis mobile si une vérification détaillée des logs est nécessaire
+- conserver une traçabilité via GitHub Issues/PRs pour les corrections produit liées aux tickets récurrents
 
 ## ⚡ Système d'Optimisation d'Images
 

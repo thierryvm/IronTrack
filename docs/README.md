@@ -1,47 +1,32 @@
-# 📚 Documentation IronTrack
+# IronTrack Documentation
 
-## 🏗️ **Architecture & Développement**
-- [**ARCHITECTURE_OVERVIEW.md**](./ARCHITECTURE_OVERVIEW.md) - Vue d'ensemble technique complète
-- [**DEVELOPER_GUIDE.md**](./DEVELOPER_GUIDE.md) - Guide complet développeur
-- [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) - Guide déploiement production
+This folder contains the living documentation for IronTrack.
 
-## 📋 **Spécifications & UX**
-- [**CAHIER_DES_CHARGES_UX.md**](./CAHIER_DES_CHARGES_UX.md) - Cahier des charges UX complet
-- [**GUIDE_PERMISSIONS_ROLES.md**](./GUIDE_PERMISSIONS_ROLES.md) - Système de rôles et permissions
+## Recommended Starting Points
 
-## 🛡️ **Sécurité**
-- [**SECURITE_IRONTRACK.md**](./SECURITE_IRONTRACK.md) - Sécurité applicative
-- [**REGLES_SECURITE_CLAUDE.md**](./REGLES_SECURITE_CLAUDE.md) - Règles sécurité développement
-- [**supabase_password_security.md**](./supabase_password_security.md) - Configuration auth sécurisée
+### Product, UX, and Accessibility
 
-## 🤖 **Context7 & Automatisation**
-- [**CONTEXT7_REFERENCE_RAPIDE.md**](./CONTEXT7_REFERENCE_RAPIDE.md) - ⚡ Référence rapide Context7
-- [**GUIDE_AUTOMATISATION_CONTEXT7.md**](./GUIDE_AUTOMATISATION_CONTEXT7.md) - Guide complet automatisation
-- [**ANALYSE_CONTEXT7_IRONTRACK.md**](./ANALYSE_CONTEXT7_IRONTRACK.md) - Analyse technique Context7
+- [AUDIT_UX_UI_WCAG22_MOBILE_FIRST_5_AVRIL_2026.md](./AUDIT_UX_UI_WCAG22_MOBILE_FIRST_5_AVRIL_2026.md) — active UX/UI audit and phased roadmap
+- [CAHIER_DES_CHARGES_UX.md](./CAHIER_DES_CHARGES_UX.md) — product scope and expected user experience
+- [GUIDE_CONTRASTE_SECURISE.md](./GUIDE_CONTRASTE_SECURISE.md) — safe contrast classes and guardrails
 
----
+### Engineering and Delivery
 
-## 🎯 **Documentation Prioritaire**
+- [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) — main engineering guide
+- [ARCHITECTURE_OVERVIEW.md](./ARCHITECTURE_OVERVIEW.md) — architecture overview
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) — deployment and production workflow
+- [GUIDE_CONTRIBUTION_PRATIQUE.md](./GUIDE_CONTRIBUTION_PRATIQUE.md) — contribution workflow
 
-### **Pour Développeurs**
-1. [`DEVELOPER_GUIDE.md`](./DEVELOPER_GUIDE.md) - **START HERE** pour nouveaux développeurs
-2. [`ARCHITECTURE_OVERVIEW.md`](./ARCHITECTURE_OVERVIEW.md) - Comprendre l'architecture
-3. [`CONTEXT7_REFERENCE_RAPIDE.md`](./CONTEXT7_REFERENCE_RAPIDE.md) - Utiliser Context7
+### Security and Operations
 
-### **Pour UX/Product**
-1. [`CAHIER_DES_CHARGES_UX.md`](./CAHIER_DES_CHARGES_UX.md) - Spécifications complètes
-2. [`GUIDE_PERMISSIONS_ROLES.md`](./GUIDE_PERMISSIONS_ROLES.md) - Système utilisateurs
+- [SECURITE_IRONTRACK.md](./SECURITE_IRONTRACK.md) — application security guidance
+- [SECURITE_CSP_HARDENING.md](./SECURITE_CSP_HARDENING.md) — CSP hardening notes
+- [GUIDE_ADMINISTRATION_SYSTEME.md](./GUIDE_ADMINISTRATION_SYSTEME.md) — admin operations and handling
+- [GUIDE_PERMISSIONS_ROLES.md](./GUIDE_PERMISSIONS_ROLES.md) — role model and permissions
 
-### **Pour DevOps/Production**
-1. [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md) - Déploiement Vercel/Supabase
-2. [`SECURITE_IRONTRACK.md`](./SECURITE_IRONTRACK.md) - Sécurité production
+## Documentation Principles
 
----
-
-## 📝 **Convention Documentation**
-
-Tous les fichiers de documentation technique sont maintenant centralisés dans `docs/` selon les bonnes pratiques standard de l'industrie.
-
-**Seuls à la racine :**
-- `README.md` - Introduction projet
-- `CLAUDE.md` - Instructions Claude Code (spécifique au workflow)
+- keep documents aligned with the current codebase and active PRs
+- avoid marking the project as “final” when roadmap phases are still open
+- prefer dated audits and phased plans for large refactors
+- keep README files short and link to the authoritative document instead of duplicating status everywhere
