@@ -1,851 +1,459 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef} from'react'
-import Head from'next/head'
+import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
+import { Activity, Calendar as CalendarIcon, List } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-// Import directs des icônes pour éviter les erreurs webpack
-import { 
- Plus, 
- Calendar as CalendarIcon, 
- List, 
- Activity, 
- ChevronLeft, 
- ChevronRight,
- Clock 
-} from'lucide-react'
+import CalendarHero from '@/components/calendar/CalendarHero'
+import CalendarInsightsPanel from '@/components/calendar/CalendarInsightsPanel'
+import CalendarListView from '@/components/calendar/CalendarListView'
+import CalendarMonthGrid from '@/components/calendar/CalendarMonthGrid'
+import {
+  buildMonthDays,
+  formatDateToYMD,
+  formatMonthLabel,
+  getMonthKey,
+  isWorkoutCompleted,
+  isWorkoutPlanned,
+  mapWorkoutToSession,
+  normalizeWorkoutType,
+  sortWorkouts,
+  type DisplayWorkout,
+  type Workout,
+  type WorkoutType,
+  type WorkoutWithProfile,
+  WORKOUT_TYPES,
+} from '@/components/calendar/calendar-utils'
+import ActionButton from '@/components/ui/action-button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Card } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createClient } from '@/utils/supabase/client'
 
-
-// MIGRATION SHADCN/UI CALENDAR
-import { Button} from'@/components/ui/button'
-import { Card} from'@/components/ui/card'
-import { Badge} from'@/components/ui/badge'
-import { Tabs, TabsList, TabsTrigger, TabsContent} from'@/components/ui/tabs'
-import { createClient} from'@/utils/supabase/client'
-import { useRouter} from'next/navigation'
-import CalendarDayCell from'@/components/ui/CalendarDayCell';
-
-interface Workout {
- id: number
- user_id: string
- scheduled_date: string
- name: string
- type:'Musculation' |'Cardio' |'Étirement' |'Repos' |'Cours collectif' |'Gainage' |'Natation' |'Crossfit' |'Yoga' |'Pilates'
- status:'Planifié' |'Planifie' |'Terminé' |'Réalisé' |'Annulé'
- duration?: number
- exercises?: string[]
- notes?: string
- start_time?: string
- end_time?: string
- created_at?: string
- updated_at?: string
- profiles?: {
- id: string
- pseudo: string | null
- full_name: string | null
- email: string
- avatar_url: string | null
-}
-}
-
-interface WorkoutWithProfile extends Workout {
- profiles?: {
- id: string
- pseudo: string | null
- full_name: string | null
- email: string
- avatar_url: string | null
-}
-}
-
-const workoutTypes = [
- { name:'Musculation', color:'bg-primary', iconName:'Dumbbell'},
- { name:'Cardio', color:'bg-secondary', iconName:'Clock'},
- { name:'Étirement', color:'bg-green-500', iconName:'Target'},
- { name:'Cours collectif', color:'bg-purple-500', iconName:'Users'},
- { name:'Gainage', color:'bg-yellow-500', iconName:'Activity'},
- { name:'Natation', color:'bg-cyan-500', iconName:'Waves'},
- { name:'Crossfit', color:'bg-red-500', iconName:'Zap'},
- { name:'Yoga', color:'bg-pink-500', iconName:'Flower'},
- { name:'Pilates', color:'bg-indigo-500', iconName:'Smile'},
- { name:'Repos', color:'bg-gray-500', iconName:'CheckCircle'}
-]
-
-
-// Type commun pour les séances du calendrier
-interface CalendarSession {
- id: string;
- name: string;
- type:'Musculation' |'Cardio' |'Étirement' |'Repos' |'Cours collectif' |'Gainage' |'Natation' |'Crossfit' |'Yoga' |'Pilates';
- status:'Planifié' |'Planifie' |'Terminé' |'Réalisé' |'Annulé';
- duration?: number;
- isShared: boolean;
- participants: { id: string; name: string; avatarUrl: string}[];
- time: string;
- exercises: string[];
- scheduled_date: string;
- color?: string;
-}
-
-
-// Ajoute une fonction utilitaire pour formater une date JS en'YYYY-MM-DD' en local (pas UTC)
-function formatDateToYMD(date: Date): string {
- const year = date.getFullYear();
- const month = String(date.getMonth() + 1).padStart(2,'0');
- const dayNum = String(date.getDate()).padStart(2,'0');
- return `${year}-${month}-${dayNum}`;
+interface TrainingPartnerRow {
+  requester_id: string
+  partner_id: string
 }
 
 export default function CalendarPage() {
- const router = useRouter();
- 
- const [currentDate, setCurrentDate] = useState(new Date())
- const [selectedDate, setSelectedDate] = useState<Date | null>(null)
- const [workouts, setWorkouts] = useState<Workout[]>([])
- const [partnersWorkouts, setPartnersWorkouts] = useState<WorkoutWithProfile[]>([])
- const [showPartnersWorkouts, setShowPartnersWorkouts] = useState(false)
- const [, setSharePlanning] = useState(false)
- const [viewMode, setViewMode] = useState<'calendar' |'list' |'stats'>('calendar')
- 
- // État pour la navigation swipe
- const [isSwipeTransition, setIsSwipeTransition] = useState(false)
- const calendarRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const [currentDate, setCurrentDate] = useState(() => new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
+  const [workouts, setWorkouts] = useState<Workout[]>([])
+  const [partnersWorkouts, setPartnersWorkouts] = useState<WorkoutWithProfile[]>([])
+  const [showPartnerWorkouts, setShowPartnerWorkouts] = useState(false)
+  const [viewMode, setViewMode] = useState<'calendar' | 'list' | 'stats'>('calendar')
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [isSwipeTransition, setIsSwipeTransition] = useState(false)
 
- // Fonctions de navigation swipe (Apple pattern)
- const handleSwipeNavigation = useCallback((direction:'left' |'right') => {
- if (isSwipeTransition) return
- 
- setIsSwipeTransition(true)
- const newDate = new Date(currentDate)
- 
- if (direction ==='left') {
- // Swipe gauche = mois suivant (comme Apple Calendar)
- newDate.setMonth(newDate.getMonth() + 1)
-} else {
- // Swipe droite = mois précédent
- newDate.setMonth(newDate.getMonth() - 1)
-}
- 
- setCurrentDate(newDate)
- 
- // Réactiver swipe après animation
- setTimeout(() => setIsSwipeTransition(false), 300)
-}, [currentDate, isSwipeTransition])
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
 
- // Gestion des événements tactiles sans Framer Motion
- const handleTouchStart = useCallback((e: React.TouchEvent) => {
- const touch = e.touches[0]
- if (calendarRef.current) {
- calendarRef.current.dataset.startX = touch.clientX.toString()
- calendarRef.current.dataset.startY = touch.clientY.toString()
- calendarRef.current.dataset.startTime = Date.now().toString()
-}
-}, [])
+  const fetchPersonalWorkouts = useCallback(async (userId: string) => {
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('workouts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('scheduled_date', { ascending: true })
 
- const handleTouchEnd = useCallback((e: React.TouchEvent) => {
- if (!calendarRef.current || isSwipeTransition) return
- 
- const touch = e.changedTouches[0]
- const startX = parseFloat(calendarRef.current.dataset.startX ||'0')
- const startY = parseFloat(calendarRef.current.dataset.startY ||'0')
- const startTime = parseInt(calendarRef.current.dataset.startTime ||'0')
- 
- const deltaX = touch.clientX - startX
- const deltaY = touch.clientY - startY
- const deltaTime = Date.now() - startTime
- 
- const swipeThreshold = 50 // Distance minimale pour déclencher swipe
- const maxTime = 300 // Temps maximum pour un swipe
- 
- // Détection swipe horizontal uniquement
- if (Math.abs(deltaX) > Math.abs(deltaY) && 
- Math.abs(deltaX) > swipeThreshold && 
- deltaTime < maxTime) {
- 
- if (deltaX > 0) {
- handleSwipeNavigation('right') // Swipe vers droite = mois précédent
-} else {
- handleSwipeNavigation('left') // Swipe vers gauche = mois suivant
-}
-}
- 
- // Nettoyer les données
- delete calendarRef.current.dataset.startX
- delete calendarRef.current.dataset.startY
- delete calendarRef.current.dataset.startTime
-}, [handleSwipeNavigation, isSwipeTransition])
+    return (data as Workout[] | null) || []
+  }, [])
 
- // Charger les séances personnelles
- const loadWorkouts = useCallback(async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) return;
+  const fetchPartnerWorkouts = useCallback(async (userId: string) => {
+    const supabase = createClient()
+    const { data: partnerships } = await supabase
+      .from('training_partners')
+      .select('requester_id, partner_id')
+      .or(`requester_id.eq.${userId},partner_id.eq.${userId}`)
+      .eq('status', 'accepted')
 
- const { data: workoutsData} = await supabase
- .from('workouts')
- .select('*')
- .eq('user_id', user.id)
- .order('scheduled_date', { ascending: true});
- 
- if (workoutsData) {
- setWorkouts(workoutsData);
-}
-}, []);
+    const resolvedPartnerships = (partnerships as TrainingPartnerRow[] | null) || []
+    if (resolvedPartnerships.length === 0) {
+      return []
+    }
 
- // Charger les séances des partenaires
- const loadPartnersWorkouts = useCallback(async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) return;
+    const partnerIds = resolvedPartnerships.map((partnership) =>
+      partnership.requester_id === userId ? partnership.partner_id : partnership.requester_id,
+    )
 
- // Récupérer les partenaires acceptés avec leurs séances partagées
- const { data: partnersData} = await supabase
- .from('training_partners')
- .select(`
- *,
- requester:requester_id(id, pseudo, full_name, email, avatar_url),
- partner:partner_id(id, pseudo, full_name, email, avatar_url)
- `)
- .or(`requester_id.eq.${user.id},partner_id.eq.${user.id}`)
- .eq('status','accepted');
+    const { data: sharingSettings } = await supabase
+      .from('partner_sharing_settings')
+      .select('user_id')
+      .in('user_id', partnerIds)
+      .eq('partner_id', userId)
+      .eq('share_workouts', true)
 
- if (!partnersData || partnersData.length === 0) {
- setPartnersWorkouts([]);
- return;
-}
+    const sharingPartnerIds =
+      (sharingSettings as Array<{ user_id: string }> | null)?.map((setting) => setting.user_id) ||
+      []
 
- const partnerIds = partnersData.map(p => 
- p.requester_id === user.id ? p.partner_id : p.requester_id
- );
+    if (sharingPartnerIds.length === 0) {
+      return []
+    }
 
- // Récupérer les paramètres de partage pour chaque partenaire
- const { data: sharingSettings} = await supabase
- .from('partner_sharing_settings')
- .select('*')
- .in('user_id', partnerIds)
- .eq('partner_id', user.id)
- .eq('share_workouts', true);
+    const { data } = await supabase
+      .from('workouts')
+      .select('*, profiles:user_id(id, pseudo, full_name, email, avatar_url)')
+      .in('user_id', sharingPartnerIds)
+      .order('scheduled_date', { ascending: true })
 
- if (!sharingSettings || sharingSettings.length === 0) {
- setPartnersWorkouts([]);
- return;
-}
+    return (data as WorkoutWithProfile[] | null) || []
+  }, [])
 
- // Filtrer les partenaires qui partagent leurs workouts
- const sharingPartnerIds = sharingSettings.map(s => s.user_id);
+  const refreshCalendarData = useCallback(async () => {
+    if (!currentUserId) {
+      return
+    }
 
- // Récupérer les séances des partenaires qui partagent leurs workouts
- const { data: workoutsData} = await supabase
- .from('workouts')
- .select(`
- *,
- profiles:user_id(id, pseudo, full_name, email, avatar_url)
- `)
- .in('user_id', sharingPartnerIds)
- .order('scheduled_date', { ascending: true});
+    setLoadError(null)
 
- if (workoutsData) {
- // Enrichir avec les informations de partenariat
- const enrichedWorkouts = workoutsData.map(workout => ({
- ...workout,
- isPartnerWorkout: true,
- partnerInfo: partnersData.find(p => 
- (p.requester_id === workout.user_id || p.partner_id === workout.user_id)
- )
-}));
- 
- setPartnersWorkouts(enrichedWorkouts);
-}
-}, []);
+    try {
+      const [personalWorkouts, sharedWorkouts] = await Promise.all([
+        fetchPersonalWorkouts(currentUserId),
+        fetchPartnerWorkouts(currentUserId),
+      ])
 
- useEffect(() => {
- const checkAuth = async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) {
- router.replace('/auth');
-}
-};
- checkAuth();
-}, [router]);
+      setWorkouts(personalWorkouts)
+      setPartnersWorkouts(sharedWorkouts)
+    } catch {
+      setLoadError('Impossible de charger le calendrier pour le moment.')
+    }
+  }, [currentUserId, fetchPartnerWorkouts, fetchPersonalWorkouts])
 
- useEffect(() => {
- const fetchProfile = async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) return;
- const { data: profile} = await supabase
- .from('profiles')
- .select('avatar_url, full_name, email, pseudo')
- .eq('id', user.id)
- .single();
- if (profile) {
- if (!profile.pseudo || profile.pseudo.trim() ==='') {
- const pseudo = (profile.email && profile.email.split('@')[0]) ||'Utilisateur IronTrack';
- await supabase
- .from('profiles')
- .update({ pseudo})
- .eq('id', user.id);
-}
-}
- const { data: settings} = await supabase
- .from('user_settings')
- .select('share_planning')
- .eq('user_id', user.id)
- .single();
- const shareEnabled = !!settings?.share_planning;
- setSharePlanning(shareEnabled);
- 
- // Charger les données initiales
- loadWorkouts();
- loadPartnersWorkouts();
-};
- fetchProfile();
-}, [router, loadWorkouts, loadPartnersWorkouts])
+  useEffect(() => {
+    let isCancelled = false
 
+    async function bootstrap() {
+      setIsLoading(true)
+      setLoadError(null)
 
- const getDaysInMonth = (date: Date) => {
- const year = date.getFullYear()
- const month = date.getMonth()
- const firstDay = new Date(year, month, 1)
- const lastDay = new Date(year, month + 1, 0)
- const daysInMonth = lastDay.getDate()
- 
- // Convertir le dimanche (0) en 7 pour le standard européen (Lundi = 1, Dimanche = 7)
- const startingDayOfWeek = firstDay.getDay() === 0 ? 7 : firstDay.getDay()
- const days = []
- 
- // Ajouter les jours du mois précédent (Lundi = jour 1)
- for (let i = 1; i < startingDayOfWeek; i++) {
- const prevDate = new Date(year, month, -(startingDayOfWeek - i - 1))
- days.push({ date: prevDate, isCurrentMonth: false})
-}
+      try {
+        const supabase = createClient()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
 
- // Ajouter les jours du mois actuel
- for (let i = 1; i <= daysInMonth; i++) {
- const currentDate = new Date(year, month, i)
- days.push({ date: currentDate, isCurrentMonth: true})
-}
+        if (!user) {
+          router.replace('/auth')
+          return
+        }
 
- // Compléter avec les jours du mois suivant pour faire 42 jours (6 semaines)
- const remainingDays = 42 - days.length
- for (let i = 1; i <= remainingDays; i++) {
- const nextDate = new Date(year, month + 1, i)
- days.push({ date: nextDate, isCurrentMonth: false})
-}
+        if (isCancelled) {
+          return
+        }
 
- return days
-}
+        setCurrentUserId(user.id)
 
- const getWorkoutsForDate = (date: Date) => {
- const selected = formatDateToYMD(date);
- return workouts.filter(workout => workout.scheduled_date === selected);
-}
+        const [personalWorkouts, sharedWorkouts] = await Promise.all([
+          fetchPersonalWorkouts(user.id),
+          fetchPartnerWorkouts(user.id),
+        ])
 
- const getTypeColor = (type: string) => {
- const workoutType = workoutTypes.find(wt => wt.name === type)
- return workoutType?.color ||'bg-gray-500'
-}
+        if (isCancelled) {
+          return
+        }
 
- // Conversion des classes CSS vers gradients pour le calendrier
- const getSessionGradient = (type: string) => {
- const colorMap: { [key: string]: string} = {
-'bg-primary':'linear-gradient(135deg, #ea580c 0%, #fb923c 100%)', // Musculation
-'bg-secondary':'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)', // Cardio
-'bg-green-500':'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)', // Étirement
-'bg-purple-500':'linear-gradient(135deg, #a855f7 0%, #c084fc 100%)', // Cours collectif
-'bg-yellow-500':'linear-gradient(135deg, #eab308 0%, #facc15 100%)', // Gainage
-'bg-cyan-500':'linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%)', // Natation
-'bg-red-500':'linear-gradient(135deg, #ef4444 0%, #f87171 100%)', // Crossfit
-'bg-pink-500':'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)', // Yoga
-'bg-indigo-500':'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', // Pilates
-'bg-gray-500':'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)', // Repos
-}
- const colorClass = getTypeColor(type)
- return colorMap[colorClass] || colorMap['bg-gray-500']
-}
+        setWorkouts(personalWorkouts)
+        setPartnersWorkouts(sharedWorkouts)
+      } catch {
+        if (!isCancelled) {
+          setLoadError('Impossible de charger le calendrier pour le moment.')
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false)
+        }
+      }
+    }
 
- const formatDate = (date: Date) => {
- return date.toLocaleDateString('fr-FR', { 
- weekday:'long', 
- year:'numeric', 
- month:'long', 
- day:'numeric' 
-})
-}
+    void bootstrap()
 
- const isToday = (date: Date) => {
- const today = new Date()
- return date.toDateString() === today.toDateString()
-}
+    return () => {
+      isCancelled = true
+    }
+  }, [fetchPartnerWorkouts, fetchPersonalWorkouts, router])
 
- const isSelected = (date: Date): boolean => {
- return (selectedDate ?? undefined) !== undefined && date.toDateString() === selectedDate!.toDateString()
-}
+  useEffect(() => {
+    if (!currentUserId) {
+      return
+    }
 
- const days = getDaysInMonth(currentDate)
- const monthName = currentDate.toLocaleDateString('fr-FR', { month:'long', year:'numeric'})
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshCalendarData()
+      }
+    }
 
- // Fonction pour corriger automatiquement le type basé sur le nom
- const getCorrectType = (workout: Workout): string => {
- const name = workout.name.toLowerCase();
- if (name.includes('cardio')) return'Cardio';
- if (name.includes('étirement') || name.includes('etirement') || name.includes('stretch')) return'Étirement';
- if (name.includes('cours') || name.includes('collectif') || name.includes('group')) return'Cours collectif';
- if (name.includes('gainage') || name.includes('core') || name.includes('abs')) return'Gainage';
- if (name.includes('natation') || name.includes('piscine') || name.includes('swim')) return'Natation';
- if (name.includes('crossfit') || name.includes('cross fit') || name.includes('wod')) return'Crossfit';
- if (name.includes('yoga')) return'Yoga';
- if (name.includes('pilates')) return'Pilates';
- if (name.includes('repos') || name.includes('rest')) return'Repos';
- return workout.type; // Garder le type original si aucune correspondance
-};
+    const handleFocus = () => {
+      void refreshCalendarData()
+    }
 
- return (
- <>
- <Head>
- <title>Calendrier - Planning entraînements | IronTrack</title>
- <meta name="description" content="Planifiez et organisez vos séances de musculation. Calendrier interactif pour suivre vos entraînements, cardio, repos et progression hebdomadaire." />
- <meta name="keywords" content="calendrier musculation, planning entraînement, organisation fitness, suivi séances" />
- <meta property="og:title" content="Calendrier IronTrack - Planning musculation" />
- <meta property="og:description" content="Organisez vos séances de musculation avec le calendrier interactif IronTrack" />
- <meta property="og:type" content="website" />
- </Head>
- <div className="min-h-screen bg-background" suppressHydrationWarning>
- {/* Header */}
- <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
- <div>
- <h1 className="text-2xl sm:text-3xl font-bold text-white">Calendrier</h1>
- <p className="text-orange-100 text-sm sm:text-base">Planifie et organise tes séances</p>
- </div>
- <div className="flex items-center space-x-2 sm:space-x-md">
- <Button
- onClick={() => {
- if (partnersWorkouts.length === 0) {
- router.push('/training-partners');
-} else {
- setShowPartnersWorkouts(!showPartnersWorkouts);
-}
-}}
- variant="outline"
- className="bg-card border-border text-primary hover:bg-accent flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation"
- title={
- partnersWorkouts.length === 0 
- ?'Aucune séance partagée disponible - Gérer mes partenaires' 
- : (showPartnersWorkouts ?'Masquer les séances des partenaires' :'Afficher les séances des partenaires')
-}
- >
- <span className="text-sm font-bold">👥</span>
- <span className="hidden sm:inline">Partenaires</span>
- <span className="sm:hidden">Part.</span>
- {partnersWorkouts.length > 0 ? (
- <span className="bg-primary text-white rounded-full px-2 py-1 text-xs font-semibold shadow-sm">
- {partnersWorkouts.length}
- </span>
- ) : (
- <span className="bg-gray-400 text-white rounded-full px-2 py-1 text-xs font-bold shadow-sm">
- 0
- </span>
- )}
- </Button>
- <Button
- onClick={() => router.push('/workouts/new')}
- className="bg-primary hover:bg-primary-hover flex items-center space-x-1 sm:space-x-sm text-sm sm:text-base min-h-[44px] touch-manipulation text-white shadow-sm transition-colors"
- >
- <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
- <span className="hidden sm:inline">Nouvelle séance</span>
- <span className="sm:hidden">Nouveau</span>
- </Button>
- </div>
- </div>
- </div>
- </div>
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
 
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
- <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-8">
- {/* Calendrier et Vue Liste */}
- <div className="xl:col-span-2">
- <Card className="p-2 sm:p-6">
- {/* ShadCN UI Tabs Component - 3 onglets sur mobile */}
- <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as'calendar' |'list' |'stats')} className="w-full">
- <TabsList className="grid w-full grid-cols-2 xl:grid-cols-2 md:grid-cols-3 mb-6">
- <TabsTrigger value="calendar" className="flex items-center space-x-2">
- <CalendarIcon className="h-4 w-4" />
- <span>Calendrier</span>
- </TabsTrigger>
- <TabsTrigger value="list" className="flex items-center space-x-2">
- <List className="h-4 w-4" />
- <span>Liste</span>
- </TabsTrigger>
- {/* Troisième onglet Stats pour mobile/tablette */}
- <TabsTrigger value="stats" className="xl:hidden flex items-center space-x-2">
- <Activity className="h-4 w-4" />
- <span>Stats</span>
- </TabsTrigger>
- </TabsList>
- 
- <TabsContent value="calendar" className="m-0">
- {/* Vue Calendrier */}
- {/* Navigation du calendrier */}
- <div className="flex items-center justify-between mb-4 sm:mb-6">
- <div>
- <Button
- onClick={() => {
- const newDate = new Date(currentDate);
- newDate.setMonth(newDate.getMonth() - 1);
- setCurrentDate(newDate);
-}}
- variant="ghost"
- size="sm"
- className="p-2 touch-manipulation"
- >
- <ChevronLeft className="h-5 w-5" />
- </Button>
- </div>
- 
- <h2 className="text-xl sm:text-2xl font-bold text-foreground capitalize">
- {monthName}
- </h2>
- 
- <div className="flex items-center gap-2">
- <div>
- <Button
- onClick={() => setCurrentDate(new Date())}
- className="bg-gradient-to-r from-orange-600 to-red-500 text-white text-sm font-semibold shadow-md hover:shadow-lg touch-manipulation"
- >
- <span className="hidden sm:inline">Aujourd'hui</span>
- <span className="sm:hidden">Auj.</span>
- </Button>
- </div>
- 
- <div>
- <Button
- onClick={() => {
- const newDate = new Date(currentDate);
- newDate.setMonth(newDate.getMonth() + 1);
- setCurrentDate(newDate);
-}}
- variant="ghost"
- size="sm"
- className="p-2 touch-manipulation"
- >
- <ChevronRight className="h-5 w-5" />
- </Button>
- </div>
- </div>
- </div>
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [currentUserId, refreshCalendarData])
 
- {/* Grille du calendrier */}
- <div 
- ref={calendarRef}
- className="grid grid-cols-7 gap-1 calendar-swipe touch-pan-y"
- onTouchStart={handleTouchStart}
- onTouchEnd={handleTouchEnd}
- style={{ touchAction:'pan-y pinch-zoom'}}
- >
- {/* En-têtes des jours - Standard européen/belge (Lundi premier) */}
- {['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(day => (
- <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
- {day}
- </div>
- ))}
+  const navigateMonth = useCallback((offset: number) => {
+    setCurrentDate((previousDate) => {
+      const nextDate = new Date(previousDate)
+      nextDate.setMonth(previousDate.getMonth() + offset)
+      return nextDate
+    })
+    setSelectedDate(null)
+  }, [])
 
- {/* Jours du mois */}
- {days.map((day, index) => {
- let sessions: CalendarSession[] = [];
- const dayYMD = formatDateToYMD(day.date);
- 
- // Séances personnelles
- const workoutsForDate = workouts.filter(w => w.scheduled_date === dayYMD);
- const personalSessions = workoutsForDate.map(w => {
- const correctedType = getCorrectType(w);
- 
- const sessionType = (['Musculation','Cardio','Étirement','Repos','Cours collectif','Gainage','Natation','Crossfit','Yoga','Pilates'].includes(correctedType) ? correctedType :'Musculation') as'Musculation' |'Cardio' |'Étirement' |'Repos' |'Cours collectif' |'Gainage' |'Natation' |'Crossfit' |'Yoga' |'Pilates';
- return {
- id: String(w.id),
- name: w.name,
- type: sessionType,
- status: w.status as'Planifié' |'Terminé' |'Annulé',
- duration: w.duration,
- isShared: false,
- participants: [],
- scheduled_date: w.scheduled_date,
- time: (w as { time?: string}).time ||'',
- exercises: w.exercises || [],
- color: getSessionGradient(sessionType),
-};
-});
+  const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0]
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() }
+  }, [])
 
- // Séances des partenaires (si activées)
- let partnerSessions: CalendarSession[] = [];
- if (showPartnersWorkouts) {
- const partnersForDate = partnersWorkouts.filter(pw => pw.scheduled_date === dayYMD);
- partnerSessions = partnersForDate.map(pw => {
- const partner = pw.profiles;
- const participant = {
- id: partner?.id ||'',
- name: partner?.pseudo || partner?.full_name || (partner?.email && partner.email.split('@')[0]) ||'Partenaire',
- avatarUrl: partner?.avatar_url ||'/default-avatar.png',
-};
- const correctedType = getCorrectType(pw);
- const partnerSessionType = (['Musculation','Cardio','Étirement','Repos','Cours collectif','Gainage','Natation','Crossfit','Yoga','Pilates'].includes(correctedType) ? correctedType :'Musculation') as'Musculation' |'Cardio' |'Étirement' |'Repos' |'Cours collectif' |'Gainage' |'Natation' |'Crossfit' |'Yoga' |'Pilates';
- 
- return {
- id: `partner-${pw.id}`,
- name: `${pw.name}`,
- type: partnerSessionType,
- status: pw.status as'Planifié' |'Planifie' |'Terminé' |'Réalisé' |'Annulé',
- duration: pw.duration,
- isShared: true,
- participants: [participant],
- scheduled_date: pw.scheduled_date,
- time: pw.start_time ||'',
- exercises: [],
- color: getSessionGradient(partnerSessionType),
-};
-});
-}
+  const handleTouchEnd = useCallback(
+    (event: TouchEvent<HTMLDivElement>) => {
+      const touchStart = touchStartRef.current
+      touchStartRef.current = null
 
- sessions = [...personalSessions, ...partnerSessions];
- 
- // Trier par heure si disponible
- sessions.sort((a, b) => {
- if (a.time && b.time) {
- return a.time.localeCompare(b.time);
-}
- return 0;
-});
- const isCurrentDay = isToday(day.date);
- const isSelectedDay = isSelected(day.date);
- const cell = (
- <div
- key={index}
- onClick={() => setSelectedDate(day.date)}
- className={`w-full cursor-pointer transition-all touch-manipulation min-h-[44px] rounded-lg ${
- isSelectedDay 
- ?'ring-2 ring-secondary bg-tertiary/8' 
- : isCurrentDay 
- ?'ring-2 ring-primary' 
- :''
-}`}
- role="button"
- tabIndex={0}
- onKeyDown={(e) => {
- if (e.key ==='Enter' || e.key ==='') {
- e.preventDefault();
- setSelectedDate(day.date);
-}
-}}
- aria-label={`Sélectionner le ${day.date.getDate()} ${monthName}`}
- >
- <CalendarDayCell date={day.date.getDate()} sessions={sessions} isSelected={isSelectedDay} />
- </div>
- );
- return cell;
-})}
- </div>
- </TabsContent>
- 
- <TabsContent value="list" className="m-0">
- {/* Vue liste des séances */}
- <div className="space-y-4">
- <div className="flex items-center justify-between mb-6">
- <h3 className="text-lg font-semibold text-foreground">Séances planifiées</h3>
- <Button
- onClick={() => router.push('/workouts/new')}
- size="sm"
- className="bg-primary hover:bg-primary-hover text-white"
- >
- <Plus className="h-4 w-4 mr-1" />
- Nouvelle séance
- </Button>
- </div>
- 
-{(() => {
- // Combiner séances personnelles et partenaires avec identification
- // Afficher toutes les séances planifiées du mois courant pour cohérence avec les statistiques
- const currentDate = new Date();
- 
- const personalWorkouts = workouts
- .filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-})
- .map(workout => ({ ...workout, isPartnerWorkout: false}));
- 
- const partnerWorkouts = partnersWorkouts
- .filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-})
- .map(workout => ({ ...workout, isPartnerWorkout: true}));
- 
- const allMonthWorkouts = [...personalWorkouts, ...partnerWorkouts]
- .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime());
- 
- return allMonthWorkouts.length === 0 ? (
- <div className="text-center py-12 text-muted-foreground">
- <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
- <p className="text-lg font-medium">Aucune séance planifiée</p>
- <p className="text-sm">Créez votre première séance pour commencer</p>
- </div>
- ) : (
- <div className="space-y-2">
- {allMonthWorkouts.slice(0, 10).map(workout => (
- <div key={`${workout.isPartnerWorkout ?'partner-' :'personal-'}${workout.id}`} className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border">
- <div className={`w-3 h-3 rounded-full ${getTypeColor(getCorrectType(workout))}`}></div>
- <div className="flex-1">
- <div className="flex items-center gap-2">
- <h4 className="font-medium text-foreground">{workout.name}</h4>
- {workout.isPartnerWorkout && (
- <span className="flex items-center gap-1 text-xs text-primary bg-orange-50 px-2 py-1 rounded-full">
- <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
- </svg>
- {(workout as WorkoutWithProfile).profiles?.pseudo || (workout as WorkoutWithProfile).profiles?.full_name ||'Partenaire'}
- </span>
- )}
- </div>
- <p className="text-sm text-muted-foreground">
- {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
- weekday:'long',
- day:'numeric',
- month:'long'
-})}
- {workout.start_time && ` • ${workout.start_time}`}
- {workout.duration && ` • ${workout.duration} min`}
- </p>
- </div>
- <Badge className={`text-white ${getTypeColor(getCorrectType(workout))}`}>
- {getCorrectType(workout)}
- </Badge>
- </div>
- ))}
- </div>
- );
-})()}</div>
- </TabsContent>
- 
- <TabsContent value="stats" className="m-0 xl:hidden">
- {/* Vue stats simplifiée */}
- <div className="text-center py-12 text-muted-foreground">
- <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300" />
- <p className="text-lg font-medium">Statistiques</p>
- <p className="text-sm">Fonctionnalité disponible prochainement</p>
- </div>
- </TabsContent>
- </Tabs>
- </Card>
- </div>
+      if (!touchStart || isSwipeTransition) {
+        return
+      }
 
- {/* Panneau latéral simple */}
- <div className="space-y-6">
- {/* Statistiques mensuelles */}
- <div className="bg-card border border-border rounded-xl shadow-md p-4 lg:p-6">
- <h3 className="text-base lg:text-lg font-bold text-foreground mb-4">
- Statistiques {monthName}
- </h3>
- <div className="space-y-4">
- {(() => {
- const currentMonthWorkouts = workouts.filter(workout => {
- const workoutDate = new Date(workout.scheduled_date);
- return workoutDate.getMonth() === currentDate.getMonth() && 
- workoutDate.getFullYear() === currentDate.getFullYear();
-});
- 
- const completedWorkouts = currentMonthWorkouts.filter(w => w.status ==='Terminé' || w.status ==='Réalisé').length;
- const plannedWorkouts = currentMonthWorkouts.filter(w => w.status ==='Planifié' || w.status ==='Planifie').length;
- 
- const typeStats = workoutTypes.map(type => ({
- ...type,
- count: currentMonthWorkouts.filter(w => getCorrectType(w) === type.name).length
-})).filter(type => type.count > 0);
+      const touch = event.changedTouches[0]
+      const deltaX = touch.clientX - touchStart.x
+      const deltaY = touch.clientY - touchStart.y
+      const deltaTime = Date.now() - touchStart.time
 
- return (
- <>
- <div className="grid grid-cols-2 gap-2">
- <div className="text-center p-2 bg-green-50 rounded-lg">
- <div className="text-2xl font-bold text-green-600">{completedWorkouts}</div>
- <div className="text-xs text-green-700">Terminées</div>
- </div>
- <div className="text-center p-2 bg-orange-50 rounded-lg">
- <div className="text-2xl font-bold text-primary">{plannedWorkouts}</div>
- <div className="text-xs text-orange-700">Planifiées</div>
- </div>
- </div>
- 
- {typeStats.length > 0 && (
- <div className="space-y-2">
- <h4 className="text-sm font-medium text-foreground">Types d'entraînements</h4>
- {typeStats.slice(0, 3).map(type => (
- <div key={type.name} className="flex items-center justify-between">
- <div className="flex items-center space-x-2">
- <div className={`w-3 h-3 rounded-full ${type.color}`}></div>
- <span className="text-sm text-foreground">{type.name}</span>
- </div>
- <span className="text-sm font-medium text-foreground">{type.count}</span>
- </div>
- ))}
- </div>
- )}
- </>
- );
-})()}
- </div>
- </div>
+      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 56 || deltaTime > 320) {
+        return
+      }
 
- {/* Date sélectionnée */}
- {selectedDate && (
- <div className="bg-card border border-border rounded-xl shadow-md p-4 lg:p-6">
- <h3 className="text-base lg:text-lg font-bold text-foreground mb-4">
- {formatDate(selectedDate)}
- </h3>
- <div className="space-y-2">
- {(() => {
- const workoutsForDate = getWorkoutsForDate(selectedDate);
- 
- if (workoutsForDate.length === 0) {
- return (
- <div className="text-center py-6 text-muted-foreground">
- <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
- <p>Aucune séance planifiée</p>
- </div>
- );
-}
- return workoutsForDate.map(workout => (
- <div key={workout.id} className="p-2 bg-muted rounded-lg flex flex-col gap-1">
- <h4 className="font-medium text-foreground">
- {workout.name}
- </h4>
- <Badge className={`text-white ${getTypeColor(getCorrectType(workout))}`}>
- {getCorrectType(workout)}
- </Badge>
- {workout.duration && (
- <span className="flex items-center space-x-1 text-sm text-muted-foreground">
- <Clock className="h-4 w-4" />
- <span>{workout.duration} min</span>
- </span>
- )}
- </div>
- ));
-})()}
- </div>
- <button
- onClick={() => router.push('/workouts/new')}
- className="w-full mt-4 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
- >
- <Plus className="h-5 w-5" />
- <span>Ajouter une séance</span>
- </button>
- </div>
- )}
- </div>
- </div>
- </div>
- </div>
- </>
- )
+      setIsSwipeTransition(true)
+      navigateMonth(deltaX > 0 ? -1 : 1)
+      window.setTimeout(() => {
+        setIsSwipeTransition(false)
+      }, 260)
+    },
+    [isSwipeTransition, navigateMonth],
+  )
+
+  const goToToday = useCallback(() => {
+    const today = new Date()
+    setCurrentDate(today)
+    setSelectedDate(today)
+  }, [])
+
+  const currentMonthKey = useMemo(() => getMonthKey(currentDate), [currentDate])
+  const monthLabel = useMemo(() => formatMonthLabel(currentDate), [currentDate])
+  const days = useMemo(() => buildMonthDays(currentDate), [currentDate])
+  const todayYmd = useMemo(() => formatDateToYMD(new Date()), [])
+
+  const currentMonthWorkouts = useMemo(
+    () => sortWorkouts(workouts.filter((workout) => workout.scheduled_date.startsWith(currentMonthKey))),
+    [currentMonthKey, workouts],
+  )
+
+  const currentMonthPartnerWorkouts = useMemo(
+    () =>
+      sortWorkouts(
+        partnersWorkouts.filter((workout) => workout.scheduled_date.startsWith(currentMonthKey)),
+      ),
+    [currentMonthKey, partnersWorkouts],
+  )
+
+  const visibleMonthPartnerWorkouts = useMemo(
+    () => (showPartnerWorkouts ? currentMonthPartnerWorkouts : []),
+    [currentMonthPartnerWorkouts, showPartnerWorkouts],
+  )
+
+  const combinedMonthWorkouts = useMemo<DisplayWorkout[]>(
+    () =>
+      sortWorkouts([
+        ...currentMonthWorkouts.map((workout) => ({ ...workout, isPartnerWorkout: false })),
+        ...visibleMonthPartnerWorkouts.map((workout) => ({ ...workout, isPartnerWorkout: true })),
+      ]),
+    [currentMonthWorkouts, visibleMonthPartnerWorkouts],
+  )
+
+  const completedCount = useMemo(
+    () => currentMonthWorkouts.filter((workout) => isWorkoutCompleted(workout.status)).length,
+    [currentMonthWorkouts],
+  )
+
+  const plannedCount = useMemo(
+    () => currentMonthWorkouts.filter((workout) => isWorkoutPlanned(workout.status)).length,
+    [currentMonthWorkouts],
+  )
+
+  const monthlyTypeStats = useMemo(
+    () =>
+      WORKOUT_TYPES.map((type) => ({
+        name: type,
+        count: currentMonthWorkouts.filter((workout) => normalizeWorkoutType(workout) === type).length,
+      })).filter((typeStat) => typeStat.count > 0) as Array<{ name: WorkoutType; count: number }>,
+    [currentMonthWorkouts],
+  )
+
+  const nextPlannedWorkout = useMemo(() => {
+    const plannedWorkouts = currentMonthWorkouts.filter((workout) => isWorkoutPlanned(workout.status))
+    return plannedWorkouts.find((workout) => workout.scheduled_date >= todayYmd) || plannedWorkouts[0] || null
+  }, [currentMonthWorkouts, todayYmd])
+
+  const selectedDateYmd = selectedDate ? formatDateToYMD(selectedDate) : null
+
+  const selectedDateWorkouts = useMemo<DisplayWorkout[]>(() => {
+    if (!selectedDateYmd) {
+      return []
+    }
+
+    return sortWorkouts([
+      ...workouts
+        .filter((workout) => workout.scheduled_date === selectedDateYmd)
+        .map((workout) => ({ ...workout, isPartnerWorkout: false })),
+      ...(showPartnerWorkouts
+        ? partnersWorkouts
+            .filter((workout) => workout.scheduled_date === selectedDateYmd)
+            .map((workout) => ({ ...workout, isPartnerWorkout: true }))
+        : []),
+    ])
+  }, [partnersWorkouts, selectedDateYmd, showPartnerWorkouts, workouts])
+
+  const resolveSessionsForDate = useCallback(
+    (dateYmd: string) =>
+      [
+        ...workouts
+          .filter((workout) => workout.scheduled_date === dateYmd)
+          .map((workout) => mapWorkoutToSession(workout, false)),
+        ...(showPartnerWorkouts
+          ? partnersWorkouts
+              .filter((workout) => workout.scheduled_date === dateYmd)
+              .map((workout) => mapWorkoutToSession(workout, true))
+          : []),
+      ].sort(
+        (left, right) =>
+          left.scheduledDate.localeCompare(right.scheduledDate) || left.time.localeCompare(right.time),
+      ),
+    [partnersWorkouts, showPartnerWorkouts, workouts],
+  )
+
+  return (
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <CalendarHero
+          monthLabel={monthLabel}
+          personalCount={currentMonthWorkouts.length}
+          completedCount={completedCount}
+          availablePartnerCount={currentMonthPartnerWorkouts.length}
+          visiblePartnerCount={visibleMonthPartnerWorkouts.length}
+          hasAnyPartnerWorkouts={partnersWorkouts.length > 0}
+          showPartnerWorkouts={showPartnerWorkouts}
+          onCreateWorkout={() => router.push('/workouts/new')}
+          onTogglePartnerWorkouts={() => {
+            if (partnersWorkouts.length === 0) {
+              router.push('/training-partners')
+              return
+            }
+
+            setShowPartnerWorkouts((previousValue) => !previousValue)
+          }}
+        />
+
+        {loadError ? (
+          <Alert className="border-rose-500/20 bg-rose-500/8 text-rose-100">
+            <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span>{loadError}</span>
+              <ActionButton type="button" tone="secondary" onClick={() => void refreshCalendarData()}>
+                Réessayer
+              </ActionButton>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
+        {isLoading ? (
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px]">
+            <Card className="h-[680px] rounded-[28px] border-border bg-card/84">
+              <div className="h-full" />
+            </Card>
+            <Card className="h-[680px] rounded-[28px] border-border bg-card/84">
+              <div className="h-full" />
+            </Card>
+          </div>
+        ) : (
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px] xl:items-start">
+            <Card className="rounded-[28px] border-border bg-card/84 p-4 shadow-[0_20px_42px_rgba(0,0,0,0.18)] sm:p-5">
+              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as typeof viewMode)}>
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-2">
+                  <TabsTrigger value="calendar" className="gap-2">
+                    <CalendarIcon className="h-4 w-4" aria-hidden="true" />
+                    <span>Calendrier</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="list" className="gap-2">
+                    <List className="h-4 w-4" aria-hidden="true" />
+                    <span>Liste</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="stats" className="gap-2 md:hidden">
+                    <Activity className="h-4 w-4" aria-hidden="true" />
+                    <span>Stats</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="calendar" className="mt-5">
+                  <CalendarMonthGrid
+                    days={days}
+                    monthLabel={monthLabel}
+                    selectedDate={selectedDate}
+                    onNextMonth={() => navigateMonth(1)}
+                    onPreviousMonth={() => navigateMonth(-1)}
+                    onResetToToday={goToToday}
+                    onSelectDate={setSelectedDate}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchStart={handleTouchStart}
+                    resolveSessionsForDate={resolveSessionsForDate}
+                  />
+                </TabsContent>
+
+                <TabsContent value="list" className="mt-5">
+                  <CalendarListView
+                    workouts={combinedMonthWorkouts}
+                    onCreateWorkout={() => router.push('/workouts/new')}
+                  />
+                </TabsContent>
+
+                <TabsContent value="stats" className="mt-5 md:hidden">
+                  <CalendarInsightsPanel
+                    monthLabel={monthLabel}
+                    completedCount={completedCount}
+                    plannedCount={plannedCount}
+                    availablePartnerCount={currentMonthPartnerWorkouts.length}
+                    monthlyTypeStats={monthlyTypeStats}
+                    nextPlannedWorkout={nextPlannedWorkout}
+                    selectedDate={selectedDate}
+                    selectedDateWorkouts={selectedDateWorkouts}
+                    onCreateWorkout={() => router.push('/workouts/new')}
+                  />
+                </TabsContent>
+              </Tabs>
+            </Card>
+
+            <div className="hidden xl:block">
+              <CalendarInsightsPanel
+                monthLabel={monthLabel}
+                completedCount={completedCount}
+                plannedCount={plannedCount}
+                availablePartnerCount={currentMonthPartnerWorkouts.length}
+                monthlyTypeStats={monthlyTypeStats}
+                nextPlannedWorkout={nextPlannedWorkout}
+                selectedDate={selectedDate}
+                selectedDateWorkouts={selectedDateWorkouts}
+                onCreateWorkout={() => router.push('/workouts/new')}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
