@@ -1,27 +1,22 @@
 import { test, expect } from '@playwright/test';
+import { appUrl, signInAsAdmin } from './helpers/auth';
 
 test('Test page admin avec authentification', async ({ page }) => {
   console.log('🔐 Test avec authentification...');
   
-  // 1. Aller à la page de login
-  await page.goto('http://localhost:3000/login');
-  
-  // 2. Se connecter avec le compte admin
+  // 1. Se connecter avec le compte admin
   console.log('🔑 Connexion admin...');
-  await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-  await page.fill('input[type="password"]', 'Lucas24052405@');
-  await page.click('button[type="submit"]');
+  await signInAsAdmin(page);
   
-  // 3. Attendre la redirection après login
+  // 2. Attendre la redirection après login
   console.log('⏳ Attente redirection...');
-  await page.waitForURL(/\//, { timeout: 10000 });
   await page.waitForTimeout(2000);
   
-  // 4. Naviguer vers la page admin du ticket
+  // 3. Naviguer vers la page admin du ticket
   const ticketId = '807594e2-05ac-4d24-a8c2-898d33e12ac8';
   console.log('🎫 Navigation vers ticket admin:', ticketId);
   
-  await page.goto(`http://localhost:3000/admin/tickets/${ticketId}`);
+  await page.goto(appUrl(`/admin/tickets/${ticketId}`));
   
   // 5. Attendre et observer le comportement
   console.log('👀 Observation du chargement...');

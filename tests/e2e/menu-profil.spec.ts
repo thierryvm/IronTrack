@@ -1,19 +1,11 @@
 // Test menu profil GitHub-style
 import { test, expect } from '@playwright/test';
+import { appUrl, getE2EAccount, signInAsAdmin } from './helpers/auth';
 
 test.describe('Menu Profil GitHub Style', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000');
-    
-    // Se connecter avec votre compte admin
-    await page.getByRole('link', { name: 'Connexion' }).click();
-    await page.waitForURL('**/auth');
-    
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-    await page.fill('input[type="password"]', 'Lucas24052405@');
-    await page.click('button[type="submit"]');
-    
-    await page.waitForURL('http://localhost:3000/', { timeout: 10000 });
+    await page.goto(appUrl());
+    await signInAsAdmin(page);
     await page.waitForLoadState('networkidle');
   });
 
@@ -59,7 +51,7 @@ test.describe('Menu Profil GitHub Style', () => {
     await expect(modal).toBeVisible();
     
     // Vérifier contenu du modal
-    await expect(modal.getByText('thierryvm@hotmail.com')).toBeVisible();
+    await expect(modal.getByText(getE2EAccount('admin').email)).toBeVisible();
     await expect(modal.getByRole('link', { name: 'Profil' })).toBeVisible();
     
     console.log('✅ Menu profil mobile fonctionne');

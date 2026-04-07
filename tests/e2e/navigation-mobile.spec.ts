@@ -1,23 +1,13 @@
 // Test de la nouvelle navigation mobile en bas
 import { test, expect } from '@playwright/test';
+import { appUrl, signInAsAdmin } from './helpers/auth';
 
 test.describe('Navigation Mobile en Bas', () => {
   test.beforeEach(async ({ page }) => {
     // Configuration mobile iPhone
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://localhost:3000');
-    
-    // Se connecter pour voir la navigation mobile
-    await page.getByRole('link', { name: 'Connexion' }).click();
-    await page.waitForURL('**/auth');
-    
-    // Remplir formulaire de connexion
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-    await page.fill('input[type="password"]', 'Lucas24052405@');
-    await page.click('button[type="submit"]');
-    
-    // Attendre redirection après connexion
-    await page.waitForURL('http://localhost:3000/', { timeout: 10000 });
+    await page.goto(appUrl());
+    await signInAsAdmin(page);
   });
 
   test('Navigation mobile visible en bas d\'écran', async ({ page }) => {

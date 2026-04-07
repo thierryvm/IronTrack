@@ -1,24 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { appUrl, signInAsAdmin } from './helpers/auth';
 
 test.describe('Admin Ticket Detail Page', () => {
   test.beforeEach(async ({ page }) => {
     // Naviguer vers la page de connexion et se connecter avec le compte admin
-    await page.goto('http://localhost:3000');
-    
-    // Connexion admin (si pas déjà connecté)
-    await page.goto('http://localhost:3000/login');
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-    await page.fill('input[type="password"]', 'Lucas24052405@');
-    await page.click('button[type="submit"]');
-    
-    // Attendre la redirection
-    await page.waitForURL(/\//, { timeout: 10000 });
+    await page.goto(appUrl());
+    await signInAsAdmin(page);
   });
 
   test('devrait charger la page admin du ticket sans erreur', async ({ page }) => {
     // Naviguer vers un ticket de test
     const ticketId = '807594e2-05ac-4d24-a8c2-898d33e12ac8';
-    await page.goto(`http://localhost:3000/admin/tickets/${ticketId}`);
+    await page.goto(appUrl(`/admin/tickets/${ticketId}`));
 
     // Attendre le chargement (max 10 secondes)
     await page.waitForLoadState('networkidle', { timeout: 10000 });
@@ -43,7 +36,7 @@ test.describe('Admin Ticket Detail Page', () => {
 
   test('devrait pouvoir envoyer une réponse', async ({ page }) => {
     const ticketId = '807594e2-05ac-4d24-a8c2-898d33e12ac8';
-    await page.goto(`http://localhost:3000/admin/tickets/${ticketId}`);
+    await page.goto(appUrl(`/admin/tickets/${ticketId}`));
     
     // Attendre le chargement
     await page.waitForLoadState('networkidle');
@@ -65,7 +58,7 @@ test.describe('Admin Ticket Detail Page', () => {
 
   test('devrait pouvoir modifier le statut du ticket', async ({ page }) => {
     const ticketId = '807594e2-05ac-4d24-a8c2-898d33e12ac8';
-    await page.goto(`http://localhost:3000/admin/tickets/${ticketId}`);
+    await page.goto(appUrl(`/admin/tickets/${ticketId}`));
     
     // Attendre le chargement
     await page.waitForLoadState('networkidle');
@@ -90,7 +83,7 @@ test.describe('Admin Ticket Detail Page', () => {
     });
 
     const ticketId = '807594e2-05ac-4d24-a8c2-898d33e12ac8';
-    await page.goto(`http://localhost:3000/admin/tickets/${ticketId}`);
+    await page.goto(appUrl(`/admin/tickets/${ticketId}`));
     
     // Attendre le chargement
     await page.waitForTimeout(5000);
@@ -104,15 +97,11 @@ test.describe('Admin Ticket Detail Page', () => {
 test.describe('Admin Ticket Detail Error Cases', () => {
   test('devrait gérer les tickets inexistants', async ({ page }) => {
     // Connexion admin
-    await page.goto('http://localhost:3000/login');
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com');
-    await page.fill('input[type="password"]', 'Lucas24052405@');
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/\//, { timeout: 10000 });
+    await signInAsAdmin(page);
 
     // Naviguer vers un ticket qui n'existe pas
     const fakeTicketId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-    await page.goto(`http://localhost:3000/admin/tickets/${fakeTicketId}`);
+    await page.goto(appUrl(`/admin/tickets/${fakeTicketId}`));
     
     // Attendre le chargement
     await page.waitForLoadState('networkidle');

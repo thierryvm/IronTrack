@@ -1,11 +1,12 @@
 // Test simple de la structure navigation mobile
 import { test, expect } from '@playwright/test';
+import { appUrl } from './helpers/auth';
 
 test.describe('Navigation Mobile Structure', () => {
   test('Structure navigation mobile en place', async ({ page }) => {
     // Configuration mobile
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://localhost:3000');
+    await page.goto(appUrl());
     await page.waitForLoadState('networkidle');
     
     // Vérifier que la page se charge
@@ -36,7 +37,7 @@ test.describe('Navigation Mobile Structure', () => {
   test('Navigation desktop vs mobile responsive', async ({ page }) => {
     // Test desktop d'abord
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('http://localhost:3000');
+    await page.goto(appUrl());
     await page.waitForLoadState('networkidle');
     
     // Vérifier navigation desktop

@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { appUrl } from './helpers/auth';
 
 test.describe('Header Critical Tests - ULTRAHARDCORE', () => {
   
   test.beforeEach(async ({ page }) => {
     // Navigate to home page
-    await page.goto('http://localhost:3000');
+    await page.goto(appUrl());
     await page.waitForLoadState('networkidle');
   });
 
@@ -24,7 +25,7 @@ test.describe('Header Critical Tests - ULTRAHARDCORE', () => {
       
       // Test logo click
       await logo.click();
-      await expect(page).toHaveURL('http://localhost:3000/');
+      await expect(page).toHaveURL(appUrl('/'));
     });
 
     test('Logo should have proper accessibility', async ({ page }) => {
@@ -37,7 +38,7 @@ test.describe('Header Critical Tests - ULTRAHARDCORE', () => {
       // Test keyboard navigation
       await page.keyboard.press('Tab');
       await page.keyboard.press('Enter');
-      await expect(page).toHaveURL('http://localhost:3000/');
+      await expect(page).toHaveURL(appUrl('/'));
     });
 
   });
@@ -287,7 +288,7 @@ test.describe('Header Critical Tests - ULTRAHARDCORE', () => {
     test('Header should load quickly', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:3000');
+      await page.goto(appUrl());
       await expect(page.locator('header')).toBeVisible();
       
       const loadTime = Date.now() - startTime;

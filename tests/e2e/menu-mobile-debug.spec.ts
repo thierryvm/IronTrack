@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
+import { appUrl, signInAsAdmin } from './helpers/auth'
 
 test.describe('Menu Mobile Debug ULTRAHARDCORE', () => {
   test('Diagnostiquer pourquoi styles ne s\'appliquent pas', async ({ page }) => {
@@ -12,18 +13,15 @@ test.describe('Menu Mobile Debug ULTRAHARDCORE', () => {
     console.log('🎯 DÉBUT TEST ULTRAHARDCORE')
     
     // Naviguer vers la page
-    await page.goto('http://localhost:3000')
+    await page.goto(appUrl())
     await page.waitForLoadState('networkidle')
     
     console.log('🔑 ÉTAPE 0: Connexion utilisateur')
     
     // Se connecter avec le compte admin test
-    await page.fill('input[type="email"]', 'thierryvm@hotmail.com')
-    await page.fill('input[type="password"]', 'Lucas24052405@')
-    await page.click('button[type="submit"]')
+    await signInAsAdmin(page)
     
     // Attendre redirection vers dashboard
-    await page.waitForURL('http://localhost:3000', { timeout: 15000 })
     await page.waitForLoadState('networkidle')
     
     // Vérifier que l'utilisateur est connecté (menu burger visible)
