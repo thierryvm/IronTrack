@@ -1,821 +1,602 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback} from'react'
-import DOMPurify from'dompurify'
-import { motion, AnimatePresence} from'framer-motion'
-import { 
- MessageSquare, 
- Clock, 
- CheckCircle, 
- AlertTriangle, 
- User,
- Calendar,
- Filter,
- Search,
- ArrowUpDown,
- MessageCircle,
- Eye,
- CheckCircle2,
- XCircle,
- Paperclip,
- Download
-} from'lucide-react'
-import { useAdminAuth} from'@/contexts/AdminAuthContext'
-import { useSupport} from'@/hooks/useSupport'
-// import AntiSpamDashboard from'@/components/admin/AntiSpamDashboard'
-import { SupportTicket, SupportTicketPriority, SupportTicketStatus, SupportTicketCategory} from'@/types/support'
-import { Button} from'@/components/ui/button'
-import { Input} from'@/components/ui/input'
-import { Label} from'@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from'@/components/ui/select'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  MessageSquare,
+  RefreshCw,
+  Search,
+} from 'lucide-react'
 
-// Types pour les filtres
-interface TicketFilters {
- status: SupportTicketStatus |'all'
- category: SupportTicketCategory |'all'
- priority: SupportTicketPriority |'all'
- search: string
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import ActionButton from '@/components/ui/action-button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import type { SupportTicketCategory, SupportTicketPriority } from '@/types/support'
+
+type AdminTicketStatus = 'open' | 'pending' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed' | 'archived'
+type TicketStatusFilter = AdminTicketStatus | 'all'
+type TicketPriorityFilter = SupportTicketPriority | 'all'
+type TicketCategoryFilter = SupportTicketCategory | 'general' | 'all'
+
+interface AdminTicket {
+  id: string
+  title: string
+  description: string
+  category: TicketCategoryFilter
+  priority: SupportTicketPriority
+  status: AdminTicketStatus
+  user_id: string
+  assigned_to: string | null
+  created_at: string
+  updated_at: string
+  user_email: string
+  user_full_name: string
+  admin_email: string | null
+  admin_full_name: string | null
+  response_count: number
 }
 
-// Types pour le tri
-type SortField ='created_at' |'priority' |'status' |'category'
-type SortDirection ='asc' |'desc'
+const statusOptions: Array<{ value: TicketStatusFilter; label: string }> = [
+  { value: 'all', label: 'Tous les statuts' },
+  { value: 'pending', label: 'En attente' },
+  { value: 'open', label: 'Ouvert' },
+  { value: 'in_progress', label: 'En cours' },
+  { value: 'waiting_user', label: 'Attente utilisateur' },
+  { value: 'resolved', label: 'Résolu' },
+  { value: 'closed', label: 'Fermé' },
+]
 
-// ✅ Fonction throttle pour éviter appels API excessifs
-const throttle = <T extends unknown[]>(func: (...args: T) => void, wait: number) => {
- let lastCall = 0
- return (...args: T) => {
- const now = Date.now()
- if (now - lastCall >= wait) {
- lastCall = now
- func(...args)
+const priorityOptions: Array<{ value: TicketPriorityFilter; label: string }> = [
+  { value: 'all', label: 'Toutes priorités' },
+  { value: 'low', label: 'Faible' },
+  { value: 'medium', label: 'Normale' },
+  { value: 'high', label: 'Élevée' },
+  { value: 'critical', label: 'Critique' },
+]
+
+const categoryOptions: Array<{ value: TicketCategoryFilter; label: string }> = [
+  { value: 'all', label: 'Toutes catégories' },
+  { value: 'bug', label: 'Bug' },
+  { value: 'feature', label: 'Fonctionnalité' },
+  { value: 'help', label: 'Aide' },
+  { value: 'feedback', label: 'Feedback' },
+  { value: 'account', label: 'Compte' },
+  { value: 'payment', label: 'Paiement' },
+  { value: 'general', label: 'Général' },
+]
+
+function getStatusMeta(status: AdminTicketStatus) {
+  switch (status) {
+    case 'pending':
+      return {
+        label: 'En attente',
+        badgeClass: 'border-amber-500/20 bg-amber-500/10 text-safe-warning',
+      }
+    case 'open':
+      return {
+        label: 'Ouvert',
+        badgeClass: 'border-primary/20 bg-primary/10 text-primary',
+      }
+    case 'in_progress':
+      return {
+        label: 'En cours',
+        badgeClass: 'border-sky-500/20 bg-sky-500/10 text-safe-info',
+      }
+    case 'waiting_user':
+      return {
+        label: 'Attente utilisateur',
+        badgeClass: 'border-violet-500/20 bg-violet-500/10 text-safe-info',
+      }
+    case 'resolved':
+      return {
+        label: 'Résolu',
+        badgeClass: 'border-emerald-500/20 bg-emerald-500/10 text-safe-success',
+      }
+    case 'closed':
+      return {
+        label: 'Fermé',
+        badgeClass: 'border-border bg-background/70 text-safe-muted',
+      }
+    default:
+      return {
+        label: 'Archivé',
+        badgeClass: 'border-border bg-background/70 text-safe-muted',
+      }
+  }
 }
+
+function getPriorityMeta(priority: SupportTicketPriority) {
+  switch (priority) {
+    case 'low':
+      return {
+        label: 'Faible',
+        badgeClass: 'border-border bg-background/70 text-safe-muted',
+      }
+    case 'medium':
+      return {
+        label: 'Normale',
+        badgeClass: 'border-primary/20 bg-primary/10 text-primary',
+      }
+    case 'high':
+      return {
+        label: 'Élevée',
+        badgeClass: 'border-amber-500/20 bg-amber-500/10 text-safe-warning',
+      }
+    default:
+      return {
+        label: 'Critique',
+        badgeClass: 'border-destructive/20 bg-destructive/10 text-safe-error',
+      }
+  }
 }
+
+function getCategoryLabel(category: TicketCategoryFilter) {
+  switch (category) {
+    case 'bug':
+      return 'Bug'
+    case 'feature':
+      return 'Fonctionnalité'
+    case 'help':
+      return 'Aide'
+    case 'feedback':
+      return 'Feedback'
+    case 'account':
+      return 'Compte'
+    case 'payment':
+      return 'Paiement'
+    default:
+      return 'Général'
+  }
+}
+
+function SummaryCard({
+  label,
+  value,
+  helper,
+}: {
+  label: string
+  value: string | number
+  helper: string
+}) {
+  return (
+    <Card className="rounded-[24px] border-border bg-card/82 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">{label}</p>
+      <p className="mt-3 text-3xl font-semibold tracking-tight text-foreground">{value}</p>
+      <p className="mt-2 text-sm text-safe-muted">{helper}</p>
+    </Card>
+  )
+}
+
+function TicketCard({
+  ticket,
+  canModerate,
+  isUpdating,
+  onStatusChange,
+}: {
+  ticket: AdminTicket
+  canModerate: boolean
+  isUpdating: boolean
+  onStatusChange: (ticketId: string, status: AdminTicketStatus) => void
+}) {
+  const statusMeta = getStatusMeta(ticket.status)
+  const priorityMeta = getPriorityMeta(ticket.priority)
+
+  return (
+    <Card className="rounded-[26px] border-border bg-card/84 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className={statusMeta.badgeClass}>
+                {statusMeta.label}
+              </Badge>
+              <Badge variant="outline" className={priorityMeta.badgeClass}>
+                {priorityMeta.label}
+              </Badge>
+              <Badge variant="outline" className="border-border bg-background/70 text-foreground">
+                {getCategoryLabel(ticket.category)}
+              </Badge>
+            </div>
+
+            <div>
+              <h2 className="break-words text-xl font-semibold tracking-tight text-foreground">
+                {ticket.title}
+              </h2>
+              <p className="mt-2 line-clamp-3 text-sm leading-7 text-muted-foreground">
+                {ticket.description || 'Aucune description disponible pour ce ticket.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0 rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+              Réponses
+            </p>
+            <p className="mt-2 text-lg font-semibold text-foreground">{ticket.response_count}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+              Demandeur
+            </p>
+            <p className="mt-2 break-words text-sm font-medium text-foreground">
+              {ticket.user_full_name !== 'Nom non défini' ? ticket.user_full_name : ticket.user_email}
+            </p>
+            <p className="mt-1 break-words text-xs text-safe-muted">{ticket.user_email}</p>
+          </div>
+
+          <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+              Créé le
+            </p>
+            <p className="mt-2 text-sm font-medium text-foreground">
+              {new Date(ticket.created_at).toLocaleDateString('fr-FR')}
+            </p>
+            <p className="mt-1 text-xs text-safe-muted">
+              {new Date(ticket.created_at).toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </p>
+          </div>
+
+          <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+              Assignation
+            </p>
+            <p className="mt-2 break-words text-sm font-medium text-foreground">
+              {ticket.admin_full_name || ticket.admin_email || 'Non assigné'}
+            </p>
+            <p className="mt-1 text-xs text-safe-muted">
+              Mis à jour le {new Date(ticket.updated_at).toLocaleDateString('fr-FR')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {canModerate && ticket.status === 'open' ? (
+              <ActionButton
+                type="button"
+                tone="secondary"
+                onClick={() => onStatusChange(ticket.id, 'in_progress')}
+                disabled={isUpdating}
+                className="gap-2"
+              >
+                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                <span>{isUpdating ? 'Mise à jour...' : 'Prendre en charge'}</span>
+              </ActionButton>
+            ) : null}
+
+            {canModerate && (ticket.status === 'in_progress' || ticket.status === 'waiting_user') ? (
+              <ActionButton
+                type="button"
+                tone="secondary"
+                onClick={() => onStatusChange(ticket.id, 'resolved')}
+                disabled={isUpdating}
+                className="gap-2"
+              >
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                <span>{isUpdating ? 'Mise à jour...' : 'Marquer résolu'}</span>
+              </ActionButton>
+            ) : null}
+          </div>
+
+          <ActionButton asChild type="button" tone="primary" className="gap-2 self-start sm:self-auto">
+            <Link href={`/admin/tickets/${ticket.id}`}>
+              <span>Ouvrir le ticket</span>
+              <ChevronRight className="h-4 w-4" aria-hidden="true" data-icon="inline-end" />
+            </Link>
+          </ActionButton>
+        </div>
+      </div>
+    </Card>
+  )
 }
 
 export default function AdminTicketsPage() {
- // Référence pour éviter les doubles appels
- const initialized = useRef(false)
- 
- const [tickets, setTickets] = useState<SupportTicket[]>([])
- const [loading, setLoading] = useState(true)
- const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
- const [showDetails, setShowDetails] = useState(false)
- // const [activeTab, setActiveTab] = useState<'tickets' |'antispam'>('tickets')
- 
- // États pour les filtres et tri
- const [filters, setFilters] = useState<TicketFilters>({
- status:'all',
- category:'all', 
- priority:'all',
- search:''
-})
- const [sortField, setSortField] = useState<SortField>('created_at')
- const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
- const [showFilters, setShowFilters] = useState(false)
+  const { isAuthenticated, loading: authLoading, hasPermission } = useAdminAuth()
+  const [tickets, setTickets] = useState<AdminTicket[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<TicketStatusFilter>('all')
+  const [priorityFilter, setPriorityFilter] = useState<TicketPriorityFilter>('all')
+  const [categoryFilter, setCategoryFilter] = useState<TicketCategoryFilter>('all')
+  const [updatingTicketId, setUpdatingTicketId] = useState<string | null>(null)
 
- const { logAdminAction, hasPermission} = useAdminAuth()
- const { getAllTickets, updateTicketStatus, updateTicketPriority} = useSupport()
+  const canModerate = hasPermission('moderator')
 
- // ✅ CORRECTION CRITIQUE: Throttler les logs admin pour éviter appels excessifs
- const throttledLogAdminAction = useCallback(
- throttle((action: string, targetType: string) => {
- logAdminAction(action, targetType)
-}, 2000), // 2 secondes minimum entre les logs
- [logAdminAction]
- )
+  const fetchTickets = useCallback(async () => {
+    if (!isAuthenticated || !canModerate) {
+      setLoading(false)
+      return
+    }
 
- // Charger les tickets - Version finale sans dépendances problématiques 
- const loadTickets = useCallback(async (skipLogging = false) => {
- setLoading(true)
- try {
- const allTickets = await getAllTickets()
- setTickets(allTickets)
- 
- // ✅ CORRECTION CRITIQUE: Utiliser throttled logging pour éviter boucles
- if (!skipLogging) {
- throttledLogAdminAction('tickets_viewed','tickets')
-}
-} catch (error) {
- console.error('[ERROR] Erreur chargement tickets:', (error as Error).message)
- setTickets([]) // S'assurer qu'on a au moins un tableau vide
-} finally {
- setLoading(false)
-}
-}, [getAllTickets, throttledLogAdminAction])
+    try {
+      setLoading(true)
+      setError(null)
 
- // Chargement initial au mount - une seule fois avec protection useRef
- useEffect(() => {
- // Éviter les doubles appels avec useRef
- if (initialized.current) return
- initialized.current = true
+      const response = await fetch('/api/admin/tickets', { cache: 'no-store' })
+      const payload = (await response.json()) as { error?: string; tickets?: AdminTicket[] }
 
- loadTickets()
- 
- // Cleanup function pour reset lors des changements de route
- return () => {
- initialized.current = false
-}
-}, []) // Pas de dépendances pour éviter la boucle infinie
+      if (!response.ok) {
+        throw new Error(payload.error || 'Impossible de charger les tickets admin.')
+      }
 
- // Filtrer et trier les tickets
- const filteredAndSortedTickets = tickets
- .filter((ticket) => {
- if (filters.status !=='all' && ticket.status !== filters.status) return false
- if (filters.category !=='all' && ticket.category !== filters.category) return false
- if (filters.priority !=='all' && ticket.priority !== filters.priority) return false
- if (filters.search && !ticket.title.toLowerCase().includes(filters.search.toLowerCase()) 
- && !ticket.description.toLowerCase().includes(filters.search.toLowerCase())) return false
- return true
-})
- .sort((a, b) => {
- let comparison = 0
- 
- switch (sortField) {
- case'created_at':
- comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
- break
- case'priority':
- const priorityOrder = { low: 1, medium: 2, high: 3, critical: 4}
- comparison = priorityOrder[a.priority] - priorityOrder[b.priority]
- break
- case'status':
- comparison = a.status.localeCompare(b.status)
- break
- case'category':
- comparison = a.category.localeCompare(b.category)
- break
-}
- 
- return sortDirection ==='desc' ? -comparison : comparison
-})
+      setTickets(payload.tickets ?? [])
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : 'Impossible de charger les tickets admin pour le moment.',
+      )
+      setTickets([])
+    } finally {
+      setLoading(false)
+    }
+  }, [canModerate, isAuthenticated])
 
- // Gérer le changement de statut
- const handleStatusChange = async (ticketId: string, newStatus: SupportTicketStatus) => {
- try {
- await updateTicketStatus(ticketId, newStatus)
- await loadTickets(true) // PATCH: Skip logging pour éviter boucle
- 
- // Mettre à jour selectedTicket si c'est le ticket modifié
- if (selectedTicket && selectedTicket.id === ticketId) {
- setSelectedTicket({ ...selectedTicket, status: newStatus})
-}
-} catch (error) {
- console.error('Erreur mise à jour statut:', (error as Error).message)
-}
-}
+  useEffect(() => {
+    if (!authLoading) {
+      void fetchTickets()
+    }
+  }, [authLoading, fetchTickets])
 
- // Gérer le changement de priorité
- const handlePriorityChange = async (ticketId: string, newPriority: SupportTicketPriority) => {
- try {
- await updateTicketPriority(ticketId, newPriority)
- await loadTickets(true) // PATCH: Skip logging pour éviter boucle
- 
- // Mettre à jour selectedTicket si c'est le ticket modifié
- if (selectedTicket && selectedTicket.id === ticketId) {
- setSelectedTicket({ ...selectedTicket, priority: newPriority})
-}
-} catch (error) {
- console.error('Erreur mise à jour priorité:', (error as Error).message)
-}
-}
+  const filteredTickets = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
 
- // Gérer le tri
- const handleSort = (field: SortField) => {
- if (sortField === field) {
- setSortDirection(sortDirection ==='asc' ?'desc' :'asc')
-} else {
- setSortField(field)
- setSortDirection('desc')
-}
-}
+    return tickets.filter((ticket) => {
+      if (statusFilter !== 'all' && ticket.status !== statusFilter) return false
+      if (priorityFilter !== 'all' && ticket.priority !== priorityFilter) return false
+      if (categoryFilter !== 'all' && ticket.category !== categoryFilter) return false
 
- // Fonctions d'affichage
- const getStatusIcon = (status: SupportTicketStatus) => {
- const icons = {
-'pending': <Clock className="h-6 w-6 text-safe-warning" />,
-'open': <Clock className="h-6 w-6 text-safe-info" />,
-'in_progress': <AlertTriangle className="h-6 w-6 text-amber-500" />,
-'waiting_user': <MessageCircle className="h-6 w-6 text-safe-primary" />,
-'resolved': <CheckCircle className="h-6 w-6 text-safe-success" />,
-'closed': <XCircle className="h-6 w-6 text-gray-600" />
-}
- return icons[status] || icons.open
-}
+      if (!normalizedSearch) return true
 
- const getStatusLabel = (status: SupportTicketStatus) => {
- const labels = {
-'pending':'En attente',
-'open':'Ouvert',
-'in_progress':'En cours',
-'waiting_user':'Attente utilisateur',
-'resolved':'Résolu',
-'closed':'Fermé'
-}
- return labels[status] || status
-}
+      return [
+        ticket.title,
+        ticket.description,
+        ticket.user_email,
+        ticket.user_full_name,
+        ticket.admin_email || '',
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(normalizedSearch)
+    })
+  }, [categoryFilter, priorityFilter, searchTerm, statusFilter, tickets])
 
- const getPriorityColor = (priority: SupportTicketPriority) => {
- const colors = {
-'low':'bg-gray-100 text-gray-700',
-'medium':'bg-tertiary/12 text-tertiary',
-'high':'bg-amber-100 text-amber-700',
-'critical':'bg-red-100 text-red-700'
-}
- return colors[priority] || colors.medium
-}
+  const stats = useMemo(() => {
+    const openCount = tickets.filter((ticket) => ticket.status === 'open' || ticket.status === 'pending').length
+    const inProgressCount = tickets.filter((ticket) => ticket.status === 'in_progress').length
+    const resolvedCount = tickets.filter((ticket) => ticket.status === 'resolved').length
+    const criticalCount = tickets.filter((ticket) => ticket.priority === 'critical').length
 
- const getPriorityLabel = (priority: SupportTicketPriority) => {
- const labels = {
-'low':'📝 Faible',
-'medium':'📋 Normale', 
-'high':'🔥 Élevée',
-'critical':'🚨 Critique'
-}
- return labels[priority] || priority
-}
+    return { openCount, inProgressCount, resolvedCount, criticalCount }
+  }, [tickets])
 
- const getCategoryLabel = (category: SupportTicketCategory) => {
- const labels = {
-'bug':'🐛 Bug',
-'feature':'💡 Fonctionnalité',
-'help':'❓ Aide',
-'feedback':'💬 Feedback',
-'account':'👤 Compte',
-'payment':'💳 Paiement'
-}
- return labels[category] || category
-}
+  const handleStatusChange = useCallback(
+    async (ticketId: string, status: AdminTicketStatus) => {
+      try {
+        setUpdatingTicketId(ticketId)
+        setError(null)
 
- if (loading) {
- return (
- <div className="space-y-6">
- {/* Header skeleton */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6 animate-pulse">
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
- <div className="flex items-center space-x-2">
- <div className="w-10 h-10 bg-muted rounded-lg" />
- <div>
- <div className="h-7 w-48 bg-muted rounded mb-2" />
- <div className="h-4 w-32 bg-muted rounded" />
- </div>
- </div>
- <div className="flex items-center space-x-2">
- <div className="h-9 w-24 bg-muted rounded-lg" />
- <div className="h-9 w-28 bg-muted rounded-lg" />
- </div>
- </div>
- </div>
- {/* Table card skeleton — même classe que le vrai pour éviter CLS */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden animate-pulse">
- <div className="h-12 bg-muted/40 border-b border-border" />
- {[...Array(6)].map((_, i) => (
- <div key={i} className="h-16 border-b border-border last:border-0 flex items-center px-6 gap-4">
- <div className="h-4 w-20 bg-muted rounded" />
- <div className="h-4 flex-1 bg-muted rounded" />
- <div className="h-6 w-16 bg-muted rounded-full" />
- <div className="h-4 w-24 bg-muted rounded" />
- </div>
- ))}
- </div>
- </div>
- )
-}
+        const response = await fetch(`/api/admin/tickets/${ticketId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        })
 
- return (
- <div className="space-y-6">
- {/* En-tête */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px]">
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
- <div>
- <div className="flex items-center space-x-2">
- <div className="p-2 bg-muted rounded-lg">
- <MessageSquare className="h-6 w-6 text-muted-foreground" />
- </div>
- <div>
- <h1 className="text-2xl font-bold text-foreground">Gestion des Tickets</h1>
- <p className="text-gray-600">
- {filteredAndSortedTickets.length} ticket{filteredAndSortedTickets.length !== 1 ?'s' :''} 
- {filters.status !=='all' || filters.category !=='all' || filters.priority !=='all' || filters.search 
- ? ` (${tickets.length} au total)` :''}
- </p>
- </div>
- </div>
- </div>
- 
- {/* Actions rapides */}
- <div className="flex items-center space-x-2">
- <Button
- onClick={() => setShowFilters(!showFilters)}
- variant={showFilters ?"default" :"outline"}
- size="sm"
- className={showFilters ?"bg-accent text-accent-foreground" :""}
- >
- <Filter className="h-4 w-4 mr-2" />
- Filtres
- </Button>
- <Button
- onClick={() => loadTickets(true)}
- size="sm"
- variant="orange"
- title="Recharger la liste des tickets"
- >
- <MessageCircle className="h-4 w-4 mr-2" />
- Actualiser
- </Button>
- </div>
- </div>
+        const payload = (await response.json()) as { error?: string }
 
- {/* Barre de filtrages */}
- <AnimatePresence>
- {showFilters && (
- <motion.div
- initial={{ height: 0, opacity: 0}}
- animate={{ height:'auto', opacity: 1}}
- exit={{ height: 0, opacity: 0}}
- className="mt-6 border-t border-border pt-6"
- >
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
- {/* Recherche */}
- <div className="lg:col-span-2">
- <div className="relative">
- <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
- <Label htmlFor="ticket-search" className="sr-only">
- Rechercher dans les tickets
- </Label>
- <Input
- id="ticket-search"
- type="text"
- placeholder="Rechercher dans les tickets..."
- value={filters.search}
- onChange={(e) => setFilters({ ...filters, search: e.target.value})}
- className="pl-8 pr-4 py-2 focus:ring-2 focus:ring-primary"
- aria-label="Rechercher dans les tickets par titre ou description"
- />
- </div>
- </div>
+        if (!response.ok) {
+          throw new Error(payload.error || 'Mise à jour impossible.')
+        }
 
- {/* Filtre statut */}
- <div>
- <Label htmlFor="status-filter" className="sr-only">
- Filtrer par statut
- </Label>
- <Select
- value={filters.status}
- onValueChange={(value) => setFilters({ ...filters, status: value as SupportTicketStatus |'all'})}
- >
- <SelectTrigger id="status-filter" className="w-full">
- <SelectValue placeholder="Tous les statuts" />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="all">Tous les statuts</SelectItem>
- <SelectItem value="pending">En attente</SelectItem>
- <SelectItem value="open">Ouvert</SelectItem>
- <SelectItem value="in_progress">En cours</SelectItem>
- <SelectItem value="waiting_user">Attente utilisateur</SelectItem>
- <SelectItem value="resolved">Résolu</SelectItem>
- <SelectItem value="closed">Fermé</SelectItem>
- </SelectContent>
- </Select>
- </div>
+        setTickets((currentTickets) =>
+          currentTickets.map((ticket) =>
+            ticket.id === ticketId
+              ? {
+                  ...ticket,
+                  status,
+                  updated_at: new Date().toISOString(),
+                }
+              : ticket,
+          ),
+        )
+      } catch (caughtError) {
+        setError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : 'Impossible de mettre à jour ce ticket pour le moment.',
+        )
+      } finally {
+        setUpdatingTicketId(null)
+      }
+    },
+    [],
+  )
 
- {/* Filtre catégorie */}
- <div>
- <Label htmlFor="category-filter" className="sr-only">
- Filtrer par catégorie
- </Label>
- <Select
- value={filters.category}
- onValueChange={(value) => setFilters({ ...filters, category: value as SupportTicketCategory |'all'})}
- >
- <SelectTrigger id="category-filter" className="w-full">
- <SelectValue placeholder="Toutes catégories" />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="all">Toutes catégories</SelectItem>
- <SelectItem value="bug">Bug</SelectItem>
- <SelectItem value="feature">Fonctionnalité</SelectItem>
- <SelectItem value="help">Aide</SelectItem>
- <SelectItem value="feedback">Feedback</SelectItem>
- <SelectItem value="account">Compte</SelectItem>
- <SelectItem value="payment">Paiement</SelectItem>
- </SelectContent>
- </Select>
- </div>
- </div>
- </motion.div>
- )}
- </AnimatePresence>
- </div>
+  if (!authLoading && !canModerate) {
+    return (
+      <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+        <AlertDescription>Accès administrateur insuffisant pour consulter les tickets.</AlertDescription>
+      </Alert>
+    )
+  }
 
- {/* Liste des tickets */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px]">
- {filteredAndSortedTickets.length === 0 ? (
- <div className="text-center py-12">
- <MessageSquare className="h-12 w-12 text-gray-700 mx-auto mb-4" />
- <h3 className="text-lg font-medium text-foreground mb-2">Aucun ticket trouvé</h3>
- <p className="text-gray-600">
- {filters.status !=='all' || filters.category !=='all' || filters.search 
- ?'Essayez de modifier vos filtres'
- :'Les tickets de support apparaîtront ici'}
- </p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full">
- {/* En-têtes de tableau */}
- <thead className="bg-background border-b border-border">
- <tr>
- <th className="px-6 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
- <button
- onClick={() => handleSort('created_at')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Date</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </th>
- <th className="px-6 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
- Ticket
- </th>
- <th className="px-6 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
- <button
- onClick={() => handleSort('status')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Statut</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </th>
- <th className="px-6 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
- <button
- onClick={() => handleSort('priority')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Priorité</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </th>
- <th className="px-6 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
- Utilisateur
- </th>
- <th className="px-6 py-2 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
- Actions
- </th>
- </tr>
- </thead>
+  return (
+    <div className="space-y-6">
+      <section className="rounded-[30px] border border-border bg-card/84 px-5 py-5 shadow-[0_24px_56px_rgba(0,0,0,0.22)] sm:px-6 sm:py-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-3xl space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              Tickets admin
+            </p>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Triage lisible, actions utiles, zéro écran parasite.
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+              Regroupe les demandes ouvertes, identifie les urgences et ouvre la fiche complète
+              uniquement quand il faut répondre ou modérer.
+            </p>
+          </div>
 
- {/* Corps du tableau */}
- <tbody className="bg-card border border-border divide-y divide-gray-200">
- {filteredAndSortedTickets.map((ticket) => (
- <tr 
- key={ticket.id} 
- className="hover:bg-muted/50 cursor-pointer transition-colors"
- onClick={() => {
- // 🔄 REDIRECTION vers page dédiée au lieu du modal
- window.location.href = `/admin/tickets/${ticket.id}`
-}}
- >
- {/* Date */}
- <td className="px-6 py-4 whitespace-nowrap">
- <div className="flex items-center space-x-2">
- <Calendar className="h-6 w-6 text-gray-700" />
- <div>
- <div className="text-sm font-medium text-foreground">
- {new Date(ticket.created_at).toLocaleDateString('fr-FR')}
- </div>
- <div className="text-xs text-gray-600">
- {new Date(ticket.created_at).toLocaleTimeString('fr-FR', { 
- hour:'2-digit', 
- minute:'2-digit' 
-})}
- </div>
- </div>
- </div>
- </td>
+          <div className="flex flex-wrap gap-3">
+            <ActionButton type="button" tone="secondary" onClick={() => void fetchTickets()} className="gap-2">
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              <span>Actualiser</span>
+            </ActionButton>
+          </div>
+        </div>
+      </section>
 
- {/* Ticket */}
- <td className="px-6 py-4">
- <div>
- <div className="flex items-center space-x-2 mb-1">
- <span className="text-sm font-medium text-foreground line-clamp-1">
- {ticket.title}
- </span>
- {ticket.attachments && ticket.attachments.length > 0 && (
- <Paperclip className="h-5 w-5 text-gray-700" />
- )}
- </div>
- <div className="text-xs text-gray-600">
- {getCategoryLabel(ticket.category)}
- </div>
- <div className="text-xs text-gray-600 line-clamp-2 mt-1">
- {ticket.description}
- </div>
- </div>
- </td>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard label="À traiter" value={stats.openCount} helper="ouverts ou en attente" />
+        <SummaryCard label="En cours" value={stats.inProgressCount} helper="déjà pris en charge" />
+        <SummaryCard label="Résolus" value={stats.resolvedCount} helper="tickets fermables ensuite" />
+        <SummaryCard label="Critiques" value={stats.criticalCount} helper="priorité maximale" />
+      </div>
 
- {/* Statut */}
- <td className="px-6 py-4 whitespace-nowrap">
- <div className="flex items-center space-x-2">
- {getStatusIcon(ticket.status)}
- <span className="text-sm text-foreground">
- {getStatusLabel(ticket.status)}
- </span>
- </div>
- </td>
+      <Card className="rounded-[26px] border-border bg-card/82 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="space-y-2">
+            <Label htmlFor="admin-ticket-search">Recherche</Label>
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-safe-muted"
+                aria-hidden="true"
+              />
+              <Input
+                id="admin-ticket-search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Titre, description, email..."
+                className="h-12 rounded-full border-border bg-background/60 pl-11"
+              />
+            </div>
+          </div>
 
- {/* Priorité */}
- <td className="px-6 py-4 whitespace-nowrap">
- <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
- {getPriorityLabel(ticket.priority)}
- </span>
- </td>
+          <div className="space-y-2">
+            <Label htmlFor="admin-ticket-status">Statut</Label>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as TicketStatusFilter)}>
+              <SelectTrigger id="admin-ticket-status" className="h-12 rounded-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
- {/* Utilisateur */}
- <td className="px-6 py-4 whitespace-nowrap">
- <div className="flex items-center space-x-2">
- <User className="h-6 w-6 text-gray-700" />
- <div>
- <div className="text-sm text-foreground">
- {ticket.profiles?.email || ticket.user_email ||'Email non disponible'}
- </div>
- {(ticket.profiles?.full_name || ticket.user_metadata?.name) && (
- <div className="text-xs text-gray-600">
- {ticket.profiles?.full_name || ticket.user_metadata?.name}
- </div>
- )}
- </div>
- </div>
- </td>
+          <div className="space-y-2">
+            <Label htmlFor="admin-ticket-priority">Priorité</Label>
+            <Select
+              value={priorityFilter}
+              onValueChange={(value) => setPriorityFilter(value as TicketPriorityFilter)}
+            >
+              <SelectTrigger id="admin-ticket-priority" className="h-12 rounded-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {priorityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
- {/* Actions */}
- <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
- <div className="flex items-center justify-end space-x-2">
- <Button
- variant="ghost"
- size="sm"
- onClick={(e) => {
- e.stopPropagation()
- setSelectedTicket(ticket)
- setShowDetails(true)
-}}
- className="p-2 h-auto hover:text-safe-info hover:bg-tertiary/8"
- title="Voir les détails"
- >
- <Eye className="h-4 w-4" />
- </Button>
- 
- {hasPermission('moderator') && ticket.status ==='open' && (
- <Button
- variant="ghost"
- size="sm"
- onClick={(e) => {
- e.stopPropagation()
- handleStatusChange(ticket.id,'in_progress')
-}}
- className="p-2 h-auto hover:text-primary hover:bg-orange-50"
- title="Prendre en charge"
- >
- <AlertTriangle className="h-4 w-4" />
- </Button>
- )}
- 
- {hasPermission('moderator') && ticket.status ==='in_progress' && (
- <Button
- variant="ghost"
- size="sm"
- onClick={(e) => {
- e.stopPropagation()
- handleStatusChange(ticket.id,'resolved')
-}}
- className="p-2 h-auto hover:text-safe-success hover:bg-green-50"
- title="Marquer comme résolu"
- >
- <CheckCircle2 className="h-4 w-4" />
- </Button>
- )}
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- )}
- </div>
+          <div className="space-y-2">
+            <Label htmlFor="admin-ticket-category">Catégorie</Label>
+            <Select
+              value={categoryFilter}
+              onValueChange={(value) => setCategoryFilter(value as TicketCategoryFilter)}
+            >
+              <SelectTrigger id="admin-ticket-category" className="h-12 rounded-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
 
- {/* Modal de détails du ticket */}
- <AnimatePresence>
- {showDetails && selectedTicket && (
- <>
- <motion.div
- initial={{ opacity: 0}}
- animate={{ opacity: 1}}
- exit={{ opacity: 0}}
- className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
- onClick={() => setShowDetails(false)}
- />
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- exit={{ opacity: 0, scale: 0.95}}
- className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-x-16 lg:top-12 lg:bottom-12 z-50 bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
- >
- {/* En-tête du modal */}
- <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-background">
- <div className="flex items-center space-x-2">
- {getStatusIcon(selectedTicket.status)}
- <div>
- <h2 className="text-lg font-semibold text-foreground line-clamp-1">
- {selectedTicket.title}
- </h2>
- <p className="text-sm text-gray-600">
- {getCategoryLabel(selectedTicket.category)} • 
- {new Date(selectedTicket.created_at).toLocaleString('fr-FR')}
- </p>
- </div>
- </div>
- 
- <div className="flex items-center space-x-2">
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedTicket.priority)}`}>
- {getPriorityLabel(selectedTicket.priority)}
- </span>
- <Button
- variant="ghost"
- size="sm"
- onClick={() => setShowDetails(false)}
- className="p-2 h-auto"
- >
- <XCircle className="h-4 w-4" />
- </Button>
- </div>
- </div>
+      {error ? (
+        <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
 
- {/* Contenu du modal */}
- <div className="flex-1 overflow-y-auto p-6">
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- {/* Contenu principal */}
- <div className="lg:col-span-2 space-y-6">
- {/* Description */}
- <div>
- <h3 className="text-sm font-medium text-foreground mb-2">Description</h3>
- <div className="bg-background rounded-lg p-4">
- <div 
- className="text-sm text-gray-700 whitespace-pre-wrap"
- dangerouslySetInnerHTML={{
- __html: DOMPurify.sanitize(selectedTicket.description, {
- ALLOWED_TAGS: ['p','br','strong','em','u','code','pre'],
- ALLOWED_ATTR: [],
- KEEP_CONTENT: true
-})
-}}
- />
- </div>
- </div>
+      {loading ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card
+              key={index}
+              className="h-[260px] rounded-[26px] border-border bg-card/82 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]"
+            >
+              <div className="h-full animate-pulse rounded-[20px] bg-background/55" />
+            </Card>
+          ))}
+        </div>
+      ) : filteredTickets.length > 0 ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {filteredTickets.map((ticket) => (
+            <TicketCard
+              key={ticket.id}
+              ticket={ticket}
+              canModerate={canModerate}
+              isUpdating={updatingTicketId === ticket.id}
+              onStatusChange={handleStatusChange}
+            />
+          ))}
+        </div>
+      ) : (
+        <Card className="rounded-[26px] border border-dashed border-border bg-card/72 px-5 py-12 text-center shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-border bg-background/55">
+            <MessageSquare className="h-6 w-6 text-primary" aria-hidden="true" />
+          </div>
+          <h2 className="mt-4 text-xl font-semibold text-foreground">Aucun ticket à afficher</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Ajuste les filtres ou recharge la liste si tu attends de nouvelles demandes.
+          </p>
+        </Card>
+      )}
 
- {/* Pièces jointes */}
- {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
- <div>
- <h3 className="text-sm font-medium text-foreground mb-2">
- Pièces jointes ({selectedTicket.attachments.length})
- </h3>
- <div className="space-y-2">
- {selectedTicket.attachments.map((attachment: {originalName?: string; type: string; size: number; url: string}, index: number) => (
- <div 
- key={index}
- className="flex items-center justify-between p-2 border border-border rounded-lg"
- >
- <div className="flex items-center space-x-2">
- <Paperclip className="h-6 w-6 text-gray-700" />
- <div>
- <p className="text-sm font-medium text-foreground">
- {attachment.originalName ||'Fichier joint'}
- </p>
- <p className="text-xs text-gray-600">
- {attachment.type} • {Math.round(attachment.size / 1024)} KB
- </p>
- </div>
- </div>
- <Button
- variant="ghost"
- size="sm"
- onClick={() => window.open(attachment.url,'_blank')}
- className="p-2 h-auto hover:text-safe-info hover:bg-tertiary/8"
- title="Télécharger"
- >
- <Download className="h-4 w-4" />
- </Button>
- </div>
- ))}
- </div>
- </div>
- )}
- </div>
-
- {/* Sidebar avec actions */}
- <div className="space-y-6">
- {/* Informations utilisateur */}
- <div className="bg-background rounded-lg p-4">
- <h3 className="text-sm font-medium text-foreground mb-2">Utilisateur</h3>
- <div className="space-y-2">
- <div className="flex items-center space-x-2">
- <User className="h-6 w-6 text-gray-700" />
- <span className="text-sm text-gray-700">
- {selectedTicket.user_email ||'Email non disponible'}
- </span>
- </div>
- {selectedTicket.user_metadata?.name && (
- <div className="text-sm text-gray-600">
- {selectedTicket.user_metadata.name}
- </div>
- )}
- </div>
- </div>
-
- {/* Actions de modération */}
- {hasPermission('moderator') && (
- <div className="bg-card border border-border rounded-lg p-4">
- <h3 className="text-sm font-medium text-foreground mb-2">Actions</h3>
- <div className="space-y-2">
- {/* Changer le statut */}
- <div>
- <label className="block text-xs font-medium text-gray-700 mb-1">
- Statut
- </label>
- <Select
- value={selectedTicket.status}
- onValueChange={(value) => handleStatusChange(selectedTicket.id, value as SupportTicketStatus)}
- >
- <SelectTrigger className="w-full text-sm">
- <SelectValue />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="pending">En attente</SelectItem>
- <SelectItem value="open">Ouvert</SelectItem>
- <SelectItem value="in_progress">En cours</SelectItem>
- <SelectItem value="waiting_user">Attente utilisateur</SelectItem>
- <SelectItem value="resolved">Résolu</SelectItem>
- <SelectItem value="closed">Fermé</SelectItem>
- </SelectContent>
- </Select>
- </div>
-
- {/* Changer la priorité */}
- <div>
- <label className="block text-xs font-medium text-gray-700 mb-1">
- Priorité
- </label>
- <Select
- value={selectedTicket.priority}
- onValueChange={(value) => handlePriorityChange(selectedTicket.id, value as SupportTicketPriority)}
- >
- <SelectTrigger className="w-full text-sm">
- <SelectValue />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="low">📝 Faible</SelectItem>
- <SelectItem value="medium">📋 Normale</SelectItem>
- <SelectItem value="high">🔥 Élevée</SelectItem>
- <SelectItem value="critical">🚨 Critique</SelectItem>
- </SelectContent>
- </Select>
- </div>
- </div>
- </div>
- )}
-
- {/* Statistiques du ticket */}
- <div className="bg-background rounded-lg p-4">
- <h3 className="text-sm font-medium text-foreground mb-2">Informations</h3>
- <div className="space-y-2 text-sm">
- <div className="flex justify-between">
- <span className="text-gray-600">Créé le:</span>
- <span className="text-foreground">
- {new Date(selectedTicket.created_at).toLocaleDateString('fr-FR')}
- </span>
- </div>
- <div className="flex justify-between">
- <span className="text-gray-600">Dernière MAJ:</span>
- <span className="text-foreground">
- {new Date(selectedTicket.updated_at).toLocaleDateString('fr-FR')}
- </span>
- </div>
- <div className="flex justify-between">
- <span className="text-gray-600">ID Ticket:</span>
- <span className="text-foreground font-mono text-xs">
- {selectedTicket.id.slice(0, 8)}...
- </span>
- </div>
- </div>
- </div>
- </div>
- </div>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
- </div>
- )
+      <Card className="rounded-[24px] border-border bg-card/72 px-4 py-4 shadow-[0_14px_28px_rgba(0,0,0,0.12)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 text-sm text-safe-muted">
+            <Clock3 className="h-4 w-4" aria-hidden="true" />
+            <span>{filteredTickets.length} ticket(s) visibles</span>
+          </div>
+          <div className="text-sm text-safe-muted">
+            Les réponses, pièces jointes et notes restent dans la fiche ticket dédiée.
+          </div>
+        </div>
+      </Card>
+    </div>
+  )
 }
