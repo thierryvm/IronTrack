@@ -86,12 +86,6 @@ export default function RootLayout({
 }>) {
  return (
  <html lang="fr" className={`dark h-full ${inter.variable}`}>
- <head>
- <meta name="mobile-web-app-capable" content="yes" />
- <meta name="apple-mobile-web-app-capable" content="yes" />
- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
- <meta name="format-detection" content="telephone=no" />
- </head>
  <body className="antialiased min-h-screen overflow-x-hidden" suppressHydrationWarning>
  <ClientProviders>
  <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">

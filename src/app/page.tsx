@@ -1,4 +1,29 @@
+import type { Metadata } from 'next'
+
 import HomePageClient from'@/components/HomePage/HomePageClient'
+import { createPageMetadata } from '@/app/metadata'
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'IronTrack | Fitness, musculation, nutrition et progression',
+  description:
+    "IronTrack est l'application fitness, musculation et nutrition pour planifier tes séances, suivre ta charge de travail, garder un timer utile et mesurer ta progression.",
+  path: '/',
+  keywords: [
+    'IronTrack',
+    'application fitness',
+    'application musculation',
+    'application nutrition',
+    'suivi entrainement',
+    'progression musculation',
+    'timer repos musculation',
+    'planning fitness',
+    'coach musculation',
+    'PWA fitness',
+  ],
+  openGraphTitle: 'IronTrack | Application fitness, musculation et nutrition',
+  openGraphDescription:
+    'Planifie tes séances, mesure ta progression, suis ta nutrition et garde un cockpit d’entraînement clair avec IronTrack.',
+})
 
 const webAppJsonLd = {
   '@context': 'https://schema.org',

@@ -1,673 +1,287 @@
 'use client'
 
-import React, { useState, useEffect, useRef} from'react'
-import Link from'next/link'
-import Image from'next/image'
-import { usePathname, useRouter} from'next/navigation'
-import { createClient} from'@/utils/supabase/client'
+import React, { useEffect, useRef, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
-// Import des icônes critiques uniquement
-import { 
- Dumbbell, 
- Calendar, 
- BarChart3, 
- Apple, 
- User,
- Users,
- LogOut,
- LogIn,
- Shield,
- HelpCircle,
- Bell,
- ChevronDown,
- FileText,
- Activity
-} from'lucide-react'
+import { useAdminRole } from '@/hooks/useAdminRole'
+import { createClient } from '@/utils/supabase/client'
 
+import HeaderDesktop from './HeaderDesktop'
+import HeaderMobile from './HeaderMobile'
+import HeaderMobileBottomNav from './HeaderMobileBottomNav'
+import { getMainNavigationItems, getSecondaryNavigationItems } from './navigation-items'
 
-// Import direct du hook (correction erreur hooks React)
-import { useAdminRole} from'@/hooks/useAdminRole'
-import ClientOnlyNavigation from'./ClientOnlyNavigation'
-import { Logo} from'@/components/shared/Logo'
+interface HeaderNotificationItem {
+  id: string
+  type: string
+  message: string
+  created_at: string
+  href?: string
+}
+
+function buildUserInitials(email: string): string {
+  return email
+    .split('@')[0]
+    .split('.')
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('')
+    .substring(0, 2)
+}
 
 export default function HeaderClient() {
- // États de menu désactivés - UI simplifiée mobile 2025
- const pathname = usePathname()
- const router = useRouter()
- 
- 
- // Logo avec lazy loading pour éviter preload warnings
- const [isLoggedIn, setIsLoggedIn] = useState(false)
- const [userEmail, setUserEmail] = useState('')
- const [userInitials, setUserInitials] = useState('')
- const [userAvatar, setUserAvatar] = useState<string | null>(null)
- const { isAdmin, isModerator} = useAdminRole()
+  const pathname = usePathname()
+  const router = useRouter()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [userInitials, setUserInitials] = useState('')
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
+  const { isAdmin, isModerator } = useAdminRole()
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [notifications, setNotifications] = useState<HeaderNotificationItem[]>([])
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const lastAdminState = useRef<boolean | null>(null)
 
- // MENU PRINCIPAL - Navigation en bas mobile, en haut desktop
- const mainNav = [
- { name:'Calendrier', href:'/calendar', icon: Calendar, mobileLabel:'Agenda'},
- { name:'Exercices', href:'/exercises', icon: Dumbbell, mobileLabel:'Exos'},
- { name:'Séances', href:'/workouts', icon: Activity, mobileLabel:'Séances'},
- { name:'Partenaires', href:'/training-partners', icon: Users, mobileLabel:'Team'},
- { name:'Nutrition', href:'/nutrition', icon: Apple, mobileLabel:'Nutrition'},
- { name:'Progression', href:'/progress', icon: BarChart3, mobileLabel:'Stats'},
- ]
+  const mainNav = getMainNavigationItems()
+  const secondaryNav = getSecondaryNavigationItems({ isAdmin, isModerator })
 
- // MENU SECONDAIRE - Profil et administration
- const secondaryNav = [
- { name:'Profil', href:'/profile', icon: User},
- { name:'Support', href:'/support', icon: HelpCircle},
- { name:'FAQ', href:'/faq', icon: FileText},
- ...(isAdmin || isModerator ? [{ name:'Admin', href:'/admin', icon: Shield}] : []),
- ]
+  useEffect(() => {
+    const supabase = createClient()
 
- // États pour les features actifs
- const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
- const [notificationCount, setNotificationCount] = useState(0)
- const [notifications, setNotifications] = useState<Array<{id: string, type: string, message: string, created_at: string, href?: string}>>([])
- const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+    const syncUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
- // Protection contre les re-chargements multiples
- const lastAdminState = useRef<boolean | null>(null)
+      if (!user) {
+        setIsLoggedIn(false)
+        setUserEmail('')
+        setUserInitials('')
+        setUserAvatar(null)
+        return
+      }
 
+      setIsLoggedIn(true)
+      setUserEmail(user.email || '')
+      setUserInitials(buildUserInitials(user.email || ''))
 
- // Vérifier l'état de connexion et récupérer infos utilisateur
- useEffect(() => {
- const supabase = createClient()
- const checkUser = async () => {
- const { data: { user}} = await supabase.auth.getUser()
- if (user) {
- setIsLoggedIn(true)
- setUserEmail(user.email ||'')
- 
- // Récupérer l'avatar depuis la table profiles
- const { data: profile} = await supabase
- .from('profiles')
- .select('avatar_url')
- .eq('id', user.id)
- .single()
- 
- setUserAvatar(profile?.avatar_url || null)
- 
- // Générer initiales à partir de l'email
- const email = user.email ||''
- const initials = email.split('@')[0]
- .split('.')
- .map(part => part.charAt(0).toUpperCase())
- .join('')
- .substring(0, 2)
- setUserInitials(initials)
-} else {
- setIsLoggedIn(false)
- setUserEmail('')
- setUserInitials('')
- setUserAvatar(null)
-}
-}
- checkUser()
- const { data: { subscription}} = supabase.auth.onAuthStateChange((event, session) => {
- if (event ==='SIGNED_IN' && session?.user) {
- setIsLoggedIn(true)
- setUserEmail(session.user.email ||'')
- 
- // Récupérer l'avatar depuis la table profiles
- supabase
- .from('profiles')
- .select('avatar_url')
- .eq('id', session.user.id)
- .single()
- .then(({ data: profile}) => {
- setUserAvatar(profile?.avatar_url || null)
-})
- 
- const email = session.user.email ||''
- const initials = email.split('@')[0]
- .split('.')
- .map(part => part.charAt(0).toUpperCase())
- .join('')
- .substring(0, 2)
- setUserInitials(initials)
-}
- if (event ==='SIGNED_OUT') {
- setIsLoggedIn(false)
- setUserEmail('')
- setUserInitials('')
- setUserAvatar(null)
-}
-})
- return () => subscription.unsubscribe()
-}, [])
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single()
 
- // Charger les notifications réelles 
- useEffect(() => {
- if (!isLoggedIn) return
+      setUserAvatar(profile?.avatar_url || null)
+    }
 
- // ✅ PROTECTION: Éviter re-chargement si admin state régresse (optimisée)
- const currentAdminState = isAdmin || isModerator
- if (lastAdminState.current === true && currentAdminState === false) {
- return
-}
- lastAdminState.current = currentAdminState
+    syncUser()
 
- const loadNotifications = async () => {
- try {
- const supabase = createClient()
- 
- // Vérifier d'abord que l'utilisateur est bien authentifié
- const { data: { user}, error: authError} = await supabase.auth.getUser()
- if (authError || !user) {
- return
-}
- 
- // SÉCURITÉ: Charger tickets selon le rôle 
- let tickets = null
- let error = null
- 
- if (isAdmin || isModerator) {
- // Admin/Modérateurs: TOUS les tickets
- const result = await supabase
- .from('support_tickets')
- .select('*')
- .in('status', ['open','in_progress','waiting_user'])
- .limit(3)
- .order('created_at', { ascending: false})
- tickets = result.data
- error = result.error
- if (error) console.error('🔔 [NOTIFICATIONS] Erreur requête tickets:', error)
- 
-} else if (user) {
- // Utilisateurs normaux: UNIQUEMENT leurs propres tickets
- const result = await supabase
- .from('support_tickets')
- .select('*')
- .eq('user_id', user.id)
- .in('status', ['open','in_progress','waiting_user'])
- .limit(3)
- .order('created_at', { ascending: false})
- tickets = result.data
- error = result.error
-}
- 
- // Charger les invitations partenaires en attente
- const { data: partnerRequests, error: partnerError} = await supabase
- .from('training_partners')
- .select('*')
- .eq('status','pending')
- .limit(3)
- 
- if (error && error.code !=='PGRST116') console.warn('Erreur chargement tickets:', error)
- if (partnerError && partnerError.code !=='PGRST116') console.warn('Erreur chargement invitations:', partnerError)
- 
- const notificationData: Array<{id: string, type: string, message: string, created_at: string, href?: string}> = []
- 
- // Ajouter tickets support avec liens directs
- // Exclure les tickets déjà consultés (mis à jour avant la dernière visite)
- if (tickets) {
- tickets.forEach(ticket => {
- const seenAt = localStorage.getItem(`ticket_seen_${ticket.id}`)
- const updatedAt = ticket.updated_at || ticket.created_at ||''
- // Afficher seulement si jamais vu, ou si mis à jour après la dernière visite
- if (!seenAt || new Date(updatedAt) > new Date(seenAt)) {
- notificationData.push({
- id: `ticket-${ticket.id}`,
- type:'support',
- message: `Ticket: ${ticket.title || ticket.description ||'Support ticket'}`,
- created_at: ticket.created_at || new Date().toISOString(),
- href: (isAdmin || isModerator)
- ? `/admin/tickets/${ticket.id}`
- : `/support/tickets/${ticket.id}`
-})
-}
-})
-}
- 
- // Ajouter invitations partenaires avec liens directs
- if (partnerRequests) {
- partnerRequests.forEach(request => {
- notificationData.push({
- id: `partner-${request.id}`,
- type:'partner',
- message: `Invitation partenaire: ${request.partner_name || request.partner_email ||'Nouveau partenaire'}`,
- created_at: request.created_at || new Date().toISOString(),
- href: `/training-partners` // Lien vers gestion partenaires
-})
-})
-}
- 
- // Trier par date (plus récent d'abord)
- notificationData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
- 
- setNotifications(notificationData)
- setNotificationCount(notificationData.length)
- 
-} catch (error) {
- console.warn('Erreur notifications:', error)
-}
-}
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const email = session.user.email || ''
+        setIsLoggedIn(true)
+        setUserEmail(email)
+        setUserInitials(buildUserInitials(email))
 
- loadNotifications()
+        supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            setUserAvatar(profile?.avatar_url || null)
+          })
+      }
 
- // Rafraîchir le badge quand un ticket est consulté
- window.addEventListener('ticket-seen', loadNotifications)
- return () => window.removeEventListener('ticket-seen', loadNotifications)
-}, [isLoggedIn, isAdmin, isModerator])
+      if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false)
+        setUserEmail('')
+        setUserInitials('')
+        setUserAvatar(null)
+      }
+    })
 
+    return () => subscription.unsubscribe()
+  }, [])
 
- const handleLogout = async () => {
- const supabase = createClient()
- await supabase.auth.signOut()
- setIsLoggedIn(false)
- router.push('/auth')
-}
+  useEffect(() => {
+    if (!isLoggedIn) return
 
- // Fermer dropdowns au clic extérieur
- useEffect(() => {
- const handleClickOutside = (event: MouseEvent) => {
- const target = event.target as Element
- 
- // Fermer dropdown profil
- if (isProfileDropdownOpen && !target.closest('[data-profile-dropdown]')) {
- setIsProfileDropdownOpen(false)
-}
- 
- // Fermer dropdown notifications 
- if (isNotificationOpen && !target.closest('[data-notification-dropdown]')) {
- setIsNotificationOpen(false)
-}
-}
+    const currentAdminState = isAdmin || isModerator
+    if (lastAdminState.current === true && currentAdminState === false) {
+      return
+    }
+    lastAdminState.current = currentAdminState
 
- document.addEventListener('mousedown', handleClickOutside)
- return () => document.removeEventListener('mousedown', handleClickOutside)
-}, [isProfileDropdownOpen, isNotificationOpen])
+    const loadNotifications = async () => {
+      try {
+        const supabase = createClient()
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser()
 
- // Ne pas rendre le header sur les pages auth (évite le preload inutile)
- if (pathname?.startsWith('/auth')) {
- return null
-}
+        if (authError || !user) {
+          return
+        }
 
- return (
- <>
- {/* Lien d'accessibilité - WCAG AA obligatoire */}
- <a 
- href="#main-content" 
- className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white"
- >
- Aller au contenu principal
- </a>
- 
- {/* HEADER DESKTOP - En haut */}
- <header className="hidden md:block sticky top-0 z-50 bg-card border-b border-border">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="flex justify-between items-center h-16">
- {/* Logo */}
- <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-xl transition-transform hover:scale-[1.02]">
- <Logo iconSize="md" />
- </Link>
+        let tickets = null
+        let error = null
 
- {/* Navigation principale desktop */}
- <ClientOnlyNavigation
- items={mainNav}
- className="flex space-x-6"
- itemClassName="flex items-center space-x-1 text-sm font-medium transition-colors"
- activeClassName="text-primary"
- inactiveClassName="text-muted-foreground hover:text-foreground"
- />
+        if (isAdmin || isModerator) {
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .in('status', ['open', 'in_progress', 'waiting_user'])
+            .limit(3)
+            .order('created_at', { ascending: false })
 
- {/* Actions utilisateur desktop */}
- <div className="flex items-center space-x-4">
- {isLoggedIn ? (
- <>
- {/* Notifications */}
- <div className="relative" data-notification-dropdown>
- <button
- onClick={() => setIsNotificationOpen(!isNotificationOpen)}
- className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus:outline-none"
- aria-label={`Notifications ${notificationCount > 0 ? `(${notificationCount} nouvelles)` :''}`}
- aria-expanded={isNotificationOpen}
- >
- <Bell className="w-5 h-5" aria-hidden="true" />
- {notificationCount > 0 && (
- <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
- {notificationCount > 9 ?'9+' : notificationCount}
- </span>
- )}
- </button>
- 
- {/* Dropdown notifications desktop */}
- {isNotificationOpen && (
- <div className="absolute top-12 right-0 w-80 bg-card border border-border rounded-lg shadow-xl z-50">
- <div className="p-4 border-b border-border">
- <h3 className="text-sm font-semibold text-foreground">🔔 Notifications</h3>
- </div>
- <div className="max-h-64 overflow-y-auto">
- {notifications.length > 0 ? (
- notifications.map((notification) => (
- <div key={notification.id} className="border-b border-border last:border-b-0">
- {notification.href ? (
- <Link
- href={notification.href}
- className="block p-4 hover:bg-muted transition-colors"
- onClick={() => setIsNotificationOpen(false)}
- >
- <p className="text-sm text-foreground">{notification.message}</p>
- <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
- </Link>
- ) : (
- <div className="p-4">
- <p className="text-sm text-foreground">{notification.message}</p>
- <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
- </div>
- )}
- </div>
- ))
- ) : (
- <div className="p-4 text-center text-sm text-muted-foreground">
- Aucune notification
- </div>
- )}
- </div>
- {/* Lien permanent vers support/tickets */}
- <div className="p-2 border-t border-border">
- <Link
- href="/notifications"
- className="w-full flex items-center justify-center px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
- onClick={() => setIsNotificationOpen(false)}
- >
- Voir mes notifications
- </Link>
- </div>
- </div>
- )}
- </div>
+          tickets = result.data
+          error = result.error
 
- {/* Avatar et dropdown profil */}
- <div className="relative" data-profile-dropdown>
- <button
- onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
- className="flex items-center space-x-2 p-1 rounded-lg hover:bg-muted transition-colors"
- >
- {userAvatar ? (
- <Image 
- src={userAvatar} 
- alt="Avatar" 
- className="w-8 h-8 rounded-full object-cover" 
- width={32} 
- height={32}
- sizes="40px"
- quality={60}
- loading="lazy"
- />
- ) : (
- <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
- {userInitials}
- </div>
- )}
- <ChevronDown className="w-4 h-4 text-muted-foreground" />
- </button>
- 
- {/* Dropdown profil desktop */}
- {isProfileDropdownOpen && (
- <div className="absolute top-12 right-0 w-64 bg-card border border-border rounded-lg shadow-xl z-50">
- {/* Header utilisateur comme sur mobile */}
- <div className="p-2 bg-muted border-b border-border">
- <div className="flex items-center space-x-2">
- {userAvatar ? (
- <Image 
- src={userAvatar} 
- alt="Avatar" 
- className="w-10 h-10 rounded-full object-cover" 
- width={40} 
- height={40}
- sizes="40px"
- quality={60}
- loading="lazy"
- />
- ) : (
- <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
- {userInitials}
- </div>
- )}
- <div className="min-w-0 flex-1">
- <h3 className="text-sm font-semibold text-foreground truncate">{userEmail}</h3>
- </div>
- </div>
- </div>
- <div className="p-2">
- {secondaryNav.map((item) => (
- <Link
- key={item.name}
- href={item.href}
- className="flex items-center space-x-2 px-2 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
- onClick={() => setIsProfileDropdownOpen(false)}
- >
- <item.icon className="w-4 h-4" />
- <span>{item.name}</span>
- </Link>
- ))}
- <hr className="my-2 border-border" />
- <button
- onClick={handleLogout}
- className="w-full flex items-center space-x-2 px-2 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors"
- >
- <LogOut className="w-4 h-4" />
- <span>Se déconnecter</span>
- </button>
- </div>
- </div>
- )}
- </div>
- 
- </>
- ) : (
- <>
- <Link
- href="/auth/login"
- className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
- >
- <LogIn className="w-4 h-4" />
- <span>Connexion</span>
- </Link>
- </>
- )}
- </div>
- </div>
- </div>
- </header>
- 
- {/* HEADER MOBILE - En haut simplifié avec support safe areas iPhone */}
- <header className="md:hidden sticky top-0 z-50 bg-card border-b border-border">
- <div className="flex justify-between items-center px-4 py-2 header-mobile-ios">
- {/* Logo */}
- <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
- <Logo iconSize="sm" />
- </Link>
+        } else {
+          const result = await supabase
+            .from('support_tickets')
+            .select('*')
+            .eq('user_id', user.id)
+            .in('status', ['open', 'in_progress', 'waiting_user'])
+            .limit(3)
+            .order('created_at', { ascending: false })
 
- {/* Actions utilisateur mobile */}
- <div className="flex items-center space-x-2">
- {isLoggedIn ? (
- <>
- {/* Notifications mobile - lien direct vers la page */}
- <Link
- href="/notifications"
- className="relative rounded-lg p-2 text-safe-muted transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
- aria-label={`Notifications${notificationCount > 0 ? ` (${notificationCount} non lues)` :''}`}
- >
- <Bell className="w-5 h-5" />
- {notificationCount > 0 && (
- <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
- {notificationCount > 9 ?'9+' : notificationCount}
- </span>
- )}
- </Link>
- 
- {/* Avatar mobile - Dropdown comme desktop */}
- <div className="relative" data-profile-dropdown>
- <button
- onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
- className="flex items-center rounded-lg p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
- aria-label="Ouvrir menu profil"
- aria-expanded={isProfileDropdownOpen}
- >
- {userAvatar ? (
- <Image 
- src={userAvatar} 
- alt="Avatar" 
- className="w-8 h-8 rounded-full object-cover" 
- width={32} 
- height={32}
- sizes="40px"
- quality={60}
- loading="lazy"
- />
- ) : (
- <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
- {userInitials}
- </div>
- )}
- </button>
- 
- {/* Dropdown profil mobile - Modal style */}
- {isProfileDropdownOpen && (
- <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setIsProfileDropdownOpen(false)}>
- <div 
- className="absolute top-20 left-4 right-4 bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
- onClick={e => e.stopPropagation()}
- >
- <div className="p-4 bg-muted border-b border-border">
- <div className="flex items-center space-x-2">
- {userAvatar ? (
- <Image 
- src={userAvatar} 
- alt="Avatar" 
- className="w-12 h-12 rounded-full object-cover" 
- width={48} 
- height={48}
- sizes="48px"
- quality={70}
- loading="lazy"
- />
- ) : (
- <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-lg font-semibold">
- {userInitials}
- </div>
- )}
- <div>
- <h3 className="text-base font-semibold text-foreground">{userEmail}</h3>
- <p className="text-sm text-muted-foreground">Votre profil</p>
- </div>
- </div>
- </div>
- <div className="py-2">
- {secondaryNav.map((item) => (
- <Link
- key={item.name}
- href={item.href}
- className="flex items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
- onClick={() => setIsProfileDropdownOpen(false)}
- >
- <item.icon className="w-5 h-5" />
- <span>{item.name}</span>
- </Link>
- ))}
- <hr className="my-2 border-border" />
- <button
- onClick={() => {
- handleLogout()
- setIsProfileDropdownOpen(false)
-}}
- className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
- >
- <LogOut className="w-5 h-5" />
- <span>Se déconnecter</span>
- </button>
- </div>
- </div>
- </div>
- )}
- </div>
- </>
- ) : (
- <Link
- href="/auth/login"
- className="text-primary font-medium text-sm"
- >
- Connexion
- </Link>
- )}
- </div>
- </div>
+          tickets = result.data
+          error = result.error
+        }
 
- {/* Modal notifications mobile */}
- {isNotificationOpen && (
- <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setIsNotificationOpen(false)}>
- <div 
- className="absolute top-20 left-4 right-4 bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
- onClick={e => e.stopPropagation()}
- >
- <div className="p-4 bg-muted border-b border-border">
- <h3 className="text-base font-bold text-foreground">🔔 Notifications</h3>
- </div>
- <div className="max-h-80 overflow-y-auto">
- {notifications.length > 0 ? (
- notifications.map((notification) => (
- <div key={notification.id} className="border-b border-border last:border-b-0">
- {notification.href ? (
- <Link
- href={notification.href}
- className="block p-4 hover:bg-muted transition-colors"
- onClick={() => setIsNotificationOpen(false)}
- >
- <p className="text-sm text-foreground">{notification.message}</p>
- <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
- </Link>
- ) : (
- <div className="p-4">
- <p className="text-sm text-foreground">{notification.message}</p>
- <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('fr-FR')}</p>
- </div>
- )}
- </div>
- ))
- ) : (
- <div className="p-8 text-center text-sm text-muted-foreground">
- Aucune notification
- </div>
- )}
- </div>
- {/* Lien permanent vers support/tickets - Mobile */}
- <div className="p-2 border-t border-border">
- <Link
- href="/notifications"
- className="w-full flex items-center justify-center px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
- onClick={() => setIsNotificationOpen(false)}
- >
- Voir mes notifications
- </Link>
- </div>
- </div>
- </div>
- )}
- </header>
- 
- {/* NAVIGATION MOBILE EN BAS - Fixe */}
- {isLoggedIn && (
- <nav
- aria-label="Navigation mobile"
- className="safe-area-bottom md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85"
- >
- <div className="mx-auto flex max-w-screen-sm items-center gap-1 overflow-x-auto px-2 pb-2 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" role="list">
- <ClientOnlyNavigation
- items={mainNav}
- className="contents"
- itemClassName="group flex min-w-[68px] flex-1 snap-center flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
- activeClassName="bg-muted text-foreground shadow-sm"
- inactiveClassName="text-safe-muted hover:bg-muted/60 hover:text-foreground"
- isMobile={true}
- ariaLabel="Navigation mobile bas de page"
- />
- </div>
- </nav>
- )}
- </>
- )
+        const { data: partnerRequests, error: partnerError } = await supabase
+          .from('training_partners')
+          .select('*')
+          .eq('status', 'pending')
+          .limit(3)
+
+        if (error && error.code !== 'PGRST116') return
+        if (partnerError && partnerError.code !== 'PGRST116') return
+
+        const nextNotifications: HeaderNotificationItem[] = []
+
+        if (tickets) {
+          tickets.forEach((ticket) => {
+            const seenAt = localStorage.getItem(`ticket_seen_${ticket.id}`)
+            const updatedAt = ticket.updated_at || ticket.created_at || ''
+
+            if (!seenAt || new Date(updatedAt) > new Date(seenAt)) {
+              nextNotifications.push({
+                id: `ticket-${ticket.id}`,
+                type: 'support',
+                message: `Ticket: ${ticket.title || ticket.description || 'Support ticket'}`,
+                created_at: ticket.created_at || new Date().toISOString(),
+                href: isAdmin || isModerator
+                  ? `/admin/tickets/${ticket.id}`
+                  : `/support/tickets/${ticket.id}`,
+              })
+            }
+          })
+        }
+
+        if (partnerRequests) {
+          partnerRequests.forEach((request) => {
+            nextNotifications.push({
+              id: `partner-${request.id}`,
+              type: 'partner',
+              message: `Invitation partenaire: ${request.partner_name || request.partner_email || 'Nouveau partenaire'}`,
+              created_at: request.created_at || new Date().toISOString(),
+              href: '/training-partners',
+            })
+          })
+        }
+
+        nextNotifications.sort(
+          (first, second) =>
+            new Date(second.created_at).getTime() - new Date(first.created_at).getTime()
+        )
+
+        setNotifications(nextNotifications)
+        setNotificationCount(nextNotifications.length)
+      } catch {
+        return
+      }
+    }
+
+    loadNotifications()
+    window.addEventListener('ticket-seen', loadNotifications)
+
+    return () => window.removeEventListener('ticket-seen', loadNotifications)
+  }, [isLoggedIn, isAdmin, isModerator])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+
+      if (isProfileDropdownOpen && !target.closest('[data-profile-dropdown]')) {
+        setIsProfileDropdownOpen(false)
+      }
+
+      if (isNotificationOpen && !target.closest('[data-notification-dropdown]')) {
+        setIsNotificationOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isNotificationOpen, isProfileDropdownOpen])
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setIsLoggedIn(false)
+    setIsNotificationOpen(false)
+    setIsProfileDropdownOpen(false)
+    router.push('/auth')
+  }
+
+  if (pathname?.startsWith('/auth')) {
+    return null
+  }
+
+  return (
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Aller au contenu principal
+      </a>
+
+      <HeaderDesktop
+        isLoggedIn={isLoggedIn}
+        mainNav={mainNav}
+        secondaryNav={secondaryNav}
+        notificationCount={notificationCount}
+        notifications={notifications}
+        isNotificationOpen={isNotificationOpen}
+        isProfileDropdownOpen={isProfileDropdownOpen}
+        userAvatar={userAvatar}
+        userEmail={userEmail}
+        userInitials={userInitials}
+        onLogout={handleLogout}
+        onNotificationOpenChange={setIsNotificationOpen}
+        onProfileOpenChange={setIsProfileDropdownOpen}
+      />
+
+      <HeaderMobile
+        isLoggedIn={isLoggedIn}
+        notificationCount={notificationCount}
+        secondaryNav={secondaryNav}
+        userAvatar={userAvatar}
+        userEmail={userEmail}
+        userInitials={userInitials}
+        isProfileDropdownOpen={isProfileDropdownOpen}
+        onLogout={handleLogout}
+        onProfileOpenChange={setIsProfileDropdownOpen}
+      />
+
+      <HeaderMobileBottomNav isLoggedIn={isLoggedIn} mainNav={mainNav} />
+    </>
+  )
 }

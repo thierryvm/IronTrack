@@ -22,15 +22,15 @@ const InputGlassmorphism = React.forwardRef<HTMLInputElement, InputGlassmorphism
  type={type}
  className={cn(
  // Reset des styles par défaut
-"w-full rounded-xl transition-all focus:outline-none",
+"auth-input w-full rounded-xl transition-all focus:outline-none",
  
- // Resizing adaptatif selon présence d'icône avec hauteur V5 standard
- icon ?"pl-12 pr-4 h-12" :"px-4 h-12",
+ // Resizing adaptatif selon présence d'icône avec hauteur tactile compacte sur mobile
+ icon ?"pl-12 pr-4 h-11 sm:h-12" :"px-4 h-11 sm:h-12",
  
- // Styles premium pour un meilleur contraste
-"bg-slate-100/50",
+ // Styles dark premium lisibles, y compris avec autofill
+"bg-[#16181f]",
 "backdrop-blur-xl", 
-"border border-slate-200",
+"border border-white/10",
 "text-foreground",
 "shadow-sm",
  
@@ -38,8 +38,8 @@ const InputGlassmorphism = React.forwardRef<HTMLInputElement, InputGlassmorphism
 "placeholder:text-muted-foreground",
  
  // Focus state adaptatif
-"focus:bg-card dark:bg-card/10",
-"focus:border-primary/50 dark:border-primary/50",
+"focus:bg-[#1b1e27]",
+"focus:border-primary/50",
 "focus:ring-4 focus:ring-primary/10",
  
  // État disabled

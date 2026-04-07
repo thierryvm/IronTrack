@@ -1,186 +1,147 @@
-'use client'
-
-import { useState } from'react'
 import Link from'next/link'
-import { ShieldCheck, Sparkles, Timer, TrendingUp } from'lucide-react'
+import { BarChart3, ShieldCheck, Timer, TrendingUp } from'lucide-react'
 
+import { AuthBodyClass } from'@/components/auth/AuthBodyClass'
 import EmailAuthForm from'@/components/auth/EmailAuthForm'
+import GoogleOAuthButton from'@/components/auth/GoogleOAuthButton'
 import InAppBrowserWarning from'@/components/auth/InAppBrowserWarning'
 import { Logo } from'@/components/shared/Logo'
-import { Button } from'@/components/ui/button'
-import { createClient } from'@/utils/supabase/client'
+import { Badge } from'@/components/ui/badge'
 
 const features = [
- { icon: TrendingUp, text:'Suivi clair de tes séances et de ta progression' },
- { icon: Timer, text:'Planification simple, pensée pour le mobile' },
- { icon: ShieldCheck, text:'Accès sécurisé à ton espace personnel' },
+ { icon: TrendingUp, text:'Suivi complet de tes entraînements' },
+ { icon: Timer, text:'Timer intelligent avec repos guidé' },
+ { icon: BarChart3, text:'Statistiques et progression détaillées' },
+ { icon: ShieldCheck, text:'Nutrition et objectifs personnalisés' },
 ]
 
 export default function AuthPage() {
- const supabase = createClient()
- const [oauthError, setOauthError] = useState<string | null>(null)
-
- const handleGoogleLogin = async () => {
- try {
- setOauthError(null)
-
- const { error } = await supabase.auth.signInWithOAuth({
- provider:'google',
- options: {
- redirectTo: `${window.location.origin}/`,
- },
- })
-
- if (error) {
- throw error
- }
- } catch (error: unknown) {
- setOauthError(error instanceof Error ? error.message :'Impossible de lancer la connexion Google pour le moment.')
- }
- }
-
  return (
- <main className="min-h-[100dvh] bg-background px-4 py-6 sm:px-6 lg:flex lg:items-center lg:justify-center lg:px-8">
- <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
- <section className="relative overflow-hidden rounded-[28px] border border-border bg-slate-950 px-6 py-8 text-white shadow-2xl sm:px-8 lg:min-h-[720px] lg:px-10 lg:py-10">
+ <>
+ <AuthBodyClass />
+ <main className="min-h-[100dvh] bg-[#0b0d12] text-white lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(440px,0.92fr)]">
+ <section className="relative hidden min-h-[100dvh] overflow-hidden border-r border-white/6 bg-slate-950 lg:flex">
  <div
  className="absolute inset-0 opacity-70"
- style={{ background:'radial-gradient(circle at top right, rgba(249,115,22,0.28), transparent 34%), radial-gradient(circle at bottom left, rgba(59,130,246,0.18), transparent 42%)' }}
+ style={{ background:'radial-gradient(circle at top right, rgba(249,115,22,0.3), transparent 32%), radial-gradient(circle at bottom left, rgba(59,130,246,0.16), transparent 42%)' }}
  />
  <div
- className="absolute inset-0 opacity-10"
+ className="absolute inset-0 opacity-[0.12]"
  style={{ backgroundImage:'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize:'28px 28px' }}
  />
 
- <div className="relative z-10 flex h-full flex-col justify-between gap-10">
- <div className="space-y-6">
- <div className="flex items-center justify-between gap-4">
+ <div className="relative z-10 mx-auto flex h-full w-full max-w-[720px] flex-col justify-between gap-12 px-12 py-16 xl:px-16">
+ <div className="space-y-10">
+ <div className="flex items-center justify-between gap-6">
  <Logo iconSize="lg" className="text-white" />
- <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur">
- <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
- Expérience mobile revue
- </div>
+ <Badge variant="outline" className="border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+ Coach fitness personnel
+ </Badge>
  </div>
 
- <div className="max-w-xl space-y-4">
+ <div className="max-w-[560px] space-y-6">
  <p className="text-sm font-medium uppercase tracking-[0.24em] text-white/60">
  Fitness, musculation & nutrition
  </p>
- <h1 className="max-w-lg text-4xl font-black leading-tight text-balance sm:text-5xl">
- Ton espace d&apos;entraînement, sans friction.
+ <h1 className="max-w-[520px] text-6xl font-black leading-[0.98] tracking-tight text-balance">
+ Dépasse tes limites.
+ <br />
+ <span className="text-primary">Forge ta légende.</span>
  </h1>
- <p className="max-w-lg text-base leading-7 text-white/72 sm:text-lg">
- Accède vite à tes séances, ta nutrition et tes progrès dans une interface plus nette, plus lisible et pensée d&apos;abord pour le mobile.
+ <p className="max-w-[520px] text-xl leading-9 text-white/72">
+ Calendrier, séances, nutrition et progression réunis dans un espace unique, lisible et crédible dès le premier écran.
  </p>
  </div>
 
- <ul className="grid gap-3 sm:grid-cols-3">
+ <ul className="grid max-w-[560px] gap-4">
  {features.map(({ icon: Icon, text }) => (
- <li key={text} className="rounded-2xl border border-white/10 bg-white/6 p-4 backdrop-blur">
- <Icon className="mb-3 h-5 w-5 text-primary" aria-hidden="true" />
- <p className="text-sm font-medium leading-6 text-white/84">{text}</p>
+ <li key={text} className="flex items-center gap-4">
+ <div className="flex size-11 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+ <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+ </div>
+ <p className="text-base font-medium leading-7 text-white/84">{text}</p>
  </li>
  ))}
  </ul>
  </div>
 
- <div className="grid gap-3 sm:grid-cols-3">
- <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
- <p className="text-sm text-white/62">Coach</p>
- <p className="mt-2 text-2xl font-bold">1 app</p>
- </div>
- <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
- <p className="text-sm text-white/62">Parcours</p>
- <p className="mt-2 text-2xl font-bold">mobile-first</p>
- </div>
- <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
- <p className="text-sm text-white/62">Suivi</p>
- <p className="mt-2 text-2xl font-bold">plus lisible</p>
- </div>
+ <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-6 text-sm text-white/50">
+ <p>© 2026 IronTrack</p>
+ <p className="max-w-[320px] text-right">Pensé pour la performance, du premier accès jusqu&apos;au suivi quotidien.</p>
  </div>
  </div>
  </section>
 
- <section className="rounded-[28px] border border-border bg-card px-5 py-6 shadow-xl sm:px-8 sm:py-8 lg:flex lg:min-h-[720px] lg:flex-col lg:justify-center">
- <div className="mx-auto flex w-full max-w-md flex-col gap-6">
- <div className="flex items-center justify-between gap-3 lg:hidden">
+ <section className="flex min-h-[100dvh] bg-[#17191f] px-4 py-4 sm:px-8 sm:py-6 lg:px-14 lg:py-10">
+ <div className="mx-auto flex w-full max-w-[480px] flex-col gap-4 sm:gap-6 lg:gap-8">
+ <div className="flex items-center justify-between gap-3">
+ <div className="lg:hidden">
  <Logo iconSize="md" />
- <Link href="/support" className="text-sm font-medium text-safe-muted transition-colors hover:text-foreground">
+ </div>
+ <Link href="/support" className="text-sm font-medium text-white/68 transition-colors hover:text-white">
  Besoin d&apos;aide ?
  </Link>
  </div>
 
- <div className="space-y-2">
- <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
- Connexion sécurisée
- </p>
- <h2 className="text-3xl font-bold text-foreground text-balance">
- Reprends ton rythme là où tu l&apos;as laissé.
- </h2>
- <p className="text-sm leading-6 text-safe-muted">
- Connecte-toi pour retrouver tes séances, ton planning et tes objectifs dans un espace plus clair et plus accessible.
+ <div className="rounded-[24px] border border-white/10 bg-slate-950/72 px-4 py-3.5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur sm:px-5 sm:py-5 lg:hidden">
+ <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[11px] text-primary">
+ Accès sécurisé
+ </Badge>
+ <h1 className="mt-3 text-[1.6rem] font-black leading-tight sm:mt-4 sm:text-3xl">
+ Dépasse tes limites.
+ </h1>
+ <p className="mt-2 text-sm leading-5 text-white/80 sm:mt-3 sm:leading-6">
+ Accède vite à tes séances, ta nutrition et ta progression.
  </p>
  </div>
 
- <div className="rounded-2xl border border-border bg-muted/35 p-4 lg:hidden">
- <p className="text-sm font-medium text-foreground">Accès rapide sur mobile</p>
- <p className="mt-1 text-sm leading-6 text-safe-muted">
- Planning, nutrition et progression restent accessibles dès le premier écran, sans détour visuel inutile.
+ <div className="flex flex-1 flex-col gap-4 sm:gap-5 lg:justify-center lg:gap-7">
+ <div className="space-y-2 sm:space-y-3">
+ <Badge variant="outline" className="border-primary/20 bg-primary/8 text-[11px] text-primary">
+ Connexion
+ </Badge>
+ <h2 className="text-3xl font-bold text-white sm:text-4xl">
+ Connexion
+ </h2>
+ <p className="hidden max-w-md text-base leading-7 text-white/80 sm:block">
+ Retrouve ton espace d&apos;entraînement, ton planning et tes objectifs dans une expérience plus nette, pensée comme une vraie vitrine produit.
  </p>
  </div>
 
  <InAppBrowserWarning />
 
- {oauthError && (
- <div role="alert" aria-live="polite" className="rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive">
- {oauthError}
- </div>
- )}
-
- <Button
- type="button"
- variant="outline"
- onClick={handleGoogleLogin}
- className="h-12 w-full gap-2 rounded-xl border-border bg-background font-semibold text-base hover:bg-accent"
- >
- <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
- <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
- <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
- <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
- <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
- </svg>
- Continuer avec Google
- </Button>
+ <GoogleOAuthButton />
 
  <div className="relative">
  <div className="absolute inset-0 flex items-center">
- <div className="w-full border-t border-border" />
+ <div className="w-full border-t border-white/10" />
  </div>
  <div className="relative flex justify-center text-xs uppercase tracking-[0.2em]">
- <span className="bg-card px-3 text-safe-muted">ou</span>
+ <span className="bg-[#17191f] px-3 text-white/48">ou</span>
  </div>
  </div>
 
  <EmailAuthForm showGoogleOption={false} />
+ </div>
 
- <div className="border-t border-border pt-4">
- <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-safe-muted">
- <Link href="/legal/terms" className="transition-colors hover:text-foreground">
+ <div className="border-t border-white/10 pt-3 sm:pt-4">
+ <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-[11px] text-white/54 sm:gap-x-4 sm:text-xs">
+ <Link href="/legal/terms" className="transition-colors hover:text-white">
  Conditions d&apos;utilisation
  </Link>
  <span aria-hidden>·</span>
- <Link href="/legal/privacy" className="transition-colors hover:text-foreground">
+ <Link href="/legal/privacy" className="transition-colors hover:text-white">
  Confidentialité
  </Link>
  <span aria-hidden>·</span>
- <Link href="/support" className="transition-colors hover:text-foreground">
+ <Link href="/support" className="transition-colors hover:text-white">
  Support
  </Link>
  </div>
  </div>
  </div>
  </section>
- </div>
  </main>
+ </>
  )
 }

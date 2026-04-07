@@ -3,16 +3,10 @@
 import React from'react'
 import Link from'next/link'
 import { usePathname} from'next/navigation'
-
-interface NavItem {
- name: string
- href: string
- icon: React.ComponentType<{ className?: string}>
- mobileLabel?: string
-}
+import type { HeaderNavItem } from './navigation-items'
 
 interface ClientOnlyNavigationProps {
- items: NavItem[]
+ items: HeaderNavItem[]
  className?: string
  itemClassName?: string
  activeClassName?: string
@@ -41,7 +35,6 @@ export default function ClientOnlyNavigation({
  key={item.name}
  href={item.href}
  aria-current={isActive ?'page' : undefined}
- aria-label={item.name}
  className={`${itemClassName} ${isActive ? activeClassName : inactiveClassName}`}
  >
  <item.icon
