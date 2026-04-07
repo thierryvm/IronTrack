@@ -1,610 +1,245 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef} from'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
- Users,
- MessageSquare,
- AlertTriangle,
- CheckCircle,
- Clock,
- Download,
- RefreshCw,
- Activity,
- Shield,
- BarChart3,
- Eye,
- FileText,
- Image
-} from'lucide-react'
-import Link from'next/link'
-import { useRouter} from'next/navigation'
-import { useAdminAuth} from'@/contexts/AdminAuthContext'
-import { AdminStats} from'@/hooks/useAdminAuth'
-import { createClient} from'@/utils/supabase/client'
+  Activity,
+  Download,
+  FileText,
+  Image,
+  MessageSquare,
+  Shield,
+  Users,
+} from 'lucide-react'
 
-// MIGRATION SHADCN/UI ADMIN - 100% COMPLET
-import { Button} from'@/components/ui/button'
+import {
+  AdminDashboardContent,
+  type AdminDashboardAction,
+  type AdminDashboardActivity,
+  type AdminDashboardStats,
+  type AdminDashboardTicket,
+} from '@/components/admin/AdminDashboardContent'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Card } from '@/components/ui/card'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import { createClient } from '@/utils/supabase/client'
 
-interface QuickAction {
- title: string
- description: string
- href: string
- icon: React.ComponentType<{ className?: string}>
- color: string
- permission:'moderator' |'admin' |'super_admin'
-}
-
-interface RecentActivity {
- id: string
- action: string
- target_type: string
- admin_email: string
- created_at: string
- details: Record<string, unknown>
-}
-
-interface SupportTicket {
- id: string
- title: string
- category: string
- status: string
- priority: string
- created_at: string
-}
-
-// Données statiques — définies hors composant pour éviter la recréation à chaque render
-const QUICK_ACTIONS: QuickAction[] = [
- {
- title:'Tickets Ouverts',
- description:'Gérer les demandes de support',
- href:'/admin/tickets?status=open',
- icon: MessageSquare,
- color:'orange',
- permission:'moderator'
-},
- {
- title:'Gestion Utilisateurs',
- description:'Administrer les comptes',
- href:'/admin/users',
- icon: Users,
- color:'blue',
- permission:'admin'
-},
- {
- title:'Export Données',
- description:'Télécharger les données',
- href:'/admin/exports',
- icon: Download,
- color:'green',
- permission:'admin'
-},
- {
- title:'Logs Système',
- description:'Audit et monitoring',
- href:'/admin/logs',
- icon: Activity,
- color:'purple',
- permission:'admin'
-},
- {
- title:'Documentation Technique',
- description:'Guides développeur et audits',
- href:'/admin/documentation',
- icon: FileText,
- color:'indigo',
- permission:'admin'
-},
- {
- title:'Optimisation Images',
- description:'Optimiser images existantes',
- href:'/admin/image-optimization',
- icon: Image,
- color:'teal',
- permission:'admin'
-}
+const QUICK_ACTIONS: Array<
+  Omit<AdminDashboardAction, 'badge'> & {
+    permission: 'moderator' | 'admin' | 'super_admin'
+    badgeKey?: keyof AdminDashboardStats
+  }
+> = [
+  {
+    href: '/admin/tickets?status=open',
+    title: 'Traiter les tickets',
+    description: 'Priorise les demandes ouvertes et repars directement de la file support.',
+    icon: MessageSquare,
+    permission: 'moderator',
+    badgeKey: 'open_tickets',
+    emphasis: 'primary',
+  },
+  {
+    href: '/admin/users',
+    title: 'Gerer les utilisateurs',
+    description: 'Roles, moderation et verification des profils sans bruit visuel.',
+    icon: Users,
+    permission: 'admin',
+  },
+  {
+    href: '/admin/logs',
+    title: 'Relire les logs',
+    description: 'Audit, traces recentes et verification de l activite sensible.',
+    icon: Activity,
+    permission: 'admin',
+  },
+  {
+    href: '/admin/exports',
+    title: 'Exporter les donnees',
+    description: 'Genere les exports admin sans repasser par plusieurs menus.',
+    icon: Download,
+    permission: 'admin',
+  },
+  {
+    href: '/admin/documentation',
+    title: 'Documentation',
+    description: 'Retrouve les procedures, audits et notes de reference internes.',
+    icon: FileText,
+    permission: 'admin',
+  },
+  {
+    href: '/admin/image-optimization',
+    title: 'Images produit',
+    description: 'Optimise les medias et corrige les assets sans quitter l espace admin.',
+    icon: Image,
+    permission: 'admin',
+  },
 ]
 
-export default function AdminDashboard() {
- const [stats, setStats] = useState<AdminStats | null>(null)
- const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
- const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([])
- const [loading, setLoading] = useState(true)
- const [refreshing, setRefreshing] = useState(false)
+export default function AdminDashboardPage() {
+  const [stats, setStats] = useState<AdminDashboardStats | null>(null)
+  const [recentActivity, setRecentActivity] = useState<AdminDashboardActivity[]>([])
+  const [recentTickets, setRecentTickets] = useState<AdminDashboardTicket[]>([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
- const { user, hasPermission, getAdminStats, logAdminAction, loading: authLoading} = useAdminAuth()
- const router = useRouter()
+  const { user, hasPermission, getAdminStats, logAdminAction, loading: authLoading } = useAdminAuth()
+  const supabase = useMemo(() => createClient(), [])
+  const refreshLockRef = useRef(false)
+  const hasLoggedViewRef = useRef(false)
 
- // Client Supabase stable — ne sera jamais recréé entre les renders
- const supabase = useMemo(() => createClient(), [])
+  const loadDashboardData = useCallback(async () => {
+    if (refreshLockRef.current) {
+      return
+    }
 
- // Refs pour le throttling — évite les stale closures
- const refreshingRef = useRef(false)
- const lastRefreshTimeRef = useRef(0)
- const hasLoggedView = useRef(false)
- const REFRESH_COOLDOWN = 2000 // 2 secondes minimum
+    refreshLockRef.current = true
+    setRefreshing(true)
+    setErrorMessage(null)
 
- // Charger les données du dashboard avec protection via refs
- const loadDashboardData = useCallback(async () => {
- // Protection contre appels simultanés via ref (pas de stale closure)
- if (refreshingRef.current) return
+    try {
+      const [statsResult, activityResult, ticketsResult] = await Promise.allSettled([
+        fetch('/api/admin/stats', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        }),
+        fetch('/api/admin/activity', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        }),
+        supabase
+          .from('support_tickets')
+          .select('id, title, category, status, priority, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5),
+      ])
 
- // Throttling via ref (stable, pas de recréation à chaque setState)
- const now = Date.now()
- if ((now - lastRefreshTimeRef.current) < REFRESH_COOLDOWN) return
+      if (statsResult.status === 'fulfilled' && statsResult.value.ok) {
+        setStats((await statsResult.value.json()) as AdminDashboardStats)
+      } else {
+        const fallbackStats = await getAdminStats()
+        setStats((fallbackStats as AdminDashboardStats | null) ?? null)
+      }
 
- refreshingRef.current = true
- lastRefreshTimeRef.current = now
- setRefreshing(true)
+      if (activityResult.status === 'fulfilled' && activityResult.value.ok) {
+        const activityPayload = (await activityResult.value.json()) as {
+          activity?: Array<{
+            id: string
+            action: string
+            target_type: string
+            created_at: string
+            admin_info?: { email_masked?: string }
+          }>
+        }
 
- try {
- // Statistiques via API sécurisée (remplacement d'appels admin côté client)
- try {
- const response = await fetch('/api/admin/stats')
- if (response.ok) {
- const adminStats = await response.json()
- setStats(adminStats)
-} else {
- console.error('Erreur API stats admin:', response.status)
- // Fallback vers la méthode existante en cas d'échec API
- const adminStats = await getAdminStats()
- setStats(adminStats)
-}
-} catch (error) {
- console.error('Erreur récupération stats admin:', error)
- // Fallback vers la méthode existante
- const adminStats = await getAdminStats()
- setStats(adminStats)
-}
+        setRecentActivity(
+          (activityPayload.activity ?? []).map((entry) => ({
+            id: entry.id,
+            action: entry.action,
+            target_type: entry.target_type,
+            created_at: entry.created_at,
+            admin_email: entry.admin_info?.email_masked ?? 'admin inconnu',
+          })),
+        )
+      } else {
+        setRecentActivity([])
+      }
 
- // Activité récente via API sécurisée
- if (hasPermission('moderator')) {
- try {
- const response = await fetch('/api/admin/activity')
- if (response.ok) {
- const { activity} = await response.json()
- const formattedActivity = activity.map((log: { id: string; action: string; target_type: string; created_at: string; admin_info?: { email_masked?: string}}) => ({
- id: log.id,
- action: log.action,
- target_type: log.target_type,
- created_at: log.created_at,
- admin_email: log.admin_info?.email_masked ||'Admin inconnu',
- details: {}
-}))
- setRecentActivity(formattedActivity)
-} else {
- console.error('Erreur API admin activity:', response.status)
- setRecentActivity([])
-}
-} catch (error) {
- console.error('Erreur récupération activité admin:', error)
- setRecentActivity([])
-}
-}
+      if (ticketsResult.status === 'fulfilled') {
+        setRecentTickets((ticketsResult.value.data as AdminDashboardTicket[] | null) ?? [])
+      } else {
+        setRecentTickets([])
+      }
 
- // Tickets récents via Supabase client
- const { data: ticketsData} = await supabase
- .from('support_tickets')
- .select('id, title, category, status, created_at, priority')
- .order('created_at', { ascending: false})
- .limit(5)
+      if (!hasLoggedViewRef.current) {
+        await logAdminAction('dashboard_viewed', 'admin_dashboard')
+        hasLoggedViewRef.current = true
+      }
+    } catch {
+      setErrorMessage('Le dashboard admin ne peut pas etre charge correctement pour le moment.')
+    } finally {
+      refreshLockRef.current = false
+      setRefreshing(false)
+      setLoading(false)
+    }
+  }, [getAdminStats, logAdminAction, supabase])
 
- setRecentTickets((ticketsData as SupportTicket[]) || [])
+  useEffect(() => {
+    if (!authLoading && hasPermission('moderator') && !stats) {
+      void loadDashboardData()
+    }
+  }, [authLoading, hasPermission, loadDashboardData, stats])
 
- // Logger la vue uniquement au premier chargement (pas à chaque refresh)
- if (!hasLoggedView.current) {
- await logAdminAction('dashboard_viewed','dashboard')
- hasLoggedView.current = true
-}
+  const visibleActions = useMemo(
+    () =>
+      QUICK_ACTIONS.filter((action) => hasPermission(action.permission)).map((action) => ({
+        href: action.href,
+        title: action.title,
+        description: action.description,
+        icon: action.icon,
+        emphasis: action.emphasis,
+        badge: action.badgeKey && stats ? `${stats[action.badgeKey] ?? 0}` : null,
+      })),
+    [hasPermission, stats],
+  )
 
-} catch (error) {
- console.error('Erreur chargement dashboard:', error)
-} finally {
- refreshingRef.current = false
- setRefreshing(false)
- setLoading(false)
-}
-}, [logAdminAction, supabase, getAdminStats, hasPermission])
+  if (authLoading || (loading && !stats && !errorMessage)) {
+    return (
+      <div className="space-y-5">
+        <Card className="rounded-[28px] border-border bg-card/90 p-5 shadow-card">
+          <div className="space-y-3 animate-pulse">
+            <div className="h-6 w-40 rounded bg-muted" />
+            <div className="h-10 w-3/4 rounded bg-muted" />
+            <div className="h-4 w-full rounded bg-muted" />
+          </div>
+        </Card>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index} className="rounded-[22px] border-border bg-card/88 p-4 shadow-card">
+              <div className="space-y-3 animate-pulse">
+                <div className="h-4 w-24 rounded bg-muted" />
+                <div className="h-9 w-16 rounded bg-muted" />
+                <div className="h-4 w-28 rounded bg-muted" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
- // Refresh manuel — reset le throttle pour forcer le rechargement
- const handleManualRefresh = useCallback(async () => {
- if (refreshingRef.current) return
- lastRefreshTimeRef.current = 0 // Reset throttle pour refresh forcé
- setStats(null)
- await loadDashboardData()
-}, [loadDashboardData])
+  if (!user || !hasPermission('moderator')) {
+    return (
+      <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+        <Shield className="h-4 w-4" aria-hidden="true" />
+        <AlertTitle>Acces admin requis</AlertTitle>
+        <AlertDescription>
+          Cette surface reste reservee aux comptes disposant d un role moderateur ou superieur.
+        </AlertDescription>
+      </Alert>
+    )
+  }
 
- useEffect(() => {
- // Chargement initial seulement si pas déjà chargé ET auth terminée
- if (hasPermission('moderator') && !stats && !authLoading) {
- loadDashboardData()
-}
-}, [hasPermission, stats, authLoading, loadDashboardData])
+  return (
+    <div className="space-y-5">
+      {errorMessage ? (
+        <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+          <AlertTitle>Chargement partiel</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      ) : null}
 
- const getActionColor = (color: string) => {
- const colors = {
- orange:'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 dark:bg-orange-900/30',
- blue:'bg-tertiary/8 border-tertiary/25 text-tertiary hover:bg-tertiary/12 bg-tertiary/10',
- green:'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 dark:bg-green-900/30',
- purple:'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30',
- indigo:'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30',
- teal:'bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-100 dark:bg-teal-900/30'
-}
- return colors[color as keyof typeof colors] || colors.orange
-}
-
- const getStatusIcon = (status: string) => {
- switch (status) {
- case'open':
- return <Clock className="h-6 w-6 text-orange-800" />
- case'in_progress':
- return <Activity className="h-6 w-6 text-safe-info" />
- case'resolved':
- case'closed':
- return <CheckCircle className="h-6 w-6 text-safe-success" />
- default:
- return <AlertTriangle className="h-6 w-6 text-gray-600" />
-}
-}
-
- const getCategoryEmoji = (category: string) => {
- const emojis = {
- bug:'🐛',
- feature:'💡',
- help:'❓',
- feedback:'💬',
- account:'👤',
- payment:'💳'
-}
- return emojis[category as keyof typeof emojis] ||'📝'
-}
-
- if (loading) {
- return (
- <div className="space-y-6">
- {/* Header Skeleton */}
- <div className="flex flex-col sm:flex-row sm:items-center justify-between min-h-[80px] animate-pulse">
- <div className="flex-1">
- <div className="h-8 bg-muted rounded w-1/3 mb-2" />
- <div className="h-4 bg-muted rounded w-1/2" />
- </div>
- <div className="mt-2 sm:mt-0 flex items-center space-x-2">
- <div className="h-8 w-20 bg-muted rounded-full" />
- <div className="h-10 w-24 bg-muted rounded-lg" />
- </div>
- </div>
-
- {/* Stats Skeleton */}
- <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
- {[...Array(4)].map((_, i) => (
- <div key={i} className="bg-card border border-border p-2 sm:p-6 rounded-xl shadow-sm animate-pulse min-h-[120px]">
- <div className="flex items-center justify-between mb-2 sm:mb-4">
- <div className="w-8 h-8 sm:w-12 sm:h-12 bg-muted rounded-lg" />
- <div className="w-4 h-4 bg-muted rounded" />
- </div>
- <div className="h-3 sm:h-4 bg-muted rounded w-1/2 mb-1" />
- <div className="h-6 sm:h-8 bg-muted rounded w-1/3 mb-1" />
- <div className="h-3 bg-muted rounded w-2/3" />
- </div>
- ))}
- </div>
-
- {/* Actions Skeleton */}
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[200px] animate-pulse">
- <div className="h-6 bg-muted rounded w-1/4 mb-4" />
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
- {[...Array(4)].map((_, i) => (
- <div key={i} className="p-4 border-2 border-border rounded-xl min-h-[100px]">
- <div className="flex items-center mb-2">
- <div className="w-5 h-5 bg-muted rounded mr-2" />
- <div className="h-4 bg-muted rounded w-2/3" />
- </div>
- <div className="h-3 bg-muted rounded w-full" />
- </div>
- ))}
- </div>
- </div>
-
- {/* Grid Sections Skeleton */}
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[300px] animate-pulse">
- <div className="h-6 bg-muted rounded w-1/3 mb-4" />
- <div className="space-y-2">
- {[...Array(3)].map((_, i) => (
- <div key={i} className="p-2 border border-border rounded-lg min-h-[80px]">
- <div className="flex justify-between mb-2">
- <div className="h-4 bg-muted rounded w-1/2" />
- <div className="w-4 h-4 bg-muted rounded" />
- </div>
- <div className="flex justify-between">
- <div className="h-3 bg-muted rounded w-1/4" />
- <div className="h-3 bg-muted rounded w-1/4" />
- </div>
- </div>
- ))}
- </div>
- </div>
-
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[300px] animate-pulse">
- <div className="h-6 bg-muted rounded w-1/3 mb-4" />
- <div className="space-y-2">
- {[...Array(3)].map((_, i) => (
- <div key={i} className="flex items-start space-x-2 p-2 bg-muted/50 rounded-lg min-h-[70px]">
- <div className="w-2 h-2 bg-muted rounded-full mt-2" />
- <div className="flex-1">
- <div className="h-4 bg-muted rounded w-3/4 mb-1" />
- <div className="h-3 bg-muted rounded w-1/2" />
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- </div>
- )
-}
-
- return (
- <div className="space-y-6">
- {/* Header avec refresh */}
- <div className="flex flex-col sm:flex-row sm:items-center justify-between">
- <div className="flex-1 min-w-0">
- <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1 truncate">
- Dashboard {user?.role ==='super_admin' ?'Super Admin' :
- user?.role ==='admin' ?'Admin' :
- user?.role ==='moderator' ?'Modérateur' :'Admin'}
- </h1>
- <p className="text-sm sm:text-base text-gray-600 truncate">
- Bonjour {user?.email.split('@')[0]} 👋
- </p>
- </div>
-
- <div className="mt-2 sm:mt-0 flex items-center justify-between sm:justify-end space-x-2 sm:space-x-sm">
- <div className="flex items-center text-xs sm:text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
- <Shield className="h-5 w-5 sm:h-4 sm:w-4 mr-1" />
- <span className="hidden xs:inline">{user?.role.replace('_','').toUpperCase()}</span>
- <span className="xs:hidden">{user?.role ==='super_admin' ?'S.ADM' : user?.role ==='admin' ?'ADM' :'MOD'}</span>
- </div>
-
- <Button
- onClick={handleManualRefresh}
- disabled={refreshing}
- variant="outline"
- className="flex items-center px-2 py-2 text-sm min-h-[44px]"
- >
- <RefreshCw className={`h-4 w-4 ${refreshing ?'animate-spin' :''}`} />
- <span className="hidden sm:inline ml-2">Actualiser</span>
- </Button>
- </div>
- </div>
-
- {/* Statistiques principales */}
- <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
- {[
- {
- title:'Tickets Ouverts',
- value: stats?.open_tickets || 0,
- change:'+' + (stats?.tickets_24h || 0) +' aujourd\'hui',
- icon: MessageSquare,
- color:'orange',
- href:'/admin/tickets?status=open'
-},
- {
- title:'Nouveaux Utilisateurs',
- value: stats?.new_users_7d || 0,
- change:'+' + (stats?.new_users_24h || 0) +' aujourd\'hui',
- icon: Users,
- color:'blue',
- href:'/admin/users'
-},
- {
- title:'Feedback',
- value: stats?.open_tickets || 0,
- change:'Retours utilisateurs',
- icon: MessageSquare,
- color:'green',
- href:'/admin/tickets?category=feedback'
-},
- {
- title:'Admins Actifs',
- value: stats?.admin_users || 0,
- change:'Équipe administrative',
- icon: Shield,
- color:'purple',
- href:'/admin/users?role=admin'
-}
- ].map((stat) => {
- const Icon = stat.icon
- return (
- <div key={stat.title}>
- <Link href={stat.href}>
- <div
- className="bg-card border border-border p-2 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer min-h-[120px]"
- style={{ minHeight:'120px'}}
- >
- <div className="flex items-center justify-between mb-2 sm:mb-4">
- <div className={`p-2 sm:p-2 rounded-lg ${
- stat.color ==='orange' ?'bg-orange-100' :
- stat.color ==='blue' ?'bg-tertiary/12' :
- stat.color ==='green' ?'bg-green-100' :
-'bg-purple-100'
-}`}>
- <Icon className={`h-6 w-6 sm:h-6 sm:w-6 ${
- stat.color ==='orange' ?'text-orange-800' :
- stat.color ==='blue' ?'text-secondary' :
- stat.color ==='green' ?'text-green-600' :
-'text-purple-600'
-}`} />
- </div>
- <Eye className="h-6 w-6 text-gray-700" />
- </div>
-
- <div>
- <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 truncate">
- {stat.title}
- </h3>
- <p className="text-lg sm:text-2xl font-bold text-foreground mb-1">
- {stat.value.toLocaleString()}
- </p>
- <p className="text-xs text-gray-600 truncate">
- {stat.change}
- </p>
- </div>
- </div>
- </Link>
- </div>
- )
-})}
- </div>
-
- {/* Actions rapides */}
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[200px]" style={{ minHeight:'200px'}}>
- <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
- <BarChart3 className="h-5 w-5 mr-2" />
- Actions Rapides
- </h2>
-
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
- {QUICK_ACTIONS.map((action) => {
- if (!hasPermission(action.permission)) return null
-
- const Icon = action.icon
- return (
- <Link key={action.title} href={action.href}>
- <div className={`p-4 border-2 rounded-xl transition-all cursor-pointer ${getActionColor(action.color)}`}>
- <div className="flex items-center mb-2">
- <Icon className="h-5 w-5 mr-2" />
- <h3 className="font-medium">{action.title}</h3>
- </div>
- <p className="text-sm opacity-75">
- {action.description}
- </p>
- </div>
- </Link>
- )
-})}
- </div>
- </div>
-
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
- {/* Tickets récents */}
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[300px]" style={{ minHeight:'300px'}}>
- <div className="flex items-center justify-between mb-4">
- <h2 className="text-lg font-semibold text-foreground flex items-center">
- <MessageSquare className="h-5 w-5 mr-2" />
- Tickets Récents
- </h2>
- <Link
- href="/admin/tickets"
- className="text-sm text-orange-800 hover:text-primary-hover font-medium"
- >
- Voir tous
- </Link>
- </div>
-
- <div className="space-y-2">
- {recentTickets.length === 0 ? (
- <p className="text-gray-600 text-sm text-center py-4">
- Aucun ticket récent
- </p>
- ) : (
- recentTickets.map((ticket) => (
- <button
- key={ticket.id}
- onClick={() => router.push('/admin/tickets')}
- className="w-full text-left p-2 border border-border rounded-lg hover:bg-muted transition-colors"
- >
- <div className="flex items-start justify-between mb-2">
- <div className="flex items-center space-x-2">
- <span className="text-lg">
- {getCategoryEmoji(ticket.category)}
- </span>
- <h4 className="font-medium text-foreground text-sm truncate max-w-[200px]">
- {ticket.title}
- </h4>
- </div>
- {getStatusIcon(ticket.status)}
- </div>
- <div className="flex items-center justify-between text-xs text-gray-600">
- <span className="capitalize">{ticket.category}</span>
- <span>{new Date(ticket.created_at).toLocaleDateString('fr-FR')}</span>
- </div>
- </button>
- ))
- )}
- </div>
- </div>
-
- {/* Activité récente */}
- <div className="bg-card border border-border rounded-xl shadow-sm p-6 min-h-[300px]" style={{ minHeight:'300px'}}>
- <div className="flex items-center justify-between mb-4">
- <h2 className="text-lg font-semibold text-foreground flex items-center">
- <Activity className="h-5 w-5 mr-2" />
- Activité Récente
- <span className="ml-2 px-2 py-1 text-xs bg-tertiary/12 text-tertiary rounded-full">
- Dernière heure
- </span>
- </h2>
- <Link
- href="/admin/logs"
- className="text-sm text-orange-800 hover:text-primary-hover font-medium flex items-center space-x-1"
- >
- <Eye className="h-5 w-5" />
- <span>Logs complets</span>
- </Link>
- </div>
-
- <div className="space-y-2">
- {!hasPermission('admin') ? (
- <div className="text-center py-6">
- <Shield className="h-8 w-8 text-gray-700 mx-auto mb-2" />
- <p className="text-gray-600 text-sm">Permissions administrateur requises</p>
- </div>
- ) : recentActivity.length === 0 ? (
- <div className="text-center py-6">
- <Clock className="h-8 w-8 text-gray-700 mx-auto mb-2" />
- <p className="text-gray-600 text-sm">Aucune activité dans la dernière heure</p>
- <p className="text-gray-700 text-xs mt-1">
- Consultez les logs complets pour plus d&apos;historique
- </p>
- </div>
- ) : (
- <>
- {recentActivity.slice(0, 3).map((activity) => (
- <div key={activity.id} className="flex items-start space-x-2 p-2 bg-muted/50 rounded-lg min-h-[70px]" style={{ minHeight:'70px'}}>
- <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
- <div className="flex-1 min-w-0">
- <p className="text-sm text-foreground">
- <span className="font-medium">{activity.admin_email}</span>
- {''}
- <span className="text-gray-600">
- {activity.action.replace(/_/g,'')}
- </span>
- {activity.target_type && (
- <span className="text-gray-600"> • {activity.target_type.replace(/_/g,'')}</span>
- )}
- </p>
- <p className="text-xs text-gray-600 mt-1">
- {new Date(activity.created_at).toLocaleString('fr-FR')}
- </p>
- </div>
- </div>
- ))}
-
- {recentActivity.length > 3 && (
- <div className="text-center pt-2">
- <Link
- href="/admin/logs"
- className="text-xs text-orange-800 hover:text-primary-hover font-medium"
- >
- +{recentActivity.length - 3} activités supplémentaires → Voir tous les logs
- </Link>
- </div>
- )}
- </>
- )}
- </div>
- </div>
- </div>
- </div>
- )
+      <AdminDashboardContent
+        userEmail={user.email}
+        stats={stats}
+        actions={visibleActions}
+        tickets={recentTickets}
+        activity={recentActivity}
+        refreshing={refreshing}
+        onRefresh={() => void loadDashboardData()}
+      />
+    </div>
+  )
 }
