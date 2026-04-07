@@ -4,6 +4,12 @@ import"./globals.css";
 import ClientProviders from"@/components/ClientProviders";
 import VercelProviders from"@/components/VercelProviders";
 import ConditionalHeader from"@/components/layout/ConditionalHeader";
+import {
+ APP_DESCRIPTION,
+ APP_NAME,
+ APP_URL,
+ DEFAULT_OG_IMAGE,
+} from"./metadata";
 
 const inter = Inter({
  subsets: ["latin"],
@@ -11,18 +17,19 @@ const inter = Inter({
  display:"swap",
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ||"https://iron-track-dusky.vercel.app";
-const APP_DESCRIPTION ="Application de suivi de musculation avec minuterie, nutrition et progression. Suis tes entraînements, ta nutrition et ta progression comme un(e) champion(ne) !";
-
 export const metadata: Metadata = {
  metadataBase: new URL(APP_URL),
+ applicationName: APP_NAME,
  title: {
- default:"IronTrack - Ton coach muscu personnel",
- template:"%s | IronTrack",
+ default:"IronTrack - Fitness, musculation et nutrition",
+ template:`%s | ${APP_NAME}`,
 },
  description: APP_DESCRIPTION,
- keywords: ["musculation","fitness","nutrition","entraînement","progression","minuterie","coach","sport"],
+ keywords: ["musculation","fitness","nutrition","entraînement","progression","planning sportif","coach","sport"],
  authors: [{ name:"IronTrack Team"}],
+ creator:"IronTrack Team",
+ publisher: APP_NAME,
+ category:"fitness",
  icons: {
  icon: [
  { url:"/icon.svg", type:"image/svg+xml"},
@@ -48,18 +55,18 @@ export const metadata: Metadata = {
 },
  openGraph: {
  type:"website",
- locale:"fr_FR",
+ locale:"fr_BE",
  url: APP_URL,
- title:"IronTrack - Ton coach muscu personnel",
+ title:"IronTrack - Fitness, musculation et nutrition",
  description: APP_DESCRIPTION,
- siteName:"IronTrack",
- // Image OG générée dynamiquement par src/app/opengraph-image.tsx (1200x630)
+ siteName: APP_NAME,
+ images: [DEFAULT_OG_IMAGE],
 },
  twitter: {
  card:"summary_large_image",
- title:"IronTrack - Ton coach muscu personnel",
+ title:"IronTrack - Fitness, musculation et nutrition",
  description: APP_DESCRIPTION,
- // Image Twitter générée via opengraph-image.tsx
+ images: [DEFAULT_OG_IMAGE.url],
 },
 };
 
@@ -79,21 +86,11 @@ export default function RootLayout({
 }>) {
  return (
  <html lang="fr" className={`dark h-full ${inter.variable}`}>
- <head>
- <meta name="mobile-web-app-capable" content="yes" />
- <meta name="apple-mobile-web-app-capable" content="yes" />
- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
- <meta name="format-detection" content="telephone=no" />
- {/* Préconnexions pour optimiser la latence réseau */}
- <link rel="preconnect" href="https://taspdceblvmpvdjixyit.supabase.co" crossOrigin="anonymous" />
- <link rel="preconnect" href="https://vitals.vercel-insights.com" crossOrigin="anonymous" />
- <link rel="dns-prefetch" href="//vercel.app" />
- </head>
  <body className="antialiased min-h-screen overflow-x-hidden" suppressHydrationWarning>
  <ClientProviders>
  <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
  <ConditionalHeader />
- <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden">
+ <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden pb-20 md:pb-0">
  {children}
  </main>
  </div>
