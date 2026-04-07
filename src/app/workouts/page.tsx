@@ -68,8 +68,8 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange}: WorkoutModalP
 
  <div className="space-y-4">
  <div className="flex items-center space-x-2">
- <Calendar className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">
+ <Calendar className="h-6 w-6 text-safe-muted" />
+ <span className="text-sm text-safe-muted">
  {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
  weekday:'long',
  year:'numeric',
@@ -81,20 +81,20 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange}: WorkoutModalP
 
  {workout.start_time && (
  <div className="flex items-center space-x-2">
- <Clock className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">{workout.start_time}</span>
+ <Clock className="h-6 w-6 text-safe-muted" />
+ <span className="text-sm text-safe-muted">{workout.start_time}</span>
  </div>
  )}
 
  {workout.duration && (
  <div className="flex items-center space-x-2">
- <Target className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">{workout.duration} minutes</span>
+ <Target className="h-6 w-6 text-safe-muted" />
+ <span className="text-sm text-safe-muted">{workout.duration} minutes</span>
  </div>
  )}
 
  <div className="flex items-center space-x-2">
- <Badge variant={isCompleted ?"default" :"secondary"} className={isCompleted ?"bg-green-100 text-green-800 hover:bg-green-200" :"bg-tertiary/12 text-tertiary hover:bg-tertiary/20"}>
+ <Badge variant={isCompleted ?"default" :"secondary"} className={isCompleted ?"bg-emerald-500/10 text-safe-success hover:bg-emerald-500/15" :"bg-tertiary/12 text-tertiary hover:bg-tertiary/20"}>
  {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
  </Badge>
  </div>
@@ -102,7 +102,7 @@ function WorkoutModal({ workout, isOpen, onClose, onStatusChange}: WorkoutModalP
  {workout.notes && (
  <Card>
  <CardContent className="pt-4">
- <p className="text-sm text-gray-700">{workout.notes}</p>
+ <p className="text-sm text-muted-foreground">{workout.notes}</p>
  </CardContent>
  </Card>
  )}
@@ -264,8 +264,8 @@ export default function WorkoutsPage() {
  <CardContent className="pt-6">
  <div className="flex flex-col sm:flex-row gap-4">
  <div className="flex items-center space-x-2">
- <Filter className="h-5 w-5 text-gray-600" />
- <span className="font-medium text-gray-700">Filtres :</span>
+ <Filter className="h-5 w-5 text-safe-muted" />
+ <span className="font-medium text-foreground">Filtres :</span>
  </div>
  <div className="flex flex-wrap gap-2">
  {[
@@ -291,7 +291,7 @@ export default function WorkoutsPage() {
  {loading ? (
  <div className="text-center py-12">
  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
- <p className="mt-4 text-gray-600">Chargement de tes séances...</p>
+ <p className="mt-4 text-safe-muted">Chargement de tes séances...</p>
  </div>
  ) : (
  <>
@@ -331,24 +331,24 @@ export default function WorkoutsPage() {
  </div>
  <div>
  <h3 className="font-semibold text-foreground text-lg">{workout.name}</h3>
- <p className="text-sm text-gray-600">{workoutType.name}</p>
+ <p className="text-sm text-safe-muted">{workoutType.name}</p>
  </div>
  </div>
  </div>
 
  {/* Section détails - variable avec hauteur minimum */}
  <div className="flex-1 flex flex-col justify-center space-y-2 mb-4">
- <div className="flex items-center space-x-2 text-sm text-gray-600">
+ <div className="flex items-center space-x-2 text-sm text-safe-muted">
  <Calendar className="h-4 w-4" />
  <span>{new Date(workout.scheduled_date).toLocaleDateString('fr-FR')}</span>
  </div>
  {workout.start_time && (
- <div className="flex items-center space-x-2 text-sm text-gray-600">
+ <div className="flex items-center space-x-2 text-sm text-safe-muted">
  <Clock className="h-4 w-4" />
  <span>{workout.start_time}</span>
  </div>
  )}
- <div className="flex items-center space-x-2 text-sm text-gray-600">
+ <div className="flex items-center space-x-2 text-sm text-safe-muted">
  <Target className="h-4 w-4" />
  <span>{workout.duration ? `${workout.duration} min` :'Durée libre'}</span>
  </div>
@@ -357,7 +357,7 @@ export default function WorkoutsPage() {
  {/* Section actions - fixe en bas */}
  <div className="flex items-center justify-between mt-auto mb-4">
  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
- isCompleted ?'bg-green-100 text-green-800' :'bg-tertiary/12 text-tertiary'
+ isCompleted ?'bg-emerald-500/10 text-safe-success' :'bg-tertiary/12 text-tertiary'
 }`}>
  {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
  </span>
@@ -421,7 +421,7 @@ export default function WorkoutsPage() {
  <div className="text-center py-12">
  <div className="text-6xl mb-4">🏋️</div>
  <h3 className="text-xl font-semibold text-foreground mb-2">Aucune séance trouvée</h3>
- <p className="text-gray-600 mb-6">Commence par créer ta première séance d'entraînement !</p>
+ <p className="text-safe-muted mb-6">Commence par créer ta première séance d'entraînement !</p>
  <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
  <Link href="/workouts/new">
  <Plus className="h-5 w-5" />

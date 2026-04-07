@@ -3,6 +3,7 @@ import { motion} from'framer-motion'
 import { Trophy, ArrowLeft, Save, Target, Dumbbell} from'lucide-react'
 import { ExercisePerformance, ExerciseSuggestion, CustomExercise} from'@/types/exercise-wizard'
 import { NumberInput} from'@/components/ui/NumberInput'
+import { Button } from '@/components/ui/button'
 import { FinalSummaryModal} from'../components/FinalSummaryModal'
 
 interface PerformanceInputProps {
@@ -23,7 +24,7 @@ const StrengthPerformanceForm: React.FC<{
  {/* Métriques principales */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Poids utilisé (kg)
  </label>
  <input
@@ -35,10 +36,10 @@ const StrengthPerformanceForm: React.FC<{
  placeholder="60"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Poids total utilisé pour l'exercice</p>
+ <p className="text-xs text-safe-muted mt-1">Poids total utilisé pour l'exercice</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Répétitions par série
  </label>
  <input
@@ -50,13 +51,13 @@ const StrengthPerformanceForm: React.FC<{
  placeholder="10"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Nombre de répétitions réalisées</p>
+ <p className="text-xs text-safe-muted mt-1">Nombre de répétitions réalisées</p>
  </div>
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Nombre de séries
  </label>
  <NumberInput
@@ -66,10 +67,10 @@ const StrengthPerformanceForm: React.FC<{
  max={10}
  className="w-full"
  />
- <p className="text-xs text-gray-600 mt-1">Séries complètes réalisées</p>
+ <p className="text-xs text-safe-muted mt-1">Séries complètes réalisées</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Temps de repos (min)
  </label>
  <input
@@ -82,16 +83,16 @@ const StrengthPerformanceForm: React.FC<{
  placeholder="2"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Repos entre les séries</p>
+ <p className="text-xs text-safe-muted mt-1">Repos entre les séries</p>
  </div>
  </div>
 
  {/* Métriques avancées optionnelles */}
  <div className="border-t pt-4">
- <h4 className="text-sm font-medium text-gray-700 mb-2">Métriques avancées (optionnel)</h4>
+ <h4 className="text-sm font-medium text-foreground mb-2">Métriques avancées (optionnel)</h4>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Temps sous tension (s)
  </label>
  <input
@@ -103,10 +104,10 @@ const StrengthPerformanceForm: React.FC<{
  placeholder="30"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Durée totale de la série</p>
+ <p className="text-xs text-safe-muted mt-1">Durée totale de la série</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  RPE (1-10)
  </label>
  <select
@@ -121,14 +122,14 @@ const StrengthPerformanceForm: React.FC<{
  <option value="9">9 - Difficile</option>
  <option value="10">10 - Très difficile</option>
  </select>
- <p className="text-xs text-gray-600 mt-1">Effort perçu (Rate of Perceived Exertion)</p>
+ <p className="text-xs text-safe-muted mt-1">Effort perçu (Rate of Perceived Exertion)</p>
  </div>
  </div>
  </div>
 
  {/* Zone commentaire */}
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Notes de séance (optionnel)
  </label>
  <textarea
@@ -138,7 +139,7 @@ const StrengthPerformanceForm: React.FC<{
  placeholder="Sensation, technique, points à améliorer..."
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Remarques sur votre ressenti et technique</p>
+ <p className="text-xs text-safe-muted mt-1">Remarques sur votre ressenti et technique</p>
  </div>
  </div>
 )
@@ -157,7 +158,7 @@ const CardioPerformanceForm: React.FC<{
  {/* Métriques principales: Distance et Durée */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Distance {isRowing ?'(optionnel)' :'(km)'}
  </label>
  <div className="flex gap-2">
@@ -182,11 +183,11 @@ const CardioPerformanceForm: React.FC<{
  )}
  </div>
  {isRowing && (
- <p className="text-xs text-gray-600 mt-1">Laissez vide si vous ne connaissez pas la distance</p>
+ <p className="text-xs text-safe-muted mt-1">Laissez vide si vous ne connaissez pas la distance</p>
  )}
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Durée (minutes)
  </label>
  <input
@@ -203,7 +204,7 @@ const CardioPerformanceForm: React.FC<{
  {/* Métriques d'intensité */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  {isRowing ?'Vitesse (optionnel)' :'Vitesse (km/h)'}
  </label>
  <input
@@ -216,11 +217,11 @@ const CardioPerformanceForm: React.FC<{
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
  {isRowing && (
- <p className="text-xs text-gray-600 mt-1">Vitesse en km/h si affichée sur l'écran du rameur</p>
+ <p className="text-xs text-safe-muted mt-1">Vitesse en km/h si affichée sur l'écran du rameur</p>
  )}
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Calories brûlées
  </label>
  <input
@@ -238,7 +239,7 @@ const CardioPerformanceForm: React.FC<{
  {isRowing && (
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Coups/minute (SPM)
  </label>
  <input
@@ -250,10 +251,10 @@ const CardioPerformanceForm: React.FC<{
  placeholder="24"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
+ <p className="text-xs text-safe-muted mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Puissance (Watts)
  </label>
  <input
@@ -264,7 +265,7 @@ const CardioPerformanceForm: React.FC<{
  placeholder="120"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
+ <p className="text-xs text-safe-muted mt-1">Affiché sur l'écran du rameur - Laissez vide si introuvable</p>
  </div>
  </div>
  )}
@@ -272,7 +273,7 @@ const CardioPerformanceForm: React.FC<{
  {isRunning && (
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Rythme cardiaque moyen
  </label>
  <input
@@ -284,10 +285,10 @@ const CardioPerformanceForm: React.FC<{
  placeholder="140"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">BPM - Zone cardio: 120-160</p>
+ <p className="text-xs text-safe-muted mt-1">BPM - Zone cardio: 120-160</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Inclinaison (%)
  </label>
  <input
@@ -307,7 +308,7 @@ const CardioPerformanceForm: React.FC<{
  {isCycling && (
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Cadence (RPM)
  </label>
  <input
@@ -319,10 +320,10 @@ const CardioPerformanceForm: React.FC<{
  placeholder="80"
  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
  />
- <p className="text-xs text-gray-600 mt-1">Optimal: 70-90 RPM</p>
+ <p className="text-xs text-safe-muted mt-1">Optimal: 70-90 RPM</p>
  </div>
  <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
+ <label className="block text-sm font-medium text-foreground mb-2">
  Résistance
  </label>
  <input
@@ -431,7 +432,7 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
  <h2 className="text-2xl font-bold text-foreground">
  Ta première performance
  </h2>
- <p className="text-gray-600">
+ <p className="text-safe-muted">
  Ajoute tes performances pour suivre tes progrès ! Tu peux aussi passer cette étape et l'ajouter plus tard.
  </p>
  </div>
@@ -465,30 +466,33 @@ export const PerformanceInput: React.FC<PerformanceInputProps> = ({
 
  {/* Actions */}
  <div className="flex gap-2">
- <button
+ <Button
  onClick={onBack}
- className="flex-1 bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-muted transition-colors flex items-center justify-center gap-2"
+ variant="outline"
+ className="flex-1"
  >
  <ArrowLeft className="h-6 w-6" />
  Retour
- </button>
+ </Button>
  
- <button
+ <Button
  onClick={handleSkip}
  disabled={loading}
- className="flex-1 bg-gray-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-muted transition-colors disabled:opacity-50"
+ variant="secondary"
+ className="flex-1"
  >
  Passer
- </button>
+ </Button>
  
- <button
+ <Button
  onClick={() => setShowModal(true)}
  disabled={!isFormValid() || loading}
- className="flex-1 bg-primary text-white py-2 px-6 rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+ variant="orange"
+ className="flex-1"
  >
  <Save className="h-6 w-6" />
  Terminer
- </button>
+ </Button>
  </div>
  </motion.div>
 
