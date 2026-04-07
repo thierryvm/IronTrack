@@ -72,31 +72,42 @@ export default function OGImage() {
         </div>
 
         {/* Title */}
-        <div
-          style={{
-            display: 'flex',
-            fontSize: '80px',
-            fontWeight: '800',
-            letterSpacing: '-2px',
-            marginBottom: '20px',
-          }}
-        >
-          <span style={{ color: '#fafafa' }}>Iron</span>
-          <span style={{ color: '#f97316' }}>Track</span>
-        </div>
-
-        {/* Tagline */}
-        <div
-          style={{
-            fontSize: '28px',
-            color: '#a1a1aa',
-            fontWeight: '400',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Ton coach muscu personnel
-        </div>
+        <svg width="560" height="120" viewBox="0 0 560 120" style={{ marginBottom: '20px' }}>
+          <text
+            x="0"
+            y="84"
+            fill="#fafafa"
+            fontSize="80"
+            fontWeight="800"
+            letterSpacing="-2"
+            fontFamily="Inter, system-ui, sans-serif"
+          >
+            Iron
+          </text>
+          <text
+            x="173"
+            y="84"
+            fill="#f97316"
+            fontSize="80"
+            fontWeight="800"
+            letterSpacing="-2"
+            fontFamily="Inter, system-ui, sans-serif"
+          >
+            Track
+          </text>
+          <text
+            x="280"
+            y="114"
+            fill="#a1a1aa"
+            fontSize="28"
+            fontWeight="400"
+            letterSpacing="1.4"
+            textAnchor="middle"
+            fontFamily="Inter, system-ui, sans-serif"
+          >
+            TON COACH MUSCU PERSONNEL
+          </text>
+        </svg>
 
         {/* Bottom bar */}
         <div

@@ -138,21 +138,26 @@ export default function NewWorkoutPage() {
  <Calendar className="h-8 w-8 text-orange-800" />
  <h1 className="text-2xl font-bold text-foreground">Nouvelle séance</h1>
  </div>
- <div>
- <label className="block text-foreground font-medium mb-2">Nom de la séance</label>
- <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary" />
- </div>
- <div>
- <label className="block text-foreground font-medium mb-2">Date</label>
- <input 
- type="date" 
- value={date} 
- onChange={e => setDate(e.target.value)} 
- className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary" 
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">Nom de la séance</Label>
+ <Input
+ type="text"
+ value={name}
+ onChange={e => setName(e.target.value)}
+ className="w-full"
  />
  </div>
- <div>
- <label className="block text-foreground font-medium mb-2">Type de séance</label>
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">Date</Label>
+ <Input
+ type="date"
+ value={date}
+ onChange={e => setDate(e.target.value)}
+ className="w-full [color-scheme:dark]"
+ />
+ </div>
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">Type de séance</Label>
  <Select value={type} onValueChange={(value) => {
  const selectedType = value as typeof type;
  setType(selectedType);
@@ -177,33 +182,38 @@ export default function NewWorkoutPage() {
  </SelectContent>
  </Select>
  </div>
- <div>
- <label className="block text-foreground font-medium mb-2">Heure prévue</label>
- <input
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">Heure prévue</Label>
+ <Input
  type="time"
  value={startTime}
  onChange={e => setStartTime(e.target.value)}
- className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+ className="w-full [color-scheme:dark]"
  placeholder="Ex: 18:00"
  />
  </div>
- <div>
- <label className="block text-foreground font-medium mb-2">
- Durée (minutes) {type ==='Repos' && <span className="text-sm text-gray-600">(optionnel pour les jours de repos)</span>}
- </label>
- <input
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">
+ Durée (minutes) {type ==='Repos' && <span className="text-sm text-muted-foreground">(optionnel pour les jours de repos)</span>}
+ </Label>
+ <Input
  type="number"
  min={0}
  value={duration}
  onChange={e => setDuration(e.target.value ==='' ?'' : Math.max(0, Number(e.target.value)))}
- className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+ className="w-full"
  placeholder={type ==='Repos' ?'Durée libre pour les jours de repos' :'Ex: 30'}
  disabled={type ==='Repos'}
  />
  </div>
- <div>
- <label className="block text-foreground font-medium mb-2">Notes</label>
- <textarea value={notes} onChange={e => setNotes(e.target.value)} className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary" rows={3} />
+ <div className="space-y-2">
+ <Label className="text-foreground font-medium">Notes</Label>
+ <Textarea
+ value={notes}
+ onChange={e => setNotes(e.target.value)}
+ className="w-full min-h-[120px]"
+ rows={4}
+ />
  </div>
  <Button 
  type="submit" 
@@ -217,9 +227,9 @@ export default function NewWorkoutPage() {
  </Button>
  <Button
  type="button"
- variant="secondary"
+ variant="outline"
  onClick={() => router.back()}
- className="w-full mt-2 min-h-[44px] border-border text-gray-700 hover:bg-muted"
+ className="w-full mt-2 min-h-[44px] text-foreground hover:bg-secondary/70"
  aria-label="Revenir à la page précédente"
  >
  Annuler

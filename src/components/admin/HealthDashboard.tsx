@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
   RefreshCw, CheckCircle2, AlertTriangle, XCircle,
   Package, Shield, Cpu, Clock,
@@ -55,6 +56,18 @@ interface HealthData {
   securityChecks: SecurityCheck[]
   runtimeChecks: RuntimeCheck[]
   checkedAt: string
+}
+
+const overallToneClasses: Record<OverallStatus, string> = {
+  healthy: 'text-emerald-300 border-emerald-500/25 bg-emerald-500/10',
+  warning: 'text-amber-300 border-amber-500/25 bg-amber-500/10',
+  critical: 'text-red-300 border-red-500/25 bg-red-500/10',
+}
+
+const statusScoreClasses: Record<Status, string> = {
+  ok: 'text-emerald-300',
+  warning: 'text-amber-300',
+  critical: 'text-red-300',
 }
 
 // --- Sub-components ---
@@ -116,14 +129,7 @@ function ScoreRing({ score, status }: { score: number; status: OverallStatus }) 
           / 100
         </text>
       </svg>
-      <span
-        className="text-sm font-semibold px-3 py-1 rounded-full border"
-        style={{
-          color,
-          borderColor: `${color}40`,
-          backgroundColor: `${color}15`,
-        }}
-      >
+      <span className={cn('text-sm font-semibold px-3 py-1 rounded-full border', overallToneClasses[status])}>
         {label}
       </span>
     </div>
@@ -138,13 +144,12 @@ function CategoryMiniCard({ title, score, icon: Icon, critical, warnings }: {
   warnings: number
 }) {
   const status: Status = critical > 0 ? 'critical' : warnings > 0 ? 'warning' : 'ok'
-  const color = status === 'ok' ? '#10b981' : status === 'warning' ? '#f59e0b' : '#ef4444'
 
   return (
     <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl border bg-white/5 border-white/10 min-w-[120px]">
       <Icon className="h-5 w-5 text-white/60" />
       <span className="text-xs text-white/50 font-medium">{title}</span>
-      <span className="text-2xl font-bold" style={{ color }}>{score}</span>
+      <span className={cn('text-2xl font-bold', statusScoreClasses[status])}>{score}</span>
       <div className="flex gap-1">
         {critical > 0 && (
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-safe-error">{critical} critique{critical > 1 ? 's' : ''}</span>

@@ -75,6 +75,13 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --input: #1c1c1e;
   --ring: #ff6b00;
+  --field-surface: rgba(28, 28, 30, 0.96);
+  --field-border-rest: rgba(255, 107, 0, 0.14);
+  --field-border-hover: rgba(255, 107, 0, 0.28);
+  --field-border-focus: rgba(255, 107, 0, 0.52);
+  --field-glow-rest: rgba(255, 107, 0, 0.05);
+  --field-glow-hover: rgba(255, 107, 0, 0.1);
+  --field-glow-focus: rgba(255, 107, 0, 0.18);
 
   --destructive: #ef4444;
   --destructive-hover: #dc2626;
@@ -129,6 +136,46 @@
 
 .border-theme {
   border-color: var(--border-color);
+}
+
+@layer components {
+  [data-slot="input"],
+  [data-slot="textarea"],
+  [data-slot="select-trigger"],
+  .field-premium {
+    border-color: var(--field-border-rest);
+    background-color: var(--field-surface);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.02),
+      0 0 0 1px var(--field-glow-rest);
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  [data-slot="input"]:hover,
+  [data-slot="textarea"]:hover,
+  [data-slot="select-trigger"]:hover,
+  .field-premium:hover {
+    border-color: var(--field-border-hover);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 0 0 1px var(--field-glow-hover),
+      0 0 18px rgba(255, 107, 0, 0.04);
+  }
+
+  [data-slot="input"]:focus-visible,
+  [data-slot="textarea"]:focus-visible,
+  [data-slot="select-trigger"]:focus-visible,
+  .field-premium:focus-visible {
+    border-color: var(--field-border-focus);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(255, 107, 0, 0.26),
+      0 0 0 4px rgba(255, 107, 0, 0.1),
+      0 0 26px var(--field-glow-focus);
+  }
 }
 
 @theme inline {

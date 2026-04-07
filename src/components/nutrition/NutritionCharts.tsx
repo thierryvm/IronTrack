@@ -1,5 +1,4 @@
 'use client'
-
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 interface MacroData {
@@ -18,6 +17,12 @@ interface NutritionChartsProps {
   macroData: MacroData[]
   weeklyData: WeeklyData[]
   showWeekly: boolean
+}
+
+const macroToneClasses: Record<string, string> = {
+  'Protéines': 'bg-sky-500',
+  'Glucides': 'bg-emerald-500',
+  'Lipides': 'bg-amber-500',
 }
 
 export default function NutritionCharts({ macroData, weeklyData, showWeekly }: NutritionChartsProps) {
@@ -106,10 +111,9 @@ export default function NutritionCharts({ macroData, weeklyData, showWeekly }: N
           {macroData.map((item, index) => (
             <div key={index} className="flex items-center space-x-4">
               <div
-                className="w-4 h-4 rounded-full border border-border"
-                style={ { backgroundColor: item.color } }
+                className={`w-4 h-4 rounded-full border border-border ${macroToneClasses[item.name] ?? 'bg-primary'}`}
               />
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-foreground">
                 {item.name}: {Math.round(item.value * 10) / 10}g
               </span>
             </div>

@@ -24,6 +24,29 @@ interface ProgressChartsProps {
  selectedExercise?: string
 }
 
+const progressTextToneByName: Record<string, string> = {
+ 'Poids (kg)': 'text-orange-400',
+ 'Pectoraux': 'text-[#FF6B6B]',
+ 'Dos': 'text-[#4ECDC4]',
+ 'Épaules': 'text-[#45B7D1]',
+ 'Biceps': 'text-[#96CEB4]',
+ 'Triceps': 'text-[#FFEAA7]',
+ 'Jambes': 'text-[#DDA0DD]',
+ 'Abdominaux': 'text-[#98D8C8]',
+ 'Fessiers': 'text-[#F7DC6F]',
+}
+
+const progressBgToneByName: Record<string, string> = {
+ 'Pectoraux': 'bg-[#FF6B6B]',
+ 'Dos': 'bg-[#4ECDC4]',
+ 'Épaules': 'bg-[#45B7D1]',
+ 'Biceps': 'bg-[#96CEB4]',
+ 'Triceps': 'bg-[#FFEAA7]',
+ 'Jambes': 'bg-[#DDA0DD]',
+ 'Abdominaux': 'bg-[#98D8C8]',
+ 'Fessiers': 'bg-[#F7DC6F]',
+}
+
 // Composant tooltip personnalisé pour la lisibilité dark mode
 const CustomTooltip = ({ active, payload, label, isDark}: {
  active?: boolean
@@ -35,23 +58,19 @@ const CustomTooltip = ({ active, payload, label, isDark}: {
 
  return (
  <div
- style={{
- backgroundColor: isDark ?'#1f2937' :'#ffffff',
- border: `1px solid ${isDark ?'#374151' :'#e5e7eb'}`,
- borderRadius:'8px',
- padding:'10px 14px',
- boxShadow:'0 4px 6px -1px rgba(0,0,0,0.3)',
- color: isDark ?'#f9fafb' :'#111827',
- fontSize:'13px',
-}}
+ className={`rounded-lg border px-3.5 py-2.5 text-[13px] shadow-lg ${
+ isDark
+ ? 'border-slate-700 bg-slate-800 text-slate-50'
+ : 'border-slate-200 bg-white text-slate-900'
+ }`}
  >
  {label && (
- <p style={{ marginBottom:'4px', fontWeight: 600, color: isDark ?'#d1d5db' :'#374151'}}>
+ <p className={`mb-1 font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
  {label}
  </p>
  )}
  {payload.map((entry, index) => (
- <p key={index} style={{ color: entry.color || (isDark ?'#f9fafb' :'#111827'), margin:'2px 0'}}>
+ <p key={index} className={`my-0.5 ${progressTextToneByName[entry.name] ?? (isDark ? 'text-slate-100' : 'text-slate-900')}`}>
  {entry.name}: <strong>{entry.value}</strong>
  </p>
  ))}
@@ -70,18 +89,16 @@ const CustomPieTooltip = ({ active, payload, isDark}: {
  const entry = payload[0]
  return (
  <div
- style={{
- backgroundColor: isDark ?'#1f2937' :'#ffffff',
- border: `1px solid ${isDark ?'#374151' :'#e5e7eb'}`,
- borderRadius:'8px',
- padding:'10px 14px',
- boxShadow:'0 4px 6px -1px rgba(0,0,0,0.3)',
- color: isDark ?'#f9fafb' :'#111827',
- fontSize:'13px',
-}}
+ className={`rounded-lg border px-3.5 py-2.5 text-[13px] shadow-lg ${
+ isDark
+ ? 'border-slate-700 bg-slate-800 text-slate-50'
+ : 'border-slate-200 bg-white text-slate-900'
+ }`}
  >
- <p style={{ fontWeight: 600, color: entry.payload.color}}>{entry.name}</p>
- <p style={{ color: isDark ?'#d1d5db' :'#6b7280'}}>
+ <p className={`font-semibold ${progressTextToneByName[entry.name] ?? 'text-primary'}`}>
+ {entry.name}
+ </p>
+ <p className={isDark ? 'text-slate-300' : 'text-slate-500'}>
  {entry.value} séance{entry.value > 1 ?'s' :''}
  </p>
  </div>
@@ -94,12 +111,10 @@ const CustomLegend = ({ data, isDark}: { data: MuscleGroupData[]; isDark: boolea
  {data.map((entry, index) => (
  <div key={index} className="flex items-center gap-1">
  <div
- className="w-3 h-3 rounded-full flex-shrink-0"
- style={{ backgroundColor: entry.color}}
+ className={`w-3 h-3 rounded-full flex-shrink-0 ${progressBgToneByName[entry.name] ?? 'bg-primary'}`}
  />
  <span
- className="text-xs font-medium"
- style={{ color: isDark ?'#d1d5db' :'#374151'}}
+ className={`text-xs font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
  >
  {entry.name} ({entry.value})
  </span>

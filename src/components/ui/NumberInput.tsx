@@ -61,7 +61,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
  onChange={handleInputChange}
  min={min}
  max={max}
- className="w-full px-2 py-2 text-center text-lg font-semibold border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+ className="field-premium w-full rounded-xl border px-3 py-2 text-center text-lg font-semibold outline-none"
  />
  </div>
  

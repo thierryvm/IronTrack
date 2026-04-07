@@ -22,25 +22,21 @@ const InputGlassmorphism = React.forwardRef<HTMLInputElement, InputGlassmorphism
  type={type}
  className={cn(
  // Reset des styles par défaut
-"auth-input w-full rounded-xl transition-all focus:outline-none",
+"auth-input field-premium w-full rounded-xl transition-all focus:outline-none",
  
  // Resizing adaptatif selon présence d'icône avec hauteur tactile compacte sur mobile
  icon ?"pl-12 pr-4 h-11 sm:h-12" :"px-4 h-11 sm:h-12",
  
  // Styles dark premium lisibles, y compris avec autofill
-"bg-[#16181f]",
-"backdrop-blur-xl", 
-"border border-white/10",
+"backdrop-blur-xl",
 "text-foreground",
 "shadow-sm",
  
  // Placeholder adaptatif
-"placeholder:text-muted-foreground",
+ "placeholder:text-muted-foreground",
  
  // Focus state adaptatif
 "focus:bg-[#1b1e27]",
-"focus:border-primary/50",
-"focus:ring-4 focus:ring-primary/10",
  
  // État disabled
 "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
