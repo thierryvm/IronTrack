@@ -40,11 +40,11 @@ interface MuscleGroupOption {
 }
 
 const difficultyColors: Record<DifficultyString, string> = {
-'Débutant':'bg-green-100 text-green-700 border-green-200',
-'Intermédiaire':'bg-yellow-100 text-yellow-700 border-yellow-200',
-'Avancé':'bg-red-100 text-red-700 border-red-200',
-'Expert':'bg-purple-100 text-purple-700 border-purple-200',
-'Élite':'bg-black text-white border-black'
+'Débutant':'bg-emerald-500/10 text-safe-success border-emerald-500/20',
+'Intermédiaire':'bg-amber-500/10 text-safe-warning border-amber-500/20',
+'Avancé':'bg-rose-500/10 text-safe-error border-rose-500/20',
+'Expert':'bg-primary/10 text-primary border-primary/20',
+'Élite':'bg-foreground text-background border-foreground'
 }
 
 export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exerciseId}) => {
@@ -88,7 +88,6 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  .single()
 
  if (exerciseError) {
- console.error('Erreur base de données:', exerciseError)
  if (exerciseError.code ==='PGRST116' || exerciseError.message?.includes('No rows')) {
  // Exercice non trouvé (404)
  toast.error(`Exercice ${exerciseId} non trouvé`)
@@ -192,8 +191,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 })
 }
 
-} catch (error) {
- console.error('Erreur lors du chargement:', error)
+} catch {
  toast.error('Erreur lors du chargement de l\'exercice')
  router.push('/exercises')
 } finally {
@@ -325,7 +323,6 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  .eq('id', latestPerf.id)
  
  if (perfError) {
- console.warn('Erreur mise à jour performance:', perfError)
  // Ne pas bloquer la sauvegarde de l'exercice pour une erreur de performance
 }
 }
@@ -350,7 +347,6 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  .eq('id', latestPerformanceData[0].id)
  
  if (notesError) {
- console.warn('Erreur mise à jour notes:', notesError)
  // Ne pas bloquer la sauvegarde de l'exercice pour une erreur de notes
 }
 }
@@ -359,8 +355,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  toast.success('Exercice mis à jour avec succès')
  router.push('/exercises')
 
-} catch (error) {
- console.error('Erreur lors de la sauvegarde:', error)
+} catch {
  toast.error('Erreur lors de la sauvegarde')
 } finally {
  setSaving(false)
@@ -427,7 +422,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  <h1 className="text-xl font-semibold text-foreground">
  Modifier l'exercice
  </h1>
- <p className="text-sm text-gray-600">{exercise.name}</p>
+ <p className="text-sm text-safe-muted">{exercise.name}</p>
  </div>
  </div>
  
@@ -446,7 +441,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  {/* Photo Upload Section */}
  <div className="border-b border-border pb-6">
  <h3 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
- <Target className="h-5 w-5 text-orange-800" />
+ <Target className="h-5 w-5 text-primary" />
  Photo de l'exercice
  </h3>
  <ExercisePhotoUpload
@@ -460,7 +455,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  {/* Basic Information */}
  <div className="space-y-6">
  <h3 className="text-lg font-medium text-foreground flex items-center gap-2">
- <Dumbbell className="h-5 w-5 text-orange-800" />
+ <Dumbbell className="h-5 w-5 text-primary" />
  Informations de base
  </h3>
 
@@ -472,10 +467,10 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  value={exercise.name}
  onChange={(e) => setExercise({...exercise, name: e.target.value})}
  placeholder="Ex: Développé couché"
- className={errors.name ?'border-red-500' :''}
+ className={errors.name ?'border-destructive' :''}
  />
  {errors.name && (
- <p className="text-sm text-red-600">{errors.name}</p>
+ <p className="text-sm text-safe-error">{errors.name}</p>
  )}
  </div>
 
@@ -488,7 +483,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  className={`
  flex-1 p-2 border-2 rounded-lg cursor-pointer transition-all
  ${exercise.exercise_type === type
- ?'border-primary bg-orange-50 text-orange-700'
+ ?'border-primary bg-primary/10 text-primary'
  :'border-border hover:border-border'
 }
  `}
@@ -519,7 +514,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  setExercise({...exercise, muscle_group: cleanValue})
 }}
  >
- <SelectTrigger id="muscle-group" className={errors.muscle_group ?'border-red-500' :''}>
+ <SelectTrigger id="muscle-group" className={errors.muscle_group ?'border-destructive' :''}>
  <SelectValue placeholder="Sélectionner un groupe" />
  </SelectTrigger>
  <SelectContent>
@@ -530,7 +525,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  </SelectContent>
  </Select>
  {errors.muscle_group && (
- <p className="text-sm text-red-600">{errors.muscle_group}</p>
+ <p className="text-sm text-safe-error">{errors.muscle_group}</p>
  )}
  </div>
 
@@ -587,7 +582,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
 
  <div className="space-y-2">
  <Label htmlFor="description">Description</Label>
- <p className="text-sm text-gray-600">Instructions d'exécution, conseils techniques, muscles ciblés...</p>
+ <p className="text-sm text-safe-muted">Instructions d'exécution, conseils techniques, muscles ciblés...</p>
  <Textarea
  value={exercise.description ||''}
  onChange={(e) => setExercise({...exercise, description: e.target.value})}
@@ -599,7 +594,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  {/* Notes de performance (maintenant éditables) */}
  <div className="space-y-2">
  <Label htmlFor="notes">Notes de la dernière performance</Label>
- <p className="text-sm text-gray-600">Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance.</p>
+ <p className="text-sm text-safe-muted">Modifiez les notes de votre dernière session. Elles seront mises à jour dans votre historique de performance.</p>
  <Textarea
  value={exercise.notes ||''}
  onChange={(e) => setExercise(prev => ({ ...prev!, notes: e.target.value}))}
@@ -613,7 +608,7 @@ export const ExerciseEditForm2025: React.FC<ExerciseEditForm2025Props> = ({ exer
  {exercise && (
  <div className="border-t border-border pt-6">
  <h3 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
- <Activity className="h-5 w-5 text-orange-800" />
+ <Activity className="h-5 w-5 text-primary" />
  Métriques spécifiques à l'exercice
  </h3>
  <p className="text-sm text-muted-foreground mb-6">
