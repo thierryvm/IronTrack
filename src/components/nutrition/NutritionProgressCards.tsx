@@ -72,11 +72,11 @@ export function NutritionProgressCards({ todayNutrition, goals }: NutritionProgr
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold text-foreground">Glucides</h3>
-              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{Math.round(todayNutrition.carbs * 10) / 10}</p>
+              <p className="text-3xl font-bold text-safe-success">{Math.round(todayNutrition.carbs * 10) / 10}</p>
               <p className="text-sm text-muted-foreground">/ {goals.carbs}g</p>
             </div>
             <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center">
-              <Wheat className="w-8 h-8 text-green-500" />
+              <Wheat className="w-8 h-8 text-safe-success" />
             </div>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
@@ -93,11 +93,11 @@ export function NutritionProgressCards({ todayNutrition, goals }: NutritionProgr
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold text-foreground">Lipides</h3>
-              <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{Math.round(todayNutrition.fat * 10) / 10}</p>
+              <p className="text-3xl font-bold text-safe-warning">{Math.round(todayNutrition.fat * 10) / 10}</p>
               <p className="text-sm text-muted-foreground">/ {goals.fat}g</p>
             </div>
             <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-full flex items-center justify-center">
-              <Droplet className="w-8 h-8 text-yellow-500" />
+              <Droplet className="w-8 h-8 text-safe-warning" />
             </div>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">

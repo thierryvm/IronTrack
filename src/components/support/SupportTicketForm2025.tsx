@@ -321,7 +321,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
  <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
  {attachment.originalName}
  </p>
- <p className="text-xs text-gray-600">
+ <p className="text-xs text-safe-muted">
  {(attachment.size / 1024 / 1024).toFixed(1)}MB • {attachment.type}
  </p>
  </div>
@@ -332,7 +332,7 @@ export const SupportTicketForm2025: React.FC<SupportTicketForm2025Props> = ({
  onClick={() => {
  setAttachments(prev => prev.filter(a => a.id !== attachment.id))
 }}
- className="text-gray-700 hover:text-safe-error"
+ className="text-safe-muted hover:text-safe-error"
  aria-label="Supprimer fichier"
  >
  <Send className="h-6 w-6 rotate-45" />

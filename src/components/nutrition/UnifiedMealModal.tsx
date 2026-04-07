@@ -75,14 +75,14 @@ export default function UnifiedMealModal({
                 onClick={handleClose}
                 className="p-1 hover:bg-muted rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-safe-muted" />
               </button>
             </div>
             
             {!mealType && (
               <div className="mt-4">
                 <p className="text-sm font-medium text-foreground mb-2">
-                  Type de repas <span className="text-red-500">*</span>
+                  Type de repas <span className="text-safe-error">*</span>
                 </p>
                 <div className="grid grid-cols-4 gap-2">
                   {MEAL_TYPES.map(type => (

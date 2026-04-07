@@ -61,9 +61,9 @@ interface HealthData {
 
 function StatusIcon({ status, size = 'sm' }: { status: Status; size?: 'sm' | 'md' }) {
   const sz = size === 'md' ? 'h-5 w-5' : 'h-4 w-4'
-  if (status === 'ok') return <CheckCircle2 className={`${sz} text-emerald-500`} />
-  if (status === 'warning') return <AlertTriangle className={`${sz} text-amber-500`} />
-  return <XCircle className={`${sz} text-red-500`} />
+  if (status === 'ok') return <CheckCircle2 className={`${sz} text-safe-success`} />
+  if (status === 'warning') return <AlertTriangle className={`${sz} text-safe-warning`} />
+  return <XCircle className={`${sz} text-safe-error`} />
 }
 
 function StatusBadge({ status }: { status: Status }) {
@@ -80,7 +80,7 @@ function StatusBadge({ status }: { status: Status }) {
     </span>
   )
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-safe-error border border-red-500/20">
       <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
       Critique
     </span>
@@ -147,7 +147,7 @@ function CategoryMiniCard({ title, score, icon: Icon, critical, warnings }: {
       <span className="text-2xl font-bold" style={{ color }}>{score}</span>
       <div className="flex gap-1">
         {critical > 0 && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">{critical} critique{critical > 1 ? 's' : ''}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-safe-error">{critical} critique{critical > 1 ? 's' : ''}</span>
         )}
         {warnings > 0 && (
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">{warnings} avert.</span>
@@ -325,12 +325,12 @@ export function HealthDashboard() {
       {criticalDeps.length > 0 && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
           <div className="flex items-start gap-3">
-            <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <XCircle className="h-5 w-5 text-safe-error flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-red-600 dark:text-red-400">
+              <p className="text-sm font-semibold text-safe-error">
                 {criticalDeps.length} problème{criticalDeps.length > 1 ? 's' : ''} critique{criticalDeps.length > 1 ? 's' : ''} détecté{criticalDeps.length > 1 ? 's' : ''}
               </p>
-              <p className="text-xs text-red-500/80 mt-0.5">
+              <p className="mt-0.5 text-xs text-safe-error">
                 {criticalDeps.map(d => d.label).join(', ')} — action immédiate recommandée
               </p>
             </div>
@@ -371,9 +371,9 @@ export function HealthDashboard() {
                     onClick={() => setFilter(f)}
                     className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors min-h-[32px] ${
                       filter === f
-                        ? f === 'critical' ? 'bg-red-500/20 text-red-500 border-red-500/30'
-                          : f === 'warning' ? 'bg-amber-500/20 text-amber-500 border-amber-500/30'
-                          : f === 'ok' ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30'
+                        ? f === 'critical' ? 'bg-red-500/20 text-safe-error border-red-500/30'
+                          : f === 'warning' ? 'bg-amber-500/20 text-safe-warning border-amber-500/30'
+                          : f === 'ok' ? 'bg-emerald-500/20 text-safe-success border-emerald-500/30'
                           : 'bg-muted text-foreground border-border'
                         : 'bg-transparent text-muted-foreground border-border hover:text-foreground'
                     }`}

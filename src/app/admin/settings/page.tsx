@@ -30,7 +30,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
         ? 'bg-card border-emerald-500/30 text-foreground'
         : 'bg-card border-red-500/30 text-foreground'
     }`}>
-      <CheckCircle className={`h-5 w-5 shrink-0 ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`} />
+      <CheckCircle className={`h-5 w-5 shrink-0 ${type === 'success' ? 'text-safe-success' : 'text-safe-error'}`} />
       <span className="text-sm font-medium">{message}</span>
       <button onClick={onClose} className="ml-2 min-h-[32px] min-w-[32px] flex items-center justify-center">
         <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
