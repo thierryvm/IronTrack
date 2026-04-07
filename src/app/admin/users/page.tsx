@@ -1,938 +1,731 @@
 'use client'
 
-import { useState} from'react'
-import { motion, AnimatePresence} from'framer-motion'
-import { 
- Users, 
- Crown, 
- Shield, 
- User,
- UserCheck,
- UserX,
- Search,
- Filter,
- ArrowUpDown,
- Ban,
- Key,
- AlertTriangle,
- CheckCircle,
- Clock,
- Eye,
- Calendar,
- Trash2,
- XCircle
-} from'lucide-react'
-import Image from'next/image'
-import { useAdminUserManagement, AdminUser, BanUserOptions} from'@/hooks/useAdminUserManagement'
-import { useAdminAuth} from'@/contexts/AdminAuthContext'
-import { Button} from'@/components/ui/button'
-import { Input} from'@/components/ui/input'
+import type { ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
- Select,
- SelectContent,
- SelectItem,
- SelectTrigger,
- SelectValue,
-} from'@/components/ui/select'
-import {
- Table,
- TableBody,
- TableCell,
- TableHead,
- TableHeader,
- TableRow,
-} from'@/components/ui/table'
-import { Textarea} from'@/components/ui/textarea'
+  AlertTriangle,
+  Crown,
+  Loader2,
+  Search,
+  Shield,
+  Trash2,
+  UserRound,
+  UserX,
+  Users,
+} from 'lucide-react'
 
-// Types pour les filtres
-interface UserFilters {
- role:'all' |'user' |'moderator' |'admin' |'super_admin'
- status:'all' |'active' |'banned'
- search: string
+import ActionButton from '@/components/ui/action-button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import { AdminUser, useAdminUserManagement, UserStats } from '@/hooks/useAdminUserManagement'
+
+type RoleFilter = 'all' | 'user' | 'moderator' | 'admin' | 'super_admin'
+type StatusFilter = 'all' | 'active' | 'banned'
+type SortMode = 'recent' | 'activity' | 'workouts' | 'role'
+type BanDuration = '24h' | '7d' | '30d' | 'permanent'
+
+function formatLongDate(value?: string) {
+  if (!value) {
+    return 'Non disponible'
+  }
+
+  return new Intl.DateTimeFormat('fr-BE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value))
 }
 
-// Types pour le tri
-type SortField ='created_at' |'last_workout' |'email' |'role' |'total_workouts'
-type SortDirection ='asc' |'desc'
+function getRoleMeta(role: AdminUser['role']) {
+  switch (role) {
+    case 'super_admin':
+      return {
+        label: 'Super admin',
+        badgeClass: 'border-violet-500/20 bg-violet-500/10 text-safe-info',
+        icon: <Crown className="size-4" />,
+      }
+    case 'admin':
+      return {
+        label: 'Admin',
+        badgeClass: 'border-primary/20 bg-primary/10 text-primary',
+        icon: <Shield className="size-4" />,
+      }
+    case 'moderator':
+      return {
+        label: 'Modérateur',
+        badgeClass: 'border-amber-500/20 bg-amber-500/10 text-safe-warning',
+        icon: <Shield className="size-4" />,
+      }
+    default:
+      return {
+        label: 'Utilisateur',
+        badgeClass: 'border-border bg-background/70 text-safe-muted',
+        icon: <UserRound className="size-4" />,
+      }
+  }
+}
+
+function getStatusMeta(user: AdminUser) {
+  if (user.is_banned) {
+    return {
+      label: 'Banni',
+      badgeClass: 'border-destructive/20 bg-destructive/10 text-safe-error',
+    }
+  }
+
+  if (user.is_active) {
+    return {
+      label: 'Actif',
+      badgeClass: 'border-emerald-500/20 bg-emerald-500/10 text-safe-success',
+    }
+  }
+
+  return {
+    label: 'Inactif',
+    badgeClass: 'border-border bg-background/70 text-safe-muted',
+  }
+}
+
+function SummaryCard({
+  icon,
+  eyebrow,
+  title,
+  helper,
+}: {
+  icon: ReactNode
+  eyebrow: string
+  title: string
+  helper: string
+}) {
+  return (
+    <Card className="rounded-[24px] border-border bg-card/84 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+      <div className="flex items-start gap-3">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-primary/14 bg-primary/10 text-primary">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">{eyebrow}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{title}</p>
+          <p className="mt-1 text-sm leading-6 text-safe-muted">{helper}</p>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+function UserCard({
+  user,
+  selected,
+  onSelect,
+}: {
+  user: AdminUser
+  selected: boolean
+  onSelect: () => void
+}) {
+  const roleMeta = getRoleMeta(user.role)
+  const statusMeta = getStatusMeta(user)
+
+  return (
+    <Card
+      className={`rounded-[24px] border p-5 shadow-[0_16px_36px_rgba(0,0,0,0.14)] transition-colors ${
+        selected
+          ? 'border-primary/30 bg-primary/8'
+          : 'border-border bg-card/84 hover:border-primary/15 hover:bg-card'
+      }`}
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-lg font-semibold tracking-tight text-foreground">
+              {user.pseudo || user.full_name || user.email.split('@')[0]}
+            </p>
+            <p className="mt-1 break-all text-sm text-safe-muted">{user.email}</p>
+          </div>
+
+          <Badge variant="outline" className={statusMeta.badgeClass}>
+            {statusMeta.label}
+          </Badge>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className={roleMeta.badgeClass}>
+            {roleMeta.icon}
+            <span className="ml-1">{roleMeta.label}</span>
+          </Badge>
+          <Badge variant="outline" className="border-border bg-background/70 text-foreground">
+            {user.total_workouts} séance{user.total_workouts > 1 ? 's' : ''}
+          </Badge>
+        </div>
+
+        <div className="grid gap-2 text-sm text-safe-muted">
+          <p>Créé le {formatLongDate(user.created_at)}</p>
+          <p>Dernière activité : {formatLongDate(user.last_active || user.last_workout)}</p>
+        </div>
+
+        <ActionButton tone={selected ? 'primary' : 'secondary'} onClick={onSelect} className="w-full justify-center">
+          {selected ? 'Fiche ouverte' : 'Ouvrir la fiche'}
+        </ActionButton>
+      </div>
+    </Card>
+  )
+}
 
 export default function AdminUsersPage() {
- const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
- const [showDetails, setShowDetails] = useState(false)
- const [showRoleModal, setShowRoleModal] = useState(false)
- const [showBanModal, setShowBanModal] = useState(false)
- const [showDeleteModal, setShowDeleteModal] = useState(false)
- const [newRole, setNewRole] = useState<'user' |'moderator' |'admin' |'super_admin'>('user')
- const [banOptions, setBanOptions] = useState<BanUserOptions>({})
- 
- // États pour les filtres et tri
- const [filters, setFilters] = useState<UserFilters>({
- role:'all',
- status:'all',
- search:''
-})
- const [sortField, setSortField] = useState<SortField>('created_at')
- const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
- const [showFilters, setShowFilters] = useState(false)
+  const { hasPermission } = useAdminAuth()
+  const { users, loading, error, updateUserRole, banUser, deleteUser, getUserStats, clearError } =
+    useAdminUserManagement()
 
- // Hooks
- const { hasPermission} = useAdminAuth()
- const {
- users,
- loading,
- error,
- updateUserRole,
- banUser,
- deleteUser,
- getUsersByRole,
- getActiveUsers,
- getBannedUsers,
- clearError
-} = useAdminUserManagement()
+  const [search, setSearch] = useState('')
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [sortMode, setSortMode] = useState<SortMode>('recent')
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [selectedRole, setSelectedRole] = useState<AdminUser['role']>('user')
+  const [banReason, setBanReason] = useState('')
+  const [banDuration, setBanDuration] = useState<BanDuration>('7d')
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [userStats, setUserStats] = useState<UserStats | null>(null)
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [roleSaving, setRoleSaving] = useState(false)
+  const [banSaving, setBanSaving] = useState(false)
+  const [deleteSaving, setDeleteSaving] = useState(false)
 
- // Filtrer et trier les utilisateurs
- const filteredAndSortedUsers = users
- .filter((user) => {
- // Filtres par rôle
- if (filters.role !=='all' && user.role !== filters.role) return false
- 
- // Filtres par statut
- if (filters.status ==='active' && user.is_banned) return false
- if (filters.status ==='banned' && !user.is_banned) return false
- 
- // Filtres par recherche
- if (filters.search) {
- const searchTerm = filters.search.toLowerCase()
- const matchEmail = user.email.toLowerCase().includes(searchTerm)
- const matchName = user.full_name?.toLowerCase().includes(searchTerm)
- if (!matchEmail && !matchName) return false
-}
- 
- return true
-})
- .sort((a, b) => {
- let comparison = 0
- 
- switch (sortField) {
- case'created_at':
- comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
- break
- case'last_workout':
- const aLastWorkout = a.last_workout ? new Date(a.last_workout).getTime() : 0
- const bLastWorkout = b.last_workout ? new Date(b.last_workout).getTime() : 0
- comparison = aLastWorkout - bLastWorkout
- break
- case'email':
- comparison = a.email.localeCompare(b.email)
- break
- case'role':
- const roleOrder: Record<string, number> = { user: 1, moderator: 2, admin: 3, super_admin: 4}
- comparison = (roleOrder[a.role] || 0) - (roleOrder[b.role] || 0)
- break
- case'total_workouts':
- comparison = a.total_workouts - b.total_workouts
- break
-}
- 
- return sortDirection ==='desc' ? -comparison : comparison
-})
+  const canManageUsers = hasPermission('admin')
+  const canManageRoles = hasPermission('super_admin')
 
- // Gérer le changement de rôle
- const handleRoleChange = async () => {
- if (!selectedUser) return
- 
- const success = await updateUserRole(selectedUser.id, newRole)
- if (success) {
- setShowRoleModal(false)
- setSelectedUser(null)
-}
-}
+  const selectedUser = useMemo(
+    () => users.find((user) => user.id === selectedUserId) || null,
+    [selectedUserId, users],
+  )
 
- // Gérer le bannissement
- const handleBanSubmit = async () => {
- if (!selectedUser) return
- 
- const success = await banUser(selectedUser.id, banOptions)
- if (success) {
- setShowBanModal(false)
- setSelectedUser(null)
- setBanOptions({})
-}
-}
+  useEffect(() => {
+    if (!selectedUser && users.length > 0) {
+      setSelectedUserId(users[0].id)
+    }
+  }, [selectedUser, users])
 
- // Gérer la suppression
- const handleDeleteConfirm = async () => {
- if (!selectedUser) return
- 
- const success = await deleteUser(selectedUser.id)
- if (success) {
- setShowDeleteModal(false)
- setSelectedUser(null)
-}
-}
+  useEffect(() => {
+    if (!selectedUser) {
+      setUserStats(null)
+      return
+    }
 
- // Gérer le tri
- const handleSort = (field: SortField) => {
- if (sortField === field) {
- setSortDirection(sortDirection ==='asc' ?'desc' :'asc')
-} else {
- setSortField(field)
- setSortDirection('desc')
-}
-}
+    setSelectedRole(selectedUser.role)
+    setDeleteConfirm(false)
 
- // Fonction pour formater le nom d'utilisateur
- const formatUserName = (user: AdminUser): string => {
- // 🎯 PRIORITÉ 1 : Respecter le pseudo choisi par l'utilisateur
- if (user.pseudo && user.pseudo.trim()) {
- return user.pseudo.trim()
-}
- 
- // 🎯 PRIORITÉ 2 : Séparer automatiquement le nom complet
- if (user.full_name && user.full_name.trim()) {
- const name = user.full_name.trim()
- 
- // Si le nom contient déjà des espaces, le retourner tel quel
- if (name.includes('')) {
- return name
-}
- 
- // Séparation automatique des noms concaténés (ex:"prenomnom" →"Prenom Nom")
- const separatedName = name
- // Séparer avant une majuscule précédée de minuscules
- .replace(/([a-z])([A-Z])/g,'$1 $2')
- // Nettoyer les espaces multiples
- .replace(/\s+/g,'')
- .trim()
- 
- return separatedName || name
-}
- 
- // 🎯 FALLBACK : Utiliser l'email
- return user.email.split('@')[0]
-}
+    if (!canManageUsers) {
+      setUserStats(null)
+      return
+    }
 
- // Fonctions d'affichage
- const getRoleIcon = (role: string) => {
- const icons = {
-'super_admin': <Crown className="h-6 w-6 text-safe-primary" />,
-'admin': <Shield className="h-6 w-6 text-safe-error" />,
-'moderator': <UserCheck className="h-6 w-6 text-orange-800" />,
-'user': <User className="h-6 w-6 text-gray-600" />
-}
- return icons[role as keyof typeof icons] || icons.user
-}
+    let cancelled = false
 
- const getRoleLabel = (role: string) => {
- const labels = {
-'super_admin':'Super Admin',
-'admin':'Admin',
-'moderator':'Modérateur',
-'user':'Utilisateur'
-}
- return labels[role as keyof typeof labels] || role
-}
+    const loadStats = async () => {
+      setStatsLoading(true)
+      const stats = await getUserStats(selectedUser.id)
+      if (!cancelled) {
+        setUserStats(stats)
+        setStatsLoading(false)
+      }
+    }
 
- const getRoleColor = (role: string) => {
- const colors = {
-'super_admin':'bg-purple-100 text-purple-700',
-'admin':'bg-red-100 text-red-700',
-'moderator':'bg-orange-100 text-orange-700',
-'user':'bg-gray-100 text-gray-700'
-}
- return colors[role as keyof typeof colors] || colors.user
-}
+    void loadStats()
 
- const getStatusIcon = (user: AdminUser) => {
- if (user.is_banned) {
- return <UserX className="h-6 w-6 text-safe-error" />
-}
- if (!user.is_onboarding_complete) {
- return <Clock className="h-6 w-6 text-orange-800" />
-}
- return <CheckCircle className="h-6 w-6 text-safe-success" />
-}
+    return () => {
+      cancelled = true
+    }
+  }, [canManageUsers, getUserStats, selectedUser])
 
- const getStatusLabel = (user: AdminUser) => {
- if (user.is_banned) {
- // Afficher la durée du ban si disponible
- if (user.banned_until) {
- const banDate = new Date(user.banned_until)
- const now = new Date()
- if (banDate > now) {
- return `Banni (jusqu'au ${banDate.toLocaleDateString('fr-FR')})`
-}
-}
- return'Banni'
-}
- 
- if (!user.is_onboarding_complete) {
- return'Onboarding incomplet'
-}
- 
- if (!user.is_active) {
- return'Inactif (>30j)'
-}
- 
- return'Actif'
-}
+  const filteredUsers = useMemo(() => {
+    const loweredSearch = search.trim().toLowerCase()
 
- if (loading) {
- return (
- <div className="space-y-6">
- {/* Header skeleton */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px] animate-pulse">
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
- <div className="flex items-center space-x-2">
- <div className="w-10 h-10 bg-muted rounded-lg" />
- <div>
- <div className="h-7 w-56 bg-muted rounded mb-2" />
- <div className="h-4 w-32 bg-muted rounded" />
- </div>
- </div>
- <div className="h-9 w-24 bg-muted rounded-lg" />
- </div>
- </div>
- {/* Table card skeleton */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px] animate-pulse">
- <div className="h-12 bg-muted/40 border-b border-border" />
- {[...Array(8)].map((_, i) => (
- <div key={i} className="h-16 border-b border-border last:border-0 flex items-center px-6 gap-4">
- <div className="w-10 h-10 bg-muted rounded-full shrink-0" />
- <div className="flex-1 space-y-1">
- <div className="h-4 w-32 bg-muted rounded" />
- <div className="h-3 w-48 bg-muted rounded" />
- </div>
- <div className="h-6 w-20 bg-muted rounded-full" />
- <div className="h-4 w-16 bg-muted rounded" />
- <div className="h-4 w-24 bg-muted rounded" />
- </div>
- ))}
- </div>
- </div>
- )
-}
+    return [...users]
+      .filter((user) => {
+        if (roleFilter !== 'all' && user.role !== roleFilter) {
+          return false
+        }
 
- if (error) {
- return (
- <div className="bg-red-50 border border-red-200 rounded-lg p-4">
- <div className="flex items-center space-x-2">
- <AlertTriangle className="h-5 w-5 text-safe-error" />
- <p className="text-red-700">{error}</p>
- <Button variant="ghost" size="icon" onClick={clearError} className="ml-auto text-destructive hover:text-red-700">
- <XCircle className="h-6 w-6" />
- </Button>
- </div>
- </div>
- )
-}
+        if (statusFilter === 'active' && user.is_banned) {
+          return false
+        }
 
- return (
- <div className="space-y-6">
- {/* En-tête */}
- <div className="bg-card border border-border rounded-xl shadow-md p-6 min-h-[88px]">
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
- <div>
- <div className="flex items-center space-x-2">
- <div className="p-2 bg-muted rounded-lg">
- <Users className="h-6 w-6 text-muted-foreground" />
- </div>
- <div>
- <h1 className="text-2xl font-bold text-foreground">Gestion des Utilisateurs</h1>
- <p className="text-gray-600">
- {filteredAndSortedUsers.length} utilisateur{filteredAndSortedUsers.length !== 1 ?'s' :''} 
- {filters.role !=='all' || filters.status !=='all' || filters.search 
- ? ` (${users.length} au total)` :''}
- </p>
- </div>
- </div>
- </div>
- 
- {/* Actions rapides */}
- <div className="flex items-center space-x-2">
- <Button
- onClick={() => setShowFilters(!showFilters)}
- variant={showFilters ?"default" :"outline"}
- size="sm"
- className={`flex items-center ${
- showFilters
- ?'bg-accent text-accent-foreground'
- :''
-}`}
- >
- <Filter className="h-4 w-4 mr-2" />
- Filtres
- </Button>
- </div>
- </div>
+        if (statusFilter === 'banned' && !user.is_banned) {
+          return false
+        }
 
- {/* Statistiques rapides */}
- <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
- <div className="bg-tertiary/8 rounded-lg p-4">
- <div className="text-2xl font-bold text-secondary">{getActiveUsers().length}</div>
- <div className="text-sm text-tertiary">Utilisateurs actifs</div>
- </div>
- <div className="bg-red-50 rounded-lg p-4">
- <div className="text-2xl font-bold text-red-600">{getBannedUsers().length}</div>
- <div className="text-sm text-red-700">Utilisateurs bannis</div>
- </div>
- <div className="bg-purple-50 rounded-lg p-4">
- <div className="text-2xl font-bold text-purple-600">
- {getUsersByRole('admin').length + getUsersByRole('super_admin').length}
- </div>
- <div className="text-sm text-purple-700">Administrateurs</div>
- </div>
- <div className="bg-card border border-border rounded-lg p-4">
- <div className="text-2xl font-bold text-foreground">{getUsersByRole('moderator').length}</div>
- <div className="text-sm text-muted-foreground">Modérateurs</div>
- </div>
- </div>
+        if (!loweredSearch) {
+          return true
+        }
 
- {/* Barre de filtrages */}
- <AnimatePresence>
- {showFilters && (
- <motion.div
- initial={{ height: 0, opacity: 0}}
- animate={{ height:'auto', opacity: 1}}
- exit={{ height: 0, opacity: 0}}
- className="mt-6 border-t border-border pt-6"
- >
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
- {/* Recherche */}
- <div>
- <div className="relative">
- <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-700" />
- <Input
- type="text"
- placeholder="Rechercher par email ou nom..."
- value={filters.search}
- onChange={(e) => setFilters({ ...filters, search: e.target.value})}
- className="pl-8 pr-4 w-full focus:ring-2 focus:ring-primary focus:border-primary"
- />
- </div>
- </div>
+        return (
+          user.email.toLowerCase().includes(loweredSearch) ||
+          (user.full_name || '').toLowerCase().includes(loweredSearch) ||
+          (user.pseudo || '').toLowerCase().includes(loweredSearch)
+        )
+      })
+      .sort((left, right) => {
+        switch (sortMode) {
+          case 'activity': {
+            const leftValue = new Date(left.last_active || left.last_workout || 0).getTime()
+            const rightValue = new Date(right.last_active || right.last_workout || 0).getTime()
+            return rightValue - leftValue
+          }
+          case 'workouts':
+            return right.total_workouts - left.total_workouts
+          case 'role': {
+            const order: Record<AdminUser['role'], number> = {
+              super_admin: 4,
+              admin: 3,
+              moderator: 2,
+              user: 1,
+            }
 
- {/* Filtre rôle */}
- <div>
- <Select
- value={filters.role}
- onValueChange={(value) => setFilters({ ...filters, role: value as UserFilters['role']})}
- >
- <SelectTrigger className="w-full">
- <SelectValue placeholder="Tous les rôles" />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="all">Tous les rôles</SelectItem>
- <SelectItem value="user">Utilisateurs</SelectItem>
- <SelectItem value="moderator">Modérateurs</SelectItem>
- <SelectItem value="admin">Admins</SelectItem>
- <SelectItem value="super_admin">Super Admins</SelectItem>
- </SelectContent>
- </Select>
- </div>
+            return order[right.role] - order[left.role]
+          }
+          default:
+            return new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
+        }
+      })
+  }, [roleFilter, search, sortMode, statusFilter, users])
 
- {/* Filtre statut */}
- <div>
- <Select
- value={filters.status}
- onValueChange={(value) => setFilters({ ...filters, status: value as UserFilters['status']})}
- >
- <SelectTrigger className="w-full">
- <SelectValue placeholder="Tous les statuts" />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="all">Tous les statuts</SelectItem>
- <SelectItem value="active">Actifs</SelectItem>
- <SelectItem value="banned">Bannis</SelectItem>
- </SelectContent>
- </Select>
- </div>
- </div>
- </motion.div>
- )}
- </AnimatePresence>
- </div>
+  const summary = useMemo(
+    () => ({
+      total: users.length,
+      active: users.filter((user) => !user.is_banned).length,
+      banned: users.filter((user) => user.is_banned).length,
+      elevated: users.filter((user) => user.role !== 'user').length,
+    }),
+    [users],
+  )
 
- {/* Liste des utilisateurs */}
- <div className="bg-card border border-border rounded-xl shadow-md overflow-hidden min-h-[400px]">
- {filteredAndSortedUsers.length === 0 ? (
- <div className="text-center py-12">
- <Users className="h-12 w-12 text-gray-700 mx-auto mb-4" />
- <h3 className="text-lg font-medium text-foreground mb-2">Aucun utilisateur trouvé</h3>
- <p className="text-gray-600">
- {filters.role !=='all' || filters.status !=='all' || filters.search 
- ?'Essayez de modifier vos filtres'
- :'Les utilisateurs apparaîtront ici'}
- </p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <Table>
- <TableHeader>
- <TableRow>
- <TableHead>
- <button
- onClick={() => handleSort('email')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Utilisateur</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </TableHead>
- <TableHead>
- <button
- onClick={() => handleSort('role')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Rôle</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </TableHead>
- <TableHead>Statut</TableHead>
- <TableHead>
- <button
- onClick={() => handleSort('created_at')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Inscription</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </TableHead>
- <TableHead>
- <button
- onClick={() => handleSort('total_workouts')}
- className="flex items-center space-x-1 hover:text-gray-700"
- >
- <span>Activité</span>
- <ArrowUpDown className="h-5 w-5" />
- </button>
- </TableHead>
- <TableHead className="text-right">Actions</TableHead>
- </TableRow>
- </TableHeader>
- <TableBody>
- {filteredAndSortedUsers.map((user) => (
- <TableRow 
- key={user.id} 
- className="cursor-pointer"
- onClick={() => {
- setSelectedUser(user)
- setShowDetails(true)
-}}
- >
- <TableCell>
- <div className="flex items-center space-x-2">
- <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
- {user.avatar_url ? (
- <Image
- src={user.avatar_url}
- alt={user.full_name || user.email}
- width={40}
- height={40}
- className="w-10 h-10 rounded-full object-cover"
- />
- ) : (
- <span className="text-sm font-medium text-foreground">
- {formatUserName(user).charAt(0).toUpperCase()}
- </span>
- )}
- </div>
- <div>
- <div className="text-sm font-medium text-foreground">
- {formatUserName(user)}
- </div>
- <div className="text-xs text-gray-600 truncate max-w-[200px]">
- {user.email}
- </div>
- </div>
- </div>
- </TableCell>
+  const handleRoleSave = async () => {
+    if (!selectedUser || !canManageRoles || selectedRole === selectedUser.role) {
+      return
+    }
 
- <TableCell className="whitespace-nowrap">
- <div className="flex items-center space-x-2">
- {getRoleIcon(user.role)}
- <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
- {getRoleLabel(user.role)}
- </span>
- </div>
- </TableCell>
+    setRoleSaving(true)
+    setActionError(null)
+    clearError()
 
- <TableCell className="whitespace-nowrap">
- <div className="flex items-center space-x-2">
- {getStatusIcon(user)}
- <span className="text-sm text-foreground">
- {getStatusLabel(user)}
- </span>
- </div>
- </TableCell>
+    const success = await updateUserRole(selectedUser.id, selectedRole)
+    if (!success) {
+      setActionError("Impossible de mettre à jour le rôle de l'utilisateur.")
+    }
+    setRoleSaving(false)
+  }
 
- <TableCell className="whitespace-nowrap">
- <div className="flex items-center space-x-2">
- <Calendar className="h-6 w-6 text-gray-700" />
- <div>
- <div className="text-sm text-foreground">
- {new Date(user.created_at).toLocaleDateString('fr-FR')}
- </div>
- <div className="text-xs text-gray-600">
- {new Date(user.created_at).toLocaleTimeString('fr-FR', { 
- hour:'2-digit', 
- minute:'2-digit' 
-})}
- </div>
- </div>
- </div>
- </TableCell>
+  const handleBanAction = async () => {
+    if (!selectedUser || !canManageUsers) {
+      return
+    }
 
- <TableCell className="whitespace-nowrap">
- <div className="text-center">
- <div className="text-sm font-medium text-foreground">
- {user.total_workouts}
- </div>
- <div className="text-xs text-gray-600">séances</div>
- {user.last_workout && (
- <div className="text-xs text-gray-700 mt-1">
- Dernier: {new Date(user.last_workout).toLocaleDateString('fr-FR')}
- </div>
- )}
- </div>
- </TableCell>
+    setBanSaving(true)
+    setActionError(null)
+    clearError()
 
- <TableCell className="text-right">
- <div className="flex items-center justify-end space-x-2">
- <Button
- variant="ghost"
- size="icon"
- onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setShowDetails(true)}}
- title="Voir les détails"
- >
- <Eye className="h-6 w-6" />
- </Button>
- 
- {hasPermission('admin') && (
- <>
- {hasPermission('super_admin') && (
- <Button
- variant="ghost"
- size="icon"
- onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setNewRole(user.role); setShowRoleModal(true)}}
- title="Changer le rôle"
- >
- <Key className="h-6 w-6" />
- </Button>
- )}
- 
- <Button
- variant="ghost"
- size="icon"
- onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setBanOptions({}); setShowBanModal(true)}}
- title={!user.is_banned ?'Bannir' :'Débannir'}
- >
- {!user.is_banned ? <Ban className="h-6 w-6" /> : <CheckCircle className="h-6 w-6" />}
- </Button>
+    const now = new Date()
+    const durations: Record<BanDuration, Date> = {
+      '24h': new Date(now.getTime() + 24 * 60 * 60 * 1000),
+      '7d': new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+      '30d': new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
+      permanent: new Date(now.getTime() + 3650 * 24 * 60 * 60 * 1000),
+    }
 
- {hasPermission('super_admin') && (
- <Button
- variant="ghost"
- size="icon"
- onClick={(e) => { e.stopPropagation(); setSelectedUser(user); setShowDeleteModal(true)}}
- title="Supprimer l'utilisateur"
- className="hover:text-destructive hover:bg-red-50 dark:hover:bg-destructive/10"
- >
- <Trash2 className="h-6 w-6" />
- </Button>
- )}
- </>
- )}
- </div>
- </TableCell>
- </TableRow>
- ))}
- </TableBody>
- </Table>
- </div>
- )}
- </div>
+    const success = selectedUser.is_banned
+      ? await banUser(selectedUser.id, {})
+      : await banUser(selectedUser.id, {
+          banned_until: durations[banDuration],
+          ban_reason: banReason.trim() || undefined,
+        })
 
- {/* Modal de détails utilisateur */}
- <AnimatePresence>
- {showDetails && selectedUser && (
- <>
- <motion.div
- initial={{ opacity: 0}}
- animate={{ opacity: 1}}
- exit={{ opacity: 0}}
- className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
- onClick={() => setShowDetails(false)}
- />
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- exit={{ opacity: 0, scale: 0.95}}
- className="fixed inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-8 md:bottom-8 lg:inset-16 lg:top-12 lg:bottom-12 z-50 bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
- >
- {/* En-tête du modal */}
- <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-background">
- <div className="flex items-center space-x-2">
- <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
- {selectedUser.avatar_url ? (
- <Image
- src={selectedUser.avatar_url}
- alt={selectedUser.full_name || selectedUser.email}
- width={48}
- height={48}
- className="w-12 h-12 rounded-full object-cover"
- />
- ) : (
- <span className="text-lg font-medium text-foreground">
- {formatUserName(selectedUser).charAt(0).toUpperCase()}
- </span>
- )}
- </div>
- <div>
- <h2 className="text-lg font-semibold text-foreground">
- {formatUserName(selectedUser)}
- </h2>
- <p className="text-sm text-gray-600">{selectedUser.email}</p>
- </div>
- </div>
- 
- <div className="flex items-center space-x-2">
- {getRoleIcon(selectedUser.role)}
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(selectedUser.role)}`}>
- {getRoleLabel(selectedUser.role)}
- </span>
- <Button variant="ghost" size="icon" onClick={() => setShowDetails(false)} className="ml-4">
- <XCircle className="h-5 w-5" />
- </Button>
- </div>
- </div>
+    if (!success) {
+      setActionError(
+        selectedUser.is_banned
+          ? "Impossible de réactiver l'utilisateur."
+          : "Impossible d'appliquer le bannissement.",
+      )
+    } else if (!selectedUser.is_banned) {
+      setBanReason('')
+      setBanDuration('7d')
+    }
 
- {/* Contenu du modal - Version simplifiée pour l'instant */}
- <div className="flex-1 overflow-y-auto p-6">
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
- {/* Informations de base */}
- <div className="bg-background rounded-lg p-4">
- <h3 className="text-sm font-medium text-foreground mb-2">Informations</h3>
- <div className="space-y-2">
- <div className="flex justify-between">
- <span className="text-sm text-gray-600">ID:</span>
- <span className="text-sm font-mono text-foreground">{selectedUser.id.slice(0, 8)}...</span>
- </div>
- <div className="flex justify-between">
- <span className="text-sm text-gray-600">Statut:</span>
- <span className="text-sm text-foreground">{getStatusLabel(selectedUser)}</span>
- </div>
- <div className="flex justify-between">
- <span className="text-sm text-gray-600">Inscription:</span>
- <span className="text-sm text-foreground">
- {new Date(selectedUser.created_at).toLocaleDateString('fr-FR')}
- </span>
- </div>
- </div>
- </div>
+    setBanSaving(false)
+  }
 
- {/* Statistiques */}
- <div className="bg-tertiary/8 rounded-lg p-4">
- <h3 className="text-sm font-medium text-foreground mb-2">Activité</h3>
- <div className="grid grid-cols-2 gap-4">
- <div className="text-center">
- <div className="text-2xl font-bold text-secondary">{selectedUser.total_workouts}</div>
- <div className="text-xs text-tertiary">Séances</div>
- </div>
- <div className="text-center">
- <div className="text-2xl font-bold text-green-600">
- {selectedUser.last_workout 
- ? `${Math.floor((new Date().getTime() - new Date(selectedUser.last_workout).getTime()) / (1000 * 60 * 60 * 24))}j`
- :'N/A'
-}
- </div>
- <div className="text-xs text-green-700">Dernière activité</div>
- </div>
- </div>
- </div>
- </div>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
+  const handleDeleteUser = async () => {
+    if (!selectedUser || !canManageRoles || !deleteConfirm) {
+      return
+    }
 
- {/* Modal de changement de rôle */}
- <AnimatePresence>
- {showRoleModal && selectedUser && (
- <>
- <motion.div
- initial={{ opacity: 0}}
- animate={{ opacity: 1}}
- exit={{ opacity: 0}}
- className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
- onClick={() => setShowRoleModal(false)}
- />
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- exit={{ opacity: 0, scale: 0.95}}
- className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-card border border-border rounded-xl shadow-2xl p-6"
- >
- <div className="mb-4">
- <h3 className="text-lg font-semibold text-foreground mb-2">Modifier le rôle</h3>
- <p className="text-sm text-gray-600">
- Changer le rôle de {formatUserName(selectedUser)}
- </p>
- </div>
+    setDeleteSaving(true)
+    setActionError(null)
+    clearError()
 
- <div className="space-y-2 mb-6">
- {['user','moderator','admin','super_admin'].map((role) => (
- <label key={role} className="flex items-center space-x-2 cursor-pointer">
- <input
- type="radio"
- name="role"
- value={role}
- checked={newRole === role}
- onChange={(e) => setNewRole(e.target.value as typeof newRole)}
- className="w-4 h-4 text-orange-800 focus:ring-primary"
- />
- <div className="flex items-center space-x-2">
- {getRoleIcon(role)}
- <span className="text-sm text-foreground">{getRoleLabel(role)}</span>
- </div>
- </label>
- ))}
- </div>
+    const success = await deleteUser(selectedUser.id)
+    if (!success) {
+      setActionError("Impossible de supprimer l'utilisateur.")
+    } else {
+      setSelectedUserId(null)
+      setDeleteConfirm(false)
+    }
 
- <div className="flex items-center justify-end space-x-2">
- <Button variant="outline" size="sm" onClick={() => setShowRoleModal(false)}>
- Annuler
- </Button>
- <Button variant="orange" size="sm" onClick={handleRoleChange}>
- Modifier le rôle
- </Button>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
+    setDeleteSaving(false)
+  }
 
- {/* Modal de bannissement */}
- <AnimatePresence>
- {showBanModal && selectedUser && (
- <>
- <motion.div
- initial={{ opacity: 0}}
- animate={{ opacity: 1}}
- exit={{ opacity: 0}}
- className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
- onClick={() => setShowBanModal(false)}
- />
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- exit={{ opacity: 0, scale: 0.95}}
- className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-card border border-border rounded-xl shadow-2xl p-6"
- >
- <div className="mb-4">
- <h3 className="text-lg font-semibold text-foreground mb-2">
- {!selectedUser.is_banned ?'Bannir' :'Débannir'} l'utilisateur
- </h3>
- <p className="text-sm text-gray-600">
- {formatUserName(selectedUser)}
- </p>
- </div>
+  return (
+    <div className="min-h-screen bg-background pb-10">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
+        <section className="overflow-hidden rounded-[30px] border border-border bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0))] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.24)] sm:p-7">
+          <div className="flex flex-col gap-4">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+                  Admin users
+                </Badge>
+                <Badge variant="outline" className="border-border bg-background/70 text-foreground">
+                  Mobile-first
+                </Badge>
+              </div>
+              <h1 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-foreground sm:text-4xl">
+                Utilisateurs
+              </h1>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-safe-muted sm:text-base">
+                Recherche rapide, lecture claire et actions d’administration sans table illisible ni modales empilées.
+              </p>
+            </div>
 
- {!selectedUser.is_banned && (
- <div className="space-y-4 mb-6">
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- Date de fin du bannissement (optionnel)
- </label>
- <Input
- type="datetime-local"
- value={banOptions.banned_until ? banOptions.banned_until.toISOString().slice(0, 16) :''}
- onChange={(e) => setBanOptions({
- ...banOptions,
- banned_until: e.target.value ? new Date(e.target.value) : undefined
-})}
- />
- </div>
- 
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- Raison du bannissement
- </label>
- <Textarea
- value={banOptions.ban_reason ||''}
- onChange={(e) => setBanOptions({
- ...banOptions,
- ban_reason: e.target.value
-})}
- rows={3}
- placeholder="Expliquez la raison du bannissement..."
- />
- </div>
- </div>
- )}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <SummaryCard
+                icon={<Users className="size-5" />}
+                eyebrow="Comptes"
+                title={String(summary.total)}
+                helper="Nombre total d’utilisateurs remontés par l’API admin"
+              />
+              <SummaryCard
+                icon={<UserRound className="size-5" />}
+                eyebrow="Actifs"
+                title={String(summary.active)}
+                helper="Comptes actuellement exploitables sans blocage explicite"
+              />
+              <SummaryCard
+                icon={<UserX className="size-5" />}
+                eyebrow="Bannis"
+                title={String(summary.banned)}
+                helper="Comptes bloqués, à vérifier avant support ou relance"
+              />
+              <SummaryCard
+                icon={<Shield className="size-5" />}
+                eyebrow="Rôles élevés"
+                title={String(summary.elevated)}
+                helper="Modérateurs, admins et super admins en circulation"
+              />
+            </div>
+          </div>
+        </section>
 
- <div className="flex items-center justify-end space-x-2">
- <Button variant="outline" size="sm" onClick={() => setShowBanModal(false)}>
- Annuler
- </Button>
- <Button
- variant={!selectedUser.is_banned ?"destructive" :"success"}
- size="sm"
- onClick={handleBanSubmit}
- >
- {!selectedUser.is_banned ?'Bannir' :'Débannir'}
- </Button>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
+        {error || actionError ? (
+          <Alert
+            variant="destructive"
+            className="rounded-[24px] border-destructive/25 bg-destructive/10 px-5 py-4"
+          >
+            <AlertTriangle className="size-4" />
+            <AlertTitle>Action ou chargement incomplet</AlertTitle>
+            <AlertDescription>{actionError || error}</AlertDescription>
+          </Alert>
+        ) : null}
 
- {/* Modal de suppression */}
- <AnimatePresence>
- {showDeleteModal && selectedUser && (
- <>
- <motion.div
- initial={{ opacity: 0}}
- animate={{ opacity: 1}}
- exit={{ opacity: 0}}
- className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
- onClick={() => setShowDeleteModal(false)}
- />
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- exit={{ opacity: 0, scale: 0.95}}
- className="fixed inset-x-4 top-1/2 transform -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-96 z-50 bg-card border border-border rounded-xl shadow-2xl p-6"
- >
- <div className="mb-4">
- <h3 className="text-lg font-semibold text-red-900 mb-2">Supprimer l'utilisateur</h3>
- <p className="text-sm text-gray-600">
- Êtes-vous sûr de vouloir supprimer définitivement {formatUserName(selectedUser)} ?
- </p>
- <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
- <p className="text-xs text-red-700">
- ⚠️ Cette action est irréversible et supprimera toutes les données de l'utilisateur.
- </p>
- </div>
- </div>
+        <Card className="rounded-[28px] border-border bg-card/86 p-5 shadow-[0_22px_48px_rgba(0,0,0,0.16)] sm:p-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_220px_220px_220px]">
+            <div className="grid gap-2">
+              <Label htmlFor="admin-users-search">Recherche</Label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-safe-muted" />
+                <Input
+                  id="admin-users-search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Nom, pseudo ou email"
+                  className="h-12 rounded-2xl bg-background/70 pl-11"
+                />
+              </div>
+            </div>
 
- <div className="flex items-center justify-end space-x-2">
- <Button variant="outline" size="sm" onClick={() => setShowDeleteModal(false)}>
- Annuler
- </Button>
- <Button variant="destructive" size="sm" onClick={handleDeleteConfirm}>
- Supprimer définitivement
- </Button>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
- </div>
- )
+            <div className="grid gap-2">
+              <Label htmlFor="admin-users-role-filter">Rôle</Label>
+              <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleFilter)}>
+                <SelectTrigger id="admin-users-role-filter" className="h-12 w-full rounded-2xl bg-background/70 px-4">
+                  <SelectValue placeholder="Tous les rôles" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les rôles</SelectItem>
+                  <SelectItem value="user">Utilisateur</SelectItem>
+                  <SelectItem value="moderator">Modérateur</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="super_admin">Super admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="admin-users-status-filter">Statut</Label>
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilter)}>
+                <SelectTrigger id="admin-users-status-filter" className="h-12 w-full rounded-2xl bg-background/70 px-4">
+                  <SelectValue placeholder="Tous les statuts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="active">Actifs</SelectItem>
+                  <SelectItem value="banned">Bannis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="admin-users-sort">Tri</Label>
+              <Select value={sortMode} onValueChange={(value) => setSortMode(value as SortMode)}>
+                <SelectTrigger id="admin-users-sort" className="h-12 w-full rounded-2xl bg-background/70 px-4">
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">Création récente</SelectItem>
+                  <SelectItem value="activity">Activité récente</SelectItem>
+                  <SelectItem value="workouts">Séances réalisées</SelectItem>
+                  <SelectItem value="role">Rôle</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </Card>
+
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_400px]">
+          <div className="flex min-w-0 flex-col gap-4">
+            {loading ? (
+              <Card className="rounded-[28px] border-border bg-card/86 p-8 text-center shadow-[0_22px_48px_rgba(0,0,0,0.16)]">
+                <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-primary/14 bg-primary/10 text-primary">
+                  <Loader2 className="size-6 animate-spin" />
+                </div>
+                <p className="mt-4 text-base font-semibold text-foreground">Chargement des utilisateurs</p>
+                <p className="mt-2 text-sm text-safe-muted">Préparation de la liste et des actions admin.</p>
+              </Card>
+            ) : filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
+                <UserCard
+                  key={user.id}
+                  user={user}
+                  selected={user.id === selectedUserId}
+                  onSelect={() => setSelectedUserId(user.id)}
+                />
+              ))
+            ) : (
+              <Card className="rounded-[28px] border-border bg-card/86 p-8 text-center shadow-[0_22px_48px_rgba(0,0,0,0.16)]">
+                <p className="text-base font-semibold text-foreground">Aucun utilisateur ne correspond aux filtres.</p>
+                <p className="mt-2 text-sm text-safe-muted">
+                  Réinitialise la recherche ou change le filtre de statut.
+                </p>
+              </Card>
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex flex-col gap-6 xl:sticky xl:top-6">
+              {selectedUser ? (
+                <>
+                  <Card className="rounded-[28px] border-border bg-card/88 p-5 shadow-[0_22px_48px_rgba(0,0,0,0.16)] sm:p-6">
+                    <div className="flex flex-col gap-5">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+                          Fiche utilisateur
+                        </p>
+                        <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight text-foreground">
+                          {selectedUser.pseudo || selectedUser.full_name || selectedUser.email}
+                        </h2>
+                        <p className="mt-2 break-all text-sm text-safe-muted">{selectedUser.email}</p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className={getRoleMeta(selectedUser.role).badgeClass}>
+                          {getRoleMeta(selectedUser.role).label}
+                        </Badge>
+                        <Badge variant="outline" className={getStatusMeta(selectedUser).badgeClass}>
+                          {getStatusMeta(selectedUser).label}
+                        </Badge>
+                      </div>
+
+                      <div className="grid gap-3 text-sm text-safe-muted">
+                        <p>Création : {formatLongDate(selectedUser.created_at)}</p>
+                        <p>Dernière activité : {formatLongDate(selectedUser.last_active || selectedUser.last_workout)}</p>
+                        <p>Onboarding : {selectedUser.is_onboarding_complete ? 'Terminé' : 'Incomplet'}</p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="rounded-[28px] border-border bg-card/88 p-5 shadow-[0_22px_48px_rgba(0,0,0,0.16)] sm:p-6">
+                    <div className="flex flex-col gap-4">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+                        Statistiques
+                      </p>
+
+                      {statsLoading ? (
+                        <div className="flex items-center gap-3 rounded-[20px] border border-border bg-background/60 px-4 py-4 text-sm text-safe-muted">
+                          <Loader2 className="size-4 animate-spin text-primary" />
+                          Chargement des statistiques utilisateur
+                        </div>
+                      ) : userStats ? (
+                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                          <div className="rounded-[20px] border border-border bg-background/60 p-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">Séances</p>
+                            <p className="mt-2 text-2xl font-semibold text-foreground">{userStats.total_workouts}</p>
+                          </div>
+                          <div className="rounded-[20px] border border-border bg-background/60 p-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">Exercices</p>
+                            <p className="mt-2 text-2xl font-semibold text-foreground">{userStats.total_exercises}</p>
+                          </div>
+                          <div className="rounded-[20px] border border-border bg-background/60 p-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">Tickets</p>
+                            <p className="mt-2 text-2xl font-semibold text-foreground">{userStats.support_tickets}</p>
+                          </div>
+                          <div className="rounded-[20px] border border-border bg-background/60 p-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">Ancienneté</p>
+                            <p className="mt-2 text-2xl font-semibold text-foreground">{userStats.account_age_days} j</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-[20px] border border-dashed border-border px-4 py-6 text-sm text-safe-muted">
+                          Aucune statistique détaillée disponible pour ce profil.
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+
+                  <Card className="rounded-[28px] border-border bg-card/88 p-5 shadow-[0_22px_48px_rgba(0,0,0,0.16)] sm:p-6">
+                    <div className="flex flex-col gap-5">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-safe-muted">
+                          Actions admin
+                        </p>
+                        <h2 className="mt-2 text-xl font-semibold tracking-tight text-foreground">
+                          Décisions centralisées
+                        </h2>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <Label htmlFor="admin-users-role">Rôle</Label>
+                        <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value as AdminUser['role'])}>
+                          <SelectTrigger id="admin-users-role" className="h-12 w-full rounded-2xl bg-background/70 px-4">
+                            <SelectValue placeholder="Choisir un rôle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">Utilisateur</SelectItem>
+                            <SelectItem value="moderator">Modérateur</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="super_admin">Super admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <ActionButton
+                          tone="primary"
+                          onClick={handleRoleSave}
+                          disabled={!canManageRoles || selectedRole === selectedUser.role || roleSaving}
+                          className="w-full justify-center"
+                        >
+                          {roleSaving ? <Loader2 className="size-4 animate-spin" data-icon="inline-start" /> : null}
+                          Mettre à jour le rôle
+                        </ActionButton>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <Label htmlFor="admin-users-ban-reason">Motif</Label>
+                        <Textarea
+                          id="admin-users-ban-reason"
+                          value={banReason}
+                          onChange={(event) => setBanReason(event.target.value)}
+                          placeholder="Motif visible pour le suivi admin"
+                          className="min-h-[120px] rounded-[22px] border-border bg-background/70 px-4 py-4 leading-7"
+                        />
+
+                        <div className="grid gap-2">
+                          <Label htmlFor="admin-users-ban-duration">Durée du blocage</Label>
+                          <Select value={banDuration} onValueChange={(value) => setBanDuration(value as BanDuration)}>
+                            <SelectTrigger id="admin-users-ban-duration" className="h-12 w-full rounded-2xl bg-background/70 px-4">
+                              <SelectValue placeholder="Durée du blocage" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="24h">24 heures</SelectItem>
+                              <SelectItem value="7d">7 jours</SelectItem>
+                              <SelectItem value="30d">30 jours</SelectItem>
+                              <SelectItem value="permanent">Long terme</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <ActionButton
+                          tone={selectedUser.is_banned ? 'secondary' : 'primary'}
+                          onClick={handleBanAction}
+                          disabled={!canManageUsers || banSaving}
+                          className="w-full justify-center"
+                        >
+                          {banSaving ? <Loader2 className="size-4 animate-spin" data-icon="inline-start" /> : null}
+                          {selectedUser.is_banned ? 'Réactiver le compte' : 'Appliquer le blocage'}
+                        </ActionButton>
+                      </div>
+
+                      <div className="rounded-[22px] border border-border bg-background/60 p-4">
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            id="admin-users-delete-confirm"
+                            checked={deleteConfirm}
+                            onCheckedChange={(checked) => setDeleteConfirm(checked === true)}
+                            className="mt-1 size-5 rounded-md"
+                          />
+                          <div className="min-w-0">
+                            <Label htmlFor="admin-users-delete-confirm" className="cursor-pointer">
+                              Je confirme la suppression définitive
+                            </Label>
+                            <p className="mt-1 text-sm leading-6 text-safe-muted">
+                              Réservé au super admin. À utiliser seulement si le compte doit disparaître du système.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <ActionButton
+                        tone="secondary"
+                        onClick={handleDeleteUser}
+                        disabled={!canManageRoles || !deleteConfirm || deleteSaving}
+                        className="w-full justify-center border-destructive/20 bg-destructive/10 text-safe-error hover:bg-destructive/15"
+                      >
+                        {deleteSaving ? (
+                          <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+                        ) : (
+                          <Trash2 className="size-4" data-icon="inline-start" />
+                        )}
+                        Supprimer le compte
+                      </ActionButton>
+                    </div>
+                  </Card>
+                </>
+              ) : (
+                <Card className="rounded-[28px] border-border bg-card/88 p-8 text-center shadow-[0_22px_48px_rgba(0,0,0,0.16)]">
+                  <p className="text-base font-semibold text-foreground">Sélectionne un utilisateur</p>
+                  <p className="mt-2 text-sm text-safe-muted">
+                    La fiche détaillée et les actions admin apparaîtront ici.
+                  </p>
+                </Card>
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
 }
