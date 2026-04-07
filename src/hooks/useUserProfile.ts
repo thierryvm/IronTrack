@@ -18,11 +18,15 @@ export interface UseUserProfileReturn {
  refreshProfile: () => Promise<void>
 }
 
-export function useUserProfile(): UseUserProfileReturn {
+export function useUserProfile(enabled = true): UseUserProfileReturn {
  const { user, isAuthenticated} = useAuth()
  const [profile, setProfile] = useState<UserProfile | null>(null)
  const [isLoading, setIsLoading] = useState(false)
  const [error, setError] = useState<string | null>(null)
+ const [cachedDisplayName] = useState(() => {
+ if (typeof window === 'undefined') return'Utilisateur'
+ return localStorage.getItem('userName') ||'Utilisateur'
+})
 
  const getDisplayName = (profile: UserProfile | null): string => {
  if (!profile) return'Utilisateur'
@@ -136,6 +140,13 @@ export function useUserProfile(): UseUserProfileReturn {
 }
 
  useEffect(() => {
+ if (!enabled) {
+ setProfile(null)
+ setError(null)
+ setIsLoading(false)
+ return
+}
+
  // Ne récupérer le profil que si l'utilisateur est authentifié
  if (isAuthenticated && user) {
  fetchProfile()
@@ -144,9 +155,9 @@ export function useUserProfile(): UseUserProfileReturn {
  setError(null)
  setIsLoading(false)
 }
-}, [isAuthenticated, user])
+}, [enabled, isAuthenticated, user])
 
- const displayName = getDisplayName(profile)
+ const displayName = profile ? getDisplayName(profile) : cachedDisplayName
  
  // Sauvegarder le displayName dans localStorage pour la page offline
  useEffect(() => {
