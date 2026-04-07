@@ -36,7 +36,7 @@ Tu peux corriger :
 
 Tu ne dois pas :
 - redessiner hors scope,
-- réouvrir des choix déjà approuvés,
+- rouvrir des choix déjà approuvés,
 - mélanger plusieurs chantiers sans demande explicite,
 - transformer une petite tâche en refonte globale.
 
@@ -116,7 +116,7 @@ Si un pattern validé existe déjà dans le repo :
 Ne mélange pas dans un même lot :
 - refonte UX,
 - migration majeure,
-- dette dépendances,
+- dette de dépendances,
 - correctifs produit,
 - expérimentation visuelle,
 - QA large.
@@ -165,7 +165,7 @@ Minimum attendu selon le lot :
 - typecheck
 - build
 - tests ciblés
-- vérifications accessibilité/contraste si la surface UI est touchée
+- vérifications d’accessibilité et de contraste si la surface UI est touchée
 
 Si un check casse :
 - corrige,
