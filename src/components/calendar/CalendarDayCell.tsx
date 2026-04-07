@@ -59,13 +59,7 @@ export default function CalendarDayCell({
       </div>
 
       <div className="mt-2 flex flex-1 flex-col gap-1.5">
-        {visibleSessions.length === 0 ? (
-          <div className="flex h-full items-end">
-            <span className="text-[11px] text-muted-foreground/70">
-              {isCurrentMonth ? 'Aucune séance' : 'Hors mois'}
-            </span>
-          </div>
-        ) : (
+        {visibleSessions.length > 0 ? (
           <>
             {visibleSessions.map((session) => {
               const typeMeta = getWorkoutTypeMeta(session.type)
@@ -93,6 +87,12 @@ export default function CalendarDayCell({
               </span>
             ) : null}
           </>
+        ) : (
+          <div className="flex h-full items-end">
+            <span className="sr-only">
+              {isCurrentMonth ? 'Aucune séance planifiée' : 'Jour hors du mois courant'}
+            </span>
+          </div>
         )}
       </div>
     </Button>
