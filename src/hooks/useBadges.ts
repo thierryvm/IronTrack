@@ -15,7 +15,7 @@ export interface UserBadge extends Badge {
  earned_at: string
 }
 
-export function useBadges() {
+export function useBadges(enabled = true) {
  const [badges, setBadges] = useState<Badge[]>([])
  const [userBadges, setUserBadges] = useState<UserBadge[]>([])
  const [loading, setLoading] = useState(true)
@@ -169,6 +169,11 @@ export function useBadges() {
 }
 
  useEffect(() => {
+ if (!enabled) {
+ setLoading(false)
+ return
+}
+
  const initializeBadges = async () => {
  setLoading(true)
  await loadBadges()
@@ -177,14 +182,15 @@ export function useBadges() {
 }
 
  initializeBadges()
-}, []) // eslint-disable-line react-hooks/exhaustive-deps
+}, [enabled]) // eslint-disable-line react-hooks/exhaustive-deps
 
  // Vérifier les badges quand les badges sont chargés
  useEffect(() => {
+ if (!enabled) return
  if (badges.length > 0 && !loading) {
  checkAndAwardBadges()
 }
-}, [badges, loading]) // eslint-disable-line react-hooks/exhaustive-deps
+}, [badges, enabled, loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
  return {
  badges,
