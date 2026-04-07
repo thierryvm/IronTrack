@@ -244,7 +244,7 @@ export function ExerciseDetailsModal({
       >
         <DialogContent
           showCloseButton={false}
-          className="max-h-[92vh] max-w-[min(760px,calc(100vw-1rem))] min-w-0 gap-0 overflow-hidden rounded-[30px] border-border bg-card p-0 shadow-[0_28px_80px_rgba(0,0,0,0.42)]"
+          className="flex max-h-[92vh] max-w-[min(760px,calc(100vw-1rem))] min-w-0 flex-col gap-0 overflow-hidden rounded-[30px] border-border bg-card p-0 shadow-[0_28px_80px_rgba(0,0,0,0.42)]"
         >
           <DialogHeader className="sr-only">
             <DialogTitle>{exercise ? `Fiche exercice ${exercise.name}` : 'Fiche exercice'}</DialogTitle>
@@ -277,7 +277,7 @@ export function ExerciseDetailsModal({
             <div className="size-10 shrink-0" aria-hidden="true" />
           </div>
 
-          <div className="max-h-[calc(92vh-73px)] min-w-0 overflow-y-auto px-4 py-4 sm:px-5">
+          <div className="min-w-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
             {loading ? (
               <div className="flex items-center justify-center py-14">
                 <div className="size-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -287,12 +287,12 @@ export function ExerciseDetailsModal({
                 <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
             ) : exercise ? (
-              <div className="flex min-w-0 flex-col gap-4">
+              <div className="space-y-4">
                 <Card className="overflow-hidden rounded-[26px] border-border bg-card p-5">
-                  <div className="grid gap-4 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-start">
+                  <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
                     <div
                       className={cn(
-                        'relative mx-auto size-[104px] overflow-hidden rounded-[24px] border border-border/70 bg-background sm:mx-0 sm:size-[112px]',
+                        'relative mx-auto size-[104px] shrink-0 overflow-hidden rounded-[24px] border border-border/70 bg-background sm:mx-0 sm:size-[112px]',
                         `bg-gradient-to-br ${visualMeta.backdropClass}`,
                       )}
                     >
@@ -317,7 +317,7 @@ export function ExerciseDetailsModal({
                       )}
                     </div>
 
-                    <div className="min-w-0 space-y-4">
+                    <div className="min-w-0 flex-1 space-y-4">
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="outline" className={visualMeta.badgeClass}>
                           {exercise.exercise_type}
@@ -351,21 +351,21 @@ export function ExerciseDetailsModal({
                           {exercise.equipment || 'Équipement libre'}
                         </Badge>
                       </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <InfoMetric label="Type" value={exercise.exercise_type} />
+                        <InfoMetric label="Niveau" value={difficultyMeta.label} />
+                        <InfoMetric
+                          label="Historique"
+                          value={`${performances.length} log${performances.length > 1 ? 's' : ''}`}
+                        />
+                        <InfoMetric label="Profil" value={`${completionScore}%`} />
+                      </div>
                     </div>
                   </div>
                 </Card>
 
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                  <InfoMetric label="Type" value={exercise.exercise_type} />
-                  <InfoMetric label="Niveau" value={difficultyMeta.label} />
-                  <InfoMetric
-                    label="Historique"
-                    value={`${performances.length} log${performances.length > 1 ? 's' : ''}`}
-                  />
-                  <InfoMetric label="Profil" value={`${completionScore}%`} />
-                </div>
-
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <Card className="rounded-[26px] border-border bg-card p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
                       Actions rapides
@@ -377,7 +377,7 @@ export function ExerciseDetailsModal({
                       Un seul CTA principal pour enrichir les données, puis un accès simple pour ajuster la fiche.
                     </p>
 
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-5 flex flex-col gap-3">
                       <ActionButton
                         type="button"
                         tone="primary"
@@ -432,29 +432,27 @@ export function ExerciseDetailsModal({
                   </Card>
                 </div>
 
-                <Card className="rounded-[24px] border-border bg-card p-5">
-                  <div className="grid gap-5 lg:grid-cols-2">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
-                        Description
-                      </p>
-                      <p className="mt-3 break-words text-sm leading-7 text-muted-foreground">
-                        {exercise.description ||
-                          'Description absente pour l’instant. Ajoute un repère simple pour reconnaître vite cet exercice.'}
-                      </p>
-                    </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <Card className="rounded-[24px] border-border bg-card p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                      Description
+                    </p>
+                    <p className="mt-3 break-words text-sm leading-7 text-muted-foreground">
+                      {exercise.description ||
+                        'Description absente pour l’instant. Ajoute un repère simple pour reconnaître vite cet exercice.'}
+                    </p>
+                  </Card>
 
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
-                        Exécution
-                      </p>
-                      <p className="mt-3 whitespace-pre-line break-words text-sm leading-7 text-muted-foreground">
-                        {exercise.instructions ||
-                          'Instructions non renseignées. Une séquence courte et concrète améliorera beaucoup la qualité d’usage.'}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                  <Card className="rounded-[24px] border-border bg-card p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                      Exécution
+                    </p>
+                    <p className="mt-3 whitespace-pre-line break-words text-sm leading-7 text-muted-foreground">
+                      {exercise.instructions ||
+                        'Instructions non renseignées. Une séquence courte et concrète améliorera beaucoup la qualité d’usage.'}
+                    </p>
+                  </Card>
+                </div>
 
                 {defaultMetricRows.length > 0 && performances.length === 0 ? (
                   <Card className="rounded-[24px] border-primary/15 bg-card p-5">
