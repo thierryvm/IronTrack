@@ -1,225 +1,195 @@
-"use client"
-import React, { useEffect, useState} from'react'
-import { useRouter, useParams} from'next/navigation'
-import { PerformanceAddForm} from'@/components/exercises/PerformanceAddForm'
-import { createClient} from'@/utils/supabase/client'
-import { ExerciseType} from'@/types/exercise'
-import { StrengthMetrics, CardioMetrics} from'@/types/performance'
-import { ArrowLeft, Dumbbell, Target} from'lucide-react'
-import { motion} from'framer-motion'
-import { Button} from'@/components/ui/button'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { ArrowLeft, Dumbbell, Target } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+
+import { PerformanceAddForm } from '@/components/exercises/PerformanceAddForm'
+import ActionButton from '@/components/ui/action-button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { ExerciseType } from '@/types/exercise'
+import { CardioMetrics, StrengthMetrics } from '@/types/performance'
+import { createClient } from '@/utils/supabase/client'
 
 interface ExerciseInfo {
- id: number
- name: string
- type: ExerciseType
- equipment: string
+  id: number
+  name: string
+  type: ExerciseType
+  equipment: string
 }
 
 export default function AddPerformancePage() {
- const [exercise, setExercise] = useState<ExerciseInfo | null>(null)
- const [loading, setLoading] = useState(true)
- const [error, setError] = useState<string | null>(null)
- const router = useRouter()
- const params = useParams()
- const id = params.id as string
+  const [exercise, setExercise] = useState<ExerciseInfo | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
 
- useEffect(() => {
- const fetchExercise = async () => {
- try {
- setLoading(true)
- const supabase = createClient()
- 
- const { data, error} = await supabase
- .from('exercises')
- .select('*')
- .eq('id', id)
- .single()
+  useEffect(() => {
+    const fetchExercise = async () => {
+      try {
+        setLoading(true)
+        setError(null)
 
- if (error) {
- throw new Error(error.message)
-}
+        const supabase = createClient()
+        const { data, error: fetchError } = await supabase
+          .from('exercises')
+          .select('id, name, exercise_type, equipment')
+          .eq('id', id)
+          .single()
 
- if (data) {
- // Transformer les données au nouveau format
- const exerciseData: ExerciseInfo = {
- id: data.id,
- name: data.name,
- type: data.exercise_type as ExerciseType, // 🚨 CORRECTION: exercise_type pas type
- equipment: data.equipment ||'Machine'
-}
- 
- setExercise(exerciseData)
-}
-} catch (err) {
- setError(err instanceof Error ? err.message :'Erreur inconnue')
-} finally {
- setLoading(false)
-}
-}
+        if (fetchError || !data) {
+          throw fetchError || new Error('Exercice introuvable.')
+        }
 
- fetchExercise()
-}, [id])
+        setExercise({
+          id: data.id,
+          name: data.name,
+          type: data.exercise_type as ExerciseType,
+          equipment: data.equipment || 'Machine',
+        })
+      } catch (caughtError) {
+        setExercise(null)
+        setError(caughtError instanceof Error ? caughtError.message : 'Erreur inconnue')
+      } finally {
+        setLoading(false)
+      }
+    }
 
- const handleComplete = async (performanceData: StrengthMetrics | CardioMetrics, notes?: string) => {
- const supabase = createClient()
- 
- try {
- // Récupérer l'utilisateur connecté pour RLS
- const { data: { user}} = await supabase.auth.getUser()
- if (!user) {
- throw new Error('Utilisateur non connecté')
-}
+    void fetchExercise()
+  }, [id])
 
- // Construire l'insert selon le type d'exercice
- const performanceInsert = {
- user_id: user.id, // 🚨 CORRECTION CRITIQUE RLS
- exercise_id: parseInt(id),
- performed_at: new Date().toISOString(),
- notes: notes ||'',
- // Métriques selon le type
- ...(exercise?.type ==='Musculation' && {
- weight: (performanceData as StrengthMetrics).weight,
- reps: (performanceData as StrengthMetrics).reps,
- sets: (performanceData as StrengthMetrics).sets,
- rest_seconds: (performanceData as StrengthMetrics).rest_seconds,
-}),
- ...(exercise?.type ==='Cardio' && {
- duration_seconds: (performanceData as CardioMetrics).duration_seconds,
- distance: (performanceData as CardioMetrics).distance,
- distance_unit: (performanceData as CardioMetrics).distance_unit,
- heart_rate: (performanceData as CardioMetrics).heart_rate,
- calories: (performanceData as CardioMetrics).calories,
- stroke_rate: (performanceData as CardioMetrics).rowing?.stroke_rate,
- watts: (performanceData as CardioMetrics).rowing?.watts,
- incline: (performanceData as CardioMetrics).running?.incline,
- cadence: (performanceData as CardioMetrics).cycling?.cadence,
- resistance: (performanceData as CardioMetrics).cycling?.resistance,
-})
-}
+  const handleComplete = async (performanceData: StrengthMetrics | CardioMetrics, notes?: string) => {
+    const supabase = createClient()
 
- const { data, error} = await supabase
- .from('performance_logs')
- .insert(performanceInsert)
- .select()
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
- if (error) {
- throw error
-}
+      if (!user) {
+        throw new Error('Utilisateur non connecté')
+      }
 
- router.push('/exercises')
-} catch {
- setError("Impossible d'enregistrer cette performance pour le moment.")
-}
-}
+      const payload = {
+        user_id: user.id,
+        exercise_id: Number.parseInt(id, 10),
+        performed_at: new Date().toISOString(),
+        notes: notes || '',
+        ...(exercise?.type === 'Musculation' && {
+          weight: (performanceData as StrengthMetrics).weight,
+          reps: (performanceData as StrengthMetrics).reps,
+          sets: (performanceData as StrengthMetrics).sets,
+          rest_seconds: (performanceData as StrengthMetrics).rest_seconds,
+          rpe: (performanceData as StrengthMetrics).rpe,
+        }),
+        ...(exercise?.type === 'Cardio' && {
+          duration_seconds: (performanceData as CardioMetrics).duration_seconds,
+          distance: (performanceData as CardioMetrics).distance,
+          distance_unit: (performanceData as CardioMetrics).distance_unit,
+          heart_rate: (performanceData as CardioMetrics).heart_rate,
+          calories: (performanceData as CardioMetrics).calories,
+          stroke_rate: (performanceData as CardioMetrics).rowing?.stroke_rate,
+          watts: (performanceData as CardioMetrics).rowing?.watts,
+          incline: (performanceData as CardioMetrics).running?.incline,
+          cadence: (performanceData as CardioMetrics).cycling?.cadence,
+          resistance: (performanceData as CardioMetrics).cycling?.resistance,
+        }),
+      }
 
- const handleBack = () => {
- router.push('/exercises')
-}
+      const { error: insertError } = await supabase.from('performance_logs').insert(payload)
 
- if (loading) {
- return (
- <div className="min-h-screen bg-background flex items-center justify-center">
- <motion.div
- initial={{ opacity: 0, scale: 0.9}}
- animate={{ opacity: 1, scale: 1}}
- className="text-center"
- >
- <motion.div 
- animate={{ rotate: 360}}
- transition={{ duration: 1, repeat: Infinity, ease:'linear'}}
- className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"
- />
- <p className="text-safe-muted">Chargement de l'exercice...</p>
- </motion.div>
- </div>
- )
-}
+      if (insertError) {
+        throw insertError
+      }
 
- if (error) {
- return (
- <div className="min-h-screen bg-background flex items-center justify-center">
- <motion.div
- initial={{ opacity: 0, y: 20}}
- animate={{ opacity: 1, y: 0}}
- className="text-center"
- >
- <div className="text-safe-error mb-4 font-medium">Erreur: {error}</div>
- <Button onClick={() => router.push('/exercises')}>
- Retour aux exercices
- </Button>
- </motion.div>
- </div>
- )
-}
+      router.push('/exercises')
+    } catch {
+      setError("Impossible d'enregistrer cette performance pour le moment.")
+    }
+  }
 
- if (!exercise) {
- return (
- <div className="min-h-screen bg-background flex items-center justify-center">
- <motion.div
- initial={{ opacity: 0, y: 20}}
- animate={{ opacity: 1, y: 0}}
- className="text-center"
- >
- <p className="mb-4 text-safe-muted">Exercice non trouvé</p>
- <Button onClick={() => router.push('/exercises')}>
- Retour aux exercices
- </Button>
- </motion.div>
- </div>
- )
-}
+  const handleBack = () => {
+    router.push('/exercises')
+  }
 
- return (
- <div className="min-h-screen bg-background">
- {/* Header - Design 2025 */}
- <motion.div
- initial={{ opacity: 0, y: -20}}
- animate={{ opacity: 1, y: 0}}
- className="sticky top-0 z-10 bg-card border border-border border-b border-border"
- >
- <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="flex items-center justify-between h-16">
- <div className="flex items-center space-x-4">
- <Button
- variant="ghost"
- size="sm"
- onClick={handleBack}
- >
- <ArrowLeft className="h-6 w-6 mr-2" />
- Retour
- </Button>
- <div>
- <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
- {exercise.type ==='Musculation' ? (
- <Dumbbell className="h-5 w-5 text-primary" />
- ) : (
- <Target className="h-5 w-5 text-primary" />
- )}
- Nouvelle performance
- </h1>
- <p className="text-sm text-safe-muted">{exercise.name}</p>
- </div>
- </div>
- </div>
- </div>
- </motion.div>
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background px-4 py-10">
+        <div className="mx-auto max-w-4xl">
+          <Card className="flex min-h-[280px] items-center justify-center rounded-[30px] border-border bg-card/88 p-8 shadow-card">
+            <div className="text-center">
+              <div className="mx-auto size-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="mt-4 text-safe-muted">Chargement de l’exercice...</p>
+            </div>
+          </Card>
+        </div>
+      </main>
+    )
+  }
 
- {/* Performance Input - Wrapper avec animation */}
- <motion.div
- initial={{ opacity: 0, y: 20}}
- animate={{ opacity: 1, y: 0}}
- transition={{ delay: 0.1}}
- className="py-8 px-4"
- >
- <div className="max-w-4xl mx-auto">
- <PerformanceAddForm
- exercise={exercise}
- onComplete={handleComplete}
- onBack={handleBack}
- />
- </div>
- </motion.div>
- </div>
- )
+  if (error || !exercise) {
+    return (
+      <main className="min-h-screen bg-background px-4 py-10">
+        <div className="mx-auto max-w-4xl space-y-4">
+          <ActionButton type="button" tone="secondary" onClick={handleBack} className="gap-2">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            <span>Retour aux exercices</span>
+          </ActionButton>
+
+          <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+            <AlertDescription>{error || 'Exercice non trouvé.'}</AlertDescription>
+          </Alert>
+        </div>
+      </main>
+    )
+  }
+
+  const ExerciseIcon = exercise.type === 'Musculation' ? Dumbbell : Target
+
+  return (
+    <main className="min-h-screen bg-background px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-4xl space-y-5">
+        <ActionButton type="button" tone="secondary" onClick={handleBack} className="gap-2">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          <span>Retour aux exercices</span>
+        </ActionButton>
+
+        <Card className="rounded-[30px] border-border bg-card/88 p-5 shadow-card sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-3">
+              <div className="inline-flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <ExerciseIcon className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                  Nouvelle performance
+                </h1>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  Saisie rapide, lisible, sans ancien écran intermédiaire inutile.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-[22px] border border-border/70 bg-background/50 p-4 sm:min-w-[230px]">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+                  {exercise.type}
+                </Badge>
+                <Badge variant="outline" className="border-border bg-background/65 text-safe-muted">
+                  {exercise.equipment}
+                </Badge>
+              </div>
+              <p className="text-lg font-semibold text-foreground">{exercise.name}</p>
+            </div>
+          </div>
+        </Card>
+
+        <PerformanceAddForm exercise={exercise} onComplete={handleComplete} onBack={handleBack} />
+      </div>
+    </main>
+  )
 }
