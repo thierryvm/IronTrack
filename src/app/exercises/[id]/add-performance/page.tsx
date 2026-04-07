@@ -8,7 +8,6 @@ import { StrengthMetrics, CardioMetrics} from'@/types/performance'
 import { ArrowLeft, Dumbbell, Target} from'lucide-react'
 import { motion} from'framer-motion'
 import { Button} from'@/components/ui/button'
-// Note: Remplacé toast par console.log temporairement
 
 interface ExerciseInfo {
  id: number
@@ -38,7 +37,6 @@ export default function AddPerformancePage() {
  .single()
 
  if (error) {
- console.error('❌ Erreur récupération exercice:', error)
  throw new Error(error.message)
 }
 
@@ -100,26 +98,18 @@ export default function AddPerformancePage() {
 })
 }
 
- console.log('🚀 Données à insérer:', performanceInsert)
- 
  const { data, error} = await supabase
  .from('performance_logs')
  .insert(performanceInsert)
  .select()
 
- console.log('📥 Réponse Supabase:', { data, error})
-
  if (error) {
- console.error('❌ Erreur Supabase détaillée:', error)
  throw error
 }
 
- console.log(`✅ Performance ajoutée à"${exercise?.name}" !`)
  router.push('/exercises')
-} catch (error) {
- console.error('💥 Erreur création performance:', error)
- console.error('📋 Détails erreur:', JSON.stringify(error, null, 2))
- console.error('❗ Erreur lors de l\'ajout de la performance')
+} catch {
+ setError("Impossible d'enregistrer cette performance pour le moment.")
 }
 }
 
@@ -140,7 +130,7 @@ export default function AddPerformancePage() {
  transition={{ duration: 1, repeat: Infinity, ease:'linear'}}
  className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"
  />
- <p className="text-gray-600">Chargement de l'exercice...</p>
+ <p className="text-safe-muted">Chargement de l'exercice...</p>
  </motion.div>
  </div>
  )
@@ -171,7 +161,7 @@ export default function AddPerformancePage() {
  animate={{ opacity: 1, y: 0}}
  className="text-center"
  >
- <p className="text-gray-600 mb-4">Exercice non trouvé</p>
+ <p className="mb-4 text-safe-muted">Exercice non trouvé</p>
  <Button onClick={() => router.push('/exercises')}>
  Retour aux exercices
  </Button>
@@ -202,13 +192,13 @@ export default function AddPerformancePage() {
  <div>
  <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
  {exercise.type ==='Musculation' ? (
- <Dumbbell className="h-5 w-5 text-orange-800" />
+ <Dumbbell className="h-5 w-5 text-primary" />
  ) : (
- <Target className="h-5 w-5 text-orange-800" />
+ <Target className="h-5 w-5 text-primary" />
  )}
  Nouvelle performance
  </h1>
- <p className="text-sm text-gray-600">{exercise.name}</p>
+ <p className="text-sm text-safe-muted">{exercise.name}</p>
  </div>
  </div>
  </div>

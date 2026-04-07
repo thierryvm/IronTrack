@@ -43,7 +43,7 @@ interface PerformanceData {
   reps?: number
   sets?: number
   distance?: number
-  duration?: number
+  duration_seconds?: number
   performed_at: string
   speed?: number
   heart_rate?: number
@@ -118,7 +118,7 @@ async function loadExercisesWithPerformances({
   const { data: performancesData } = await supabase
     .from('performance_logs')
     .select(
-      'exercise_id, weight, reps, sets, distance, duration, performed_at, speed, heart_rate, stroke_rate, watts, cadence, resistance, incline, calories',
+      'exercise_id, weight, reps, sets, distance, duration_seconds, performed_at, speed, heart_rate, stroke_rate, watts, cadence, resistance, incline, calories',
     )
     .in('exercise_id', exerciseIds)
     .order('performed_at', { ascending: false })
@@ -145,7 +145,7 @@ function ExerciseLoadingSkeleton() {
       {Array.from({ length: 6 }).map((_, index) => (
         <Card
           key={index}
-          className="h-[420px] rounded-[26px] border-border bg-card/80 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]"
+          className="h-[318px] rounded-[26px] border-border bg-card/80 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.16)]"
         >
           <div className="h-full animate-pulse rounded-[20px] bg-background/65" />
         </Card>
@@ -382,7 +382,7 @@ export default function ExercisesPage() {
         </Card>
 
         {loadError ? (
-          <Alert className="border-rose-500/20 bg-rose-500/8 text-rose-100">
+          <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
             <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <span>{loadError}</span>
               <ActionButton

@@ -230,7 +230,7 @@ export default function ExerciseDetailPage() {
  </span>
  )}
  </div>
- <span className="text-xs text-gray-600">
+ <span className="text-xs text-safe-muted">
  {new Date(performance.date).toLocaleDateString('fr-FR', {
  day:'numeric',
  month:'short',

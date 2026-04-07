@@ -1,509 +1,667 @@
 'use client'
 
-import React, { useState, useEffect, useCallback} from'react'
-import Image from'next/image'
-import { motion, AnimatePresence} from'framer-motion'
-import { X, ArrowLeft, Trophy, Trash2, Edit3, Plus} from'lucide-react'
-import { createClient} from'@/utils/supabase/client'
-import { useRouter} from'next/navigation'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from'@/components/ui/dialog'
-import { Button} from'@/components/ui/button'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
+import { ArrowLeft, Clock3, Edit3, Plus, Trophy, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-// Types pour les métriques JSONB (champs Supabase non typés)
+import ActionButton from '@/components/ui/action-button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  type ExercisePerformanceSnapshot,
+  getDifficultyMeta,
+  getExerciseVisualMeta,
+  summarizeExercisePerformance,
+} from '@/components/exercises/exercise-display'
+import { cn } from '@/lib/utils'
+import { createClient } from '@/utils/supabase/client'
+
 interface CardioMetrics {
- distance?: number
- running?: { speed?: number; incline?: number}
- rowing?: { stroke_rate?: number; watts?: number}
- cycling?: { cadence?: number; resistance?: number}
+  distance?: number
+  running?: { speed?: number; incline?: number }
+  rowing?: { stroke_rate?: number; watts?: number }
+  cycling?: { cadence?: number; resistance?: number }
 }
+
 interface StrengthMetrics {
- weight?: number
- reps?: number
- sets?: number
+  weight?: number
+  reps?: number
+  sets?: number
 }
 
 interface Exercise {
- id: number
- name: string
- exercise_type:'Musculation' |'Cardio'
- muscle_group: string
- equipment: string
- difficulty:'Débutant' |'Intermédiaire' |'Avancé'
- description?: string
- instructions?: string
- image_url?: string
- sets?: number
- reps?: number
- duration?: number
- distance?: number
- rest_time?: number
- default_cardio_metrics?: Record<string, unknown>
- default_strength_metrics?: Record<string, unknown>
+  id: number
+  name: string
+  exercise_type: 'Musculation' | 'Cardio'
+  muscle_group: string
+  equipment: string
+  difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé' | string
+  description?: string
+  instructions?: string
+  image_url?: string
+  default_cardio_metrics?: CardioMetrics | null
+  default_strength_metrics?: StrengthMetrics | null
 }
 
-interface Performance {
- id: number
- performed_at: string
- weight?: number
- reps?: number
- duration?: number
- distance?: number
- calories?: number
- speed?: number
- notes?: string
- set_number?: number
+interface Performance extends ExercisePerformanceSnapshot {
+  id: number
+  notes?: string
+  calories?: number
 }
 
 interface ExerciseDetailsModalProps {
- exerciseId: string
- isOpen: boolean
- onClose: () => void
+  exerciseId: string
+  isOpen: boolean
+  onClose: () => void
 }
 
-export const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({
- exerciseId,
- isOpen,
- onClose
-}) => {
- const [exercise, setExercise] = useState<Exercise | null>(null)
- const [performances, setPerformances] = useState<Performance[]>([])
- const [loading, setLoading] = useState(true)
- const [deleteModalOpen, setDeleteModalOpen] = useState(false)
- const [perfToDelete, setPerfToDelete] = useState<Performance | null>(null)
- const router = useRouter()
-
- const loadExerciseData = useCallback(async () => {
- try {
- setLoading(true)
- const supabase = createClient()
-
- // Charger les données de l'exercice avec métriques par défaut
- const { data: exerciseData, error: exerciseError} = await supabase
- .from('exercises')
- .select('*, image_url, default_cardio_metrics, default_strength_metrics')
- .eq('id', exerciseId)
- .single()
-
- if (exerciseError) throw exerciseError
-
- // Charger les performances
- const { data: performanceData, error: perfError} = await supabase
- .from('performance_logs')
- .select('*')
- .eq('exercise_id', exerciseId)
- .order('performed_at', { ascending: false})
-
- if (perfError) throw perfError
-
- setExercise(exerciseData)
- setPerformances(performanceData || [])
-} catch (error) {
- console.error('Erreur lors du chargement:', error)
-} finally {
- setLoading(false)
-}
-}, [exerciseId])
-
- useEffect(() => {
- if (isOpen && exerciseId) {
- loadExerciseData()
-}
-}, [isOpen, exerciseId, loadExerciseData])
-
- const handleDeletePerformance = async (performance: Performance) => {
- try {
- const supabase = createClient()
- 
- const { error} = await supabase
- .from('performance_logs')
- .delete()
- .eq('id', performance.id)
-
- if (error) throw error
-
- // Recharger les performances
- await loadExerciseData()
- setDeleteModalOpen(false)
- setPerfToDelete(null)
-} catch (error) {
- console.error('Erreur lors de la suppression:', error)
-}
+function getCompletionScore(exercise: Exercise) {
+  let score = 60
+  if (exercise.description) score += 20
+  if (exercise.instructions) score += 15
+  if (exercise.image_url) score += 5
+  return score
 }
 
- const getPerfLabel = (perf: Performance, exerciseType: string, exerciseName?: string) => {
- if (exerciseType ==='Cardio') {
- const parts = []
- const isRowing = exerciseName?.toLowerCase().includes('rameur')
- 
- if (perf.distance) {
- // Adapter l'unité selon le type d'exercice avec conversion intelligente
- if (isRowing) {
- // Rameur â†’ afficher en mètres (ex: 2000m, 5000m)
- parts.push(`${perf.distance}m`)
-} else {
- // Course/vélo â†’ vérifier si données en mètres ou km
- const distance = perf.distance
- if (distance > 100) {
- // Probablement en mètres si > 100, convertir en km
- parts.push(`${(distance / 1000).toFixed(1).replace('.0','')}km`)
-} else {
- // Probablement déjà en km si â‰¤ 100
- parts.push(`${distance}km`)
-}
-}
-}
- if (perf.duration) parts.push(`${Math.round(perf.duration / 60)}min`)
- if (perf.calories) parts.push(`${perf.calories} kcal`)
- 
- return parts.join(' â€¢') ||'Performance cardio'
-} else {
- const parts = []
- if (perf.weight) parts.push(`${perf.weight}kg`)
- if (perf.reps) parts.push(`${perf.reps} reps`)
- return parts.join(' ×') ||'Performance musculation'
-}
+function getCompletionMeta(score: number) {
+  if (score >= 95) {
+    return 'border-emerald-500/20 bg-emerald-500/10 text-safe-success'
+  }
+
+  if (score >= 80) {
+    return 'border-primary/20 bg-primary/10 text-primary'
+  }
+
+  if (score >= 60) {
+    return 'border-amber-500/20 bg-amber-500/10 text-safe-warning'
+  }
+
+  return 'border-destructive/20 bg-destructive/10 text-safe-error'
 }
 
- const lastPerf = performances[0]
+function buildDefaultMetricRows(exercise: Exercise) {
+  if (exercise.exercise_type === 'Cardio' && exercise.default_cardio_metrics) {
+    const metrics = exercise.default_cardio_metrics
+    return [
+      metrics.distance
+        ? {
+            label: 'Distance de départ',
+            value:
+              metrics.distance >= 1000
+                ? `${(metrics.distance / 1000).toFixed(1)} km`
+                : `${metrics.distance} m`,
+          }
+        : null,
+      metrics.running?.speed ? { label: 'Vitesse cible', value: `${metrics.running.speed} km/h` } : null,
+      metrics.running?.incline ? { label: 'Inclinaison', value: `${metrics.running.incline}%` } : null,
+      metrics.rowing?.stroke_rate
+        ? { label: 'Cadence rameur', value: `${metrics.rowing.stroke_rate} spm` }
+        : null,
+      metrics.rowing?.watts ? { label: 'Puissance rameur', value: `${metrics.rowing.watts} W` } : null,
+      metrics.cycling?.cadence ? { label: 'Cadence vélo', value: `${metrics.cycling.cadence} rpm` } : null,
+      metrics.cycling?.resistance ? { label: 'Résistance vélo', value: `${metrics.cycling.resistance}` } : null,
+    ].filter(Boolean) as Array<{ label: string; value: string }>
+  }
 
- return (
- <Dialog open={isOpen} onOpenChange={onClose}>
- <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden p-0 bg-card">
- <DialogHeader className="sr-only">
- <DialogTitle>
- Détails de l'exercice {exercise?.name ||''}
- </DialogTitle>
- <DialogDescription>
- Consultation des informations détaillées et performances de cet exercice
- </DialogDescription>
- </DialogHeader>
- 
- <motion.div
- initial={{ opacity: 0, scale: 0.95, y: 20}}
- animate={{ opacity: 1, scale: 1, y: 0}}
- exit={{ opacity: 0, scale: 0.95, y: 20}}
- className="w-full h-full"
- >
- {/* Header visuel - conservé pour l'UI */}
- <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
- <Button
- onClick={onClose}
- variant="ghost"
- size="sm"
- className="p-2 hover:bg-muted"
- aria-label="Retour à la liste des exercices"
- >
- <ArrowLeft className="w-5 h-5 text-gray-600" />
- </Button>
- <h2 className="text-lg font-semibold text-foreground text-center flex-1">
- Détails de l'exercice
- </h2>
- {/* Bouton X supprimé - DialogContent gère déjà la fermeture */}
- </div>
+  if (exercise.exercise_type === 'Musculation' && exercise.default_strength_metrics) {
+    const metrics = exercise.default_strength_metrics
+    return [
+      metrics.weight ? { label: 'Charge de départ', value: `${metrics.weight} kg` } : null,
+      metrics.reps ? { label: 'Répétitions', value: `${metrics.reps}` } : null,
+      metrics.sets ? { label: 'Séries', value: `${metrics.sets}` } : null,
+    ].filter(Boolean) as Array<{ label: string; value: string }>
+  }
 
- {/* Content */}
- <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
- {loading ? (
- <div className="flex items-center justify-center py-12">
- <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
- </div>
- ) : exercise ? (
- <div className="space-y-6">
- {/* Photo de l'exercice */}
- {exercise.image_url && (
- <div className="relative w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-muted">
- <Image
- src={exercise.image_url}
- alt={`Photo de ${exercise.name}`}
- fill
- className="object-cover object-center"
- sizes="(max-width: 640px) 100vw, 50vw"
- />
- </div>
- )}
- {/* Info exercice */}
- <div>
- <div className="flex items-start justify-between mb-2">
- <h3 className="text-xl font-bold text-foreground">{exercise.name}</h3>
- {(() => {
- // Calcul du score de complétion
- let score = 60 // Base pour champs requis
- if (exercise.description) score += 20
- if (exercise.instructions) score += 15
- if (exercise.image_url) score += 5
- 
- const getScoreColor = (s: number) => {
- if (s >= 95) return'text-green-600 bg-green-50 border-green-200'
- if (s >= 80) return'text-secondary bg-tertiary/8 border-tertiary/25'
- if (s >= 60) return'text-orange-800 bg-orange-50 border-orange-200'
- return'text-red-600 bg-red-50 border-red-200'
+  return []
 }
- 
- return (
- <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-full border text-xs font-medium ${getScoreColor(score)}`}>
- <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
- Profil {score}%
- {score >= 95 && <span>âœ¨</span>}
- </div>
- )
-})()}
- </div>
- <div className="flex flex-wrap gap-2 text-sm">
- <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
- {exercise.muscle_group}
- </span>
- <span className="bg-tertiary/12 text-tertiary px-2 py-1 rounded-full">
- {exercise.equipment}
- </span>
- <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
- {exercise.difficulty}
- </span>
- </div>
- {/* Description et instructions */}
- <div className="mt-4 space-y-2">
- {exercise.description ? (
- <div>
- <h5 className="text-sm font-medium text-foreground mb-1">Description</h5>
- <p className="text-muted-foreground">{exercise.description}</p>
- </div>
- ) : (
- <div className="bg-tertiary/8 border border-tertiary/25 rounded-lg p-2">
- <p className="text-sm text-tertiary">
- 💡 <strong>Améliore ton exercice :</strong> Ajoute une description pour le rendre plus facile à identifier
- </p>
- </div>
- )}
- 
- {exercise.instructions ? (
- <div>
- <h5 className="text-sm font-medium text-foreground mb-1">Instructions</h5>
- <p className="text-muted-foreground text-sm whitespace-pre-line">{exercise.instructions}</p>
- </div>
- ) : (
- <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
- <p className="text-sm text-yellow-700">
- 📝 <strong>Complète ton exercice :</strong> Ajoute des instructions détaillées d'exécution
- </p>
- </div>
- )}
- </div>
- </div>
 
- {/* Dernière performance */}
- <div className="bg-muted rounded-lg p-4 flex items-center gap-2">
- <Trophy className="h-6 w-6 text-safe-warning" />
- {lastPerf ? (
- <span className="text-foreground">
- Dernière : <span className="font-bold">{getPerfLabel(lastPerf, exercise.exercise_type, exercise.name)}</span>
- <span className="text-foreground ml-2">
- ({new Date(lastPerf.performed_at).toLocaleDateString()})
- </span>
- </span>
- ) : (
- <span className="text-gray-600">Aucune performance enregistrée</span>
- )}
- </div>
+export function ExerciseDetailsModal({
+  exerciseId,
+  isOpen,
+  onClose,
+}: ExerciseDetailsModalProps) {
+  const [exercise, setExercise] = useState<Exercise | null>(null)
+  const [performances, setPerformances] = useState<Performance[]>([])
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [perfToDelete, setPerfToDelete] = useState<Performance | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter()
 
- {/* Métriques par défaut - Seulement si aucune performance enregistrée */}
- {(exercise.default_cardio_metrics || exercise.default_strength_metrics) && performances.length === 0 && (
- <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
- <h5 className="font-medium text-orange-900 mb-2 flex items-center gap-2">
- <span className="text-primary">🎯</span>
- Valeurs recommandées pour démarrer
- </h5>
- 
- {/* Métriques cardio */}
- {exercise.default_cardio_metrics && exercise.exercise_type ==='Cardio' && (
- <div className="space-y-2">
- {((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Distance :</strong> {((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) >= 1000 
- ? `${(((exercise.default_cardio_metrics as CardioMetrics).distance ?? 0) / 1000).toFixed(1)} km`
- : `${(exercise.default_cardio_metrics as CardioMetrics).distance ?? 0} m`}
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).running?.speed ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Vitesse :</strong> {(exercise.default_cardio_metrics as CardioMetrics).running?.speed} km/h
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).running?.incline ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Inclinaison :</strong> {(exercise.default_cardio_metrics as CardioMetrics).running?.incline}%
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).rowing?.stroke_rate ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>SPM :</strong> {(exercise.default_cardio_metrics as CardioMetrics).rowing?.stroke_rate}
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).rowing?.watts ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Puissance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).rowing?.watts} watts
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).cycling?.cadence ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Cadence :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.cadence} RPM
- </div>
- )}
- {((exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Résistance :</strong> {(exercise.default_cardio_metrics as CardioMetrics).cycling?.resistance}
- </div>
- )}
- </div>
- )}
- 
- {/* Métriques musculation */}
- {exercise.default_strength_metrics && exercise.exercise_type ==='Musculation' && (
- <div className="space-y-2">
- {((exercise.default_strength_metrics as StrengthMetrics).weight ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Poids :</strong> {(exercise.default_strength_metrics as StrengthMetrics).weight} kg
- </div>
- )}
- {((exercise.default_strength_metrics as StrengthMetrics).reps ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Répétitions :</strong> {(exercise.default_strength_metrics as StrengthMetrics).reps}
- </div>
- )}
- {((exercise.default_strength_metrics as StrengthMetrics).sets ?? 0) > 0 && (
- <div className="text-sm text-orange-800">
- <strong>Séries :</strong> {(exercise.default_strength_metrics as StrengthMetrics).sets}
- </div>
- )}
- </div>
- )}
- 
- <p className="text-xs text-orange-700 mt-2 italic">
- 💡 Ces valeurs suggérées vous aideront à commencer votre première session !
- </p>
- </div>
- )}
+  const loadExerciseData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setErrorMessage(null)
 
- {/* Actions rapides */}
- <div className="flex gap-2">
- <button
- onClick={() => {
- onClose()
- router.push(`/exercises/${exerciseId}/edit-exercise`)
-}}
- className="flex-1 bg-muted hover:bg-muted text-foreground py-2 px-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
- >
- <Edit3 className="h-4 w-4" />
- Modifier l'exercice
- </button>
- <button
- onClick={() => {
- onClose()
- router.push(`/exercises/${exerciseId}/add-performance`)
-}}
- className="flex-1 bg-primary hover:bg-primary-hover text-white py-2 px-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
- >
- <Plus className="h-4 w-4" />
- Nouvelle performance
- </button>
- </div>
+      const supabase = createClient()
 
- {/* Historique des performances */}
- <div>
- <h4 className="text-lg font-semibold text-foreground mb-4">
- Historique des performances ({performances.length})
- </h4>
- 
- {performances.length === 0 ? (
- <div className="text-center py-8 text-gray-600">
- <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-2" />
- <p>Aucune performance enregistrée pour cet exercice.</p>
- <p className="text-sm mt-1">Ajoutez votre première performance !</p>
- </div>
- ) : (
- <div className="space-y-2">
- {performances.map((perf) => (
- <div
- key={perf.id}
- className="bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow"
- >
- <div className="flex items-center justify-between">
- <div className="flex-1">
- <div className="flex items-center gap-4">
- <span className="font-medium text-foreground">
- {getPerfLabel(perf, exercise.exercise_type, exercise.name)}
- </span>
- <span className="text-sm text-gray-600">
- {new Date(perf.performed_at).toLocaleDateString()}
- </span>
- </div>
- {perf.notes && (
- <p className="text-sm text-muted-foreground mt-1">{perf.notes}</p>
- )}
- </div>
- <div className="flex items-center gap-2">
- <button
- onClick={() => {
- onClose()
- router.push(`/exercises/${exerciseId}/edit-performance/${perf.id}`)
-}}
- className="p-2 text-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
- title="Modifier cette performance"
- >
- <Edit3 className="h-6 w-6" />
- </button>
- <button
- onClick={() => {
- setPerfToDelete(perf)
- setDeleteModalOpen(true)
-}}
- className="p-2 text-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
- title="Supprimer"
- >
- <Trash2 className="h-6 w-6" />
- </button>
- </div>
- </div>
- </div>
- ))}
- </div>
- )}
- </div>
- </div>
- ) : (
- <div className="text-center py-12 text-safe-error">
- Erreur lors du chargement de l'exercice
- </div>
- )}
- </div>
- </motion.div>
- 
- {/* Modal de confirmation - Dialog shadcn pour accessibilité ARIA correcte */}
- <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
- <DialogContent className="max-w-sm">
- <DialogHeader>
- <DialogTitle>Supprimer la performance</DialogTitle>
- <DialogDescription>
- Êtes-vous sûr de vouloir supprimer cette performance ? Cette action est irréversible.
- </DialogDescription>
- </DialogHeader>
- <DialogFooter className="flex gap-2 sm:gap-2">
- <Button
- onClick={() => setDeleteModalOpen(false)}
- variant="outline"
- className="flex-1"
- >
- Annuler
- </Button>
- <Button
- onClick={() => perfToDelete && handleDeletePerformance(perfToDelete)}
- variant="destructive"
- className="flex-1"
- >
- Supprimer
- </Button>
- </DialogFooter>
- </DialogContent>
- </Dialog>
- </DialogContent>
- </Dialog>
- )
+      const { data: exerciseData, error: exerciseError } = await supabase
+        .from('exercises')
+        .select(
+          'id, name, exercise_type, muscle_group, equipment, difficulty, description, instructions, image_url, default_cardio_metrics, default_strength_metrics',
+        )
+        .eq('id', exerciseId)
+        .single()
+
+      if (exerciseError || !exerciseData) {
+        throw exerciseError || new Error('Impossible de charger cet exercice.')
+      }
+
+      const { data: performanceData, error: performanceError } = await supabase
+        .from('performance_logs')
+        .select(
+          'id, performed_at, weight, reps, sets, duration_seconds, distance, calories, speed, heart_rate, stroke_rate, watts, incline, cadence, resistance, notes',
+        )
+        .eq('exercise_id', exerciseId)
+        .order('performed_at', { ascending: false })
+
+      if (performanceError) {
+        throw performanceError
+      }
+
+      setExercise(exerciseData)
+      setPerformances((performanceData ?? []) as Performance[])
+    } catch {
+      setExercise(null)
+      setPerformances([])
+      setErrorMessage('Impossible de charger la fiche exercice pour le moment.')
+    } finally {
+      setLoading(false)
+    }
+  }, [exerciseId])
+
+  useEffect(() => {
+    if (isOpen && exerciseId) {
+      void loadExerciseData()
+    }
+  }, [exerciseId, isOpen, loadExerciseData])
+
+  const handleDeletePerformance = async () => {
+    if (!perfToDelete) {
+      return
+    }
+
+    try {
+      setIsDeleting(true)
+      const supabase = createClient()
+
+      const { error } = await supabase.from('performance_logs').delete().eq('id', perfToDelete.id)
+
+      if (error) {
+        throw error
+      }
+
+      await loadExerciseData()
+      setDeleteModalOpen(false)
+      setPerfToDelete(null)
+    } catch {
+      setErrorMessage('Suppression impossible pour le moment.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const difficultyMeta = useMemo(
+    () => getDifficultyMeta(exercise?.difficulty),
+    [exercise?.difficulty],
+  )
+  const visualMeta = useMemo(
+    () => getExerciseVisualMeta(exercise?.exercise_type ?? 'Musculation'),
+    [exercise?.exercise_type],
+  )
+  const completionScore = useMemo(
+    () => (exercise ? getCompletionScore(exercise) : 0),
+    [exercise],
+  )
+  const latestPerformance = performances[0]
+  const latestPerformanceSummary = useMemo(
+    () =>
+      summarizeExercisePerformance({
+        exerciseType: exercise?.exercise_type ?? 'Musculation',
+        exerciseName: exercise?.name,
+        equipment: exercise?.equipment,
+        performance: latestPerformance,
+      }),
+    [exercise?.equipment, exercise?.exercise_type, exercise?.name, latestPerformance],
+  )
+  const defaultMetricRows = useMemo(
+    () => (exercise ? buildDefaultMetricRows(exercise) : []),
+    [exercise],
+  )
+  const VisualIcon = visualMeta.icon
+
+  return (
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
+      }}
+    >
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-5xl gap-0 overflow-hidden rounded-[30px] border-border bg-card p-0 shadow-[0_28px_80px_rgba(0,0,0,0.42)]"
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{exercise ? `Fiche exercice ${exercise.name}` : 'Fiche exercice'}</DialogTitle>
+          <DialogDescription>
+            Consultation des informations détaillées et de l’historique des performances.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-center justify-between border-b border-border/70 bg-card/95 px-5 py-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={onClose}
+            className="rounded-full border-border bg-background/60"
+            aria-label="Retour à la liste des exercices"
+          >
+            <ArrowLeft className="h-4 w-4 text-foreground" aria-hidden="true" />
+          </Button>
+
+          <div className="text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              Fiche exercice
+            </p>
+            <h2 className="text-base font-semibold text-foreground">
+              {exercise?.name || 'Détails de l’exercice'}
+            </h2>
+          </div>
+
+          <div className="size-10" aria-hidden="true" />
+        </div>
+
+        <div className="max-h-[82vh] overflow-y-auto px-5 py-5">
+          {loading ? (
+            <div className="flex items-center justify-center py-14">
+              <div className="size-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : errorMessage ? (
+            <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          ) : exercise ? (
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_340px]">
+              <div className="space-y-5">
+                <Card className="rounded-[26px] border-border bg-background/42 p-5">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+                    <div
+                      className={cn(
+                        'relative size-[112px] shrink-0 overflow-hidden rounded-[24px] border border-border/70 bg-background',
+                        `bg-gradient-to-br ${visualMeta.backdropClass}`,
+                      )}
+                    >
+                      {exercise.image_url ? (
+                        <>
+                          <Image
+                            src={exercise.image_url}
+                            alt={`Illustration de ${exercise.name}`}
+                            fill
+                            sizes="112px"
+                            className="object-cover object-center"
+                          />
+                          <div
+                            aria-hidden="true"
+                            className={cn(
+                              'absolute inset-0 bg-gradient-to-br',
+                              visualMeta.imageTintClass,
+                            )}
+                          />
+                        </>
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <VisualIcon
+                            className={cn('h-11 w-11', visualMeta.accentClass)}
+                            aria-hidden="true"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1 space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className={visualMeta.badgeClass}>
+                          {exercise.exercise_type}
+                        </Badge>
+                        <Badge variant="outline" className={difficultyMeta.className}>
+                          {difficultyMeta.label}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'border-border bg-background/65',
+                            getCompletionMeta(completionScore),
+                          )}
+                        >
+                          Profil {completionScore}%
+                        </Badge>
+                      </div>
+
+                      <div>
+                        <h3 className="text-2xl font-semibold tracking-tight text-foreground">
+                          {exercise.name}
+                        </h3>
+                        <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                          {exercise.description ||
+                            'Ajoute une description claire pour rendre la bibliothèque plus facile à scanner.'}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <Badge
+                          variant="outline"
+                          className="border-border bg-background/65 text-foreground"
+                        >
+                          {exercise.muscle_group || 'Groupe non défini'}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-border bg-background/65 text-safe-muted"
+                        >
+                          {exercise.equipment || 'Équipement libre'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <Card className="rounded-[24px] border-border bg-background/38 p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                      Description
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                      {exercise.description ||
+                        'Description absente pour l’instant. Ajoute un repère simple pour reconnaître vite cet exercice.'}
+                    </p>
+                  </Card>
+
+                  <Card className="rounded-[24px] border-border bg-background/38 p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                      Exécution
+                    </p>
+                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">
+                      {exercise.instructions ||
+                        'Instructions non renseignées. Une séquence courte et concrète améliorera beaucoup la qualité d’usage.'}
+                    </p>
+                  </Card>
+                </div>
+
+                {defaultMetricRows.length > 0 && performances.length === 0 ? (
+                  <Card className="rounded-[24px] border-primary/15 bg-primary/6 p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                          Point de départ
+                        </p>
+                        <h4 className="mt-1 text-base font-semibold text-foreground">
+                          Valeurs recommandées pour la première séance
+                        </h4>
+                      </div>
+                      <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+                        Départ guidé
+                      </Badge>
+                    </div>
+
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      {defaultMetricRows.map((row) => (
+                        <div
+                          key={row.label}
+                          className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3"
+                        >
+                          <p className="text-xs font-medium uppercase tracking-[0.12em] text-safe-muted">
+                            {row.label}
+                          </p>
+                          <p className="mt-2 text-base font-semibold text-foreground">{row.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                ) : null}
+
+                <Card className="rounded-[26px] border-border bg-background/38 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                        Historique
+                      </p>
+                      <h4 className="mt-1 text-lg font-semibold text-foreground">
+                        Performances enregistrées
+                      </h4>
+                    </div>
+                    <Badge variant="outline" className="border-border bg-background/70 text-foreground">
+                      {performances.length}
+                    </Badge>
+                  </div>
+
+                  {performances.length === 0 ? (
+                    <div className="mt-5 rounded-[20px] border border-dashed border-border/80 bg-background/45 px-5 py-8 text-center">
+                      <Trophy className="mx-auto h-9 w-9 text-safe-muted" aria-hidden="true" />
+                      <p className="mt-3 text-base font-medium text-foreground">
+                        Aucune performance enregistrée
+                      </p>
+                      <p className="mt-2 text-sm text-safe-muted">
+                        Commence par un premier log pour transformer cette fiche en outil de progression.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mt-5 space-y-3">
+                      {performances.map((performance) => {
+                        const performanceSummary = summarizeExercisePerformance({
+                          exerciseType: exercise.exercise_type,
+                          exerciseName: exercise.name,
+                          equipment: exercise.equipment,
+                          performance,
+                        })
+
+                        return (
+                          <div
+                            key={performance.id}
+                            className="rounded-[20px] border border-border/70 bg-card/70 px-4 py-4"
+                          >
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-base font-semibold text-foreground">
+                                    {performanceSummary.headline}
+                                  </p>
+                                  <span className="inline-flex items-center gap-1 text-xs text-safe-muted">
+                                    <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                                    {performanceSummary.dateLabel}
+                                  </span>
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                  {performanceSummary.supporting}
+                                </p>
+                                {performance.notes ? (
+                                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                                    {performance.notes}
+                                  </p>
+                                ) : null}
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    onClose()
+                                    router.push(`/exercises/${exerciseId}/edit-performance/${performance.id}`)
+                                  }}
+                                  className="rounded-full border-border bg-background/60"
+                                  aria-label="Modifier cette performance"
+                                >
+                                  <Edit3 className="h-4 w-4" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    setPerfToDelete(performance)
+                                    setDeleteModalOpen(true)
+                                  }}
+                                  className="rounded-full border-destructive/20 bg-destructive/5 text-safe-error hover:bg-destructive/10"
+                                  aria-label="Supprimer cette performance"
+                                >
+                                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <Card className="rounded-[26px] border-border bg-background/40 p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                    Actions rapides
+                  </p>
+                  <h4 className="mt-1 text-lg font-semibold text-foreground">
+                    Continue sans repasser par la liste
+                  </h4>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    Un seul CTA principal pour enrichir les données, puis un accès simple pour ajuster la fiche.
+                  </p>
+
+                  <div className="mt-5 space-y-3">
+                    <ActionButton
+                      type="button"
+                      tone="primary"
+                      onClick={() => {
+                        onClose()
+                        router.push(`/exercises/${exerciseId}/add-performance`)
+                      }}
+                      className="w-full justify-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                      <span>Ajouter une performance</span>
+                    </ActionButton>
+
+                    <ActionButton
+                      type="button"
+                      tone="secondary"
+                      onClick={() => {
+                        onClose()
+                        router.push(`/exercises/${exerciseId}/edit-exercise`)
+                      }}
+                      className="w-full justify-center gap-2"
+                    >
+                      <Edit3 className="h-4 w-4" aria-hidden="true" />
+                      <span>Modifier l’exercice</span>
+                    </ActionButton>
+                  </div>
+                </Card>
+
+                <Card className="rounded-[26px] border-border bg-background/40 p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
+                    Dernier repère
+                  </p>
+                  <div className="mt-4 rounded-[20px] border border-border/70 bg-background/55 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Trophy className="h-4 w-4" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold text-foreground">
+                          {latestPerformanceSummary.headline}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          {latestPerformanceSummary.supporting}
+                        </p>
+                        <p className="mt-3 text-xs font-medium uppercase tracking-[0.12em] text-safe-muted">
+                          {latestPerformanceSummary.dateLabel}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                    <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-safe-muted">
+                        Type
+                      </p>
+                      <p className="mt-2 text-base font-semibold text-foreground">
+                        {exercise.exercise_type}
+                      </p>
+                    </div>
+                    <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-safe-muted">
+                        Niveau
+                      </p>
+                      <p className="mt-2 text-base font-semibold text-foreground">
+                        {difficultyMeta.label}
+                      </p>
+                    </div>
+                    <div className="rounded-[18px] border border-border/70 bg-background/55 px-4 py-3">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-safe-muted">
+                        Historique
+                      </p>
+                      <p className="mt-2 text-base font-semibold text-foreground">
+                        {performances.length} log{performances.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          ) : (
+            <Alert className="border-destructive/30 bg-destructive/10 text-foreground">
+              <AlertDescription>Exercice introuvable.</AlertDescription>
+            </Alert>
+          )}
+        </div>
+
+        <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+          <DialogContent className="max-w-sm rounded-[24px] border-border bg-card">
+            <DialogHeader>
+              <DialogTitle>Supprimer la performance</DialogTitle>
+              <DialogDescription>
+                Cette action retire définitivement cette entrée de l’historique.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-2 sm:gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1"
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => void handleDeletePerformance()}
+                className="flex-1"
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Suppression...' : 'Supprimer'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </DialogContent>
+    </Dialog>
+  )
 }
