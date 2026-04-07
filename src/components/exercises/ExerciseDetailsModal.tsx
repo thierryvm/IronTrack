@@ -277,7 +277,7 @@ export function ExerciseDetailsModal({
             <div className="size-10 shrink-0" aria-hidden="true" />
           </div>
 
-          <div className="min-w-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+          <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-5">
             {loading ? (
               <div className="flex items-center justify-center py-14">
                 <div className="size-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -287,9 +287,9 @@ export function ExerciseDetailsModal({
                 <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
             ) : exercise ? (
-              <div className="space-y-4">
+              <div className="mx-auto flex w-full max-w-[640px] min-w-0 flex-col gap-4">
                 <Card className="overflow-hidden rounded-[26px] border-border bg-card p-5">
-                  <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
+                  <div className="flex min-w-0 flex-col gap-4">
                     <div
                       className={cn(
                         'relative mx-auto size-[104px] shrink-0 overflow-hidden rounded-[24px] border border-border/70 bg-background sm:mx-0 sm:size-[112px]',
@@ -337,7 +337,7 @@ export function ExerciseDetailsModal({
                         <h3 className="break-words text-2xl font-semibold tracking-tight text-foreground">
                           {exercise.name}
                         </h3>
-                        <p className="mt-3 break-words text-sm leading-7 text-muted-foreground">
+                        <p className="mt-3 line-clamp-4 break-words text-sm leading-7 text-muted-foreground">
                           {exercise.description ||
                             'Ajoute une description claire pour rendre la bibliothèque plus facile à scanner.'}
                         </p>
@@ -352,7 +352,7 @@ export function ExerciseDetailsModal({
                         </Badge>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <InfoMetric label="Type" value={exercise.exercise_type} />
                         <InfoMetric label="Niveau" value={difficultyMeta.label} />
                         <InfoMetric
@@ -365,8 +365,8 @@ export function ExerciseDetailsModal({
                   </div>
                 </Card>
 
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <Card className="rounded-[26px] border-border bg-card p-5">
+                <div className="grid gap-4">
+                  <Card className="min-w-0 rounded-[26px] border-border bg-card p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
                       Actions rapides
                     </p>
@@ -406,7 +406,7 @@ export function ExerciseDetailsModal({
                     </div>
                   </Card>
 
-                  <Card className="rounded-[26px] border-border bg-card p-5">
+                  <Card className="min-w-0 rounded-[26px] border-border bg-card p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
                       Dernier repère
                     </p>
@@ -432,8 +432,8 @@ export function ExerciseDetailsModal({
                   </Card>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <Card className="rounded-[24px] border-border bg-card p-5">
+                <div className="grid gap-4">
+                  <Card className="min-w-0 rounded-[24px] border-border bg-card p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
                       Description
                     </p>
@@ -443,7 +443,7 @@ export function ExerciseDetailsModal({
                     </p>
                   </Card>
 
-                  <Card className="rounded-[24px] border-border bg-card p-5">
+                  <Card className="min-w-0 rounded-[24px] border-border bg-card p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
                       Exécution
                     </p>
@@ -455,7 +455,7 @@ export function ExerciseDetailsModal({
                 </div>
 
                 {defaultMetricRows.length > 0 && performances.length === 0 ? (
-                  <Card className="rounded-[24px] border-primary/15 bg-card p-5">
+                  <Card className="min-w-0 rounded-[24px] border-primary/15 bg-card p-5">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
@@ -470,7 +470,7 @@ export function ExerciseDetailsModal({
                       </Badge>
                     </div>
 
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {defaultMetricRows.map((row) => (
                         <InfoMetric key={row.label} label={row.label} value={row.value} />
                       ))}
@@ -478,7 +478,7 @@ export function ExerciseDetailsModal({
                   </Card>
                 ) : null}
 
-                <Card className="rounded-[26px] border-border bg-card p-5">
+                <Card className="min-w-0 rounded-[26px] border-border bg-card p-5">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-safe-muted">
@@ -537,7 +537,7 @@ export function ExerciseDetailsModal({
                                 ) : null}
                               </div>
 
-                              <div className="flex items-center gap-2 self-start">
+                              <div className="flex flex-wrap items-center gap-2 self-start">
                                 <ActionButton
                                   type="button"
                                   tone="secondary"
