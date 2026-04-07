@@ -61,6 +61,7 @@ export interface ExerciseCreationData {
  equipment: string;
  difficulty?: DifficultyLevel;
  instructions?: string;
+ image_url?: string;
 }
 
 /**

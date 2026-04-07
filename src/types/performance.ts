@@ -53,8 +53,8 @@ export interface CardioMetrics {
  * Métriques spécialisées Rameur
  */
 export interface RowingMetrics {
- stroke_rate: number; // SPM (strokes per minute)
- watts: number; // Puissance
+ stroke_rate?: number; // SPM (strokes per minute)
+ watts?: number; // Puissance
  split_time?: string; // Temps au 500m (format"2:05.4")
 }
 
@@ -72,8 +72,8 @@ export interface RunningMetrics {
  * Métriques spécialisées Vélo
  */
 export interface CyclingMetrics {
- cadence: number; // RPM
- resistance: number; // Niveau 1-20
+ cadence?: number; // RPM
+ resistance?: number; // Niveau 1-20
  average_speed?: number; // km/h
  max_speed?: number; // km/h
 }

@@ -1,142 +1,193 @@
-"use client"
-import { useRouter} from'next/navigation'
-import toast from'react-hot-toast'
-import { ExerciseCreationWizard} from'@/components/exercises/ExerciseCreation'
-import { Exercise} from'@/types/exercise'
-import { Performance} from'@/types/performance'
-import { createClient} from'@/utils/supabase/client'
+'use client'
+
+import { useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
+
+import { ExerciseCreationWizard } from '@/components/exercises/ExerciseCreation'
+import { type Exercise } from '@/types/exercise'
+import { type Performance } from '@/types/performance'
+import { createClient } from '@/utils/supabase/client'
 
 interface PerformanceMetrics {
- // Musculation
- weight?: number
- reps?: number
- sets?: number
- rest_seconds?: number
- 
- // Cardio
- duration_seconds?: number
- distance?: number
- distance_unit?: string
- heart_rate?: number
- calories?: number
- 
- // Spécialisé rameur
- rowing?: {
- stroke_rate?: number
- watts?: number
+  weight?: number
+  reps?: number
+  sets?: number
+  rest_seconds?: number
+  duration_seconds?: number
+  distance?: number
+  distance_unit?: string
+  heart_rate?: number
+  calories?: number
+  rowing?: {
+    stroke_rate?: number
+    watts?: number
+  }
+  running?: {
+    incline?: number
+    speed?: number
+  }
+  cycling?: {
+    cadence?: number
+    resistance?: number
+  }
 }
- 
- // Spécialisé course
- running?: {
- incline?: number
+
+interface ExerciseCreationPayload {
+  exercise: Exercise
+  performance?: Performance
 }
- 
- // Spécialisé vélo
- cycling?: {
- cadence?: number
- resistance?: number
+
+async function resolveEquipmentId(equipmentName?: string) {
+  const supabase = createClient()
+
+  if (!equipmentName?.trim()) {
+    return 1
+  }
+
+  const { data } = await supabase
+    .from('equipment')
+    .select('id')
+    .eq('name', equipmentName)
+    .maybeSingle()
+
+  return data?.id ?? 1
 }
+
+function buildPerformanceInsert(
+  payload: ExerciseCreationPayload['performance'],
+  exerciseType: Exercise['exercise_type'],
+) {
+  if (!payload) {
+    return null
+  }
+
+  const metrics = payload.metrics as PerformanceMetrics
+
+  return {
+    performed_at: new Date().toISOString(),
+    notes: payload.notes ?? '',
+    ...(exerciseType === 'Musculation'
+      ? {
+          weight: metrics.weight,
+          reps: metrics.reps,
+          sets: metrics.sets,
+          rest_seconds: metrics.rest_seconds,
+        }
+      : {
+          duration_seconds: metrics.duration_seconds,
+          distance: metrics.distance,
+          distance_unit: metrics.distance_unit,
+          heart_rate: metrics.heart_rate,
+          calories: metrics.calories,
+          stroke_rate: metrics.rowing?.stroke_rate,
+          watts: metrics.rowing?.watts,
+          incline: metrics.running?.incline,
+          speed: metrics.running?.speed,
+          cadence: metrics.cycling?.cadence,
+          resistance: metrics.cycling?.resistance,
+        }),
+  }
 }
 
 export default function NewExercisePage() {
- const router = useRouter()
- 
- const handleClose = () => {
- router.push('/exercises')
-}
+  const router = useRouter()
 
- const handleComplete = async (data: { exercise: Exercise; performance?: Performance}) => {
- const supabase = createClient()
- 
- try {
- // 0. Mapper le nom d'équipement vers l'ID
- let equipment_id = 1 // Défaut
- if (data.exercise.equipment) {
- const { data: equipmentData} = await supabase
- .from('equipment')
- .select('id')
- .eq('name', data.exercise.equipment)
- .single()
- 
- if (equipmentData) {
- equipment_id = equipmentData.id
-}
-}
- 
- // 1. Créer l'exercice
- const { data: exerciseData, error: exerciseError} = await supabase
- .from('exercises')
- .insert({
- user_id: (await supabase.auth.getUser()).data.user?.id,
- name: data.exercise.name,
- exercise_type: data.exercise.exercise_type,
- muscle_group: data.exercise.muscle_group, // Texte, pas ID
- equipment_id: equipment_id,
- difficulty: data.exercise.difficulty,
- description: data.exercise.instructions,
- image_url: data.exercise.image_url, // âœ… AJOUT de l'image_url
- is_template: false,
- is_public: false
-})
- .select()
- .single()
+  useEffect(() => {
+    const verifySession = async () => {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
- if (exerciseError) throw exerciseError
+      if (!user) {
+        router.replace('/auth')
+      }
+    }
 
- // 2. Créer la performance si fournie
- if (data.performance && exerciseData) {
- const performanceInsert = {
- exercise_id: exerciseData.id,
- performed_at: new Date().toISOString(),
- notes:'', // Notes vides pour l'instant
- // Métriques selon le type
- ...(data.exercise.exercise_type ==='Musculation' && {
- weight: (data.performance.metrics as PerformanceMetrics).weight,
- reps: (data.performance.metrics as PerformanceMetrics).reps,
- sets: (data.performance.metrics as PerformanceMetrics).sets,
- rest_seconds: (data.performance.metrics as PerformanceMetrics).rest_seconds,
-}),
- ...(data.exercise.exercise_type ==='Cardio' && {
- duration_seconds: (data.performance.metrics as PerformanceMetrics).duration_seconds,
- distance: (data.performance.metrics as PerformanceMetrics).distance,
- distance_unit: (data.performance.metrics as PerformanceMetrics).distance_unit,
- heart_rate: (data.performance.metrics as PerformanceMetrics).heart_rate,
- calories: (data.performance.metrics as PerformanceMetrics).calories,
- stroke_rate: (data.performance.metrics as PerformanceMetrics).rowing?.stroke_rate,
- watts: (data.performance.metrics as PerformanceMetrics).rowing?.watts,
- incline: (data.performance.metrics as PerformanceMetrics).running?.incline,
- cadence: (data.performance.metrics as PerformanceMetrics).cycling?.cadence,
- resistance: (data.performance.metrics as PerformanceMetrics).cycling?.resistance,
-})
-}
+    void verifySession()
+  }, [router])
 
- const { error: performanceError} = await supabase
- .from('performance_logs')
- .insert(performanceInsert)
+  const handleClose = useCallback(() => {
+    router.push('/exercises')
+  }, [router])
 
- if (performanceError) {
- console.warn('Erreur création performance:', performanceError)
- // Ne pas faire échouer la création si seule la performance échoue
-}
-}
+  const handleComplete = useCallback(
+    async ({ exercise, performance }: ExerciseCreationPayload) => {
+      const supabase = createClient()
 
- toast.success(
- data.performance 
- ? `Exercice"${data.exercise.name}" créé avec première performance !`
- : `Exercice"${data.exercise.name}" créé avec succès !`
- )
- 
- router.push('/exercises')
-} catch (error) {
- console.error('Erreur création exercice:', error)
- console.error('Erreur lors de la création de l\'exercice')
-}
-}
+      try {
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser()
 
- return (
- <ExerciseCreationWizard 
- onClose={handleClose}
- onComplete={handleComplete}
- />
- )
+        if (authError) {
+          throw authError
+        }
+
+        if (!user) {
+          toast.error('Ta session a expiré. Reconnecte-toi pour créer un exercice.')
+          router.push('/auth')
+          return
+        }
+
+        const equipmentId = await resolveEquipmentId(exercise.equipment)
+
+        const { data: createdExercise, error: exerciseError } = await supabase
+          .from('exercises')
+          .insert({
+            user_id: user.id,
+            name: exercise.name,
+            exercise_type: exercise.exercise_type,
+            muscle_group: exercise.muscle_group,
+            equipment_id: equipmentId,
+            difficulty: exercise.difficulty,
+            description: exercise.instructions,
+            image_url: exercise.image_url,
+            is_template: false,
+            is_public: false,
+          })
+          .select('id, name')
+          .single()
+
+        if (exerciseError || !createdExercise) {
+          throw exerciseError ?? new Error("Impossible d'enregistrer l'exercice.")
+        }
+
+        const performanceInsert = buildPerformanceInsert(performance, exercise.exercise_type)
+
+        if (performanceInsert) {
+          const { error: performanceError } = await supabase.from('performance_logs').insert({
+            exercise_id: createdExercise.id,
+            ...performanceInsert,
+          })
+
+          if (performanceError) {
+            throw new Error(
+              "L'exercice a été créé, mais la première performance n'a pas pu être enregistrée.",
+            )
+          }
+        }
+
+        toast.success(
+          performance
+            ? `Exercice “${createdExercise.name}” créé avec sa première performance.`
+            : `Exercice “${createdExercise.name}” créé avec succès.`,
+        )
+
+        router.push('/exercises')
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Une erreur inattendue a empêché la création de l'exercice."
+
+        toast.error(message)
+      }
+    },
+    [router],
+  )
+
+  return <ExerciseCreationWizard onClose={handleClose} onComplete={handleComplete} />
 }
