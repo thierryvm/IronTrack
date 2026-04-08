@@ -31,22 +31,36 @@ jobs:
       run: npm ci
     
     - name: 🎨 Run contrast compliance tests
+      id: contrast_check
       run: npm run test:contrast:ci
       
     - name: 🧪 Run unit tests for contrast utilities
+      id: contrast_utils
       run: npm test -- --testPathPatterns="contrastUtils.test.ts" --passWithNoTests
       
     - name: 📊 Generate contrast report
       if: always()
+      env:
+        CONTRAST_CHECK_OUTCOME: ${{ steps.contrast_check.outcome }}
+        CONTRAST_UTILS_OUTCOME: ${{ steps.contrast_utils.outcome }}
       run: |
+        OVERALL_STATUS="success"
+        if [ "$CONTRAST_CHECK_OUTCOME" != "success" ] || [ "$CONTRAST_UTILS_OUTCOME" != "success" ]; then
+          OVERALL_STATUS="failure"
+        fi
+
         echo "## 🎨 Contrast Compliance Report" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Status" >> $GITHUB_STEP_SUMMARY
-        if [ $? -eq 0 ]; then
-          echo "✅ **WCAG 2.1 AA Compliant** - All components pass contrast requirements" >> $GITHUB_STEP_SUMMARY
+        if [ "$OVERALL_STATUS" = "success" ]; then
+          echo "✅ **Contrast workflow passed** - no blocking contrast errors were reported in this run" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ **Non-compliant** - Some components need contrast improvements" >> $GITHUB_STEP_SUMMARY
         fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Step outcomes" >> $GITHUB_STEP_SUMMARY
+        echo "- Contrast scan: \`$CONTRAST_CHECK_OUTCOME\`" >> $GITHUB_STEP_SUMMARY
+        echo "- Contrast utility tests: \`$CONTRAST_UTILS_OUTCOME\`" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Standards Applied" >> $GITHUB_STEP_SUMMARY
         echo "- **Normal text**: 4.5:1 minimum contrast ratio" >> $GITHUB_STEP_SUMMARY
@@ -63,23 +77,40 @@ jobs:
     - name: 💬 Comment PR with results
       if: github.event_name == 'pull_request' && always()
       uses: actions/github-script@v7
+      env:
+        CONTRAST_CHECK_OUTCOME: ${{ steps.contrast_check.outcome }}
+        CONTRAST_UTILS_OUTCOME: ${{ steps.contrast_utils.outcome }}
       with:
         script: |
-          const fs = require('fs');
-          
-          // Générer commentaire PR basé sur le résultat
-          let body = '## 🎨 Contrast Compliance Check Results\n\n';
-          
-          if (process.env.GITHUB_JOB_STATUS === 'success') {
-            body += '✅ **All contrast requirements met!**\n\n';
-            body += 'This PR maintains WCAG 2.1 AA compliance.\n\n';
-            body += '### Standards Verified:\n';
-            body += '- Normal text: 4.5:1+ contrast ratio ✅\n';
-            body += '- Large text: 3:1+ contrast ratio ✅\n';
-            body += '- UI components: 3:1+ contrast ratio ✅\n';
+          const marker = '<!-- irontrack-contrast-ci -->';
+          const contrastOutcome = process.env.CONTRAST_CHECK_OUTCOME || 'unknown';
+          const utilsOutcome = process.env.CONTRAST_UTILS_OUTCOME || 'unknown';
+          const isSuccess = contrastOutcome === 'success' && utilsOutcome === 'success';
+
+          const outcomeLabel = (outcome) => {
+            switch (outcome) {
+              case 'success':
+                return 'passed';
+              case 'failure':
+                return 'failed';
+              case 'skipped':
+                return 'skipped';
+              default:
+                return outcome;
+            }
+          };
+
+          let body = `${marker}\n## 🎨 Contrast Compliance Check Results\n\n`;
+
+          if (isSuccess) {
+            body += '✅ **Contrast workflow passed**\n\n';
+            body += 'This PR currently passes the contrast compliance workflow.\n\n';
+            body += '### What this means:\n';
+            body += '- no blocking contrast errors were reported by the workflow\n';
+            body += '- non-blocking warnings, if any, should be reviewed in the job logs\n';
           } else {
-            body += '❌ **Contrast issues detected**\n\n';
-            body += 'Some components may not meet WCAG 2.1 AA requirements.\n\n';
+            body += '❌ **Contrast workflow reports a failure**\n\n';
+            body += 'The comment below reflects the actual step outcomes for this run.\n\n';
             body += '### 🔧 Quick Fixes:\n';
             body += '- Replace `text-gray-400/500` → `text-safe-muted`\n';
             body += '- Replace custom colors → `text-safe-*` classes\n';
@@ -89,15 +120,54 @@ jobs:
             body += '- [Contrast Utils](src/utils/contrastUtils.ts)\n';
             body += '- Run `npm run test:contrast` locally\n';
           }
-          
+
+          body += '\n### Step outcomes\n';
+          body += `- Contrast scan: \`${outcomeLabel(contrastOutcome)}\`\n`;
+          body += `- Contrast utility tests: \`${outcomeLabel(utilsOutcome)}\`\n`;
           body += '\n---\n*Automated check by IronTrack Contrast CI*';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
+
+          const { data: comments } = await github.rest.issues.listComments({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: body
+            issue_number: context.issue.number,
+            per_page: 100,
           });
+
+          const existingComments = comments
+            .filter((comment) =>
+              comment.user?.login === 'github-actions[bot]' &&
+              (
+                comment.body?.includes(marker) ||
+                comment.body?.includes('Automated check by IronTrack Contrast CI')
+              )
+            )
+            .sort((a, b) => a.id - b.id);
+
+          const [commentToKeep, ...duplicates] = existingComments;
+
+          for (const duplicate of duplicates) {
+            await github.rest.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: duplicate.id,
+            });
+          }
+
+          if (commentToKeep) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: commentToKeep.id,
+              body,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+          }
 
   accessibility-audit:
     name: Full Accessibility Audit
