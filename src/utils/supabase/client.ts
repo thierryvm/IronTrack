@@ -10,42 +10,44 @@ if (!supabaseUrl || !supabaseAnonKey) {
  )
 }
 
-// Guard against double-stringified localStorage values (corrupted session tokens)
-const safeStorage = {
- getItem: (key: string): string | null => {
-   if (typeof window === 'undefined') return null;
+function cleanupLegacySupabaseStorage() {
+ if (typeof window === 'undefined') return;
+
+ const authStorageKeys = Object.keys(localStorage).filter((key) =>
+   key.startsWith('sb-')
+ );
+
+ authStorageKeys.forEach((key) => {
    try {
      const raw = localStorage.getItem(key);
-     if (!raw) return null;
-     // Detect double-encoded JSON: parse returns a string instead of object
+     if (!raw) return;
+
      const parsed = JSON.parse(raw);
+
      if (typeof parsed === 'string') {
-       // Self-heal: re-store the unwrapped value
        localStorage.setItem(key, parsed);
-       return parsed;
      }
-     return raw;
    } catch {
-     // Corrupted value — remove it so Supabase re-authenticates cleanly
-     try { localStorage.removeItem(key); } catch { /* ignore */ }
-     return null;
+     try {
+       localStorage.removeItem(key);
+     } catch {
+       // Ignore localStorage cleanup failures and let Supabase recover gracefully.
+     }
    }
- },
- setItem: (key: string, value: string): void => {
-   if (typeof window !== 'undefined') localStorage.setItem(key, value);
- },
- removeItem: (key: string): void => {
-   if (typeof window !== 'undefined') localStorage.removeItem(key);
- },
-};
+ });
+}
 
 export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonKey, {
+ cookieOptions: {
+   path: '/',
+   sameSite: 'lax',
+   secure: process.env.NODE_ENV === 'production',
+ },
  auth: {
    flowType:'pkce',
    detectSessionInUrl: true,
    persistSession: true,
    autoRefreshToken: true,
-   storage: safeStorage,
  },
  realtime: {
  params: {
@@ -56,5 +58,7 @@ export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonK
  headers: {
 'x-client-info':'irontrack-web'
 }
-}
-}); 
+ }
+});
+
+cleanupLegacySupabaseStorage();
