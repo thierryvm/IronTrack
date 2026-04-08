@@ -14,7 +14,7 @@ function cleanupLegacySupabaseStorage() {
  if (typeof window === 'undefined') return;
 
  const authStorageKeys = Object.keys(localStorage).filter((key) =>
-   key.startsWith('sb-')
+   /^sb-[a-z0-9-]+-auth-token(?:\.\d+)?$/i.test(key)
  );
 
  authStorageKeys.forEach((key) => {
@@ -37,28 +37,32 @@ function cleanupLegacySupabaseStorage() {
  });
 }
 
-export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonKey, {
- cookieOptions: {
-   path: '/',
-   sameSite: 'lax',
-   secure: process.env.NODE_ENV === 'production',
- },
- auth: {
-   flowType:'pkce',
-   detectSessionInUrl: true,
-   persistSession: true,
-   autoRefreshToken: true,
- },
- realtime: {
- params: {
- eventsPerSecond: 2
-}
-},
- global: {
- headers: {
-'x-client-info':'irontrack-web'
-}
+export const createClient = () => {
+ if (typeof window !== 'undefined') {
+   cleanupLegacySupabaseStorage();
  }
-});
 
-cleanupLegacySupabaseStorage();
+ return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+   cookieOptions: {
+     path: '/',
+     sameSite: 'lax',
+     secure: process.env.NODE_ENV === 'production',
+   },
+   auth: {
+     flowType:'pkce',
+     detectSessionInUrl: true,
+     persistSession: true,
+     autoRefreshToken: true,
+   },
+   realtime: {
+   params: {
+   eventsPerSecond: 2
+  }
+  },
+   global: {
+   headers: {
+  'x-client-info':'irontrack-web'
+  }
+   }
+ });
+};
