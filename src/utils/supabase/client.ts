@@ -10,51 +10,59 @@ if (!supabaseUrl || !supabaseAnonKey) {
  )
 }
 
-// Guard against double-stringified localStorage values (corrupted session tokens)
-const safeStorage = {
- getItem: (key: string): string | null => {
-   if (typeof window === 'undefined') return null;
+function cleanupLegacySupabaseStorage() {
+ if (typeof window === 'undefined') return;
+
+ const authStorageKeys = Object.keys(localStorage).filter((key) =>
+   /^sb-[a-z0-9-]+-auth-token(?:\.\d+)?$/i.test(key)
+ );
+
+ authStorageKeys.forEach((key) => {
    try {
      const raw = localStorage.getItem(key);
-     if (!raw) return null;
-     // Detect double-encoded JSON: parse returns a string instead of object
-     const parsed = JSON.parse(raw);
-     if (typeof parsed === 'string') {
-       // Self-heal: re-store the unwrapped value
-       localStorage.setItem(key, parsed);
-       return parsed;
-     }
-     return raw;
-   } catch {
-     // Corrupted value — remove it so Supabase re-authenticates cleanly
-     try { localStorage.removeItem(key); } catch { /* ignore */ }
-     return null;
-   }
- },
- setItem: (key: string, value: string): void => {
-   if (typeof window !== 'undefined') localStorage.setItem(key, value);
- },
- removeItem: (key: string): void => {
-   if (typeof window !== 'undefined') localStorage.removeItem(key);
- },
-};
+     if (!raw) return;
 
-export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonKey, {
- auth: {
-   flowType:'pkce',
-   detectSessionInUrl: true,
-   persistSession: true,
-   autoRefreshToken: true,
-   storage: safeStorage,
- },
- realtime: {
- params: {
- eventsPerSecond: 2
+     const parsed = JSON.parse(raw);
+
+     if (typeof parsed === 'string') {
+       localStorage.setItem(key, parsed);
+     }
+   } catch {
+     try {
+       localStorage.removeItem(key);
+     } catch {
+       // Ignore localStorage cleanup failures and let Supabase recover gracefully.
+     }
+   }
+ });
 }
-},
- global: {
- headers: {
-'x-client-info':'irontrack-web'
-}
-}
-}); 
+
+export const createClient = () => {
+ if (typeof window !== 'undefined') {
+   cleanupLegacySupabaseStorage();
+ }
+
+ return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+   cookieOptions: {
+     path: '/',
+     sameSite: 'lax',
+     secure: process.env.NODE_ENV === 'production',
+   },
+   auth: {
+     flowType:'pkce',
+     detectSessionInUrl: true,
+     persistSession: true,
+     autoRefreshToken: true,
+   },
+   realtime: {
+   params: {
+   eventsPerSecond: 2
+  }
+  },
+   global: {
+   headers: {
+  'x-client-info':'irontrack-web'
+  }
+   }
+ });
+};
