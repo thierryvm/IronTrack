@@ -1,7 +1,6 @@
 'use client';
 
 import { useState} from'react';
-import { motion} from'framer-motion';
 import { Eye, EyeOff, Mail, Lock, AlertTriangle, CheckCircle} from'lucide-react';
 import { useInAppBrowserAuth} from'@/hooks/useInAppBrowserAuth';
 import { Button} from'@/components/ui/button';
@@ -75,19 +74,13 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
 };
 
  return (
- <motion.div
- initial={{ opacity: 0, y: 20}}
- animate={{ opacity: 1, y: 0}}
- className="w-full"
- >
+ <div className="w-full">
  <div className="bg-transparent p-0">
  {/* Titre supprimé - déjà en haut de la page */}
 
  {/* Messages d'état glassmorphism */}
  {error && (
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
+ <div
  role="alert"
  aria-live="polite"
  className="bg-red-500/20 border border-red-400/30 rounded-xl p-4 mb-4 backdrop-blur-md"
@@ -96,25 +89,21 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  <AlertTriangle className="w-5 h-5 text-red-200 flex-shrink-0 mt-1" aria-hidden="true" />
  <p id="email-error" className="text-red-700 text-sm font-medium">{error}</p>
  </div>
- </motion.div>
+ </div>
  )}
 
  {success && (
- <motion.div
- initial={{ opacity: 0, scale: 0.95}}
- animate={{ opacity: 1, scale: 1}}
- className="bg-green-500/20 border border-green-400/30 rounded-xl p-4 mb-4 backdrop-blur-md"
- >
+ <div className="bg-green-500/20 border border-green-400/30 rounded-xl p-4 mb-4 backdrop-blur-md">
  <div className="flex items-start gap-2">
  <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0 mt-1" />
  <p className="text-green-700 text-sm">{success}</p>
  </div>
- </motion.div>
+ </div>
  )}
 
 
  {/* Formulaire */}
- <form onSubmit={handleSubmit} className="space-y-6">
+ <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
  {/* Email */}
  <div>
  <AuthLabel htmlFor="email">
@@ -149,7 +138,7 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  type={showPassword ?'text' :'password'}
  value={password}
  onChange={(e) => setPassword(e.target.value)}
- className="w-full pl-12 pr-12 h-12 rounded-xl bg-slate-100/50 backdrop-blur-xl border border-slate-200 text-foreground shadow-sm placeholder:text-muted-foreground focus:bg-card dark:bg-card/10 focus:border-primary/50 dark:border-primary/50 focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all"
+ className="auth-input w-full h-11 rounded-xl border border-white/10 bg-[#16181f] pl-12 pr-12 text-foreground shadow-sm transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:bg-[#1b1e27] focus:outline-none focus:ring-4 focus:ring-primary/10 sm:h-12"
  placeholder={isSignUp ?'Un mot de passe sécurisé (min. 8 caractères)' :'Ton mot de passe'}
  required
  autoComplete={isSignUp ?'new-password' :'current-password'}
@@ -188,10 +177,10 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  type={showConfirmPassword ?'text' :'password'}
  value={confirmPassword}
  onChange={(e) => setConfirmPassword(e.target.value)}
- className={`w-full pl-12 pr-12 h-12 rounded-xl backdrop-blur-xl shadow-sm border transition-all focus:outline-none ${
+ className={`auth-input w-full h-11 rounded-xl border pl-12 pr-12 shadow-sm transition-all focus:outline-none sm:h-12 ${
  confirmPassword && password !== confirmPassword
- ?'bg-red-50/50 border-red-300 text-red-900 placeholder:text-red-300'
- :'bg-slate-100/50 border-slate-200 text-foreground placeholder:text-muted-foreground focus:bg-card dark:bg-card/10 focus:border-primary/50 dark:border-primary/50 focus:ring-4 focus:ring-primary/10'
+ ?'border-red-500/50 bg-red-950/20 text-foreground placeholder:text-red-300/70 focus:border-red-500/60 focus:ring-red-500/10'
+ :'border-white/10 bg-[#16181f] text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:bg-[#1b1e27] focus:ring-4 focus:ring-primary/10'
 }`}
  placeholder="Répète ton mot de passe"
  required
@@ -220,7 +209,7 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  <Button
  type="submit"
  disabled={isLoading || (isSignUp && password !== confirmPassword)}
- className="w-full h-12 bg-primary hover:bg-primary-hover text-white font-bold tracking-wide shadow-md transition-all rounded-xl text-base"
+ className="h-11 w-full rounded-xl bg-[var(--brand-700)] text-base font-bold tracking-wide text-white shadow-md transition-[transform,opacity,background-color] hover:bg-[var(--brand-800)] sm:h-12"
  >
  {isLoading ? (
  <div className="flex items-center gap-2">
@@ -234,7 +223,7 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  </form>
 
  {/* Navigation entre les modes */}
- <div className="mt-6 space-y-2 text-center text-sm">
+ <div className="mt-5 space-y-1.5 text-center text-sm sm:mt-6 sm:space-y-2">
  {showForgotPassword ? (
  <Button
  variant="ghost"
@@ -266,6 +255,6 @@ export default function EmailAuthForm({ showGoogleOption}: EmailAuthFormProps) {
  )}
  </div>
  </div>
- </motion.div>
+ </div>
  );
 }

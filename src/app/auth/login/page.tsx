@@ -1,26 +1,24 @@
 'use client'
 
-import { useEffect} from'react'
-import { useRouter} from'next/navigation'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-/**
- * Page de redirection pour /auth/login
- * Évite les erreurs 404 en redirigeant vers /auth
- */
 export default function LoginPage() {
- const router = useRouter()
+  const router = useRouter()
 
- useEffect(() => {
- // Redirection immédiate vers la page auth principale
- router.replace('/auth')
-}, [router])
+  useEffect(() => {
+    router.replace('/auth')
+  }, [router])
 
- return (
- <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
- <div className="text-center">
- <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
- <p className="text-gray-600">Redirection...</p>
- </div>
- </div>
- )
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+      <div className="rounded-3xl border border-border bg-card px-6 py-6 text-center shadow-lg">
+        <div
+          aria-hidden="true"
+          className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground"
+        />
+        <p className="text-sm font-medium text-foreground">Redirection vers la connexion…</p>
+      </div>
+    </div>
+  )
 }

@@ -1,20 +1,21 @@
 import type { Metadata } from 'next'
+import { createPageMetadata } from '../metadata'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://iron-track-dusky.vercel.app'
-
-export const metadata: Metadata = {
-  title: 'Support & Aide | IronTrack',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Support & Aide',
   description:
-    'Centre d\'aide IronTrack : guide de démarrage, gestion des partenaires d\'entraînement, suivi nutritionnel, timer de session, et contact support. Trouvez l\'aide dont vous avez besoin.',
-  alternates: { canonical: `${APP_URL}/support` },
-  openGraph: {
-    title: 'Support IronTrack — Centre d\'aide',
-    description:
-      'Guide complet pour utiliser IronTrack : séances, exercices, nutrition, partenaires d\'entraînement et fonctionnalités avancées.',
-    url: `${APP_URL}/support`,
-    type: 'website',
-  },
-}
+    "Centre d'aide IronTrack : démarrage, partenaires d'entraînement, nutrition, séances, progression et support produit.",
+  path: '/support',
+  keywords: [
+    'support irontrack',
+    'aide application fitness',
+    'guide musculation et nutrition',
+    'documentation irontrack',
+  ],
+  openGraphTitle: "Support IronTrack - Centre d'aide",
+  openGraphDescription:
+    "Guide complet pour utiliser IronTrack et retrouver rapidement les réponses utiles sur les séances, la nutrition et les partenaires.",
+})
 
 export default function SupportLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
