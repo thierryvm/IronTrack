@@ -11,6 +11,7 @@ import { Button} from'@/components/ui/button'
 import { Input} from'@/components/ui/input'
 import { Label} from'@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from'@/components/ui/dialog'
+import { useAuth } from '@/hooks/useAuth'
 import dynamic from'next/dynamic'
 import { ExerciseCard2025} from'@/components/exercises/ExerciseCard2025'
 
@@ -143,18 +144,14 @@ function ExerciseLoadingSkeleton() {
 // Composant principal optimisé
 export default function ExercisesPageOptimized() {
  const router = useRouter();
+ const { isAuthenticated, isLoading: isAuthLoading } = useAuth()
  
- // OPTIMISATION: Check auth uniquement au montage
  useEffect(() => {
- const checkAuth = async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) {
+ if (isAuthLoading) return;
+ if (!isAuthenticated) {
  router.replace('/auth');
 }
-};
- checkAuth();
-}, [router]);
+}, [isAuthenticated, isAuthLoading, router]);
 
  const [exercises, setExercises] = useState<Exercise[]>([])
  const [searchTerm, setSearchTerm] = useState('')
@@ -169,6 +166,7 @@ export default function ExercisesPageOptimized() {
 
  // OPTIMISATION: Fonction de chargement avec une seule requête groupée
  const loadExercises = useCallback(async () => {
+ if (isAuthLoading || !isAuthenticated) return;
  setLoading(true)
  
  try {
@@ -180,13 +178,14 @@ export default function ExercisesPageOptimized() {
 } finally {
  setLoading(false);
 }
-}, [page]);
+}, [isAuthenticated, isAuthLoading, page]);
 
  // OPTIMISATION: Charger équipements en lazy
  useEffect(() => {
+ if (isAuthLoading || !isAuthenticated) return;
  loadExercises()
  
-}, [loadExercises]);
+}, [isAuthenticated, isAuthLoading, loadExercises]);
 
  // Fonction utilitaire pour normaliser (enlever accents et mettre en minuscule)
  function normalize(str: string | null | undefined): string {

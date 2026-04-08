@@ -4,6 +4,7 @@ import Link from'next/link'
 import { motion} from'framer-motion'
 import { Plus, Eye, Edit, X, Filter, Clock, Calendar, CheckCircle, Target, Users, Activity, Waves, Zap, Flower, Smile, Dumbbell} from'lucide-react'
 import { useRouter} from'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { createClient} from'@/utils/supabase/client'
 
 // MIGRATION SHADCN/UI
@@ -149,6 +150,7 @@ const getCorrectType = (workout: Workout): string => {
 
 export default function WorkoutsPage() {
  const router = useRouter();
+ const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
  const [workouts, setWorkouts] = useState<Workout[]>([])
  const [loading, setLoading] = useState(true)
  const [page, setPage] = useState(1);
@@ -158,9 +160,8 @@ export default function WorkoutsPage() {
 
  const loadWorkouts = useCallback(async () => {
  setLoading(true);
+ if (isAuthLoading || !isAuthenticated || !user) return;
  const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) return;
 
  const query = supabase
  .from('workouts')
@@ -208,19 +209,16 @@ export default function WorkoutsPage() {
  setTotalCount(filteredWorkouts.length);
 }
  setLoading(false);
-}, [page, filterStatus]);
+}, [filterStatus, isAuthenticated, isAuthLoading, page, user]);
 
  useEffect(() => {
- const checkAuth = async () => {
- const supabase = createClient();
- const { data: { user}} = await supabase.auth.getUser();
- if (!user) {
+ if (isAuthLoading) return;
+ if (!isAuthenticated || !user) {
  router.replace('/auth');
-}
-};
- checkAuth();
+ return;
+ }
  loadWorkouts();
-}, [page, router, loadWorkouts]);
+}, [isAuthenticated, isAuthLoading, loadWorkouts, router, user]);
 
  // Fonction pour changer le statut d'une séance
  const changeWorkoutStatus = async (workoutId: string, newStatus: string) => {
