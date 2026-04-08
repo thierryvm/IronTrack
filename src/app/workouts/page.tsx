@@ -151,6 +151,7 @@ const getCorrectType = (workout: Workout): string => {
 export default function WorkoutsPage() {
  const router = useRouter();
  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
+ const userId = user?.id
  const [workouts, setWorkouts] = useState<Workout[]>([])
  const [loading, setLoading] = useState(true)
  const [page, setPage] = useState(1);
@@ -159,14 +160,14 @@ export default function WorkoutsPage() {
  const [filterStatus, setFilterStatus] = useState<string>('all')
 
  const loadWorkouts = useCallback(async () => {
+ if (isAuthLoading || !isAuthenticated || !userId) return;
  setLoading(true);
- if (isAuthLoading || !isAuthenticated || !user) return;
  const supabase = createClient();
 
  const query = supabase
  .from('workouts')
  .select('*', { count:'exact'})
- .eq('user_id', user.id);
+ .eq('user_id', userId);
 
  // Ne pas appliquer de filtres ici - on filtrera côté client après auto-marquage
 
@@ -209,16 +210,16 @@ export default function WorkoutsPage() {
  setTotalCount(filteredWorkouts.length);
 }
  setLoading(false);
-}, [filterStatus, isAuthenticated, isAuthLoading, page, user]);
+}, [filterStatus, isAuthenticated, isAuthLoading, page, userId]);
 
  useEffect(() => {
  if (isAuthLoading) return;
- if (!isAuthenticated || !user) {
+ if (!isAuthenticated || !userId) {
  router.replace('/auth');
  return;
  }
  loadWorkouts();
-}, [isAuthenticated, isAuthLoading, loadWorkouts, router, user]);
+}, [isAuthenticated, isAuthLoading, loadWorkouts, router, userId]);
 
  // Fonction pour changer le statut d'une séance
  const changeWorkoutStatus = async (workoutId: string, newStatus: string) => {
