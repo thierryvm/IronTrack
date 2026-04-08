@@ -28,6 +28,7 @@ import ActionButton from '@/components/ui/action-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/utils/supabase/client'
 
 interface TrainingPartnerRow {
@@ -37,6 +38,8 @@ interface TrainingPartnerRow {
 
 export default function CalendarPage() {
   const router = useRouter()
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
+  const userId = user?.id
   const [currentDate, setCurrentDate] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
   const [workouts, setWorkouts] = useState<Workout[]>([])
@@ -126,29 +129,28 @@ export default function CalendarPage() {
     let isCancelled = false
 
     async function bootstrap() {
+      if (isAuthLoading) {
+        return
+      }
+
+      if (!isAuthenticated || !userId) {
+        router.replace('/auth')
+        return
+      }
+
       setIsLoading(true)
       setLoadError(null)
 
       try {
-        const supabase = createClient()
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
-
-        if (!user) {
-          router.replace('/auth')
-          return
-        }
-
         if (isCancelled) {
           return
         }
 
-        setCurrentUserId(user.id)
+        setCurrentUserId(userId)
 
         const [personalWorkouts, sharedWorkouts] = await Promise.all([
-          fetchPersonalWorkouts(user.id),
-          fetchPartnerWorkouts(user.id),
+          fetchPersonalWorkouts(userId),
+          fetchPartnerWorkouts(userId),
         ])
 
         if (isCancelled) {
@@ -173,7 +175,7 @@ export default function CalendarPage() {
     return () => {
       isCancelled = true
     }
-  }, [fetchPartnerWorkouts, fetchPersonalWorkouts, router])
+  }, [fetchPartnerWorkouts, fetchPersonalWorkouts, isAuthenticated, isAuthLoading, router, userId])
 
   useEffect(() => {
     if (!currentUserId) {
