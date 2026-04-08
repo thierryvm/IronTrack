@@ -4,6 +4,7 @@
 @source "../lib";
 @source "../hooks";
 @import "tw-animate-css";
+@import "./theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -34,6 +35,10 @@ body {
   body {
     /* Navigation mobile : 60px hauteur réelle + safe area iPhone */
     padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.auth-screen-active {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   }
 }
 
@@ -72,148 +77,6 @@ img, video, svg, canvas {
   .safe-right {
     padding-right: max(1rem, env(safe-area-inset-right));
   }
-}
-
-:root {
-  /* ===== FORGED IRON — DARK ONLY ===== */
-
-  /* === ESPACEMENTS === */
-  --spacing-xs: 0.25rem;   /* 4px */
-  --spacing-sm: 0.5rem;    /* 8px */
-  --spacing-md: 1rem;      /* 16px */
-  --spacing-lg: 1.5rem;    /* 24px */
-  --spacing-xl: 2rem;      /* 32px */
-  --spacing-2xl: 3rem;     /* 48px */
-
-  /* === BRAND PALETTE — FORGED IRON === */
-  --brand-500: #FF6B00;
-  --brand-600: #E55F00;
-  --brand-700: #BF5200;
-  --brand-800: #9a3412;
-  --brand-900: #7c2d12;
-
-  /* === SURFACES === */
-  --surface-dark: #0A0A0B;
-  --surface-dark-alt: #111111;
-
-  /* === ÉTATS SYSTÈME === */
-  --success-50: #ecfdf5;
-  --success-500: #10b981;
-  --success-600: #059669;
-  --warning-50: #fffbeb;
-  --warning-500: #f59e0b;
-  --warning-600: #d97706;
-  --danger-50: #fef2f2;
-  --danger-500: #ef4444;
-  --danger-600: #dc2626;
-
-  /* === RÉFÉRENCES TEXTES & BORDURES === */
-  --text-primary-dark: #F5F5F5;
-  --text-secondary-dark: #8E8E93;
-  --border-dark: rgba(255, 255, 255, 0.10);
-
-  /* === RAYON === */
-  --radius: 1rem;
-
-  /* ===== TOKENS DE THÈME ===== */
-
-  /* Fond */
-  --background: #0A0A0B;
-  --background-alt: #111111;
-  --foreground: #F5F5F5;
-  --foreground-secondary: #8E8E93;
-
-  /* Cartes */
-  --card: #141414;
-  --card-foreground: #F5F5F5;
-  --popover: #1C1C1E;
-  --popover-foreground: #F5F5F5;
-
-  /* Primary — Orange Forged Iron */
-  --primary: #FF6B00;
-  --primary-hover: #E55F00;
-  --primary-foreground: #FFFFFF;
-
-  /* Secondary — Surface neutre */
-  --secondary: #1C1C1E;
-  --secondary-hover: #262628;
-  --secondary-foreground: #F5F5F5;
-
-  /* Tertiary — Blue info */
-  --tertiary: #049EFF;
-  --tertiary-hover: #0385D4;
-  --tertiary-foreground: #FFFFFF;
-
-  /* Muted */
-  --muted: rgba(255, 255, 255, 0.05);
-  --muted-foreground: #8E8E93;
-
-  /* Accent */
-  --accent: rgba(255, 107, 0, 0.08);
-  --accent-hover: rgba(255, 107, 0, 0.14);
-  --accent-foreground: #FF6B00;
-
-  /* Bordures & Inputs */
-  --border: rgba(255, 255, 255, 0.10);
-  --border-color: rgba(255, 255, 255, 0.10);
-  --input: #1C1C1E;
-  --ring: #FF6B00;
-
-  /* États sémantiques */
-  --destructive: #ef4444;
-  --destructive-hover: #dc2626;
-  --destructive-foreground: #ffffff;
-  --success: #10b981;
-  --success-hover: #059669;
-  --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-hover: #d97706;
-  --warning-foreground: #0A0A0B;
-
-  /* Charts */
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-
-  /* Sidebar */
-  --sidebar: #111111;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #FF6B00;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1C1C1E;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: rgba(255, 255, 255, 0.10);
-  --sidebar-ring: #FF6B00;
-
-  /* Header */
-  --header-bg: var(--card);
-}
-
-/* Classes utilitaires CSS pour usage facile */
-.bg-theme-surface {
-  background-color: var(--background);
-}
-
-.bg-theme-surface-alt {
-  background-color: var(--background-alt);
-}
-
-.text-theme-primary {
-  color: var(--foreground);
-}
-
-.text-theme-secondary {
-  color: var(--foreground-secondary);
-}
-
-.border-theme {
-  border-color: var(--border-color);
-}
-
-body {
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 /* Optimisations tactiles Android/Samsung */
@@ -425,104 +288,63 @@ input[type="submit"] {
   }
 }
 
-@theme inline {
-  --spacing-touch-44: 44px;
-  --spacing-touch-48: 48px;
-  --spacing-touch-56: 56px;
+/* Theme tokens now live in src/app/theme.css.
+   Keep globals.css focused on behavior, safe areas, and cross-page quirks. */
 
-  /* Spacing tokens retirés car ils écrasent les échelles par défaut (ex: max-w-2xl) */
-
-  --breakpoint-xs: 375px;
-  --breakpoint-2xs: 320px;
-  --breakpoint-3xl: 1600px;
-  --breakpoint-4xl: 1920px;
-
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
-  --radius-4xl: 2.5rem;
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-hover: var(--secondary-hover);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-tertiary: var(--tertiary);
-  --color-tertiary-hover: var(--tertiary-hover);
-  --color-tertiary-foreground: var(--tertiary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-hover: var(--destructive-hover);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-success: var(--success);
-  --color-success-hover: var(--success-hover);
-  --color-success-foreground: var(--success-foreground);
-  --color-warning: var(--warning);
-  --color-warning-hover: var(--warning-hover);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+/* S'assurer que tous les éléments héritent correctement */
+input,
+textarea {
+  color: inherit !important;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-    /* Force l'application des variables de thème oklch - SAUF pour page auth */
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-  
-  /* S'assurer que tous les éléments héritent correctement */
-  input, textarea {
-    color: inherit !important;
-  }
+/* select: fond et texte explicites pour dark mode */
+select {
+  color: inherit;
+  background-color: var(--background);
+}
 
-  /* select: fond et texte explicites pour dark mode */
-  select {
-    color: inherit;
-    background-color: var(--background);
-  }
-  
-  /* Styles adaptatifs pour les éléments de formulaire */
-  input::placeholder, textarea::placeholder {
-    color: var(--muted-foreground) !important;
-  }
-  
+/* Styles adaptatifs pour les éléments de formulaire */
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+.auth-input {
+  color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  color-scheme: dark;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--input) inset;
+  caret-color: var(--foreground);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--foreground) !important;
+  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
+  box-shadow: 0 0 0 1000px #16181f inset !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  caret-color: var(--foreground) !important;
+  background-color: #16181f !important;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.auth-input:is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  box-shadow: 0 0 0 1000px #16181f inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
 }
 
 /* OPTIMISATIONS TOUCH EVENTS - Performance mobile */

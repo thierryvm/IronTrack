@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect} from'react';
-import { detectBrowserInfo, redirectToSystemBrowser, copyCurrentUrlToClipboard, getPlatformSpecificInstructions, type BrowserInfo} from'@/utils/browserDetection';
+import { useState, useEffect } from 'react';
+import { AlertTriangle, Check, Copy, ExternalLink, Mail, Smartphone, X } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { detectBrowserInfo, redirectToSystemBrowser, copyCurrentUrlToClipboard, getPlatformSpecificInstructions, type BrowserInfo } from '@/utils/browserDetection';
 
 interface InAppBrowserWarningProps {
  onClose?: () => void;
@@ -47,24 +50,27 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
 
  return (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
- <div className="bg-card border border-border rounded-xl max-w-md w-full mx-4 shadow-2xl border border-border">
+ <div className="bg-card border border-border rounded-xl max-w-md w-full mx-4 shadow-2xl">
  {/* Header */}
  <div className="flex items-center justify-between p-6 border-b border-border">
  <div className="flex items-center gap-2">
- <div className="text-2xl">{instructions.icon}</div>
+ <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+ <Smartphone className="h-5 w-5" aria-hidden="true" />
+ </div>
  <h2 className="text-lg font-semibold text-foreground">
  Problème de connexion Google
  </h2>
  </div>
- <button
+ <Button
+ type="button"
  onClick={handleClose}
- className="text-gray-700 hover:text-foreground transition-colors"
  aria-label="Fermer"
+ variant="ghost"
+ size="icon"
+ className="text-gray-700 hover:text-foreground"
  >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
- </svg>
- </button>
+ <X className="h-5 w-5" aria-hidden="true" />
+ </Button>
  </div>
 
  {/* Content */}
@@ -105,22 +111,25 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
  {/* Actions */}
  <div className="space-y-2 pt-4">
  {browserInfo.canRedirectToSystemBrowser && (
- <button
+ <Button
+ type="button"
  onClick={handleRedirectToBrowser}
- className="w-full bg-secondary hover:bg-secondary-hover text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+ className="w-full"
  >
- 🚀 Ouvrir dans le navigateur
- </button>
+ <ExternalLink className="h-4 w-4" aria-hidden="true" />
+ Ouvrir dans le navigateur
+ </Button>
  )}
  
- <button
+ <Button
+ type="button"
  onClick={handleCopyUrl}
- className={`w-full border border-border hover:bg-muted text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
- copySuccess ?'bg-green-50 border-green-300 text-green-700' :''
-}`}
+ variant="outline"
+ className={`w-full ${copySuccess ? 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100' : ''}`}
  >
- {copySuccess ?'✅ Lien copié !' :'📋 Copier le lien'}
- </button>
+ {copySuccess ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+ {copySuccess ? 'Lien copié' : 'Copier le lien'}
+ </Button>
  </div>
 
  {/* Alternative auth */}
@@ -130,12 +139,15 @@ export default function InAppBrowserWarning({ onClose, showAlternativeAuth = tru
  Ou connectez-vous autrement :
  </p>
  <div className="text-center">
- <button
+ <Button
+ type="button"
  onClick={handleClose}
- className="text-secondary hover:text-secondary-hover font-medium text-sm transition-colors"
+ variant="ghost"
+ className="text-secondary hover:text-secondary-hover font-medium text-sm"
  >
+ <Mail className="h-4 w-4" aria-hidden="true" />
  Utiliser email et mot de passe
- </button>
+ </Button>
  </div>
  </div>
  )}
