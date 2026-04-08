@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { useAuth } from '@/hooks/useAuth'
 
 import { NutritionLayout, NutritionLayoutContainer, NutritionLayoutCard, NutritionLayoutGrid, NutritionLayoutScreenLoader, NutritionLayoutBlockLoader, NutritionLayoutFooterText } from '@/components/layout/NutritionLayout'
 import { NutritionHeader } from '@/components/nutrition/NutritionHeader'
@@ -40,6 +41,7 @@ interface Meal {
 
 export default function NutritionPage() {
   const router = useRouter()
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [meals, setMeals] = useState<Meal[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -119,25 +121,24 @@ export default function NutritionPage() {
   }
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const supabaseClient = createClient()
-      const { data: { user } } = await supabaseClient.auth.getUser()
-      if (!user) {
+    if (isAuthLoading) {
+      return
+    }
+
+    if (!isAuthenticated || !user) {
         router.replace('/auth')
         return
-      }
-      setUserId(user.id)
-      setLoading(false)
     }
-    checkAuth()
-  }, [router])
+
+    setUserId(user.id)
+    setLoading(false)
+  }, [isAuthenticated, isAuthLoading, router, user])
 
   useEffect(() => {
-    if (userId) {
-      loadMeals()
-      loadWeeklyMeals()
-    }
-  }, [userId, selectedDate, loadMeals, loadWeeklyMeals])
+    if (isAuthLoading || !isAuthenticated || !userId) return
+    loadMeals()
+    loadWeeklyMeals()
+  }, [isAuthenticated, isAuthLoading, loadMeals, loadWeeklyMeals, selectedDate, userId])
 
   const todayNutrition = useMemo(() => {
     return meals.reduce(
