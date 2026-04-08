@@ -39,6 +39,7 @@ interface TrainingPartnerRow {
 export default function CalendarPage() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
+  const userId = user?.id
   const [currentDate, setCurrentDate] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
   const [workouts, setWorkouts] = useState<Workout[]>([])
@@ -132,7 +133,7 @@ export default function CalendarPage() {
         return
       }
 
-      if (!isAuthenticated || !user) {
+      if (!isAuthenticated || !userId) {
         router.replace('/auth')
         return
       }
@@ -145,11 +146,11 @@ export default function CalendarPage() {
           return
         }
 
-        setCurrentUserId(user.id)
+        setCurrentUserId(userId)
 
         const [personalWorkouts, sharedWorkouts] = await Promise.all([
-          fetchPersonalWorkouts(user.id),
-          fetchPartnerWorkouts(user.id),
+          fetchPersonalWorkouts(userId),
+          fetchPartnerWorkouts(userId),
         ])
 
         if (isCancelled) {
@@ -174,7 +175,7 @@ export default function CalendarPage() {
     return () => {
       isCancelled = true
     }
-  }, [fetchPartnerWorkouts, fetchPersonalWorkouts, isAuthenticated, isAuthLoading, router, user])
+  }, [fetchPartnerWorkouts, fetchPersonalWorkouts, isAuthenticated, isAuthLoading, router, userId])
 
   useEffect(() => {
     if (!currentUserId) {
