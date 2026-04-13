@@ -3,7 +3,24 @@
  * Vérifie que les fonctionnalités essentielles marchent
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+const AUTH_FORM_SELECTOR = 'input[type="email"], input[name="email"]';
+const LOCAL_SMOKE_MAX_LOAD_MS = 10_000;
+
+async function getNavigationState(page: Page): Promise<'auth' | 'shell'> {
+  const redirectedToAuth = await page
+    .waitForURL(/\/auth(?:[/?#]|$)/, { timeout: 1_500 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (redirectedToAuth) {
+    await expect(page.locator(AUTH_FORM_SELECTOR).first()).toBeVisible();
+    return 'auth';
+  }
+
+  return 'shell';
+}
 
 test.describe('Tests smoke IronTrack', () => {
   
@@ -16,10 +33,9 @@ test.describe('Tests smoke IronTrack', () => {
     await expect(page.locator('main:visible').first()).toBeVisible();
     
     // IronTrack redirige vers /auth si non connecté - c'est normal
-    const currentUrl = page.url();
-    if (currentUrl.includes('/auth')) {
+    const navigationState = await getNavigationState(page);
+    if (navigationState === 'auth') {
       console.log('📍 Redirection vers authentification (comportement attendu)');
-      await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
     } else {
       // Si connecté, vérifier navigation
       await expect(
@@ -32,10 +48,8 @@ test.describe('Tests smoke IronTrack', () => {
 
   test('Navigation responsive fonctionne', async ({ page, isMobile }) => {
     await page.goto('/');
-    const currentUrl = page.url();
 
-    if (currentUrl.includes('/auth')) {
-      await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
+    if ((await getNavigationState(page)) === 'auth') {
       console.log(`✅ Navigation ${isMobile ? 'mobile' : 'desktop'} redirige correctement vers auth`);
       return;
     }
@@ -86,7 +100,7 @@ test.describe('Tests smoke IronTrack', () => {
   test('Formulaires critiques sont accessibles', async ({ page }) => {
     // Test formulaire connexion
     await page.goto('/auth');
-    await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
+    await expect(page.locator(AUTH_FORM_SELECTOR).first()).toBeVisible();
     
     console.log('✅ Formulaires critiques accessibles');
   });
@@ -101,7 +115,7 @@ test.describe('Tests smoke IronTrack', () => {
     
     // Smoke local sur serveur dev: on valide une réactivité raisonnable,
     // pas une mesure perf stricte type Lighthouse.
-    expect(loadTime).toBeLessThan(10000);
+    expect(loadTime).toBeLessThan(LOCAL_SMOKE_MAX_LOAD_MS);
     
     console.log('✅ Performance acceptable');
   });
