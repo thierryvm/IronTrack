@@ -9,6 +9,7 @@ import {
   isWorkoutPlanned,
   normalizeWorkoutType,
   type Workout,
+  type WorkoutStatus,
   WORKOUT_TYPES,
 } from '@/components/calendar/calendar-utils'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -59,16 +60,28 @@ export default function WorkoutsPage() {
 
     if (data) {
       const today = new Date().toISOString().split('T')[0]
-      const processedWorkouts = data.map((workout) => {
-        if (workout.scheduled_date < today && workout.status === 'Planifié') {
-          void supabase.from('workouts').update({ status: 'Réalisé' }).eq('id', workout.id)
-          return { ...workout, status: 'Réalisé' }
+      const staleWorkoutIds = data
+        .filter((workout) => workout.scheduled_date < today && workout.status === 'Planifié')
+        .map((workout) => workout.id)
+
+      let processedWorkouts = data as Workout[]
+
+      if (staleWorkoutIds.length > 0) {
+        const { error: staleUpdateError } = await supabase
+          .from('workouts')
+          .update({ status: 'Réalisé' })
+          .in('id', staleWorkoutIds)
+
+        if (staleUpdateError) {
+          console.error('Unable to sync stale workouts status', staleUpdateError)
+        } else {
+          processedWorkouts = data.map((workout) =>
+            staleWorkoutIds.includes(workout.id) ? { ...workout, status: 'Réalisé' } : workout,
+          ) as Workout[]
         }
+      }
 
-        return workout
-      })
-
-      setWorkouts(processedWorkouts as Workout[])
+      setWorkouts(processedWorkouts)
     }
 
     setLoading(false)
@@ -164,7 +177,7 @@ export default function WorkoutsPage() {
     [filteredWorkouts],
   )
 
-  const changeWorkoutStatus = async (workoutId: string, newStatus: string) => {
+  const changeWorkoutStatus = async (workoutId: string, newStatus: WorkoutStatus) => {
     const supabase = createClient()
 
     await supabase.from('workouts').update({ status: newStatus }).eq('id', workoutId)

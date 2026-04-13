@@ -16,6 +16,7 @@ import {
   getWorkoutTypeMeta,
   isWorkoutCompleted,
   isWorkoutPlanned,
+  type WorkoutStatus,
   type WorkoutType,
 } from '@/components/calendar/calendar-utils'
 
@@ -39,7 +40,7 @@ export function getWorkoutPresentation(type: WorkoutType) {
   }
 }
 
-export function getWorkoutStatusPresentation(status: string) {
+export function getWorkoutStatusPresentation(status: WorkoutStatus) {
   if (isWorkoutCompleted(status)) {
     return {
       label: 'Terminée',

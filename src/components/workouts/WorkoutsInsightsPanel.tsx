@@ -24,16 +24,16 @@ interface WorkoutsInsightsPanelProps {
 function WorkoutSummaryCard({
   title,
   workout,
+  emptyMessage,
 }: {
   title: string
   workout: Workout | null
+  emptyMessage: string
 }) {
   if (!workout) {
     return (
       <div className="rounded-[18px] border border-dashed border-border bg-background/35 px-4 py-5 text-sm text-muted-foreground">
-        {title === 'Prochaine séance'
-          ? 'Aucune séance planifiée à venir pour le moment.'
-          : 'Aucune séance terminée récente à afficher.'}
+        {emptyMessage}
       </div>
     )
   }
@@ -132,7 +132,11 @@ export default function WorkoutsInsightsPanel({
             Prochaine séance
           </p>
           <div className="mt-3">
-            <WorkoutSummaryCard title="Prochaine séance" workout={nextPlannedWorkout} />
+            <WorkoutSummaryCard
+              title="Prochaine séance"
+              workout={nextPlannedWorkout}
+              emptyMessage="Aucune séance planifiée à venir pour le moment."
+            />
           </div>
         </section>
 
@@ -141,7 +145,11 @@ export default function WorkoutsInsightsPanel({
             Dernière validée
           </p>
           <div className="mt-3">
-            <WorkoutSummaryCard title="Dernière validée" workout={latestCompletedWorkout} />
+            <WorkoutSummaryCard
+              title="Dernière validée"
+              workout={latestCompletedWorkout}
+              emptyMessage="Aucune séance terminée récente à afficher."
+            />
           </div>
         </section>
 
