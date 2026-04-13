@@ -1,464 +1,300 @@
 "use client"
-import { useEffect, useState, useCallback} from'react'
-import Link from'next/link'
-import { motion} from'framer-motion'
-import { Plus, Eye, Edit, X, Filter, Clock, Calendar, CheckCircle, Target, Users, Activity, Waves, Zap, Flower, Smile, Dumbbell} from'lucide-react'
-import { useRouter} from'next/navigation'
+
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+import {
+  formatMonthLabel,
+  isWorkoutCompleted,
+  isWorkoutPlanned,
+  normalizeWorkoutType,
+  type Workout,
+  WORKOUT_TYPES,
+} from '@/components/calendar/calendar-utils'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import ActionButton from '@/components/ui/action-button'
+import { Card } from '@/components/ui/card'
+import WorkoutCard from '@/components/workouts/WorkoutCard'
+import WorkoutDetailsDialog from '@/components/workouts/WorkoutDetailsDialog'
+import WorkoutsFilters, { type WorkoutFilterStatus } from '@/components/workouts/WorkoutsFilters'
+import WorkoutsHero from '@/components/workouts/WorkoutsHero'
+import WorkoutsInsightsPanel from '@/components/workouts/WorkoutsInsightsPanel'
 import { useAuth } from '@/hooks/useAuth'
-import { createClient} from'@/utils/supabase/client'
+import { createClient } from '@/utils/supabase/client'
 
-// MIGRATION SHADCN/UI
-import { Button} from'@/components/ui/button'
-import { Card, CardContent} from'@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from'@/components/ui/dialog'
-import { Badge} from'@/components/ui/badge'
-// PERFORMANCE CRITICAL: Images optimisées WebP/AVIF
-// import { OptimizedAvatar, OptimizedImage} from'@/components/PerformanceImageOptimizer'
-
-interface Workout {
- id: string
- name: string
- scheduled_date: string
- notes: string | null
- status?: string
- type?: string
- duration?: number
- start_time?: string
- created_at?: string
-}
-
-interface WorkoutModalProps {
- workout: Workout | null
- isOpen: boolean
- onClose: () => void
- onStatusChange: (workoutId: string, newStatus: string) => void
-}
-
-const workoutTypes = [
- { name:'Musculation', color:'bg-primary', icon: Dumbbell},
- { name:'Cardio', color:'bg-secondary', icon: Clock},
- { name:'Étirement', color:'bg-green-500', icon: Target},
- { name:'Cours collectif', color:'bg-purple-500', icon: Users},
- { name:'Gainage', color:'bg-yellow-500', icon: Activity},
- { name:'Natation', color:'bg-cyan-500', icon: Waves},
- { name:'Crossfit', color:'bg-red-500', icon: Zap},
- { name:'Yoga', color:'bg-pink-500', icon: Flower},
- { name:'Pilates', color:'bg-indigo-500', icon: Smile},
- { name:'Repos', color:'bg-gray-500', icon: CheckCircle}
-]
-
-function WorkoutModal({ workout, isOpen, onClose, onStatusChange}: WorkoutModalProps) {
- if (!workout) return null
-
- const workoutType = workoutTypes.find(t => t.name === workout.type) || workoutTypes[0]
- const Icon = workoutType.icon
- const isCompleted = workout.status ==='Réalisé' || workout.status ==='Terminé'
-
- return (
- <Dialog open={isOpen} onOpenChange={onClose}>
- <DialogContent className="max-w-md">
- <DialogHeader>
- <DialogTitle className="flex items-center space-x-2">
- <div className={`p-2 rounded-lg ${workoutType.color}`}>
- <Icon className="h-5 w-5 text-white" />
- </div>
- <span>{workout.name}</span>
- </DialogTitle>
- <DialogDescription className="sr-only">Détails de la séance d'entraînement</DialogDescription>
- </DialogHeader>
-
- <div className="space-y-4">
- <div className="flex items-center space-x-2">
- <Calendar className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">
- {new Date(workout.scheduled_date).toLocaleDateString('fr-FR', {
- weekday:'long',
- year:'numeric',
- month:'long',
- day:'numeric'
-})}
- </span>
- </div>
-
- {workout.start_time && (
- <div className="flex items-center space-x-2">
- <Clock className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">{workout.start_time}</span>
- </div>
- )}
-
- {workout.duration && (
- <div className="flex items-center space-x-2">
- <Target className="h-6 w-6 text-gray-600" />
- <span className="text-sm text-gray-600">{workout.duration} minutes</span>
- </div>
- )}
-
- <div className="flex items-center space-x-2">
- <Badge variant={isCompleted ?"default" :"secondary"} className={isCompleted ?"bg-green-100 text-green-800 hover:bg-green-200" :"bg-tertiary/12 text-tertiary hover:bg-tertiary/20"}>
- {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
- </Badge>
- </div>
-
- {workout.notes && (
- <Card>
- <CardContent className="pt-4">
- <p className="text-sm text-gray-700">{workout.notes}</p>
- </CardContent>
- </Card>
- )}
- </div>
-
- <div className="flex space-x-2 mt-6">
- {!isCompleted && (
- <Button
- onClick={() => {
- onStatusChange(workout.id,'Réalisé')
- onClose()
-}}
- variant="orange"
- >
- ✅ Marquer comme réalisé
- </Button>
- )}
- <Button asChild variant="secondary" size="sm" className="flex-1">
- <Link href={`/workouts/${workout.id}/edit`}>
- ✏️ Modifier
- </Link>
- </Button>
- </div>
- </DialogContent>
- </Dialog>
- )
-}
-
-const PAGE_SIZE = 10;
-
-const getCorrectType = (workout: Workout): string => {
- const name = workout.name.toLowerCase();
- if (name.includes('cardio')) return'Cardio';
- if (name.includes('étirement') || name.includes('etirement') || name.includes('stretch')) return'Étirement';
- if (name.includes('cours') || name.includes('collectif') || name.includes('group')) return'Cours collectif';
- if (name.includes('gainage') || name.includes('core') || name.includes('abs')) return'Gainage';
- if (name.includes('natation') || name.includes('piscine') || name.includes('swim')) return'Natation';
- if (name.includes('crossfit') || name.includes('cross fit') || name.includes('wod')) return'Crossfit';
- if (name.includes('yoga')) return'Yoga';
- if (name.includes('pilates')) return'Pilates';
- if (name.includes('repos') || name.includes('rest')) return'Repos';
- return workout.type ||'Musculation';
-};
+const PAGE_SIZE = 8
 
 export default function WorkoutsPage() {
- const router = useRouter();
- const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
- const userId = user?.id
- const [workouts, setWorkouts] = useState<Workout[]>([])
- const [loading, setLoading] = useState(true)
- const [page, setPage] = useState(1);
- const [totalCount, setTotalCount] = useState(0);
- const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null)
- const [filterStatus, setFilterStatus] = useState<string>('all')
+  const router = useRouter()
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth()
+  const userId = user?.id
 
- const loadWorkouts = useCallback(async () => {
- if (isAuthLoading || !isAuthenticated || !userId) return;
- setLoading(true);
- const supabase = createClient();
+  const [workouts, setWorkouts] = useState<Workout[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null)
+  const [filterStatus, setFilterStatus] = useState<WorkoutFilterStatus>('all')
 
- const query = supabase
- .from('workouts')
- .select('*', { count:'exact'})
- .eq('user_id', userId);
+  const loadWorkouts = useCallback(async () => {
+    if (isAuthLoading || !isAuthenticated || !userId) {
+      return
+    }
 
- // Ne pas appliquer de filtres ici - on filtrera côté client après auto-marquage
+    setLoading(true)
+    setLoadError(null)
 
- // Récupérer toutes les séances pour pouvoir filtrer côté client
- const { data, error} = await query
- .order('scheduled_date', { ascending: false});
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('workouts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('scheduled_date', { ascending: false })
 
- if (!error && data) {
- // Auto-marquer les séances passées comme réalisées si elles sont encore"Planifié"
- const today = new Date().toISOString().split('T')[0];
- const processedWorkouts = data.map(workout => {
- if (workout.scheduled_date < today && workout.status ==='Planifié') {
- // Marquer automatiquement comme réalisé en arrière-plan
- supabase.from('workouts').update({ status:'Réalisé'}).eq('id', workout.id);
- return { ...workout, status:'Réalisé'};
+    if (error) {
+      setLoadError('Impossible de charger tes séances pour le moment.')
+      setLoading(false)
+      return
+    }
+
+    if (data) {
+      const today = new Date().toISOString().split('T')[0]
+      const processedWorkouts = data.map((workout) => {
+        if (workout.scheduled_date < today && workout.status === 'Planifié') {
+          void supabase.from('workouts').update({ status: 'Réalisé' }).eq('id', workout.id)
+          return { ...workout, status: 'Réalisé' }
+        }
+
+        return workout
+      })
+
+      setWorkouts(processedWorkouts as Workout[])
+    }
+
+    setLoading(false)
+  }, [isAuthenticated, isAuthLoading, userId])
+
+  useEffect(() => {
+    if (isAuthLoading) {
+      return
+    }
+
+    if (!isAuthenticated || !userId) {
+      router.replace('/auth')
+      return
+    }
+
+    void loadWorkouts()
+  }, [isAuthenticated, isAuthLoading, loadWorkouts, router, userId])
+
+  useEffect(() => {
+    setPage(1)
+  }, [filterStatus])
+
+  const filteredWorkouts = useMemo(() => {
+    return workouts.filter((workout) => {
+      if (filterStatus === 'completed') {
+        return isWorkoutCompleted(workout.status)
+      }
+
+      if (filterStatus === 'pending') {
+        return !isWorkoutCompleted(workout.status)
+      }
+
+      return true
+    })
+  }, [filterStatus, workouts])
+
+  const totalPages = Math.max(1, Math.ceil(filteredWorkouts.length / PAGE_SIZE))
+
+  useEffect(() => {
+    setPage((currentPage) => Math.min(currentPage, totalPages))
+  }, [totalPages])
+
+  const paginatedWorkouts = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE
+    return filteredWorkouts.slice(start, start + PAGE_SIZE)
+  }, [filteredWorkouts, page])
+
+  const totalCount = workouts.length
+
+  const plannedCount = useMemo(
+    () => workouts.filter((workout) => isWorkoutPlanned(workout.status)).length,
+    [workouts],
+  )
+
+  const completedCount = useMemo(
+    () => workouts.filter((workout) => isWorkoutCompleted(workout.status)).length,
+    [workouts],
+  )
+
+  const nextPlannedWorkout = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]
+
+    return (
+      [...workouts]
+        .filter((workout) => isWorkoutPlanned(workout.status))
+        .sort((left, right) =>
+          `${left.scheduled_date}${left.start_time || ''}`.localeCompare(
+            `${right.scheduled_date}${right.start_time || ''}`,
+          ),
+        )
+        .find((workout) => workout.scheduled_date >= today) || null
+    )
+  }, [workouts])
+
+  const latestCompletedWorkout = useMemo(() => {
+    return (
+      [...workouts]
+        .filter((workout) => isWorkoutCompleted(workout.status))
+        .sort((left, right) =>
+          `${right.scheduled_date}${right.start_time || ''}`.localeCompare(
+            `${left.scheduled_date}${left.start_time || ''}`,
+          ),
+        )[0] || null
+    )
+  }, [workouts])
+
+  const typeBreakdown = useMemo(
+    () =>
+      WORKOUT_TYPES.map((type) => ({
+        name: type,
+        count: filteredWorkouts.filter((workout) => normalizeWorkoutType(workout) === type).length,
+      })).filter((typeStat) => typeStat.count > 0),
+    [filteredWorkouts],
+  )
+
+  const changeWorkoutStatus = async (workoutId: string, newStatus: string) => {
+    const supabase = createClient()
+
+    await supabase.from('workouts').update({ status: newStatus }).eq('id', workoutId)
+
+    void loadWorkouts()
+  }
+
+  return (
+    <main className="min-h-screen bg-background">
+      <WorkoutDetailsDialog
+        workout={selectedWorkout}
+        open={!!selectedWorkout}
+        onClose={() => setSelectedWorkout(null)}
+        onMarkCompleted={(workoutId) => void changeWorkoutStatus(workoutId, 'Réalisé')}
+      />
+
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <WorkoutsHero
+          monthLabel={formatMonthLabel(new Date())}
+          totalCount={totalCount}
+          plannedCount={plannedCount}
+          completedCount={completedCount}
+          onCreateWorkout={() => router.push('/workouts/new')}
+        />
+
+        {loadError ? (
+          <Alert className="border-rose-500/20 bg-rose-500/8 text-rose-100">
+            <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span>{loadError}</span>
+              <ActionButton type="button" tone="secondary" onClick={() => void loadWorkouts()}>
+                Réessayer
+              </ActionButton>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
+        <WorkoutsFilters
+          filterStatus={filterStatus}
+          activeCount={filteredWorkouts.length}
+          totalCount={totalCount}
+          currentPage={page}
+          totalPages={totalPages}
+          onFilterChange={setFilterStatus}
+        />
+
+        {loading ? (
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px]">
+            <Card className="h-[540px] rounded-[28px] border-border bg-card/84">
+              <div className="h-full" />
+            </Card>
+            <Card className="h-[540px] rounded-[28px] border-border bg-card/84">
+              <div className="h-full" />
+            </Card>
+          </div>
+        ) : (
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px] xl:items-start">
+            <Card className="rounded-[28px] border-border bg-card/84 p-4 shadow-[0_20px_42px_rgba(0,0,0,0.18)] sm:p-5">
+              {paginatedWorkouts.length > 0 ? (
+                <div className="space-y-5">
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    {paginatedWorkouts.map((workout) => (
+                      <WorkoutCard
+                        key={workout.id}
+                        workout={workout}
+                        onOpenDetails={setSelectedWorkout}
+                        onMarkCompleted={(workoutId) => void changeWorkoutStatus(workoutId, 'Réalisé')}
+                      />
+                    ))}
+                  </div>
+
+                  {filteredWorkouts.length > PAGE_SIZE ? (
+                    <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-sm text-muted-foreground">
+                        {filteredWorkouts.length} séance{filteredWorkouts.length > 1 ? 's' : ''} dans cette vue
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <ActionButton
+                          type="button"
+                          tone="secondary"
+                          onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
+                          disabled={page === 1}
+                        >
+                          Précédent
+                        </ActionButton>
+                        <ActionButton
+                          type="button"
+                          tone="secondary"
+                          onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
+                          disabled={page >= totalPages}
+                        >
+                          Suivant
+                        </ActionButton>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="rounded-[24px] border border-dashed border-border bg-background/35 px-5 py-12 text-center">
+                  <div className="mx-auto max-w-md space-y-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      Vue vide
+                    </p>
+                    <h2 className="text-2xl font-semibold text-foreground">Aucune séance dans cette vue</h2>
+                    <p className="text-sm leading-7 text-muted-foreground">
+                      Change le filtre actif ou ajoute une nouvelle séance pour retrouver un planning exploitable.
+                    </p>
+                    <div className="flex justify-center">
+                      <ActionButton type="button" tone="primary" onClick={() => router.push('/workouts/new')}>
+                        Nouvelle séance
+                      </ActionButton>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            <div className="xl:sticky xl:top-6">
+              <WorkoutsInsightsPanel
+                monthLabel={formatMonthLabel(new Date())}
+                activeCount={filteredWorkouts.length}
+                nextPlannedWorkout={nextPlannedWorkout}
+                latestCompletedWorkout={latestCompletedWorkout}
+                typeBreakdown={typeBreakdown}
+                onCreateWorkout={() => router.push('/workouts/new')}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
- return workout;
-});
-
- // Appliquer les filtres côté client après processing
- const filteredWorkouts = processedWorkouts.filter(workout => {
- const isCompleted = workout.status ==='Réalisé' || workout.status ==='Terminé';
- 
- switch (filterStatus) {
- case'completed':
- return isCompleted;
- case'pending':
- return !isCompleted;
- default:
- return true; //'all'
-}
-});
-
- // Appliquer la pagination côté client
- const from = (page - 1) * PAGE_SIZE;
- const to = from + PAGE_SIZE;
- const paginatedWorkouts = filteredWorkouts.slice(from, to);
-
- setWorkouts(paginatedWorkouts);
- setTotalCount(filteredWorkouts.length);
-}
- setLoading(false);
-}, [filterStatus, isAuthenticated, isAuthLoading, page, userId]);
-
- useEffect(() => {
- if (isAuthLoading) return;
- if (!isAuthenticated || !userId) {
- router.replace('/auth');
- return;
- }
- loadWorkouts();
-}, [isAuthenticated, isAuthLoading, loadWorkouts, router, userId]);
-
- // Fonction pour changer le statut d'une séance
- const changeWorkoutStatus = async (workoutId: string, newStatus: string) => {
- const supabase = createClient();
- await supabase
- .from('workouts')
- .update({ status: newStatus})
- .eq('id', workoutId);
- loadWorkouts();
-}
-
- return (
- <div className="min-h-screen bg-background">
- <WorkoutModal 
- workout={selectedWorkout} 
- isOpen={!!selectedWorkout} 
- onClose={() => setSelectedWorkout(null)}
- onStatusChange={changeWorkoutStatus}
- />
- 
- <div className="bg-gradient-to-r from-orange-600 to-red-500 text-white py-8">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
- <div>
- <h1 className="text-3xl font-bold">Mes Séances</h1>
- <p className="text-white/90">Organise et suis tes entraînements</p>
- </div>
- <Button asChild variant="outline">
- <Link href="/workouts/new" className="flex items-center space-x-2">
- <Plus className="h-5 w-5" />
- <span>Nouvelle séance</span>
- </Link>
- </Button>
- </div>
- </div>
- </div>
-
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
- {/* Filtres */}
- <Card className="mb-6">
- <CardContent className="pt-6">
- <div className="flex flex-col sm:flex-row gap-4">
- <div className="flex items-center space-x-2">
- <Filter className="h-5 w-5 text-gray-600" />
- <span className="font-medium text-gray-700">Filtres :</span>
- </div>
- <div className="flex flex-wrap gap-2">
- {[
- { value:'all', label:'Toutes', icon:'📋'},
- { value:'pending', label:'À venir', icon:'⏳'},
- { value:'completed', label:'Terminées', icon:'✅'}
- ].map(filter => (
- <Button
- key={filter.value}
- onClick={() => setFilterStatus(filter.value)}
- variant={filterStatus === filter.value ?"default" :"secondary"}
- size="sm"
- className={filterStatus === filter.value ?"bg-primary hover:bg-primary-hover text-white" :"border-orange-200 text-orange-700 hover:bg-orange-50"}
- >
- {filter.icon} {filter.label}
- </Button>
- ))}
- </div>
- </div>
- </CardContent>
- </Card>
-
- {loading ? (
- <div className="text-center py-12">
- <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
- <p className="mt-4 text-gray-600">Chargement de tes séances...</p>
- </div>
- ) : (
- <>
- <div className="mb-4 flex justify-between items-center">
- <h2 className="text-xl font-bold text-foreground">
- {totalCount} séance{totalCount > 1 ?'s' :''} trouvée{totalCount > 1 ?'s' :''}
- </h2>
- </div>
-
- <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
- {workouts.map((workout, index) => {
- const workoutType = workoutTypes.find(t => t.name === getCorrectType(workout)) || workoutTypes[0];
- const Icon = workoutType.icon;
- const isCompleted = workout.status ==='Réalisé' || workout.status ==='Terminé';
- // Simplifié - plus besoin de isPast
-
- return (
- <motion.div
- key={workout.id}
- initial={{ opacity: 0, y: 20}}
- animate={{ opacity: 1, y: 0}}
- transition={{ delay: index * 0.05}}
- >
- <Card 
- className={`cursor-pointer border-l-4 hover:shadow-lg transition-all min-h-[260px] flex flex-col ${
- isCompleted ?'border-l-green-500' :'border-l-orange-600'
-}`}
- onClick={() => setSelectedWorkout(workout)}
- data-shadcn-card="true"
- >
- <CardContent className="p-6 flex flex-col h-full">
- {/* Section titre - fixe */}
- <div className="flex items-start justify-between mb-4">
- <div className="flex items-center space-x-2">
- <div className={`p-2 rounded-lg ${workoutType.color}`}>
- <Icon className="h-5 w-5 text-white" />
- </div>
- <div>
- <h3 className="font-semibold text-foreground text-lg">{workout.name}</h3>
- <p className="text-sm text-gray-600">{workoutType.name}</p>
- </div>
- </div>
- </div>
-
- {/* Section détails - variable avec hauteur minimum */}
- <div className="flex-1 flex flex-col justify-center space-y-2 mb-4">
- <div className="flex items-center space-x-2 text-sm text-gray-600">
- <Calendar className="h-4 w-4" />
- <span>{new Date(workout.scheduled_date).toLocaleDateString('fr-FR')}</span>
- </div>
- {workout.start_time && (
- <div className="flex items-center space-x-2 text-sm text-gray-600">
- <Clock className="h-4 w-4" />
- <span>{workout.start_time}</span>
- </div>
- )}
- <div className="flex items-center space-x-2 text-sm text-gray-600">
- <Target className="h-4 w-4" />
- <span>{workout.duration ? `${workout.duration} min` :'Durée libre'}</span>
- </div>
- </div>
-
- {/* Section actions - fixe en bas */}
- <div className="flex items-center justify-between mt-auto mb-4">
- <span className={`px-2 py-1 rounded-full text-xs font-medium ${
- isCompleted ?'bg-green-100 text-green-800' :'bg-tertiary/12 text-tertiary'
-}`}>
- {isCompleted ?'✅ Réalisé' :'⏳ Planifié'}
- </span>
-
- <div className="flex space-x-1">
- <Button
- onClick={(e) => {
- e.stopPropagation();
- setSelectedWorkout(workout);
-}}
- variant="ghost"
- size="sm"
- className="p-2 h-auto w-auto hover:bg-muted"
- title="Voir détails"
- aria-label="Voir les détails de la séance"
- >
- <Eye className="h-6 w-6" />
- </Button>
- <Button
- asChild
- variant="ghost"
- size="sm"
- className="p-2 h-auto w-auto hover:bg-accent"
- title="Modifier"
- aria-label="Modifier la séance"
- >
- <Link
- href={`/workouts/${workout.id}/edit`}
- onClick={(e) => e.stopPropagation()}
- >
- <Edit className="h-6 w-6" />
- </Link>
- </Button>
- </div>
- </div>
-
- {/* Zone réservée pour le bouton - hauteur fixe */}
- <div className="h-10 flex items-center">
- {!isCompleted && (
- <Button
- onClick={(e) => {
- e.stopPropagation();
- changeWorkoutStatus(workout.id,'Réalisé');
-}}
- variant="orange"
- className="w-full"
- size="sm"
- >
- ✅ Marquer comme réalisé
- </Button>
- )}
- </div>
- </CardContent>
- </Card>
- </motion.div>
- );
-})}
- </div>
-
- {workouts.length === 0 && (
- <div className="text-center py-12">
- <div className="text-6xl mb-4">🏋️</div>
- <h3 className="text-xl font-semibold text-foreground mb-2">Aucune séance trouvée</h3>
- <p className="text-gray-600 mb-6">Commence par créer ta première séance d'entraînement !</p>
- <Button asChild className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600">
- <Link href="/workouts/new">
- <Plus className="h-5 w-5" />
- <span>Créer une séance</span>
- </Link>
- </Button>
- </div>
- )}
-
- {/* Pagination */}
- {totalCount > PAGE_SIZE && (
- <div className="flex justify-center items-center gap-4 mt-8">
- <Button
- onClick={() => setPage((p) => Math.max(1, p - 1))}
- disabled={page === 1}
- variant={page === 1 ?"outline" :"default"}
- className={page === 1 ?"" :"bg-primary hover:bg-primary-hover text-white"}
- aria-label="Page précédente"
- >
- Précédent
- </Button>
- <span className="font-semibold text-foreground">
- Page {page} / {Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
- </span>
- <Button
- onClick={() => setPage((p) => p + 1)}
- disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
- variant={page >= Math.ceil(totalCount / PAGE_SIZE) ?"outline" :"default"}
- className={page >= Math.ceil(totalCount / PAGE_SIZE) ?"" :"bg-primary hover:bg-primary-hover text-white"}
- aria-label="Page suivante"
- >
- Suivant
- </Button>
- </div>
- )}
- </>
- )}
- </div>
- </div>
- )
-} 
