@@ -1,11 +1,13 @@
 import { createServerSupabaseClient} from'@/utils/supabase/server'
 import { redirect} from'next/navigation'
+import { connection } from 'next/server'
 import { ProfileClientWrapper} from'@/components/profile/ProfileClientWrapper'
 import type { UserProfile} from'@/types/user-profile'
 import type { UserStats} from'@/types/user-stats'
 import type { Achievement} from'@/types/achievement'
 
 export default async function ProfilePage() {
+ await connection()
  const supabase = createServerSupabaseClient()
  const { data: { user}, error: userError} = await supabase.auth.getUser()
  
