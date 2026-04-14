@@ -1,393 +1,200 @@
 @import "tailwindcss";
-@source "../components";
-@source "../styles";
-@source "../lib";
-@source "../hooks";
 @import "tw-animate-css";
-@import "./theme.css";
+
+/* =============================================================
+   IronTrack v2 — Design tokens (Tailwind v4 CSS-first @theme)
+   Source : docs/preview/tokens.css (Phase 0 validée)
+   ============================================================= */
 
 @custom-variant dark (&:is(.dark *));
 
-/* CORRECTIONS RESPONSIVE MOBILE */
-html {
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100%;
+@theme {
+  /* ---- Fonts ---- */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Courier New", monospace;
+
+  /* ---- Brand signature ---- */
+  --color-brand: #ff6b00;
+  --color-brand-hover: #e55f00;
+  --color-brand-deep: #bf5200;
+
+  /* ---- Accents ---- */
+  --color-acid: #d4ff3a;
+  --color-acid-deep: #9fc800;
+  --color-pulse: #ff3d3d;
+  --color-azure: #4da8ff;
+  --color-amber: #ffa94d;
+
+  /* ---- Paper (light base) ---- */
+  --color-paper: #f5f1ea;
+  --color-paper-2: #ede6d8;
+  --color-paper-3: #e5dcc8;
+  --color-ink: #0a0a0a;
+  --color-ink-2: #1f1f1f;
+  --color-ink-muted: #5b5b5b;
+  --color-rule: #d8cfb7;
+
+  /* ---- Iron (dark base) ---- */
+  --color-obsidian: #0a0a0a;
+  --color-obsidian-2: #141414;
+  --color-obsidian-3: #1c1c1c;
+  --color-obsidian-4: #242424;
+  --color-chalk: #f5f1ea;
+  --color-chalk-2: #d8d2c6;
+  --color-chalk-muted: #ada89c;
+  --color-rule-dark: #2a2a2a;
+
+  /* ---- Semantic (light default) ---- */
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-muted: var(--color-paper-2);
+  --color-muted-foreground: var(--color-ink-muted);
+  --color-card: var(--color-paper);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-paper);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-paper-2);
+  --color-secondary-foreground: var(--color-ink);
+  --color-accent: var(--color-paper-2);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-pulse);
+  --color-destructive-foreground: #ffffff;
+  --color-success: var(--color-acid-deep);
+  --color-success-foreground: var(--color-ink);
+  --color-border: var(--color-rule);
+  --color-input: var(--color-rule);
+  --color-ring: var(--color-brand);
+
+  /* ---- Radius ---- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  /* ---- Shadows ---- */
+  --shadow-1: 0 1px 2px rgba(10, 10, 10, 0.08);
+  --shadow-2: 0 6px 18px rgba(10, 10, 10, 0.12);
+  --shadow-3: 0 18px 48px rgba(10, 10, 10, 0.18);
+  --shadow-glow: 0 0 32px rgba(255, 107, 0, 0.28);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body {
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100%;
-  position: relative;
-  /* Padding en bas pour compenser la navigation mobile fixe */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-
-  /* OPTIMISATION TOUCH EVENTS - Réduire les violations non-passive */
-  touch-action: pan-y pinch-zoom;
-
-  /* Police Inter via CSS variable injectée par next/font */
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+/* Dark theme overrides */
+.dark {
+  --color-background: var(--color-obsidian);
+  --color-foreground: var(--color-chalk);
+  --color-muted: var(--color-obsidian-2);
+  --color-muted-foreground: var(--color-chalk-muted);
+  --color-card: var(--color-obsidian-2);
+  --color-card-foreground: var(--color-chalk);
+  --color-popover: var(--color-obsidian-2);
+  --color-popover-foreground: var(--color-chalk);
+  --color-secondary: var(--color-obsidian-3);
+  --color-secondary-foreground: var(--color-chalk);
+  --color-accent: var(--color-obsidian-3);
+  --color-accent-foreground: var(--color-chalk);
+  --color-border: var(--color-rule-dark);
+  --color-input: var(--color-rule-dark);
 }
 
-/* 🔧 CORRECTION: Espace pour navigation mobile en bas - uniquement sur mobile */
-@media (max-width: 768px) {
-  body {
-    /* Navigation mobile : 60px hauteur réelle + safe area iPhone */
-    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+/* =============================================================
+   Base
+   ============================================================= */
+@layer base {
+  * {
+    border-color: var(--color-border);
   }
-
-  body.auth-screen-active {
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-  }
-}
-
-/* Classe utilitaire pour les pages avec navigation mobile */
-.pb-mobile-nav {
-  padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px));
-}
-
-/* Empêcher débordement - SAUF containers Tailwind */
-* {
-  box-sizing: border-box;
-}
-
-/* Empêcher débordement seulement sur images et médias */
-img, video, svg, canvas {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Container responsive - Supprimé, on utilise les classes Tailwind */
-
-/* Safe areas iPhone */
-@supports (padding: max(0px)) {
-  .safe-top {
-    padding-top: max(1rem, env(safe-area-inset-top));
-  }
-
-  .safe-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-
-  .safe-left {
-    padding-left: max(1rem, env(safe-area-inset-left));
-  }
-
-  .safe-right {
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-}
-
-/* Optimisations tactiles Android/Samsung */
-.touch-manipulation {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Amélioration des délais tactiles pour Android */
-* {
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-
-/* Optimisation des éléments interactifs pour mobiles */
-button, 
-[role="button"], 
-input[type="button"], 
-input[type="submit"] {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-@keyframes avatar-pop {
-  0% { transform: scale(1) rotate(-2deg); filter: brightness(1.2) drop-shadow(0 0 8px #a855f7); }
-  60% { transform: scale(1.15) rotate(2deg); filter: brightness(1.4) drop-shadow(0 0 16px #a855f7); }
-  100% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 0 #a855f7); }
-}
-.animate-avatar-pop {
-  animation: avatar-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
-}
-@keyframes fade-in-out {
-  0% { opacity: 0; transform: translateY(10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
-}
-.animate-fade-in-out {
-  animation: fade-in-out 2.5s both;
-}
-@keyframes timer-bg {
-  0% { filter: brightness(1) saturate(1); }
-  100% { filter: brightness(1.1) saturate(1.2) hue-rotate(10deg); }
-}
-
-/* Animations pour le menu mobile */
-@keyframes slide-up {
-  0% { 
-    opacity: 0; 
-    transform: translateY(20px); 
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-.animate-timer-bg {
-  animation: timer-bg 8s linear infinite alternate;
-}
-@keyframes timer-glow {
-  0% { text-shadow: 0 0 0 #fff, 0 0 0 #facc15; }
-  60% { text-shadow: 0 0 32px #fff, 0 0 64px #facc15; }
-  100% { text-shadow: 0 0 16px #fff, 0 0 32px #facc15; }
-}
-.animate-timer-glow {
-  animation: timer-glow 1.2s ease-in-out;
-}
-@keyframes timer-step {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.animate-timer-step {
-  animation: timer-step 0.7s cubic-bezier(.68,-0.55,.27,1.55);
-}
-@keyframes timer-congrats {
-  0% { opacity: 0; transform: scale(0.8); }
-  60% { opacity: 1; transform: scale(1.1); }
-  100% { opacity: 1; transform: scale(1); }
-}
-.animate-timer-congrats {
-  animation: timer-congrats 1.2s cubic-bezier(.68,-0.55,.27,1.55);
-}
-
-/* Fallback flou modale IronBuddy */
-.modal-backdrop {
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px);
-}
-@supports not (backdrop-filter: blur(8px)) {
-  .modal-backdrop {
-    background: #000 !important;
-  }
-}
-
-/* ===== OPTIMISATIONS ÉCRANS MOBILES 2025 ===== */
-
-/* Support des safe areas pour écrans modernes */
-@supports (padding: max(0px)) {
-  .safe-area-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-  .safe-area-right {
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-}
-
-/* Formats d'écrans ultra-larges 2025 */
-/* iPhone 15 Pro Max: 430x932, Samsung S24 Ultra: 440x964, Xiaomi 14 Ultra: 446x972 */
-@media screen and (min-width: 430px) and (min-height: 896px) {
-  .fab-2025 {
-    bottom: max(1.5rem, env(safe-area-inset-bottom, 1rem)) !important;
-    right: max(1.5rem, env(safe-area-inset-right, 1rem)) !important;
-  }
-
-  .modal-2025 {
-    bottom: max(6rem, calc(env(safe-area-inset-bottom, 0px) + 6rem)) !important;
-    right: max(1.5rem, calc(env(safe-area-inset-right, 0px) + 1.5rem)) !important;
-    min-width: 340px !important;
-  }
-}
-
-/* Écrans pliables déployés (Samsung Galaxy Z Fold, Google Pixel Fold) */
-@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  .fab-2025 {
-    bottom: 2rem !important;
-    right: 2rem !important;
-    transform: scale(1.2) !important;
-  }
-
-  .modal-2025 {
-    bottom: 8rem !important;
-    right: 2rem !important;
-    min-width: 380px !important;
-    max-height: 65vh !important;
-  }
-}
-
-/* Mode paysage mobile (amélioration UX) */
-@media screen and (max-height: 500px) and (orientation: landscape) {
-  .fab-2025 {
-    bottom: 1rem !important;
-    right: 1rem !important;
-    transform: scale(0.9) !important;
-  }
-
-  .modal-2025 {
-    bottom: 1rem !important;
-    right: 1rem !important;
-    max-height: 70vh !important;
-    overflow-y: auto !important;
-  }
-}
-
-/* Écrans très haute densité (Retina HD+, AMOLED) */
-@media screen and (-webkit-min-device-pixel-ratio: 3), 
-       screen and (min-resolution: 3dppx) {
-  .fab-enhanced {
-    border-width: 3px !important;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
-  }
-
-  .text-sharp {
+  html {
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-}
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    font-feature-settings: "ss01", "ss02", "cv11";
+    background-image:
+      radial-gradient(1200px circle at 90% -10%, rgba(255, 107, 0, 0.15), transparent 55%),
+      radial-gradient(900px circle at -10% 110%, rgba(212, 255, 58, 0.10), transparent 55%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  .dark body {
+    background-image:
+      radial-gradient(1200px circle at 90% -10%, rgba(255, 107, 0, 0.25), transparent 55%),
+      radial-gradient(900px circle at -10% 110%, rgba(77, 168, 255, 0.10), transparent 55%);
+  }
 
-/* Animations optimisées pour écrans 120Hz+ */
-@media (prefers-reduced-motion: no-preference) {
-  .smooth-120hz {
-    will-change: transform, opacity;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Editorial typography primitives */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    font-variation-settings: "opsz" 96, "SOFT" 0;
+  }
+  .display-italic {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variation-settings: "opsz" 96, "SOFT" 20;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "zero" 1, "ss02" 1;
+    letter-spacing: -0.02em;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
   }
 }
 
-/* Support écrans avec encoche/Dynamic Island */
-@supports (padding-top: env(safe-area-inset-top)) {
-  .avoid-notch {
-    padding-top: max(1rem, env(safe-area-inset-top));
-  }
-
-  /* Header mobile iOS - éviter status bar */
-  .header-mobile-ios {
-    padding-top: max(12px, env(safe-area-inset-top)) !important;
-  }
-
-  /* iPhone 14+ avec Dynamic Island */
-  @media screen and (min-device-width: 390px) and (max-device-width: 430px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
-    .header-mobile-ios {
-      padding-top: max(18px, env(safe-area-inset-top)) !important;
-    }
-  }
+/* Grain overlay */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
 }
 
-/* Optimisation pour appareils avec bouton home virtuel */
-@media screen and (min-height: 812px) {
-  .avoid-home-indicator {
-    padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
-
-/* Theme tokens now live in src/app/theme.css.
-   Keep globals.css focused on behavior, safe areas, and cross-page quirks. */
-
-/* S'assurer que tous les éléments héritent correctement */
-input,
-textarea {
-  color: inherit !important;
-}
-
-/* select: fond et texte explicites pour dark mode */
-select {
-  color: inherit;
-  background-color: var(--background);
-}
-
-/* Styles adaptatifs pour les éléments de formulaire */
-input::placeholder,
-textarea::placeholder {
-  color: var(--muted-foreground) !important;
-}
-
-.auth-input {
-  color: var(--foreground) !important;
-  caret-color: var(--foreground);
-  color-scheme: dark;
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--foreground);
-  -webkit-box-shadow: 0 0 0 1000px var(--input) inset;
-  caret-color: var(--foreground);
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-.auth-input:-webkit-autofill,
-.auth-input:-webkit-autofill:hover,
-.auth-input:-webkit-autofill:focus,
-.auth-input:-webkit-autofill:active {
-  -webkit-text-fill-color: var(--foreground) !important;
-  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
-  box-shadow: 0 0 0 1000px #16181f inset !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  caret-color: var(--foreground) !important;
-  background-color: #16181f !important;
-  transition: background-color 99999s ease-out 0s;
-}
-
-.auth-input:is(:autofill, :-webkit-autofill) {
-  -webkit-text-fill-color: var(--foreground) !important;
-  caret-color: var(--foreground) !important;
-  box-shadow: 0 0 0 1000px #16181f inset !important;
-  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
-}
-
-/* OPTIMISATIONS TOUCH EVENTS - Performance mobile */
-.touch-optimized {
-  touch-action: manipulation;
-}
-
-.swipe-container {
-  touch-action: pan-x;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.calendar-swipe {
-  touch-action: pan-x;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Optimiser les NumberWheel pour éviter les event listeners non-passifs */
-.number-wheel {
-  touch-action: none; /* Nécessaire pour preventDefault() dans les gestures */
-}
-
-/* Optimiser les composants avec react-easy-crop */
-.crop-container {
-  touch-action: none;
-}
-
-/* Correction des icônes date/heure en thème sombre */
-@media (prefers-color-scheme: dark) {
-  input[type="date"]::-webkit-calendar-picker-indicator,
-  input[type="time"]::-webkit-calendar-picker-indicator,
-  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-  }
-}
-
-.dark input[type="date"]::-webkit-calendar-picker-indicator,
-.dark input[type="time"]::-webkit-calendar-picker-indicator,
-.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) !important;
-  cursor: pointer !important;
+.rise {
+  animation: rise 0.7s var(--ease-out) forwards;
 }

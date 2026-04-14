@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>01 — Home · IronTrack v2</title>
+<link rel="stylesheet" href="./tokens.css" />
+<style>
+  body { padding: 0 0 160px; }
+  .app {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 20px 20px 40px;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .topbar .greet-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--amber) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 500;
+    position: relative;
+  }
+  .avatar::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 10px; height: 10px;
+    background: var(--acid);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  /* Hero greeting */
+  .hero-greet {
+    margin-bottom: 32px;
+  }
+  .hero-greet h1 {
+    font-family: var(--font-display);
+    font-size: 54px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    margin: 0;
+  }
+  .hero-greet h1 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--brand);
+  }
+  .hero-greet .date {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+  }
+
+  /* Track line */
+  .track {
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--fg) 0 14px, transparent 14px 26px);
+    opacity: 0.15;
+    margin: 28px 0;
+  }
+
+  /* Section title */
+  .sec-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .sec-title h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .sec-title a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  /* Next session — hero card */
+  .next-session {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--r-xl);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .next-session::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 260px; height: 260px;
+    background: var(--brand);
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .next-session .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-2);
+  }
+  .next-session .tag::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--acid);
+  }
+  .next-session h3 {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin: 12px 0 0;
+    color: #FFFFFF;
+  }
+  .next-session h3 em { font-style: italic; color: var(--brand); font-weight: 400; }
+  .next-session .exo-line {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: -0.02em;
+  }
+  .next-session .exo-line:last-of-type { border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .next-session .exo-line .reps { color: var(--chalk-2); font-weight: 500; }
+  .next-session .cta {
+    margin-top: 20px;
+    width: 100%;
+    background: var(--brand);
+    color: #fff;
+    padding: 16px;
+    border-radius: var(--r-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    font-family: var(--font-body);
+  }
+  .next-session .cta svg { width: 18px; height: 18px; }
+
+  /* Weekly load */
+  .load-card {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 22px;
+    background: var(--bg);
+  }
+  .load-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+  }
+  .load-header .big {
+    font-family: var(--font-display);
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    color: var(--brand);
+  }
+  .load-header .unit {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+  }
+  .load-header .delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--acid);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    height: 80px;
+    align-items: end;
+  }
+  .bars .bar {
+    border-radius: 4px;
+    background: var(--fg);
+    opacity: 0.15;
+    position: relative;
+    transform-origin: bottom;
+    animation: grow 1.2s var(--ease-out) both;
+  }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .bars .bar.active { background: var(--brand); opacity: 1; }
+  .bars .bar.today { background: var(--fg); opacity: 1; }
+  .bars-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--fg-muted);
+    text-align: center;
+  }
+  .bars-labels span.today { color: var(--brand); font-weight: 700; }
+
+  /* PR celebration */
+  .pr-card {
+    background: var(--acid);
+    color: var(--ink);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pr-card::after {
+    content: 'PR';
+    position: absolute;
+    right: -20px; top: -30px;
+    font-family: var(--font-display);
+    font-size: 180px;
+    font-style: italic;
+    font-weight: 300;
+    opacity: 0.18;
+    line-height: 1;
+  }
+  .pr-card { transition: transform 240ms var(--ease), box-shadow 240ms var(--ease); cursor: pointer; }
+  .pr-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(212, 255, 58, 0.35); }
+  .pr-card .big-num {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .pr-card .big-num .unit { font-size: 20px; margin-left: 4px; font-family: var(--font-mono); }
+  .pr-card .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .pr-card .when {
+    margin-top: 16px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+  }
+
+  /* Quick actions row */
+  .quick-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .quick {
+    aspect-ratio: 1 / 1.15;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease),
+                border-color 200ms var(--ease), background 200ms var(--ease);
+  }
+  .quick:hover {
+    transform: translateY(-3px);
+    border-color: var(--fg);
+    box-shadow: var(--shadow-2);
+  }
+  .quick:active { transform: translateY(-1px); }
+  .quick svg { width: 24px; height: 24px; color: var(--brand); }
+  .quick.accent-acid { background: var(--acid); border-color: transparent; }
+  .quick.accent-acid svg { color: var(--ink); }
+  .quick.accent-azure {
+    background: linear-gradient(135deg, #4DA8FF 0%, #1E40AF 100%);
+    border-color: transparent;
+    color: #fff;
+  }
+  .quick.accent-azure svg { color: #fff; }
+  .quick .label {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-top: auto;
+  }
+
+  /* Nutrition glance */
+  .nutri-card {
+    margin-top: 24px;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border: 1px solid var(--border);
+  }
+  .nutri-ring { flex-shrink: 0; }
+  .nutri-info { flex: 1; }
+  .nutri-info h4 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+    color: var(--fg-muted);
+  }
+  .nutri-info .title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .nutri-bars { display: flex; flex-direction: column; gap: 8px; }
+  .nutri-bar-row { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; }
+  .nutri-bar-row .name { width: 40px; color: var(--fg-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .nutri-bar-row .bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .nutri-bar-row .fill { height: 100%; border-radius: 2px; }
+  .nutri-bar-row .val { width: 50px; text-align: right; }
+
+  /* Buddy FAB */
+  .buddy {
+    position: fixed;
+    right: 24px;
+    bottom: 96px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-3);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 28px;
+    animation: pulseRing 2.4s infinite;
+    z-index: 120;
+  }
+</style>
+</head>
+<body class="grain">
+
+<main class="app">
+
+  <div class="topbar rise rise-1">
+    <div>
+      <span class="greet-tag">Mardi · 14 avril 2026</span>
+    </div>
+    <div class="avatar">T</div>
+  </div>
+
+  <div class="hero-greet rise rise-2">
+    <h1><span data-i18n="home.hello">Bonjour</span> <span class="ital" data-i18n="home.name">Thierry,</span><br/><span data-i18n="home.push">on pousse.</span></h1>
+    <div class="date" data-i18n="home.week">Semaine 15 · Jour 3 · Streak 7</div>
+  </div>
+
+  <div class="track rise rise-3"></div>
+
+  <!-- NEXT SESSION -->
+  <div class="next-session rise rise-3">
+    <span class="tag">Prochaine séance · 18:30</span>
+    <h3>Pull <em>heavy</em>,<br/>Push <em>clean.</em></h3>
+
+    <div class="exo-line">
+      <span>Tractions lestées</span>
+      <span class="reps">4 × 6 · +10 kg</span>
+    </div>
+    <div class="exo-line">
+      <span>Rowing barre</span>
+      <span class="reps">4 × 8 · 72,5 kg</span>
+    </div>
+    <div class="exo-line">
+      <span>Développé militaire</span>
+      <span class="reps">3 × 10 · 45 kg</span>
+    </div>
+    <div class="exo-line">
+      <span>Rameur finisher</span>
+      <span class="reps">1 500 m · 2:08 / 500</span>
+    </div>
+
+    <button class="cta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+      Commencer la séance
+    </button>
+  </div>
+
+  <!-- WEEKLY LOAD -->
+  <div class="sec-title rise rise-4">
+    <h2>Charge de la semaine</h2>
+    <a href="./03-progress.html">Détails →</a>
+  </div>
+
+  <div class="load-card rise rise-4">
+    <div class="load-header">
+      <div>
+        <div class="big mono">412</div>
+        <div class="unit">Training load · 7j</div>
+      </div>
+      <span class="delta">+12% ↑</span>
+    </div>
+
+    <div class="bars">
+      <div class="bar" style="height: 40%;"></div>
+      <div class="bar active" style="height: 75%;"></div>
+      <div class="bar" style="height: 20%;"></div>
+      <div class="bar active" style="height: 85%;"></div>
+      <div class="bar" style="height: 10%;"></div>
+      <div class="bar active" style="height: 62%;"></div>
+      <div class="bar today" style="height: 35%; animation: pulseRing 1.8s infinite;"></div>
+    </div>
+    <div class="bars-labels">
+      <span>Lun</span>
+      <span>Mar</span>
+      <span>Mer</span>
+      <span>Jeu</span>
+      <span>Ven</span>
+      <span>Sam</span>
+      <span class="today">AUJ</span>
+    </div>
+  </div>
+
+  <!-- PR -->
+  <div class="pr-card rise rise-5">
+    <div class="big-num">142,5<span class="unit">kg</span></div>
+    <div class="label">Nouveau record · Soulevé de terre</div>
+    <div class="when">il y a 3 jours · +5 kg sur le précédent</div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="sec-title rise rise-5" style="margin-top: 32px;">
+    <h2>Raccourcis</h2>
+  </div>
+  <div class="quick-row rise rise-5">
+    <button class="quick">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
+      <span class="label">Séance libre</span>
+    </button>
+    <button class="quick accent-acid">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+      <span class="label">Cardio<br/>rapide</span>
+    </button>
+    <button class="quick accent-azure">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/></svg>
+      <span class="label">Log<br/>repas</span>
+    </button>
+  </div>
+
+  <!-- NUTRITION GLANCE -->
+  <div class="nutri-card rise rise-6">
+    <div class="nutri-ring">
+      <svg viewBox="0 0 80 80" width="80" height="80">
+        <circle cx="40" cy="40" r="34" class="ring-track" stroke-width="8"></circle>
+        <circle cx="40" cy="40" r="34" class="ring-fill" stroke="var(--brand)" stroke-width="8"
+          stroke-dasharray="213.6" stroke-dashoffset="85" />
+        <text x="40" y="38" text-anchor="middle" class="display" font-size="20" fill="var(--fg)">1840</text>
+        <text x="40" y="52" text-anchor="middle" class="mono" font-size="7" fill="var(--fg-muted)" letter-spacing="1.5">/ 2600 KCAL</text>
+      </svg>
+    </div>
+    <div class="nutri-info">
+      <h4>Aujourd'hui</h4>
+      <div class="title">Macros du jour</div>
+      <div class="nutri-bars">
+        <div class="nutri-bar-row">
+          <span class="name">Prot</span>
+          <div class="bar"><div class="fill" style="width: 72%; background: var(--brand);"></div></div>
+          <span class="val">128g</span>
+        </div>
+        <div class="nutri-bar-row">
+          <span class="name">Gluc</span>
+          <div class="bar"><div class="fill" style="width: 55%; background: var(--azure);"></div></div>
+          <span class="val">180g</span>
+        </div>
+        <div class="nutri-bar-row">
+          <span class="name">Lip</span>
+          <div class="bar"><div class="fill" style="width: 65%; background: var(--amber);"></div></div>
+          <span class="val">58g</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="track" style="margin-top: 40px;"></div>
+  <div style="text-align: center; font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 22px; color: var(--fg-muted); margin-top: 20px;">
+    "The iron never lies."
+  </div>
+
+</main>
+
+<button class="buddy">B</button>
+
+<nav class="mock-nav">
+  <a href="./index.html" data-i18n="nav.index">Index</a>
+  <span class="sep"></span>
+  <a href="./00-design-tokens.html" data-i18n="nav.system">00 System</a>
+  <a href="./01-home.html" class="active" data-i18n="nav.home">01 Home</a>
+  <a href="./02-workout-live.html" data-i18n="nav.live">02 Live</a>
+  <a href="./03-progress.html" data-i18n="nav.data">03 Data</a>
+  <a href="./04-nutrition.html" data-i18n="nav.fuel">04 Fuel</a>
+  <a href="./05-profile.html" data-i18n="nav.profile">05 Profile</a>
+  <span class="sep"></span>
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')" aria-label="Toggle theme">◐</button>
+</nav>
+
+<script src="./i18n.js" defer></script>
+
+</body>
+</html>

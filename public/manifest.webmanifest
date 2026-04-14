@@ -1,0 +1,16 @@
+{
+  "name": "IronTrack",
+  "short_name": "IronTrack",
+  "description": "Train heavier, live lighter. Une app fitness précise, éditoriale, brutaliste.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0A",
+  "theme_color": "#FF6B00",
+  "lang": "fr-BE",
+  "dir": "ltr",
+  "categories": ["fitness", "health", "lifestyle"],
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" }
+  ]
+}

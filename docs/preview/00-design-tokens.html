@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>00 — Design System · IronTrack v2</title>
+<link rel="stylesheet" href="./tokens.css" />
+<style>
+  body { padding: 48px 0 160px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+  .masthead h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(48px, 8vw, 92px);
+    letter-spacing: -0.025em;
+    line-height: 0.95;
+    margin: 0;
+  }
+  .masthead h1 em { font-style: italic; font-weight: 300; color: var(--brand); }
+
+  section { margin-top: 64px; }
+  .sec-head {
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+    margin-bottom: 24px;
+  }
+  .sec-head .n {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--brand);
+    letter-spacing: 0.2em;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* Palette */
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 880px) { .palette { grid-template-columns: repeat(3, 1fr); } }
+  .swatch {
+    aspect-ratio: 1 / 1.25;
+    border-radius: var(--r-md);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(10, 10, 10, 0.14);
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
+  }
+  .swatch:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(10, 10, 10, 0.18);
+  }
+  .swatch .name { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .swatch .hex { font-family: var(--font-mono); font-size: 11px; font-weight: 500; opacity: 0.82; }
+  /* Paper/Chalk swatches blend into body — force a visible outline */
+  .swatch.paper, .swatch.paper-2, .swatch.paper-3,
+  .swatch.chalk, .swatch.chalk-2 {
+    border: 1.5px solid rgba(10, 10, 10, 0.22);
+  }
+  html.dark .swatch.paper, html.dark .swatch.paper-2, html.dark .swatch.paper-3,
+  html.dark .swatch.chalk, html.dark .swatch.chalk-2 {
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+  }
+  .swatch.brand { background: var(--brand); color: #fff; border-color: transparent; }
+  .swatch.brand-hover { background: var(--brand-hover); color: #fff; border-color: transparent; }
+  .swatch.brand-deep { background: var(--brand-deep); color: #fff; border-color: transparent; }
+  .swatch.acid { background: var(--acid); color: var(--ink); border-color: transparent; }
+  .swatch.pulse { background: var(--pulse); color: #fff; border-color: transparent; }
+  .swatch.azure { background: var(--azure); color: #fff; border-color: transparent; }
+  .swatch.ink { background: var(--ink); color: var(--paper); border-color: transparent; }
+  .swatch.ink-2 { background: var(--ink-2); color: var(--paper); border-color: transparent; }
+  .swatch.ink-muted { background: var(--ink-muted); color: #fff; border-color: transparent; }
+  .swatch.paper { background: var(--paper); color: var(--ink); }
+  .swatch.paper-2 { background: var(--paper-2); color: var(--ink); }
+  .swatch.paper-3 { background: var(--paper-3); color: var(--ink); }
+  .swatch.obsidian { background: var(--obsidian); color: var(--chalk); border-color: transparent; }
+  .swatch.obsidian-2 { background: var(--obsidian-2); color: var(--chalk); border-color: transparent; }
+  .swatch.obsidian-3 { background: var(--obsidian-3); color: var(--chalk); border-color: transparent; }
+  .swatch.chalk { background: var(--chalk); color: var(--ink); }
+  .swatch.chalk-2 { background: var(--chalk-2); color: var(--ink); }
+  .swatch.chalk-muted { background: var(--chalk-muted); color: #fff; border-color: transparent; }
+
+  /* Typography */
+  .typo-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .typo-row .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    padding-top: 14px;
+  }
+  .typo-row .sample { line-height: 1; }
+  .typo-row .spec {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Components grid */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 880px) { .comp-grid { grid-template-columns: 1fr; } }
+  .comp-card {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+  }
+  .comp-card h4 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    color: var(--fg-muted);
+  }
+  .comp-card .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+
+  /* Spacing & radius */
+  .scale-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (max-width: 880px) { .scale-row { grid-template-columns: repeat(4, 1fr); } }
+  .scale-item {
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .scale-item .box { background: var(--brand); }
+
+  /* Iconography */
+  .icons-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 720px) { .icons-grid { grid-template-columns: repeat(5, 1fr); } }
+  .icon-tile {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg);
+  }
+  .icon-tile svg { width: 22px; height: 22px; }
+
+  /* Principles */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 880px) { .principles { grid-template-columns: 1fr; } }
+  .principle {
+    padding: 24px;
+    border-top: 3px solid var(--fg);
+    transition: transform 240ms var(--ease);
+  }
+  .principle:hover { transform: translateY(-3px); }
+  .principle .big {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 500;
+    color: var(--brand);
+    font-style: italic;
+    line-height: 1;
+  }
+  .principle h4 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin: 16px 0 8px; }
+  .principle p { color: var(--fg-2); font-size: 14px; line-height: 1.55; margin: 0; }
+
+</style>
+</head>
+<body class="grain">
+
+<main class="wrap">
+
+  <div class="masthead rise rise-1">
+    <div>
+      <span class="eyebrow">00 · Foundations</span>
+      <h1>Design <em>system.</em></h1>
+    </div>
+    <span class="pill">v2026.04</span>
+  </div>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section class="rise rise-2">
+    <div class="sec-head"><span class="n">A.</span><h2>Principes</h2></div>
+    <div class="principles">
+      <div class="principle">
+        <div class="big">01</div>
+        <h4>Serif pour l'humain</h4>
+        <p>Les verbes et les émotions méritent Fraunces. Les chiffres et les sets méritent Manrope. Ne pas mélanger les rôles.</p>
+      </div>
+      <div class="principle">
+        <div class="big">02</div>
+        <h4>Orange = action</h4>
+        <p>Le #FF6B00 n'est jamais décoratif. Uniquement les CTA et la signature. Un orange par écran, jamais deux.</p>
+      </div>
+      <div class="principle">
+        <div class="big">03</div>
+        <h4>Densité éditoriale</h4>
+        <p>Whoop pour la data, Strava pour la lecture, Hevy pour l'efficacité. Grain, lignes de piste, chiffres monumentaux.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COLOR ================= -->
+  <section class="rise rise-3">
+    <div class="sec-head"><span class="n">B.</span><h2>Palette</h2></div>
+    <span class="eyebrow">Signature & accents</span>
+    <div class="palette" style="margin-top: 12px;">
+      <div class="swatch brand"><div class="name">Brand</div><div class="hex">#FF6B00</div></div>
+      <div class="swatch brand-hover"><div class="name">Brand hover</div><div class="hex">#E55F00</div></div>
+      <div class="swatch brand-deep"><div class="name">Brand deep</div><div class="hex">#BF5200</div></div>
+      <div class="swatch acid"><div class="name">Acid · PR</div><div class="hex">#D4FF3A</div></div>
+      <div class="swatch pulse"><div class="name">Pulse · HR</div><div class="hex">#FF3D3D</div></div>
+      <div class="swatch azure"><div class="name">Azure · info</div><div class="hex">#4DA8FF</div></div>
+    </div>
+    <span class="eyebrow" style="margin-top: 32px; display: block;">Light — Paper</span>
+    <div class="palette" style="margin-top: 12px;">
+      <div class="swatch paper"><div class="name">Paper</div><div class="hex">#F5F1EA</div></div>
+      <div class="swatch paper-2"><div class="name">Paper-2</div><div class="hex">#EDE6D8</div></div>
+      <div class="swatch paper-3"><div class="name">Paper-3</div><div class="hex">#E5DCC8</div></div>
+      <div class="swatch ink"><div class="name">Ink</div><div class="hex">#0A0A0A</div></div>
+      <div class="swatch ink-2"><div class="name">Ink-2</div><div class="hex">#1F1F1F</div></div>
+      <div class="swatch ink-muted"><div class="name">Ink muted</div><div class="hex">#5B5B5B</div></div>
+    </div>
+    <span class="eyebrow" style="margin-top: 32px; display: block;">Dark — Iron</span>
+    <div class="palette" style="margin-top: 12px;">
+      <div class="swatch obsidian"><div class="name">Obsidian</div><div class="hex">#0A0A0A</div></div>
+      <div class="swatch obsidian-2"><div class="name">Obsidian-2</div><div class="hex">#141414</div></div>
+      <div class="swatch obsidian-3"><div class="name">Obsidian-3</div><div class="hex">#1C1C1C</div></div>
+      <div class="swatch chalk"><div class="name">Chalk</div><div class="hex">#F5F1EA</div></div>
+      <div class="swatch chalk-2"><div class="name">Chalk-2</div><div class="hex">#D8D2C6</div></div>
+      <div class="swatch chalk-muted"><div class="name">Chalk muted</div><div class="hex">#8A8680</div></div>
+    </div>
+  </section>
+
+  <!-- ================= TYPO ================= -->
+  <section class="rise rise-4">
+    <div class="sec-head"><span class="n">C.</span><h2>Typographie</h2></div>
+
+    <div class="typo-row">
+      <span class="tag">Display XL</span>
+      <div>
+        <span class="display" style="font-size: clamp(48px, 10vw, 128px);">Train heavier.</span>
+        <div class="spec">Fraunces · 400 · -0.025em · opsz 144</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">Display italic</span>
+      <div>
+        <span class="display-italic" style="font-size: clamp(48px, 10vw, 128px); color: var(--brand);">live lighter.</span>
+        <div class="spec">Fraunces · 300 italic · -0.035em</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">H1 Serif</span>
+      <div>
+        <span class="display" style="font-size: 48px;">Séance du mardi</span>
+        <div class="spec">Fraunces · 400 · -0.02em · 48/1</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">H2 Sans</span>
+      <div>
+        <span style="font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Vos prochains exercices</span>
+        <div class="spec">Manrope · 700 · 28/1.15</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">Body</span>
+      <div>
+        <span style="font-size: 16px;">Le rameur gagne 12 watts moyens sur les 4 dernières séances. Progression à ce rythme : PR dans 9 jours.</span>
+        <div class="spec">Manrope · 400 · 16/1.55</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">Mono stat</span>
+      <div>
+        <span class="mono" style="font-size: 40px; font-weight: 500; letter-spacing: -0.02em;">1 250 m · 2:12 / 500</span>
+        <div class="spec">JetBrains Mono · 500 · tabular-nums</div>
+      </div>
+    </div>
+    <div class="typo-row">
+      <span class="tag">Eyebrow</span>
+      <div>
+        <span class="eyebrow">Volume hebdo · Progression</span>
+        <div class="spec">JetBrains Mono · 500 · 11/1 · 0.18em</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COMPONENTS ================= -->
+  <section class="rise rise-5">
+    <div class="sec-head"><span class="n">D.</span><h2>Composants</h2></div>
+    <div class="comp-grid">
+
+      <div class="comp-card">
+        <h4>Buttons</h4>
+        <div class="row">
+          <button class="btn btn-primary">Commencer la séance</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-dark">Voir l'historique</button>
+          <button class="btn btn-ghost">Annuler</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-primary" style="min-height: 36px; padding: 8px 14px; font-size: 12px;">Quick add</button>
+          <button class="btn btn-ghost" style="min-height: 36px; padding: 8px 14px; font-size: 12px;">+ Exercice</button>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <h4>Pills & Badges</h4>
+        <div class="row">
+          <span class="pill">Planifié</span>
+          <span class="pill pill-brand">En cours</span>
+          <span class="pill pill-acid">PR · +5 kg</span>
+        </div>
+        <div class="row">
+          <span class="pill">Rameur</span>
+          <span class="pill">Tapis</span>
+          <span class="pill">Vélo</span>
+          <span class="pill">Musculation</span>
+        </div>
+        <div class="row">
+          <span class="pill" style="background: var(--pulse); color: #fff; border-color: transparent;">Zone 4 · 168 bpm</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <h4>Stat blocks</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="stat">
+            <span class="stat-value display">142</span>
+            <span class="stat-label">Watts moyens</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value-mono mono">12:48</span>
+            <span class="stat-label">Temps total</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value display" style="color: var(--brand);">+8%</span>
+            <span class="stat-label">vs semaine -1</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value-mono mono">167</span>
+            <span class="stat-label">BPM max</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <h4>Ring progress</h4>
+        <div style="display: flex; justify-content: center;">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle cx="60" cy="60" r="52" class="ring-track"></circle>
+            <circle cx="60" cy="60" r="52" class="ring-fill" stroke="var(--brand)"
+              stroke-dasharray="326.7" stroke-dashoffset="88" />
+            <text x="60" y="58" text-anchor="middle" class="display" font-size="28" fill="var(--fg)">73</text>
+            <text x="60" y="76" text-anchor="middle" class="mono" font-size="9" fill="var(--fg-muted)" letter-spacing="2">PERCENT</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <h4>Input</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label class="eyebrow">Poids · kg</label>
+          <div style="display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--fg); border-radius: var(--r-md); padding: 10px 14px;">
+            <span class="mono" style="font-size: 28px; font-weight: 500;">82.5</span>
+            <span class="eyebrow" style="margin-left: auto;">kg</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-ghost" style="flex: 1; min-height: 36px; padding: 6px; font-size: 12px;">−2.5</button>
+            <button class="btn btn-ghost" style="flex: 1; min-height: 36px; padding: 6px; font-size: 12px;">+2.5</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <h4>Checkbox set</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-sm);">
+            <div style="width: 22px; height: 22px; background: var(--brand); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px;">✓</div>
+            <span class="mono" style="font-size: 15px;">Série 1 · 10 × 82.5 kg</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-sm);">
+            <div style="width: 22px; height: 22px; background: var(--brand); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px;">✓</div>
+            <span class="mono" style="font-size: 15px;">Série 2 · 10 × 82.5 kg</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1.5px solid var(--fg); border-radius: var(--r-sm); background: var(--bg-2);">
+            <div style="width: 22px; height: 22px; border: 1.5px solid var(--fg); border-radius: 4px;"></div>
+            <span class="mono" style="font-size: 15px; font-weight: 700;">Série 3 · 8 × 85 kg</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SPACING + RADIUS ================= -->
+  <section class="rise rise-6">
+    <div class="sec-head"><span class="n">E.</span><h2>Spacing & Radius</h2></div>
+    <span class="eyebrow">Spacing · base 8</span>
+    <div class="scale-row">
+      <div class="scale-item"><div class="box" style="width: 4px; height: 4px;"></div>4</div>
+      <div class="scale-item"><div class="box" style="width: 8px; height: 8px;"></div>8</div>
+      <div class="scale-item"><div class="box" style="width: 12px; height: 12px;"></div>12</div>
+      <div class="scale-item"><div class="box" style="width: 16px; height: 16px;"></div>16</div>
+      <div class="scale-item"><div class="box" style="width: 24px; height: 24px;"></div>24</div>
+      <div class="scale-item"><div class="box" style="width: 32px; height: 32px;"></div>32</div>
+      <div class="scale-item"><div class="box" style="width: 48px; height: 48px;"></div>48</div>
+      <div class="scale-item"><div class="box" style="width: 64px; height: 64px;"></div>64</div>
+    </div>
+    <span class="eyebrow" style="margin-top: 32px; display: block;">Radius · sharp → round</span>
+    <div class="scale-row">
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 2px;"></div>2</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 4px;"></div>4</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 8px;"></div>8</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 14px;"></div>14</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 20px;"></div>20</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 28px;"></div>28</div>
+      <div class="scale-item"><div class="box" style="width: 36px; height: 36px; border-radius: 50%;"></div>full</div>
+      <div class="scale-item"><div class="box" style="width: 56px; height: 16px; border-radius: 9999px;"></div>pill</div>
+    </div>
+  </section>
+
+  <!-- ================= ICONS ================= -->
+  <section class="rise rise-7">
+    <div class="sec-head"><span class="n">F.</span><h2>Iconographie</h2></div>
+    <p style="color: var(--fg-muted); font-size: 14px; max-width: 60ch;">Lucide (stroke 1.75), filigrane cohérent avec la grotesque. Jamais d'emoji. Jamais d'icônes marketing.</p>
+    <div class="icons-grid" style="margin-top: 20px;">
+      <!-- dumbbell --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg></div>
+      <!-- heart --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></div>
+      <!-- timer --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></div>
+      <!-- flame --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+      <!-- trending --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+      <!-- target --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <!-- calendar --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></div>
+      <!-- user --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <!-- apple --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg></div>
+      <!-- zap --> <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="mock-nav">
+  <a href="./index.html" data-i18n="nav.index">Index</a>
+  <span class="sep"></span>
+  <a href="./00-design-tokens.html" class="active" data-i18n="nav.system">00 System</a>
+  <a href="./01-home.html" data-i18n="nav.home">01 Home</a>
+  <a href="./02-workout-live.html" data-i18n="nav.live">02 Live</a>
+  <a href="./03-progress.html" data-i18n="nav.data">03 Data</a>
+  <a href="./04-nutrition.html" data-i18n="nav.fuel">04 Fuel</a>
+  <a href="./05-profile.html" data-i18n="nav.profile">05 Profile</a>
+  <span class="sep"></span>
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')" aria-label="Toggle theme">◐</button>
+</nav>
+
+<script src="./i18n.js" defer></script>
+
+</body>
+</html>

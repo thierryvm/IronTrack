@@ -1,0 +1,557 @@
+/* =============================================================
+   IronTrack v2 — Design Tokens (editorial-brutalist fitness)
+   Shared across all mockups in docs/preview/
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Manrope:wght@200..800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ---- Brand signature ---- */
+  --brand: #FF6B00;
+  --brand-hover: #E55F00;
+  --brand-deep: #BF5200;
+  --brand-glow: rgba(255, 107, 0, 0.28);
+
+  /* ---- Accent system ---- */
+  --acid: #D4FF3A;        /* PR / success */
+  --acid-deep: #9FC800;
+  --pulse: #FF3D3D;       /* heart zones, danger */
+  --azure: #4DA8FF;       /* info, stroke rate */
+  --amber: #FFA94D;
+
+  /* ---- Light theme (editorial paper) ---- */
+  --paper: #F5F1EA;
+  --paper-2: #EDE6D8;
+  --paper-3: #E5DCC8;
+  --ink: #0A0A0A;
+  --ink-2: #1F1F1F;
+  --ink-muted: #5B5B5B;
+  --rule: #D8CFB7;
+
+  /* ---- Dark theme (brutalist iron) ---- */
+  --obsidian: #0A0A0A;
+  --obsidian-2: #141414;
+  --obsidian-3: #1C1C1C;
+  --obsidian-4: #242424;
+  --chalk: #F5F1EA;
+  --chalk-2: #D8D2C6;
+  /* bumped from #8A8680 (~4.1:1) to #ADA89C (~5.9:1) — WCAG AA on obsidian */
+  --chalk-muted: #ADA89C;
+  --chalk-muted-weak: #8A8680; /* only for obsidian-3+ or non-text UI */
+  --rule-dark: #2A2A2A;
+
+  /* ---- Typography ---- */
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+
+  /* ---- Radii — sharper than generic shadcn ---- */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-2xl: 28px;
+  --r-full: 9999px;
+
+  /* ---- Elevation ---- */
+  --shadow-1: 0 1px 2px rgba(10, 10, 10, 0.08);
+  --shadow-2: 0 6px 18px rgba(10, 10, 10, 0.12);
+  --shadow-3: 0 18px 48px rgba(10, 10, 10, 0.18);
+  --shadow-glow: 0 0 32px var(--brand-glow);
+
+  /* ---- Spacing scale (8px base) ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- Semantic (light default) ---- */
+  --bg: var(--paper);
+  --bg-2: var(--paper-2);
+  --bg-3: var(--paper-3);
+  --fg: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-muted: var(--ink-muted);
+  --border: var(--rule);
+  --primary: var(--brand);
+  --primary-fg: #FFF;
+}
+
+html.dark,
+[data-theme='dark'] {
+  --bg: var(--obsidian);
+  --bg-2: var(--obsidian-2);
+  --bg-3: var(--obsidian-3);
+  --fg: var(--chalk);
+  --fg-2: var(--chalk-2);
+  --fg-muted: var(--chalk-muted);
+  --border: var(--rule-dark);
+}
+
+/* =============================================================
+   Base
+   ============================================================= */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html {
+  font-family: var(--font-body);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body {
+  font-size: 15px;
+  line-height: 1.5;
+  font-feature-settings: 'ss01', 'ss02', 'cv11';
+  min-height: 100vh;
+  /* Atmospheric warmth — subtle brand glow on every page */
+  background:
+    radial-gradient(1200px circle at 90% -10%, rgba(255, 107, 0, 0.18), transparent 55%),
+    radial-gradient(900px circle at -10% 110%, rgba(212, 255, 58, 0.12), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+}
+html.dark body {
+  background:
+    radial-gradient(1200px circle at 90% -10%, rgba(255, 107, 0, 0.26), transparent 55%),
+    radial-gradient(900px circle at -10% 110%, rgba(77, 168, 255, 0.10), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+}
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* =============================================================
+   Typography primitives
+   ============================================================= */
+/* Readability pass: lower opsz (less "display-extreme" wide letterforms),
+   bump weights (Fraunces thin strokes visually disappear), SOFT 0-20
+   (sharp italics, no ornate curls). */
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  font-variation-settings: 'opsz' 96, 'SOFT' 0;
+}
+.display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variation-settings: 'opsz' 96, 'SOFT' 20;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'zero' 1, 'ss02' 1;
+  letter-spacing: -0.02em;
+}
+.body {
+  font-family: var(--font-body);
+}
+
+.h-display-xl { font-size: clamp(64px, 12vw, 144px); }
+.h-display-lg { font-size: clamp(48px, 8vw, 96px); }
+.h-display-md { font-size: clamp(32px, 5vw, 56px); }
+.h-display-sm { font-size: clamp(24px, 4vw, 36px); }
+
+/* =============================================================
+   Utility primitives
+   ============================================================= */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.pill-brand {
+  background: var(--brand);
+  color: #fff;
+  border-color: transparent;
+}
+.pill-acid {
+  background: var(--acid);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+/* =============================================================
+   Buttons
+   ============================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: var(--r-full);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  min-height: 48px;
+  transition: transform 180ms var(--ease), background 180ms var(--ease), box-shadow 180ms var(--ease);
+  border: 1.5px solid transparent;
+}
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover { background: var(--brand-hover); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--border);
+}
+.btn-ghost:hover { background: var(--bg-2); }
+.btn-dark {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-dark:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+
+/* =============================================================
+   Cards
+   ============================================================= */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: var(--s-5);
+  box-shadow: var(--shadow-1);
+}
+.card-contrast {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+.card-brand {
+  background: var(--brand);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* =============================================================
+   Grain overlay (atmosphere)
+   ============================================================= */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* =============================================================
+   Decorative track lines (inspired by running tracks)
+   ============================================================= */
+.track-line {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0 16px,
+    transparent 16px 28px
+  );
+  opacity: 0.22;
+}
+
+/* =============================================================
+   Motion — staggered reveal on page load
+   ============================================================= */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes widen {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 var(--brand), 0 0 0 0 var(--brand-glow); }
+  70%  { box-shadow: 0 0 0 16px transparent, 0 0 0 24px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent; }
+}
+@keyframes counter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* forwards (not both) → element is visible by default; animation only on entrance */
+.rise { animation: rise 0.7s var(--ease-out) forwards; }
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.15s; }
+.rise-3 { animation-delay: 0.25s; }
+.rise-4 { animation-delay: 0.35s; }
+.rise-5 { animation-delay: 0.45s; }
+.rise-6 { animation-delay: 0.55s; }
+.rise-7 { animation-delay: 0.65s; }
+.rise-8 { animation-delay: 0.75s; }
+
+.widen {
+  transform-origin: left;
+  animation: widen 1s var(--ease-out) 0.4s both;
+}
+
+.pulse-ring {
+  border-radius: 50%;
+  animation: pulseRing 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+}
+
+/* =============================================================
+   Nav bar (shared floating nav between mockups)
+   ============================================================= */
+.mock-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--r-full);
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: var(--shadow-3);
+  z-index: 150;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.mock-nav a {
+  padding: 8px 14px;
+  border-radius: var(--r-full);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--chalk-muted);
+  transition: all 200ms var(--ease);
+  white-space: nowrap;
+}
+.mock-nav a:hover { color: var(--paper); background: rgba(255, 255, 255, 0.05); }
+.mock-nav a.active {
+  background: var(--brand);
+  color: #fff;
+}
+.mock-nav .sep {
+  width: 1px; height: 18px; background: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+}
+
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: var(--r-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chalk-muted);
+  transition: all 200ms var(--ease);
+}
+.theme-toggle:hover { background: rgba(255, 255, 255, 0.06); color: var(--paper); }
+
+/* =============================================================
+   Phone frame for mobile mocks
+   ============================================================= */
+.phone {
+  width: 390px;
+  max-width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+  position: relative;
+}
+.phone-notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 24px;
+  background: var(--ink);
+  border-radius: var(--r-full);
+  z-index: 10;
+}
+
+/* =============================================================
+   Progress / rings
+   ============================================================= */
+.ring-track {
+  stroke: var(--border);
+  stroke-width: 10;
+  fill: none;
+}
+.ring-fill {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 10;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 1.2s var(--ease-out);
+}
+
+/* =============================================================
+   Tabular stat blocks
+   ============================================================= */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.stat-value-mono {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* =============================================================
+   Tiny helpers
+   ============================================================= */
+.hairline { height: 1px; background: var(--border); }
+.hairline-strong { height: 1px; background: var(--fg); opacity: 0.8; }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.scroll-x {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 4px 0 12px;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar { display: none; }
+.scroll-x > * { scroll-snap-align: start; flex-shrink: 0; }
+
+/* =============================================================
+   Contrast & energy fixes (WCAG AA on every surface)
+   ============================================================= */
+
+/* On any dark surface, Fraunces display weight 400 feels too frail —
+   serif vertical strokes thin out below ~20px on #0A0A0A. Bump to 500. */
+html.dark .display,
+[data-theme='dark'] .display,
+.current-set .display,
+.next-session .display,
+.hero-cal .display,
+.streak .display,
+.buddy-card .display,
+.hero-stat .display,
+.hero-id .display,
+.rest .display {
+  font-weight: 500;
+}
+html.dark .display-italic,
+[data-theme='dark'] .display-italic {
+  font-weight: 400;
+}
+
+/* Mono stats on dark surfaces also need a half-step bump */
+html.dark .mono,
+[data-theme='dark'] .mono,
+.current-set .mono,
+.next-session .mono,
+.hero-cal .mono,
+.streak .mono,
+.rest .mono {
+  font-weight: 500;
+}
+
+/* Focus ring — non-text UI, must reach 3:1 */
+:where(a, button, .btn, .quick, .scan-btn, .mock-tile, .srow, .day-chip, .period-switch button):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--r-md);
+}
+
+/* Global hover affordance for interactive surfaces */
+.mock-nav a, .btn, .quick, .scan-btn, .day-chip, .srow, .partner .p-av, .lift, .badge, .meal-icon {
+  transition: transform 200ms var(--ease), background 200ms var(--ease),
+              box-shadow 200ms var(--ease), color 200ms var(--ease),
+              border-color 200ms var(--ease);
+}
+.mock-tile:active, .btn:active, .quick:active, .scan-btn:active, .day-chip:active {
+  transform: translateY(1px) scale(0.995);
+}
+
+/* =============================================================
+   Energy boosters — colorful cards, gradient halos
+   ============================================================= */
+.card-acid {
+  background: var(--acid);
+  color: var(--ink);
+  border-color: transparent;
+}
+.card-azure {
+  background: linear-gradient(135deg, #4DA8FF 0%, #1E40AF 100%);
+  color: #fff;
+  border-color: transparent;
+}
+.card-pulse {
+  background: linear-gradient(135deg, var(--pulse) 0%, #BF2020 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Swatch cards — force a soft inner shadow so paper/chalk tones stay
+   visible against a paper/chalk body background. */
+.swatch {
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.08),
+              0 1px 2px rgba(10, 10, 10, 0.06);
+}
+html.dark .swatch {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* When a muted token is used against a brand/colored fill,
+   override it to a legible tone. Applied by dedicated classes below. */
+.on-dark-muted { color: var(--chalk-2) !important; }
+.on-brand-muted { color: rgba(255, 255, 255, 0.92) !important; }
+.on-acid-muted { color: rgba(10, 10, 10, 0.78) !important; }

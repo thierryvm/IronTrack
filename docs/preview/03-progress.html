@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>03 — Progress · IronTrack v2</title>
+<link rel="stylesheet" href="./tokens.css" />
+<style>
+  body { padding: 0 0 160px; }
+  .app { max-width: 520px; margin: 0 auto; padding: 20px 20px 40px; }
+
+  .topline {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .period-switch {
+    display: inline-flex;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-full);
+    padding: 3px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .period-switch button {
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    color: var(--fg-muted);
+    font-weight: 500;
+    transition: all 200ms var(--ease);
+  }
+  .period-switch button.active { background: var(--ink); color: var(--paper); }
+
+  .hero-stat {
+    background: linear-gradient(135deg, #FF6B00 0%, #E55F00 60%, #BF5200 100%);
+    color: #fff;
+    border-radius: var(--r-xl);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 18px 50px rgba(255, 107, 0, 0.35);
+  }
+  .hero-stat::before {
+    content: '';
+    position: absolute;
+    top: -60%; left: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .hero-stat::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 220px; height: 220px;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 50 Q 25 20, 50 50 T 100 50' stroke='rgba(255,255,255,0.18)' stroke-width='2' fill='none'/%3E%3Cpath d='M0 60 Q 25 30, 50 60 T 100 60' stroke='rgba(255,255,255,0.14)' stroke-width='2' fill='none'/%3E%3Cpath d='M0 70 Q 25 40, 50 70 T 100 70' stroke='rgba(255,255,255,0.10)' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat;
+    background-size: cover;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .hero-stat .eyebrow { color: rgba(255,255,255,0.9); font-weight: 600; }
+  .hero-stat .big {
+    font-family: var(--font-display);
+    font-size: clamp(80px, 15vw, 128px);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    margin: 6px 0 8px;
+    color: #FFFFFF;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+    position: relative;
+    z-index: 1;
+  }
+  .hero-stat .big em { font-style: italic; font-weight: 400; color: var(--acid); }
+  .hero-stat .sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-stat .sub span.up { color: var(--acid); font-weight: 700; }
+
+  /* Training load heatmap (GitHub-style) */
+  .card-dense {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .card-dense h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  .card-dense .caption {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin-bottom: 18px;
+  }
+  .heatmap {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+  }
+  .heatmap .cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--bg-2);
+  }
+  .heatmap .cell.l1 { background: rgba(255, 107, 0, 0.25); }
+  .heatmap .cell.l2 { background: rgba(255, 107, 0, 0.50); }
+  .heatmap .cell.l3 { background: rgba(255, 107, 0, 0.75); }
+  .heatmap .cell.l4 { background: var(--brand); box-shadow: 0 0 10px var(--brand-glow); }
+  .legend { display: flex; gap: 4px; align-items: center; margin-top: 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--fg-muted); text-transform: uppercase; }
+  .legend .lc { width: 12px; height: 12px; border-radius: 2px; }
+
+  /* Line chart (1RM trend) */
+  .chart-wrap { position: relative; height: 160px; margin-top: 10px; }
+  .chart-wrap svg { width: 100%; height: 100%; }
+  .chart-wrap .label-pr {
+    position: absolute;
+    background: var(--acid);
+    color: var(--ink);
+    padding: 4px 8px;
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* Top lifts grid */
+  .lift-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .lift {
+    padding: 18px;
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .lift:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(10, 10, 10, 0.22); }
+  .lift.squat { background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%); color: var(--paper); border-color: var(--ink); }
+  .lift.bench { background: linear-gradient(135deg, #4DA8FF 0%, #2563EB 100%); color: #fff; border-color: transparent; }
+  .lift.deadlift { background: linear-gradient(135deg, var(--acid) 0%, #9FC800 100%); color: var(--ink); border-color: transparent; }
+  .lift.ohp { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%); color: #fff; border-color: transparent; }
+  .lift .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; }
+  .lift .big-num {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 1;
+    margin-top: 8px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    position: relative;
+    z-index: 1;
+  }
+  .lift .big-num .unit { font-size: 14px; font-family: var(--font-mono); opacity: 0.7; }
+  .lift .delta {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+  .lift::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    pointer-events: none;
+  }
+
+  /* Badges row */
+  .badges {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 0 10px;
+    scrollbar-width: none;
+  }
+  .badges::-webkit-scrollbar { display: none; }
+  .badge {
+    flex-shrink: 0;
+    width: 120px;
+    padding: 18px 14px;
+    border-radius: var(--r-lg);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+  }
+  .badge:hover { transform: translateY(-4px); box-shadow: var(--shadow-2); border-color: var(--fg); }
+  .badge-emoji-sub {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .badge.b1 .badge-emoji-sub { background: var(--acid); }
+  .badge.b2 .badge-emoji-sub { background: var(--brand); color: #fff; }
+  .badge.b3 .badge-emoji-sub { background: var(--ink); color: var(--paper); }
+  .badge.b4 .badge-emoji-sub { background: var(--azure); color: #fff; }
+  .badge .title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .badge .date { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--fg-muted); text-transform: uppercase; }
+  .badge.locked { opacity: 0.4; }
+
+  /* Streak */
+  .streak {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--r-xl);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .streak::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 30%;
+    transform: translateY(-50%);
+    width: 260px; height: 260px;
+    background: var(--brand);
+    filter: blur(80px);
+    opacity: 0.45;
+  }
+  .streak .num {
+    font-family: var(--font-display);
+    font-size: 104px;
+    line-height: 0.9;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    position: relative;
+    z-index: 1;
+    color: #FFFFFF;
+    text-shadow: 0 2px 32px rgba(255, 107, 0, 0.4);
+  }
+  .streak .num em { color: var(--brand); font-style: italic; font-weight: 400; }
+  .streak .side {
+    position: relative; z-index: 1;
+    text-align: right;
+  }
+  .streak .flame {
+    display: inline-block;
+    font-size: 40px;
+    animation: flicker 2s infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { transform: scale(1) rotate(-2deg); }
+    50% { transform: scale(1.1) rotate(2deg); }
+  }
+  .streak .cap { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-2); margin-top: 6px; }
+
+  /* Split */
+  h2.split {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 32px 0 14px;
+  }
+  h2.split em { font-style: italic; color: var(--brand); font-weight: 300; }
+</style>
+</head>
+<body class="grain">
+
+<main class="app">
+
+  <div class="topline rise">
+    <div>
+      <span class="eyebrow" data-i18n="prog.eyebrow">Progression</span>
+      <h1 class="display" style="font-size: 48px; margin: 6px 0 0; font-weight: 500; letter-spacing: -0.025em;"><span data-i18n="prog.from">Mars</span> <em class="display-italic" style="color: var(--brand);">→</em> <span data-i18n="prog.to">Avril</span></h1>
+    </div>
+    <div class="period-switch">
+      <button>7j</button>
+      <button class="active">30j</button>
+      <button>1an</button>
+    </div>
+  </div>
+
+  <!-- HERO STAT -->
+  <div class="hero-stat rise" style="animation-delay: 0.1s;">
+    <span class="eyebrow" data-i18n="prog.volume">Volume cumulé · 30 jours</span>
+    <div class="big">48,2<span style="font-size: 0.35em; font-family: var(--font-mono); letter-spacing: 0.02em; margin-left: 6px;">t</span></div>
+    <div class="sub">
+      <span class="up">↑ +18%</span>
+      <span>vs période précédente</span>
+      <span style="margin-left: auto; color: var(--acid); font-weight: 700;">Top 12%</span>
+    </div>
+  </div>
+
+  <!-- TOP LIFTS -->
+  <h2 class="split">Tes <em>quatre</em> piliers.</h2>
+  <div class="lift-grid rise" style="animation-delay: 0.15s;">
+    <div class="lift squat">
+      <div class="lbl">Squat · 1RM</div>
+      <div class="big-num">118<span class="unit"> kg</span></div>
+      <div class="delta">↑ +7 kg · 30j</div>
+    </div>
+    <div class="lift deadlift">
+      <div class="lbl">Deadlift · 1RM</div>
+      <div class="big-num">142,5<span class="unit"> kg</span></div>
+      <div class="delta">↑ +12 kg · PR il y a 3j</div>
+    </div>
+    <div class="lift bench">
+      <div class="lbl">Bench · 1RM</div>
+      <div class="big-num">92,5<span class="unit"> kg</span></div>
+      <div class="delta">↑ +2,5 kg · 30j</div>
+    </div>
+    <div class="lift ohp">
+      <div class="lbl">OHP · 1RM</div>
+      <div class="big-num">58<span class="unit"> kg</span></div>
+      <div class="delta">→ stable · 30j</div>
+    </div>
+  </div>
+
+  <!-- 1RM TREND -->
+  <div class="card-dense rise" style="animation-delay: 0.2s; margin-top: 20px;">
+    <h3>Estimation 1RM — Soulevé de terre</h3>
+    <div class="caption">6 dernières semaines</div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 500 160" preserveAspectRatio="none">
+        <!-- gridlines -->
+        <line x1="0" y1="40" x2="500" y2="40" stroke="var(--border)" stroke-dasharray="2 4" />
+        <line x1="0" y1="80" x2="500" y2="80" stroke="var(--border)" stroke-dasharray="2 4" />
+        <line x1="0" y1="120" x2="500" y2="120" stroke="var(--border)" stroke-dasharray="2 4" />
+        <!-- area fill -->
+        <path d="M0,130 L60,125 L120,118 L180,110 L240,95 L300,85 L360,72 L420,55 L500,40 L500,160 L0,160 Z"
+          fill="url(#grad)" opacity="0.8"/>
+        <defs>
+          <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#FF6B00" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- line -->
+        <path d="M0,130 L60,125 L120,118 L180,110 L240,95 L300,85 L360,72 L420,55 L500,40"
+          fill="none" stroke="#FF6B00" stroke-width="3" stroke-linecap="round"/>
+        <!-- points -->
+        <circle cx="60" cy="125" r="4" fill="#FF6B00"/>
+        <circle cx="120" cy="118" r="4" fill="#FF6B00"/>
+        <circle cx="180" cy="110" r="4" fill="#FF6B00"/>
+        <circle cx="240" cy="95" r="4" fill="#FF6B00"/>
+        <circle cx="300" cy="85" r="4" fill="#FF6B00"/>
+        <circle cx="360" cy="72" r="4" fill="#FF6B00"/>
+        <!-- PR point -->
+        <circle cx="420" cy="55" r="8" fill="#D4FF3A" stroke="#0A0A0A" stroke-width="2"/>
+        <circle cx="420" cy="55" r="14" fill="none" stroke="#D4FF3A" stroke-width="1" opacity="0.5"/>
+      </svg>
+      <div class="label-pr" style="right: 12%; top: 20%;">NOUVEAU PR</div>
+    </div>
+  </div>
+
+  <!-- HEATMAP -->
+  <div class="card-dense rise" style="animation-delay: 0.25s;">
+    <h3>Intensité d'entraînement</h3>
+    <div class="caption">14 dernières semaines</div>
+    <div class="heatmap">
+      <!-- Row generated pattern — 14 cols × 7 rows -->
+      <!-- Row 1 -->
+      <div class="cell l1"></div><div class="cell"></div><div class="cell l2"></div><div class="cell"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell"></div><div class="cell l1"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l3"></div>
+      <!-- Row 2 -->
+      <div class="cell"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l4"></div><div class="cell"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div>
+      <!-- Row 3 -->
+      <div class="cell l1"></div><div class="cell l3"></div><div class="cell"></div><div class="cell l2"></div><div class="cell"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l4"></div>
+      <!-- Row 4 -->
+      <div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div>
+      <!-- Row 5 -->
+      <div class="cell"></div><div class="cell l2"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l3"></div>
+      <!-- Row 6 -->
+      <div class="cell l1"></div><div class="cell"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div>
+      <!-- Row 7 -->
+      <div class="cell"></div><div class="cell l1"></div><div class="cell"></div><div class="cell l2"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div>
+    </div>
+    <div class="legend">
+      <span>Less</span>
+      <span class="lc" style="background: var(--bg-2);"></span>
+      <span class="lc" style="background: rgba(255, 107, 0, 0.25);"></span>
+      <span class="lc" style="background: rgba(255, 107, 0, 0.50);"></span>
+      <span class="lc" style="background: rgba(255, 107, 0, 0.75);"></span>
+      <span class="lc" style="background: var(--brand);"></span>
+      <span>More</span>
+    </div>
+  </div>
+
+  <!-- STREAK -->
+  <h2 class="split">Continuité : <em>27 jours.</em></h2>
+  <div class="streak rise" style="animation-delay: 0.3s;">
+    <div>
+      <div class="num mono">27<em class="display-italic">.</em></div>
+      <div class="cap">Jours consécutifs</div>
+    </div>
+    <div class="side">
+      <span class="flame">🔥</span>
+      <div class="cap">Record : 41 jours</div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <h2 class="split">Trophées <em>récents.</em></h2>
+  <div class="badges rise" style="animation-delay: 0.35s;">
+    <div class="badge b1">
+      <div class="badge-emoji-sub">PR</div>
+      <div class="title">Deadlift 140+</div>
+      <div class="date">3 avril</div>
+    </div>
+    <div class="badge b2">
+      <div class="badge-emoji-sub">30</div>
+      <div class="title">30 séances</div>
+      <div class="date">28 mars</div>
+    </div>
+    <div class="badge b3">
+      <div class="badge-emoji-sub">7</div>
+      <div class="title">Semaine parfaite</div>
+      <div class="date">20 mars</div>
+    </div>
+    <div class="badge b4">
+      <div class="badge-emoji-sub">45</div>
+      <div class="title">45 min cardio</div>
+      <div class="date">15 mars</div>
+    </div>
+    <div class="badge locked">
+      <div class="badge-emoji-sub" style="background: var(--bg-2);">?</div>
+      <div class="title">Squat 120+</div>
+      <div class="date">Bientôt</div>
+    </div>
+  </div>
+
+</main>
+
+<nav class="mock-nav">
+  <a href="./index.html" data-i18n="nav.index">Index</a>
+  <span class="sep"></span>
+  <a href="./00-design-tokens.html" data-i18n="nav.system">00 System</a>
+  <a href="./01-home.html" data-i18n="nav.home">01 Home</a>
+  <a href="./02-workout-live.html" data-i18n="nav.live">02 Live</a>
+  <a href="./03-progress.html" class="active" data-i18n="nav.data">03 Data</a>
+  <a href="./04-nutrition.html" data-i18n="nav.fuel">04 Fuel</a>
+  <a href="./05-profile.html" data-i18n="nav.profile">05 Profile</a>
+  <span class="sep"></span>
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')" aria-label="Toggle theme">◐</button>
+</nav>
+
+<script src="./i18n.js" defer></script>
+
+</body>
+</html>

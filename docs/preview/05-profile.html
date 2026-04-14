@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>05 — Profile · IronTrack v2</title>
+<link rel="stylesheet" href="./tokens.css" />
+<style>
+  body { padding: 0 0 160px; }
+  .app { max-width: 440px; margin: 0 auto; padding: 20px 20px 40px; }
+
+  /* Hero identity */
+  .hero-id {
+    background: linear-gradient(135deg, #FF6B00 0%, #BF5200 100%);
+    color: #fff;
+    border-radius: var(--r-2xl);
+    padding: 32px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .hero-id::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 0%, rgba(255,255,255,0.25), transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(0,0,0,0.25), transparent 50%);
+    pointer-events: none;
+  }
+  .hero-id::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border: 20px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .avatar-big {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 400;
+    margin: 0 auto 16px;
+    border: 4px solid rgba(255,255,255,0.2);
+    position: relative;
+    z-index: 1;
+  }
+  .hero-id h1 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 0;
+    line-height: 1;
+    position: relative;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  }
+  .hero-id h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--acid);
+    text-shadow: 0 0 16px rgba(212, 255, 58, 0.4);
+  }
+  .hero-id .handle {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    opacity: 0.85;
+    letter-spacing: 0.1em;
+  }
+  .hero-id .tagline {
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.96);
+    max-width: 26ch;
+    margin-left: auto; margin-right: auto;
+    line-height: 1.35;
+    position: relative;
+  }
+  .member-since {
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* Lifetime stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .lstat {
+    background: var(--bg);
+    padding: 22px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .lstat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 24px;
+    background: var(--brand);
+  }
+  .lstat.alt::before { background: var(--acid); }
+  .lstat.alt2::before { background: var(--azure); }
+  .lstat.alt3::before { background: var(--pulse); }
+  .lstat { transition: background 200ms var(--ease); cursor: pointer; }
+  .lstat:hover { background: var(--bg-2); }
+  .lstat .val {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .lstat .val .u { font-size: 14px; font-family: var(--font-mono); color: var(--fg-muted); margin-left: 3px; }
+  .lstat .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; color: var(--fg-muted); text-transform: uppercase; }
+
+  /* Training partners */
+  .sec-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 32px 0 14px;
+  }
+  .sec-title h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .sec-title h2 em { font-style: italic; color: var(--brand); font-weight: 300; }
+  .sec-title a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--fg-muted); text-transform: uppercase; }
+
+  .partners {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .partner {
+    text-align: center;
+  }
+  .p-av {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .p-av.p1 { background: linear-gradient(135deg, #FF3D3D, #BF2020); }
+  .p-av.p2 { background: linear-gradient(135deg, #4DA8FF, #1E40AF); }
+  .p-av.p3 { background: linear-gradient(135deg, #D4FF3A, #9FC800); color: var(--ink); }
+  .p-av.p4 {
+    background: var(--bg-2);
+    color: var(--fg-muted);
+    border: 2px dashed var(--border);
+  }
+  .p-av .online {
+    position: absolute;
+    bottom: 4%; right: 4%;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--acid);
+    border: 2.5px solid var(--bg);
+  }
+  .partner .name { font-size: 12px; font-weight: 500; }
+  .partner .status { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--fg-muted); text-transform: uppercase; }
+
+  /* IronBuddy */
+  .buddy-card {
+    margin-top: 28px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--r-xl);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .buddy-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%, rgba(255, 107, 0, 0.35), transparent 55%);
+  }
+  .buddy-card h3 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+    position: relative;
+  }
+  .buddy-card h3 em { font-style: italic; font-weight: 300; color: var(--brand); }
+  .buddy-card p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--chalk-2);
+    margin: 8px 0 0;
+    font-weight: 400;
+    position: relative;
+    line-height: 1.4;
+  }
+  .buddy-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand), var(--amber));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 36px;
+    position: relative;
+    animation: pulseRing 3s infinite;
+  }
+
+  /* Settings list */
+  .settings {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .srow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    transition: background 200ms var(--ease);
+  }
+  .srow:last-child { border-bottom: none; }
+  .srow:hover { background: var(--bg-2); }
+  .srow-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--r-md);
+    background: var(--bg-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg);
+    flex-shrink: 0;
+  }
+  .srow-icon svg { width: 18px; height: 18px; }
+  .srow.danger .srow-icon { background: rgba(255, 61, 61, 0.12); color: var(--pulse); }
+  .srow.brand .srow-icon { background: rgba(255, 107, 0, 0.12); color: var(--brand); }
+  .srow .lbl {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .srow.danger .lbl { color: var(--pulse); }
+  .srow .val { font-family: var(--font-mono); font-size: 12px; color: var(--fg-muted); }
+  .srow .chev { color: var(--fg-muted); }
+
+  .danger-line {
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .signout {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pulse);
+    letter-spacing: 0.02em;
+  }
+
+  .sig {
+    margin-top: 40px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--fg-2);
+    font-weight: 400;
+  }
+</style>
+</head>
+<body class="grain">
+
+<main class="app">
+
+  <!-- HERO IDENTITY -->
+  <div class="hero-id rise">
+    <div class="avatar-big">T</div>
+    <h1>@thierry<em>vm</em></h1>
+    <div class="handle">Bruxelles · BE · Powerlifting</div>
+    <p class="tagline" data-i18n="prof.tagline">"Je construis. Je casse. Je reconstruis plus fort."</p>
+    <span class="member-since">
+      <span class="dot" style="color: var(--acid);"></span>
+      <span data-i18n="prof.memberSince">Membre depuis mars 2025</span>
+    </span>
+  </div>
+
+  <!-- LIFETIME STATS -->
+  <div class="sec-title">
+    <h2><span data-i18n="prof.stats">Stats</span> <em data-i18n="prof.stats.em">lifetime.</em></h2>
+    <a href="./03-progress.html" data-i18n="prof.stats.progressLink">Progression →</a>
+  </div>
+  <div class="stats-grid rise" style="animation-delay: 0.1s;">
+    <div class="lstat">
+      <span class="val">284<span class="u">séances</span></span>
+      <span class="lbl">Total</span>
+    </div>
+    <div class="lstat alt">
+      <span class="val">186<span class="u">h</span></span>
+      <span class="lbl">Sous la barre</span>
+    </div>
+    <div class="lstat alt2">
+      <span class="val">512<span class="u">t</span></span>
+      <span class="lbl">Volume soulevé</span>
+    </div>
+    <div class="lstat alt3">
+      <span class="val">42<span class="u">PR</span></span>
+      <span class="lbl">Records personnels</span>
+    </div>
+  </div>
+
+  <!-- TRAINING PARTNERS -->
+  <div class="sec-title">
+    <h2 data-i18n="prof.partners">Partenaires</h2>
+    <a data-i18n="prof.partners.link">Tous →</a>
+  </div>
+  <div class="partners rise" style="animation-delay: 0.15s;">
+    <div class="partner">
+      <div class="p-av p1">
+        S
+        <span class="online"></span>
+      </div>
+      <div class="name">Sarah</div>
+      <div class="status">En séance</div>
+    </div>
+    <div class="partner">
+      <div class="p-av p2">
+        M
+      </div>
+      <div class="name">Marco</div>
+      <div class="status">3j · strength</div>
+    </div>
+    <div class="partner">
+      <div class="p-av p3">
+        L
+        <span class="online"></span>
+      </div>
+      <div class="name">Léa</div>
+      <div class="status">Cardio +24</div>
+    </div>
+    <div class="partner">
+      <div class="p-av p4">+</div>
+      <div class="name" style="color: var(--fg-muted);">Inviter</div>
+      <div class="status">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- IRONBUDDY -->
+  <div class="buddy-card rise" style="animation-delay: 0.2s;">
+    <div>
+      <h3>Iron <em>Buddy.</em></h3>
+      <p>"Prête pour une nouvelle PR, demain ?" — ton coach IA te prépare un programme sur mesure.</p>
+    </div>
+    <div class="buddy-avatar">B</div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="sec-title">
+    <h2 data-i18n="prof.settings">Réglages</h2>
+  </div>
+  <div class="settings rise" style="animation-delay: 0.25s;">
+    <div class="srow brand">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.units">Unités & système</span>
+      <span class="val">kg · métrique</span>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.theme">Apparence</span>
+      <span class="val" data-i18n="prof.settings.theme.val">Auto</span>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.notif">Notifications</span>
+      <span class="val" data-i18n="prof.settings.notif.val">3 actives</span>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c2.5-2.5 4-5.8 4-9s-1.5-6.5-4-9m0 18c-2.5-2.5-4-5.8-4-9s1.5-6.5 4-9m-9 9a9 9 0 0 1 9-9"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.lang">Langue</span>
+      <span class="val" data-i18n="prof.settings.lang.val">Français · BE</span>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.security">Sécurité & RGPD</span>
+      <span class="val" data-i18n="prof.settings.security.val">Export data</span>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="srow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <span class="lbl" data-i18n="prof.settings.help">Aide & support</span>
+      <span class="chev">›</span>
+    </div>
+  </div>
+
+  <div class="danger-line rise" style="animation-delay: 0.3s;">
+    <button class="signout" data-i18n="prof.signout">Se déconnecter</button>
+  </div>
+
+  <div class="sig" data-i18n="prof.sig">— Train hard. Live better. —</div>
+
+</main>
+
+<nav class="mock-nav">
+  <a href="./index.html" data-i18n="nav.index">Index</a>
+  <span class="sep"></span>
+  <a href="./00-design-tokens.html" data-i18n="nav.system">00 System</a>
+  <a href="./01-home.html" data-i18n="nav.home">01 Home</a>
+  <a href="./02-workout-live.html" data-i18n="nav.live">02 Live</a>
+  <a href="./03-progress.html" data-i18n="nav.data">03 Data</a>
+  <a href="./04-nutrition.html" data-i18n="nav.fuel">04 Fuel</a>
+  <a href="./05-profile.html" class="active" data-i18n="nav.profile">05 Profile</a>
+  <span class="sep"></span>
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')" aria-label="Toggle theme">◐</button>
+</nav>
+
+<script src="./i18n.js" defer></script>
+
+</body>
+</html>

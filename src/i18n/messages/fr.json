@@ -1,0 +1,23 @@
+{
+  "brand": { "name": "IronTrack", "tagline": "Train heavier, live lighter." },
+  "nav": {
+    "home": "Accueil",
+    "workouts": "Séances",
+    "progress": "Progression",
+    "nutrition": "Nutrition",
+    "profile": "Profil",
+    "login": "Se connecter",
+    "signup": "Créer un compte"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Masterclass redesign",
+      "train": "Train",
+      "heavier": "heavier,",
+      "live": "live",
+      "lighter": "lighter.",
+      "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès."
+    },
+    "cta": { "start": "Commencer la séance", "login": "Se connecter" }
+  }
+}
