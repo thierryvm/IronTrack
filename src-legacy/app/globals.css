@@ -1,0 +1,393 @@
+@import "tailwindcss";
+@source "../components";
+@source "../styles";
+@source "../lib";
+@source "../hooks";
+@import "tw-animate-css";
+@import "./theme.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* CORRECTIONS RESPONSIVE MOBILE */
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  /* Padding en bas pour compenser la navigation mobile fixe */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* OPTIMISATION TOUCH EVENTS - Réduire les violations non-passive */
+  touch-action: pan-y pinch-zoom;
+
+  /* Police Inter via CSS variable injectée par next/font */
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+/* 🔧 CORRECTION: Espace pour navigation mobile en bas - uniquement sur mobile */
+@media (max-width: 768px) {
+  body {
+    /* Navigation mobile : 60px hauteur réelle + safe area iPhone */
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.auth-screen-active {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+}
+
+/* Classe utilitaire pour les pages avec navigation mobile */
+.pb-mobile-nav {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px));
+}
+
+/* Empêcher débordement - SAUF containers Tailwind */
+* {
+  box-sizing: border-box;
+}
+
+/* Empêcher débordement seulement sur images et médias */
+img, video, svg, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container responsive - Supprimé, on utilise les classes Tailwind */
+
+/* Safe areas iPhone */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+
+  .safe-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Optimisations tactiles Android/Samsung */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Amélioration des délais tactiles pour Android */
+* {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+
+/* Optimisation des éléments interactifs pour mobiles */
+button, 
+[role="button"], 
+input[type="button"], 
+input[type="submit"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes avatar-pop {
+  0% { transform: scale(1) rotate(-2deg); filter: brightness(1.2) drop-shadow(0 0 8px #a855f7); }
+  60% { transform: scale(1.15) rotate(2deg); filter: brightness(1.4) drop-shadow(0 0 16px #a855f7); }
+  100% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 0 #a855f7); }
+}
+.animate-avatar-pop {
+  animation: avatar-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+.animate-fade-in-out {
+  animation: fade-in-out 2.5s both;
+}
+@keyframes timer-bg {
+  0% { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(1.1) saturate(1.2) hue-rotate(10deg); }
+}
+
+/* Animations pour le menu mobile */
+@keyframes slide-up {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+.animate-timer-bg {
+  animation: timer-bg 8s linear infinite alternate;
+}
+@keyframes timer-glow {
+  0% { text-shadow: 0 0 0 #fff, 0 0 0 #facc15; }
+  60% { text-shadow: 0 0 32px #fff, 0 0 64px #facc15; }
+  100% { text-shadow: 0 0 16px #fff, 0 0 32px #facc15; }
+}
+.animate-timer-glow {
+  animation: timer-glow 1.2s ease-in-out;
+}
+@keyframes timer-step {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-timer-step {
+  animation: timer-step 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes timer-congrats {
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-timer-congrats {
+  animation: timer-congrats 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+}
+
+/* Fallback flou modale IronBuddy */
+.modal-backdrop {
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+}
+@supports not (backdrop-filter: blur(8px)) {
+  .modal-backdrop {
+    background: #000 !important;
+  }
+}
+
+/* ===== OPTIMISATIONS ÉCRANS MOBILES 2025 ===== */
+
+/* Support des safe areas pour écrans modernes */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Formats d'écrans ultra-larges 2025 */
+/* iPhone 15 Pro Max: 430x932, Samsung S24 Ultra: 440x964, Xiaomi 14 Ultra: 446x972 */
+@media screen and (min-width: 430px) and (min-height: 896px) {
+  .fab-2025 {
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 1rem)) !important;
+    right: max(1.5rem, env(safe-area-inset-right, 1rem)) !important;
+  }
+
+  .modal-2025 {
+    bottom: max(6rem, calc(env(safe-area-inset-bottom, 0px) + 6rem)) !important;
+    right: max(1.5rem, calc(env(safe-area-inset-right, 0px) + 1.5rem)) !important;
+    min-width: 340px !important;
+  }
+}
+
+/* Écrans pliables déployés (Samsung Galaxy Z Fold, Google Pixel Fold) */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .fab-2025 {
+    bottom: 2rem !important;
+    right: 2rem !important;
+    transform: scale(1.2) !important;
+  }
+
+  .modal-2025 {
+    bottom: 8rem !important;
+    right: 2rem !important;
+    min-width: 380px !important;
+    max-height: 65vh !important;
+  }
+}
+
+/* Mode paysage mobile (amélioration UX) */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .fab-2025 {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    transform: scale(0.9) !important;
+  }
+
+  .modal-2025 {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Écrans très haute densité (Retina HD+, AMOLED) */
+@media screen and (-webkit-min-device-pixel-ratio: 3), 
+       screen and (min-resolution: 3dppx) {
+  .fab-enhanced {
+    border-width: 3px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
+  }
+
+  .text-sharp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Animations optimisées pour écrans 120Hz+ */
+@media (prefers-reduced-motion: no-preference) {
+  .smooth-120hz {
+    will-change: transform, opacity;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* Support écrans avec encoche/Dynamic Island */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .avoid-notch {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  /* Header mobile iOS - éviter status bar */
+  .header-mobile-ios {
+    padding-top: max(12px, env(safe-area-inset-top)) !important;
+  }
+
+  /* iPhone 14+ avec Dynamic Island */
+  @media screen and (min-device-width: 390px) and (max-device-width: 430px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+    .header-mobile-ios {
+      padding-top: max(18px, env(safe-area-inset-top)) !important;
+    }
+  }
+}
+
+/* Optimisation pour appareils avec bouton home virtuel */
+@media screen and (min-height: 812px) {
+  .avoid-home-indicator {
+    padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+  }
+}
+
+/* Theme tokens now live in src/app/theme.css.
+   Keep globals.css focused on behavior, safe areas, and cross-page quirks. */
+
+/* S'assurer que tous les éléments héritent correctement */
+input,
+textarea {
+  color: inherit !important;
+}
+
+/* select: fond et texte explicites pour dark mode */
+select {
+  color: inherit;
+  background-color: var(--background);
+}
+
+/* Styles adaptatifs pour les éléments de formulaire */
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+.auth-input {
+  color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  color-scheme: dark;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--input) inset;
+  caret-color: var(--foreground);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--foreground) !important;
+  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
+  box-shadow: 0 0 0 1000px #16181f inset !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  caret-color: var(--foreground) !important;
+  background-color: #16181f !important;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.auth-input:is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  box-shadow: 0 0 0 1000px #16181f inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #16181f inset !important;
+}
+
+/* OPTIMISATIONS TOUCH EVENTS - Performance mobile */
+.touch-optimized {
+  touch-action: manipulation;
+}
+
+.swipe-container {
+  touch-action: pan-x;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.calendar-swipe {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optimiser les NumberWheel pour éviter les event listeners non-passifs */
+.number-wheel {
+  touch-action: none; /* Nécessaire pour preventDefault() dans les gestures */
+}
+
+/* Optimiser les composants avec react-easy-crop */
+.crop-container {
+  touch-action: none;
+}
+
+/* Correction des icônes date/heure en thème sombre */
+@media (prefers-color-scheme: dark) {
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  cursor: pointer !important;
+}

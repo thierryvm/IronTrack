@@ -1,0 +1,23 @@
+{
+  "brand": { "name": "IronTrack", "tagline": "Train zwaarder, leef lichter." },
+  "nav": {
+    "home": "Start",
+    "workouts": "Sessies",
+    "progress": "Vooruitgang",
+    "nutrition": "Voeding",
+    "profile": "Profiel",
+    "login": "Aanmelden",
+    "signup": "Account maken"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Masterclass redesign",
+      "train": "Train",
+      "heavier": "zwaarder,",
+      "live": "leef",
+      "lighter": "lichter.",
+      "lede": "Een fitness-app gebouwd als een atelierboek: precies, redactioneel, brutalistisch. Geen confetti. Geen jargon. Enkel jouw lichaam, jouw cijfers, jouw vooruitgang."
+    },
+    "cta": { "start": "Sessie starten", "login": "Aanmelden" }
+  }
+}

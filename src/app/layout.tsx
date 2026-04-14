@@ -1,102 +1,103 @@
-import type { Metadata, Viewport} from"next";
-import { Inter} from"next/font/google";
-import"./globals.css";
-import ClientProviders from"@/components/ClientProviders";
-import VercelProviders from"@/components/VercelProviders";
-import ConditionalHeader from"@/components/layout/ConditionalHeader";
-import {
- APP_DESCRIPTION,
- APP_NAME,
- APP_URL,
- DEFAULT_OG_IMAGE,
-} from"./metadata";
+import type { Metadata, Viewport } from 'next';
+import { Fraunces, Manrope, JetBrains_Mono } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({
- subsets: ["latin"],
- variable:"--font-inter",
- display:"swap",
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+  axes: ['opsz', 'SOFT'],
 });
 
-export const metadata: Metadata = {
- metadataBase: new URL(APP_URL),
- applicationName: APP_NAME,
- title: {
- default:"IronTrack - Fitness, musculation et nutrition",
- template:`%s | ${APP_NAME}`,
-},
- description: APP_DESCRIPTION,
- keywords: ["musculation","fitness","nutrition","entraînement","progression","planning sportif","coach","sport"],
- authors: [{ name:"IronTrack Team"}],
- creator:"IronTrack Team",
- publisher: APP_NAME,
- category:"fitness",
- icons: {
- icon: [
- { url:"/icon.svg", type:"image/svg+xml"},
- { url:"/logo-32.webp", sizes:"32x32", type:"image/webp"},
- { url:"/logo-128.webp", sizes:"128x128", type:"image/webp"},
- ],
- apple:"/logo-128.webp",
-},
- manifest:"/manifest.json",
- robots: {
- index: true,
- follow: true,
- googleBot: {
- index: true,
- follow: true,
-"max-video-preview": -1,
-"max-image-preview":"large",
-"max-snippet": -1,
-},
-},
- alternates: {
- canonical: APP_URL,
-},
- openGraph: {
- type:"website",
- locale:"fr_BE",
- url: APP_URL,
- title:"IronTrack - Fitness, musculation et nutrition",
- description: APP_DESCRIPTION,
- siteName: APP_NAME,
- images: [DEFAULT_OG_IMAGE],
-},
- twitter: {
- card:"summary_large_image",
- title:"IronTrack - Fitness, musculation et nutrition",
- description: APP_DESCRIPTION,
- images: [DEFAULT_OG_IMAGE.url],
-},
-};
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+});
 
 export const viewport: Viewport = {
- width:"device-width",
- initialScale: 1,
- maximumScale: 5, // WCAG compliance - minimum 5x zoom
- userScalable: true, // Accessibilité requise pour zoom
- viewportFit:"cover", // Support iPhone safe areas
- themeColor: "#FF6B00",
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F5F1EA' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0A0A' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  ),
+  title: {
+    default: 'IronTrack — Train heavier, live lighter.',
+    template: '%s · IronTrack',
+  },
+  description:
+    "Une app fitness pensée comme un carnet d'atelier. Précise, éditoriale, brutaliste. Musculation, cardio, nutrition.",
+  applicationName: 'IronTrack',
+  keywords: [
+    'fitness',
+    'musculation',
+    'cardio',
+    'nutrition',
+    'workout tracker',
+    'strength training',
+    'Belgique',
+  ],
+  authors: [{ name: 'Thierry VM' }],
+  creator: 'Thierry VM',
+  publisher: 'IronTrack',
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  manifest: '/manifest.webmanifest',
+  openGraph: {
+    type: 'website',
+    siteName: 'IronTrack',
+    title: 'IronTrack — Train heavier, live lighter.',
+    description:
+      "Une app fitness pensée comme un carnet d'atelier. Précise, éditoriale, brutaliste.",
+    locale: 'fr_BE',
+    alternateLocale: ['nl_BE', 'en_BE'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'IronTrack — Train heavier, live lighter.',
+    description: "Une app fitness pensée comme un carnet d'atelier.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
- children,
-}: Readonly<{
- children: React.ReactNode;
-}>) {
- return (
- <html lang="fr" className={`dark h-full ${inter.variable}`}>
- <body className="antialiased min-h-screen overflow-x-hidden" suppressHydrationWarning>
- <ClientProviders>
- <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
- <ConditionalHeader />
- <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden pb-20 md:pb-0">
- {children}
- </main>
- </div>
- </ClientProviders>
- <VercelProviders />
- </body>
- </html>
- );
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html
+      lang="fr"
+      suppressHydrationWarning
+      className={`${fraunces.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="grain">{children}</body>
+    </html>
+  );
 }

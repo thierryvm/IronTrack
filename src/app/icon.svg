@@ -1,0 +1,11 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IronTrack">
+  <title>IronTrack</title>
+  <rect width="256" height="256" rx="56" fill="#FF6B00"/>
+  <!-- Editorial "I" that doubles as a barbell seen face-on.
+       Top/bottom slab serifs read as weight plates; the stem reads as the bar. -->
+  <rect x="54" y="50" width="148" height="24" rx="3" fill="#F5F1EA"/>
+  <rect x="116" y="50" width="24" height="156" fill="#F5F1EA"/>
+  <rect x="54" y="182" width="148" height="24" rx="3" fill="#F5F1EA"/>
+  <!-- Acid-lime PR signature dot, upper right -->
+  <circle cx="218" cy="58" r="12" fill="#D4FF3A"/>
+</svg>

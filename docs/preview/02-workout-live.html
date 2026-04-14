@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>02 — Live Session · IronTrack v2</title>
+<link rel="stylesheet" href="./tokens.css" />
+<style>
+  body { padding: 0 0 160px; background: var(--obsidian); }
+  .app { max-width: 440px; margin: 0 auto; padding: 20px 20px 40px; }
+
+  /* Top record bar */
+  .record-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255, 61, 61, 0.08);
+    border: 1px solid rgba(255, 61, 61, 0.2);
+    border-radius: var(--r-full);
+    margin-bottom: 24px;
+  }
+  .record-bar .rec-left {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pulse);
+    font-weight: 700;
+  }
+  .rec-dot {
+    width: 8px; height: 8px;
+    background: var(--pulse);
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .record-bar .rec-time {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--chalk);
+  }
+  .record-bar button {
+    color: var(--chalk-muted);
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Title */
+  .session-head {
+    margin-bottom: 28px;
+  }
+  .session-head .eyebrow {
+    color: var(--chalk-2);
+  }
+  .session-head h1 {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 8px 0 0;
+    color: var(--chalk);
+  }
+  .session-head h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--brand);
+  }
+  .exo-nav {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--chalk-2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .exo-nav .dots { display: flex; gap: 6px; }
+  .exo-nav .dots .d { width: 6px; height: 6px; border-radius: 50%; background: var(--obsidian-4); }
+  .exo-nav .dots .d.active { background: var(--brand); width: 18px; border-radius: 3px; }
+  .exo-nav .dots .d.done { background: var(--chalk-muted); }
+
+  /* Current set focus */
+  .current-set {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: var(--r-xl);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .current-set::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 260px; height: 260px;
+    background: var(--brand);
+    filter: blur(100px);
+    opacity: 0.25;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .current-set .set-label {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-2);
+  }
+  .current-set .set-label .active-tag {
+    background: var(--brand);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .big-numbers {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 12px;
+  }
+  .big-numbers .num {
+    font-family: var(--font-display);
+    font-size: 104px;
+    line-height: 0.9;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: #FFFFFF;
+    text-align: center;
+    font-variation-settings: 'opsz' 144;
+    text-shadow: 0 2px 24px rgba(255, 107, 0, 0.28);
+  }
+  .big-numbers .num.pop { color: var(--brand); }
+  .big-numbers .x {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--brand);
+  }
+  .unit-row {
+    display: flex;
+    justify-content: space-around;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-muted);
+    margin-bottom: 8px;
+  }
+
+  .adjust-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .adjust-group {
+    background: var(--obsidian-3);
+    border-radius: var(--r-md);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .adjust-group button {
+    width: 36px; height: 36px;
+    border-radius: var(--r-sm);
+    background: var(--obsidian-4);
+    color: var(--chalk);
+    font-size: 18px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adjust-group .val {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--chalk);
+    letter-spacing: 0.04em;
+  }
+
+  .log-btn {
+    margin-top: 20px;
+    width: 100%;
+    background: var(--brand);
+    color: #fff;
+    padding: 18px;
+    border-radius: var(--r-full);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Sets completed list */
+  .sets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .set-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-3);
+    border-radius: var(--r-md);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--chalk);
+  }
+  .set-row.done { opacity: 0.72; }
+  .set-row.current {
+    border-color: var(--brand);
+    background: rgba(255, 107, 0, 0.06);
+    color: var(--chalk);
+    font-weight: 700;
+  }
+  .set-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--obsidian-4);
+    color: transparent;
+    font-size: 12px;
+  }
+  .set-row.done .set-check { background: var(--brand); color: #fff; }
+  .set-row .reps { color: var(--chalk-2); font-size: 12px; }
+  .set-row .target { color: var(--chalk-2); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+  .set-row.pr .target { color: var(--acid); }
+
+  /* Rest timer */
+  .rest {
+    margin: 28px 0;
+    padding: 24px;
+    background: linear-gradient(180deg, var(--obsidian-2) 0%, var(--obsidian-3) 100%);
+    border-radius: var(--r-xl);
+    text-align: center;
+    border: 1px solid var(--obsidian-4);
+    position: relative;
+    overflow: hidden;
+  }
+  .rest .eyebrow {
+    color: var(--chalk-2);
+  }
+  .rest .countdown {
+    font-family: var(--font-display);
+    font-size: 96px;
+    line-height: 0.9;
+    font-weight: 600;
+    color: var(--acid);
+    margin: 8px 0 12px;
+    letter-spacing: -0.04em;
+    font-variation-settings: 'opsz' 144;
+    text-shadow: 0 0 32px rgba(212, 255, 58, 0.35);
+  }
+  .rest-track {
+    height: 4px;
+    background: var(--obsidian-4);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .rest-track .fill {
+    height: 100%;
+    background: var(--acid);
+    width: 58%;
+    border-radius: 2px;
+    animation: widen 2s var(--ease-out) both;
+    transform-origin: left;
+  }
+  .rest .advice {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--chalk-2);
+    margin-top: 14px;
+    font-weight: 400;
+  }
+  .rest .controls { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  .rest .controls button {
+    color: var(--chalk-2);
+    padding: 10px 16px;
+    border: 1px solid rgba(212, 255, 58, 0.25);
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: rgba(212, 255, 58, 0.04);
+  }
+  .rest .controls button:hover {
+    color: var(--acid);
+    border-color: var(--acid);
+    background: rgba(212, 255, 58, 0.12);
+    transform: translateY(-1px);
+  }
+
+  /* Metrics strip */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--obsidian-4);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .metric {
+    background: var(--obsidian-2);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .metric .val {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--chalk);
+    letter-spacing: -0.02em;
+  }
+  .metric .val { font-size: 26px; }
+  .metric .val.hr { color: var(--pulse); text-shadow: 0 0 16px rgba(255, 61, 61, 0.4); }
+  .metric .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--chalk-2);
+  }
+
+  /* Next exercise teaser */
+  .next-teaser {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px dashed var(--obsidian-4);
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .next-teaser { transition: all 200ms var(--ease); cursor: pointer; }
+  .next-teaser:hover { border-color: var(--brand); background: rgba(255, 107, 0, 0.04); }
+  .next-teaser:hover .arrow { transform: translateX(4px); }
+  .next-teaser .lbl { font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--chalk-2); }
+  .next-teaser .name { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--chalk); margin-top: 4px; }
+  .next-teaser .arrow { color: var(--brand); font-size: 28px; transition: transform 200ms var(--ease); }
+
+  /* Sec title adapted for dark */
+  .sec-title h2 { color: var(--chalk); }
+  .sec-title a { color: var(--chalk-muted); }
+</style>
+</head>
+<body class="grain">
+
+<main class="app">
+
+  <div class="record-bar rise rise-1">
+    <div class="rec-left">
+      <span class="rec-dot"></span>
+      <span data-i18n="live.recording">Recording</span>
+    </div>
+    <div class="rec-time mono">18:42</div>
+    <button aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+  </div>
+
+  <div class="session-head rise rise-2">
+    <span class="eyebrow" data-i18n="live.exo">Exercice 2 / 5</span>
+    <h1>Rowing <em>barre.</em></h1>
+    <div class="exo-nav">
+      <div class="dots">
+        <span class="d done"></span>
+        <span class="d active"></span>
+        <span class="d"></span>
+        <span class="d"></span>
+        <span class="d"></span>
+      </div>
+      <span>Pull heavy, Push clean</span>
+    </div>
+  </div>
+
+  <!-- CURRENT SET -->
+  <div class="current-set rise rise-3">
+    <div class="set-label">
+      <span data-i18n="live.setInProgress">Série en cours</span>
+      <span class="active-tag">3 / 4</span>
+    </div>
+
+    <div class="big-numbers">
+      <div class="num mono">8</div>
+      <div class="x display-italic">×</div>
+      <div class="num mono pop">72,5</div>
+    </div>
+    <div class="unit-row">
+      <span data-i18n="live.reps">reps</span>
+      <span data-i18n="live.kg">kg</span>
+    </div>
+
+    <div class="adjust-row">
+      <div class="adjust-group">
+        <button>−</button>
+        <span class="val">8 reps</span>
+        <button>+</button>
+      </div>
+      <div class="adjust-group">
+        <button>−2.5</button>
+        <span class="val">72,5 kg</span>
+        <button>+2.5</button>
+      </div>
+    </div>
+
+    <button class="log-btn" data-i18n="live.validate">
+      Valider la série
+    </button>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics rise rise-3">
+    <div class="metric">
+      <span class="val hr mono">142</span>
+      <span class="lbl">BPM</span>
+    </div>
+    <div class="metric">
+      <span class="val mono">18:42</span>
+      <span class="lbl">Temps écoulé</span>
+    </div>
+    <div class="metric">
+      <span class="val mono" style="color: var(--acid);">342</span>
+      <span class="lbl">Kcal</span>
+    </div>
+  </div>
+
+  <!-- SETS LIST -->
+  <div class="sec-title rise rise-4" style="margin-top: 28px;">
+    <h2 style="font-size: 18px;">Séries</h2>
+    <a>Objectif 4 × 8 · 72,5 kg</a>
+  </div>
+  <div class="sets-list rise rise-4">
+    <div class="set-row done">
+      <div class="set-check">✓</div>
+      <div>Série 1</div>
+      <div>8 × 72,5 kg</div>
+      <div class="target">OK</div>
+    </div>
+    <div class="set-row done pr">
+      <div class="set-check">✓</div>
+      <div>Série 2</div>
+      <div>8 × 72,5 kg</div>
+      <div class="target">+ 1 RIR</div>
+    </div>
+    <div class="set-row current">
+      <div class="set-check" style="background: var(--brand); color: #fff;"></div>
+      <div>Série 3</div>
+      <div>— kg</div>
+      <div class="target" style="color: var(--brand);">EN COURS</div>
+    </div>
+    <div class="set-row">
+      <div class="set-check"></div>
+      <div>Série 4</div>
+      <div style="color: var(--chalk-muted);">8 × 72,5 kg</div>
+      <div class="target">À FAIRE</div>
+    </div>
+  </div>
+
+  <!-- REST TIMER -->
+  <div class="rest rise rise-5">
+    <span class="eyebrow" data-i18n="live.rest">Repos · objectif 2:30</span>
+    <div class="countdown mono">01:28</div>
+    <div class="rest-track">
+      <div class="fill"></div>
+    </div>
+    <div class="advice" data-i18n="live.advice">Respire par le nez. Reste mobile.</div>
+    <div class="controls">
+      <button>− 15s</button>
+      <button>skip</button>
+      <button>+ 15s</button>
+    </div>
+  </div>
+
+  <!-- NEXT TEASER -->
+  <div class="next-teaser rise rise-6">
+    <div>
+      <div class="lbl" data-i18n="live.nextExo">À suivre · exercice 3</div>
+      <div class="name">Développé militaire</div>
+    </div>
+    <span class="arrow">→</span>
+  </div>
+
+</main>
+
+<nav class="mock-nav">
+  <a href="./index.html" data-i18n="nav.index">Index</a>
+  <span class="sep"></span>
+  <a href="./00-design-tokens.html" data-i18n="nav.system">00 System</a>
+  <a href="./01-home.html" data-i18n="nav.home">01 Home</a>
+  <a href="./02-workout-live.html" class="active" data-i18n="nav.live">02 Live</a>
+  <a href="./03-progress.html" data-i18n="nav.data">03 Data</a>
+  <a href="./04-nutrition.html" data-i18n="nav.fuel">04 Fuel</a>
+  <a href="./05-profile.html" data-i18n="nav.profile">05 Profile</a>
+  <span class="sep"></span>
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')" aria-label="Toggle theme">◐</button>
+</nav>
+
+<script src="./i18n.js" defer></script>
+
+</body>
+</html>
