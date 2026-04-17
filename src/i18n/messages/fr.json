@@ -208,7 +208,7 @@
       "password": {
         "label": "Mot de passe",
         "placeholder": "Au moins 10 caractères",
-        "help": "10 caractères min · 1 majuscule · 1 chiffre"
+        "help": "10 caractères · 1 majuscule · 1 chiffre · 1 spécial (!@#…)"
       },
       "submit": "Recevoir le lien",
       "signin": "Se connecter",
@@ -228,7 +228,7 @@
       "emailInvalid": "Cette adresse email n'est pas valide.",
       "passwordTooShort": "Mot de passe trop court (10 caractères min).",
       "passwordTooLong": "Mot de passe trop long (72 caractères max).",
-      "passwordWeak": "Ajoute au moins une majuscule, une minuscule et un chiffre.",
+      "passwordWeak": "Ajoute au moins une majuscule, une minuscule, un chiffre et un caractère spécial (!@#$…).",
       "invalidCredentials": "Email ou mot de passe incorrect.",
       "emailTaken": "Un compte existe déjà avec cet email. Connecte-toi.",
       "rateLimit": "Trop de tentatives. Réessaie dans une minute.",

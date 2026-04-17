@@ -208,7 +208,7 @@
       "password": {
         "label": "Password",
         "placeholder": "At least 10 characters",
-        "help": "10 chars min · 1 uppercase · 1 digit"
+        "help": "10 chars · 1 uppercase · 1 digit · 1 special (!@#…)"
       },
       "submit": "Send the link",
       "signin": "Sign in",
@@ -228,7 +228,7 @@
       "emailInvalid": "This email address is not valid.",
       "passwordTooShort": "Password too short (10 characters min).",
       "passwordTooLong": "Password too long (72 characters max).",
-      "passwordWeak": "Add at least one uppercase, one lowercase and one digit.",
+      "passwordWeak": "Add at least one uppercase, one lowercase, one digit and one special character (!@#$…).",
       "invalidCredentials": "Wrong email or password.",
       "emailTaken": "An account already exists with this email. Sign in.",
       "rateLimit": "Too many attempts. Try again in a minute.",
