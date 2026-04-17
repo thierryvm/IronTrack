@@ -34,7 +34,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
-      <header className="mb-12 flex items-start justify-between gap-4">
+      <header className="mb-12 flex flex-col items-start gap-6 sm:flex-row sm:justify-between sm:gap-4">
         <div className="flex items-start gap-5">
           <Link
             href={`/${typedLocale}/profile`}
@@ -47,19 +47,19 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
               size="lg"
             />
           </Link>
-          <div>
+          <div className="min-w-0">
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
               {t('eyebrow')}
             </p>
-            <h1 className="mt-3 font-display text-5xl leading-tight text-foreground">
+            <h1 className="mt-3 font-display text-4xl leading-tight text-foreground break-words sm:text-5xl">
               {t('hello', { name: displayName })}
             </h1>
-            <p className="mt-3 text-base text-muted-foreground">
+            <p className="mt-3 break-words text-base text-muted-foreground">
               {t('greeting', { email: user.email ?? '' })}
             </p>
           </div>
         </div>
-        <form action={signOut}>
+        <form action={signOut} className="shrink-0">
           <input type="hidden" name="locale" value={typedLocale} />
           <button
             type="submit"
@@ -105,13 +105,13 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         <div className="mt-6 flex flex-wrap gap-6 font-mono text-xs uppercase tracking-widest">
           <Link
             href={`/${typedLocale}/profile`}
-            className="underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center py-2 underline-offset-4 hover:underline"
           >
             {t('profileLink')} →
           </Link>
           <Link
             href={`/${typedLocale}`}
-            className="underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center py-2 underline-offset-4 hover:underline"
           >
             ← {t('back')}
           </Link>
