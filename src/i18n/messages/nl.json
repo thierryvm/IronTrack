@@ -185,6 +185,16 @@
     "title": "Jij, in cijfers.",
     "lede": "Aangemeld als {email}. Je kunt je pseudoniem en je naam op elk moment wijzigen.",
     "logout": "Afmelden",
+    "avatar": {
+      "label": "FOTO",
+      "heading": "Je profielfoto.",
+      "pick": "Foto kiezen",
+      "replace": "Foto vervangen",
+      "remove": "Verwijderen",
+      "uploading": "Uploaden…",
+      "removing": "Verwijderen…",
+      "help": "JPG, PNG, WebP of GIF · max 5 MB · vierkant aanbevolen."
+    },
     "section": {
       "label": "IDENTITEIT",
       "heading": "Hoe moeten we je noemen?"
@@ -211,6 +221,9 @@
       "pseudoTaken": "Dit pseudoniem is al in gebruik.",
       "fullNameRequired": "Vul een naam in of laat leeg.",
       "fullNameTooLong": "Naam te lang (max 50 tekens).",
+      "avatarTooLarge": "Afbeelding te groot (max 5 MB).",
+      "avatarMimeType": "Niet-ondersteund formaat. JPG, PNG, WebP of GIF.",
+      "avatarUpload": "Uploaden mislukt. Probeer opnieuw.",
       "rateLimit": "Te veel pogingen. Probeer het over een minuut opnieuw.",
       "generic": "Er is iets misgegaan. Probeer opnieuw."
     },

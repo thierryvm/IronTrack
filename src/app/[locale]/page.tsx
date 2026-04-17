@@ -63,6 +63,7 @@ export default async function HomePage({ params }: HomePageProps) {
             locale={typedLocale}
             isAuthenticated={Boolean(user)}
             displayName={displayName}
+            avatarUrl={profile?.avatar_url ?? null}
           />
         </div>
 

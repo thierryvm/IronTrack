@@ -1,15 +1,22 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
+import { Avatar } from '@/components/avatar';
 import type { Locale } from '@/i18n/request';
 
 interface HeroProps {
   locale: Locale;
   isAuthenticated: boolean;
   displayName?: string | null;
+  avatarUrl?: string | null;
 }
 
-export function HomeHero({ locale, isAuthenticated, displayName }: HeroProps) {
+export function HomeHero({
+  locale,
+  isAuthenticated,
+  displayName,
+  avatarUrl,
+}: HeroProps) {
   const t = useTranslations('home.hero');
 
   return (
@@ -56,12 +63,18 @@ export function HomeHero({ locale, isAuthenticated, displayName }: HeroProps) {
                 </span>
               </Link>
               {displayName && (
-                <span
-                  className="font-mono text-xs uppercase tracking-widest"
+                <Link
+                  href={`/${locale}/profile`}
+                  className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest underline-offset-4 hover:underline"
                   style={{ color: 'var(--color-muted-foreground)' }}
                 >
-                  · {displayName}
-                </span>
+                  <Avatar
+                    src={avatarUrl}
+                    displayName={displayName}
+                    size="sm"
+                  />
+                  {displayName}
+                </Link>
               )}
             </>
           ) : (
