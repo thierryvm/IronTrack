@@ -173,9 +173,35 @@
       "body": "Pick a username to personalise your space — and, later, train alongside partners.",
       "cta": "Complete my profile"
     },
-    "placeholder": {
-      "label": "COMING NEXT",
-      "body": "The real dashboard is on its way: your last session, your records, your upcoming sessions, your progress graphs."
+    "empty": {
+      "label": "FIRST SESSION",
+      "body": "No data yet. Log your first session to see your numbers here.",
+      "subtext": "Your streak, records and history will appear once your first session is complete."
+    },
+    "stats": {
+      "heading": "Statistics",
+      "streak": {
+        "label": "STREAK",
+        "days": "{count, plural, =0 {day} one {day in a row} other {days in a row}}",
+        "record": "Record: {count, plural, one {# day} other {# days}}"
+      },
+      "sevenDays": {
+        "label": "LAST 7 DAYS",
+        "workouts": "{count, plural, =0 {session} one {session} other {sessions}}",
+        "subtext": "Sessions completed this week"
+      },
+      "lastPerformance": {
+        "label": "LAST PERFORMANCE",
+        "weight": "Load",
+        "reps": "Reps",
+        "distance": "Distance",
+        "duration": "Duration"
+      },
+      "recentWorkouts": {
+        "label": "HISTORY",
+        "heading": "Your latest sessions.",
+        "empty": "No completed sessions yet."
+      }
     }
   },
   "profile": {

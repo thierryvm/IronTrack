@@ -8,10 +8,21 @@ export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 600);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const update = () => {
+      // Ne s'affiche que si (1) la page est réellement plus longue que le
+      // viewport + un seuil utile, et (2) l'utilisateur a scrollé. Sinon sur
+      // les pages courtes (login, erreurs) le bouton apparaissait à tort.
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight > 600;
+      setVisible(scrollable && window.scrollY > 600);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
   }, []);
 
   return (
