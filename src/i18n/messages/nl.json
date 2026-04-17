@@ -179,11 +179,11 @@
   },
   "auth": {
     "login": {
-      "metaTitle": "Aanmelden · IronTrack",
-      "metaDescription": "Meld je aan bij IronTrack met een magic link. Geen wachtwoord nodig.",
+      "metaTitle": "Aanmelden",
+      "metaDescription": "Meld je aan bij IronTrack met Google of met je e-mail en wachtwoord.",
       "eyebrow": "TOEGANG · IRONTRACK",
       "title": "Welkom terug.",
-      "lede": "Meld je aan met Google of ontvang een magic link per e-mail. Geen wachtwoord nodig.",
+      "lede": "Meld je aan met Google of met je e-mail. That's it.",
       "editorialKicker": "MANIFEST · 01",
       "editorialQuote": "« IJzer liegt nooit. Je cijfers ook niet. »",
       "editorialAttribution": "Een fitness-app als een atelierboek. Geen holle gamification, geen stresserende meldingen. Enkel je data, je vooruitgang, je routine.",
