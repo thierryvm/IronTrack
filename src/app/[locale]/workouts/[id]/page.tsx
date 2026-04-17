@@ -42,6 +42,10 @@ export default async function WorkoutDetailPage({
     : 'fr';
   setRequestLocale(typedLocale);
 
+  // Auth AVANT tout parsing — un anonyme ne doit pas pouvoir sonder
+  // l'espace des URLs (même pour se voir renvoyer un 404).
+  const user = await requireUser(typedLocale);
+
   // Parsing strict : rejette "abc", "1.5", "1e10", négatifs.
   const workoutId = Number.parseInt(idParam, 10);
   if (
@@ -52,7 +56,6 @@ export default async function WorkoutDetailPage({
     notFound();
   }
 
-  const user = await requireUser(typedLocale);
   const detail = await getWorkoutDetail(user.id, workoutId);
   if (!detail) notFound();
 
