@@ -8,6 +8,13 @@ import {
 } from './schema';
 
 /**
+ * Statuts "séance terminée" côté legacy IronTrack v1 (contrainte CHECK sur la
+ * colonne `workouts.status`). On garde les deux valeurs pour rester rétro-compat.
+ * Toute normalisation future (vers 'completed') se fera via migration.
+ */
+const COMPLETED_STATUSES = ['Terminé', 'Réalisé'] as const;
+
+/**
  * Stats affichées sur le dashboard v2.
  *
  * Toutes les queries sont faites via `createServerClient` (cookies utilisateur) :
@@ -40,14 +47,14 @@ export async function getDashboardStats(
       .from('workouts')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .eq('status', 'completed')
+      .in('status', COMPLETED_STATUSES)
       .gte('end_time', sevenDaysAgoISO),
 
     supabase
       .from('workouts')
       .select('id, name, end_time, duration, type, status')
       .eq('user_id', userId)
-      .eq('status', 'completed')
+      .in('status', COMPLETED_STATUSES)
       .not('end_time', 'is', null)
       .order('end_time', { ascending: false })
       .limit(5),
