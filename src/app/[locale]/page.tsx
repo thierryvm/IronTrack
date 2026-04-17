@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { LangSwitcher } from '@/components/lang-switcher';
+import { ScrollToTop } from '@/components/scroll-to-top';
 import { LOCALES, type Locale } from '@/i18n/request';
 import { getUser } from '@/lib/auth';
 
@@ -89,6 +90,8 @@ export default async function HomePage({ params }: HomePageProps) {
           <p className="eyebrow">{t('footer.build')}</p>
         </div>
       </footer>
+
+      <ScrollToTop />
     </>
   );
 }
