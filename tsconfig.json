@@ -43,6 +43,9 @@
     "node_modules",
     ".next",
     "out",
-    "src-legacy"
+    "src-legacy",
+    "tests",
+    "playwright.config.ts",
+    "scripts"
   ]
 }

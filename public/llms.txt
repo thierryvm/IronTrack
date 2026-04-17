@@ -1,106 +1,43 @@
-# IronTrack - Application de Musculation Complète
+# IronTrack
 
-## Description
-IronTrack est une application web moderne de suivi d'entraînement de musculation développée avec Next.js 15, TypeScript et Supabase. Elle offre une solution complète pour planifier, suivre et analyser ses séances de musculation avec une interface responsive mobile-first.
+> Train heavier, live lighter. A Belgian fitness web app that tracks strength training, cardio, nutrition, progress, and training partners — built as an editorial, brutalist workshop notebook. Free forever tier, privacy-first, GDPR-compliant.
 
-IronTrack est destinée aux pratiquants belges et francophones, mais accessible à tous.
+IronTrack is a Next.js 16 / Supabase / Vercel application available in French (default), Dutch and English. It is designed for serious lifters and runners who want precision without gamification noise. Developed in Belgium, it uses the metric system natively and integrates with Belgian retailer product data.
 
-## Fonctionnalités Principales
+## Core features
 
-### Timer de Session Avancé
-- Timer multi-étapes personnalisable avec notifications audio
-- Interface responsive adaptée à tous les formats d'écran
-- Gestion des temps de repos, échauffement et exercices principaux
-- Contrôles intuitifs (play, pause, suivant, précédent, reset)
+- Strength training sessions with live logging (weight, reps, RIR, tempo) and historical volume analytics
+- Cardio sessions with advanced metrics (stroke rate SPM, watts, heart rate BPM, incline, cadence RPM, resistance) adapted to Belgian equipment conventions
+- Exercise library with custom creation wizard, AI-assisted suggestions, duplicate detection, and muscle-group / equipment taxonomy
+- Nutrition tracker with Open Food Facts integration (Belgian retailers: Colruyt, Delhaize, Carrefour, Lidl), Nutri-Score display, barcode scanning via Web BarcodeDetector API, and macro targets
+- Progress dashboards with personal records, progression charts, and trend detection (improving / stable / declining)
+- Training partners with realtime shared sessions and nutrition visibility via Supabase Realtime
+- Admin panel with site health monitoring, bidirectional support tickets, user management, security audits, and GDPR exports
+- Multilingual routing (FR default / NL / EN) with hreflang alternates
+- PWA with offline support, installable on iOS and Android
 
-### Gestion des Exercices
-- Base de données complète d'exercices de musculation et cardio
-- Création et modification d'exercices personnalisés via wizard IA
-- Suivi des performances avec historique détaillé
-- Catégorisation par groupes musculaires et équipement
-- Métriques avancées cardio : SPM (rameur), watts, rythme cardiaque, inclinaison, cadence
+## Tech stack
 
-### Calendrier et Planification
-- Calendrier interactif pour planifier les séances
-- Visualisation des entraînements passés et futurs
-- Séances partagées avec partenaires d'entraînement
-- Rappels et notifications
+- Framework: Next.js 16 App Router, React 19, TypeScript strict
+- Styling: Tailwind CSS v4 (CSS-first @theme tokens), shadcn/ui new-york, Fraunces / Manrope / JetBrains Mono typography
+- Backend: Supabase (Postgres with RLS, Realtime, Storage, Auth SSR)
+- Deployment: Vercel with Fluid Compute on Node 22 LTS
+- AI: Vercel AI SDK v6 + AI Gateway (Gemini 2.0 Flash free tier)
+- Observability: Sentry + Vercel Analytics
+- i18n: next-intl v3 with middleware-based locale routing
 
-### Système de Partenaires d'Entraînement
-- Connexion avec d'autres utilisateurs via recherche par pseudo/email
-- Partage sélectif de séances et programmes
-- Motivation et suivi collectif
-- Partage des données nutritionnelles entre partenaires
+## Documentation
 
-### Suivi Nutritionnel
-- Base de données d'aliments et recettes
-- Calcul automatique des macronutriments
-- Planification des repas
-- Partage de recettes entre partenaires
+- Homepage: https://iron-track-dusky.vercel.app
+- Repository: https://github.com/thierryvm/IronTrack
+- Privacy policy: /fr/legal/privacy
+- Terms of service: /fr/legal/terms
 
-### Analyse et Progression
-- Graphiques détaillés de progression par exercice
-- Statistiques avancées et comparaisons temporelles
-- Suivi du volume d'entraînement
-- Export des données personnelles (RGPD)
+## Principles
 
-### Tableau de Bord Santé Système (Admin)
-- Surveillance en temps réel des dépendances et versions
-- Score de santé global avec indicateurs visuels
-- Vérifications de sécurité automatisées
-- Monitoring du runtime applicatif
-
-## Technologies
-- **Frontend**: Next.js 15 avec App Router, TypeScript strict, Tailwind CSS v4
-- **Backend**: Supabase (PostgreSQL, Authentication SSR, Real-time WebSocket)
-- **UI/UX**: shadcn/ui, Framer Motion, Lucide Icons, design system tokens
-- **Déploiement**: Vercel avec optimisations automatiques
-- **PWA**: Progressive Web App installable sur iOS et Android
-
-## Public Cible
-- Pratiquants de musculation débutants à avancés
-- Coachs sportifs et préparateurs physiques
-- Groupes d'entraînement et clubs de fitness
-- Personnes cherchant un suivi structuré de leur progression
-- Utilisateurs belges et francophones
-
-## Cas d'Usage Typiques
-1. **Débutant**: Utilise les programmes pré-définis et le timer guidé
-2. **Intermédiaire**: Crée ses propres séances et suit sa progression
-3. **Avancé**: Analyse ses performances et optimise ses programmes
-4. **Coach**: Gère plusieurs clients et partage des programmes
-5. **Groupe**: S'entraîne ensemble avec des séances partagées
-
-## Sécurité et Protection des Données
-- **Authentification sécurisée**: OAuth 2.0 via Supabase Auth
-- **HTTPS obligatoire**: Toutes les communications chiffrées
-- **RGPD compliant**: Conforme au RGPD et à la loi belge (APD)
-  - Droit d'accès, de rectification et de suppression des données
-  - Export des données personnelles disponible
-  - Conservation limitée : comptes inactifs supprimés après 3 ans
-- **Row Level Security (RLS)**: Isolation stricte des données utilisateurs
-- **Politique CSP**: Content Security Policy stricte en production
-- **Aucune donnée médicale**: Pas de données de santé au sens médical
-
-## Accessibilité et Performance
-- Conformité WCAG 2.1 AA
-- Support PWA pour installation mobile
-- Optimisation Core Web Vitals
-- Compatible tous navigateurs modernes
-
-## Pages Publiques
-- `/` — Page d'accueil
-- `/faq` — Questions fréquentes
-- `/support` — Centre d'aide et documentation
-- `/pwa-guide` — Guide d'installation PWA
-- `/legal/privacy` — Politique de confidentialité
-- `/legal/terms` — Conditions générales d'utilisation
-
-## Contact et Support
-- Support technique intégré à l'application (tickets)
-- Documentation complète disponible dans l'application
-- Communauté active d'utilisateurs
-
----
-Dernière mise à jour: 2026-03-26
-Version: 2.0
+- Zero paid dependency in runtime — every external service has a meaningful free tier
+- GDPR-compliant by design (Belgian user base, data residency in EU)
+- Accessibility: WCAG 2.2 AA minimum on all interactive surfaces
+- Lighthouse target: 100 across Performance, Accessibility, Best Practices and SEO
+- Editorial-brutalist design language, opinionated and distinctive
+- No dark patterns, no streak anxiety, no forced gamification

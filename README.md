@@ -1,79 +1,87 @@
-# IronTrack
+# IronTrack v2
 
-Application de suivi fitness et musculation — Next.js 15 + Supabase + Vercel.
+**Train heavier, live lighter.** — Une app fitness éditoriale, précise, brutaliste. Belgique 🇧🇪.
 
-**Production** : [iron-track-dusky.vercel.app](https://iron-track-dusky.vercel.app)
+Production : [iron-track-dusky.vercel.app](https://iron-track-dusky.vercel.app)
 
 ---
 
-## Fonctionnalités
+## Stack
 
-| Module | Description |
+| Couche | Techno |
 |---|---|
-| **Exercices** | Bibliothèque personnalisée avec assistant de création intelligent |
-| **Performances** | Historique détaillé — séries, répétitions, poids, métriques cardio |
-| **Cardio avancé** | Rameur (SPM, watts), tapis (inclinaison, vitesse), vélo (cadence, résistance) |
-| **Nutrition** | Suivi alimentaire et calculs nutritionnels |
-| **Progression** | Graphiques de progression par exercice et période |
-| **Calendrier** | Planification des séances d'entraînement |
-| **Partenaires** | Partage de programmes avec d'autres utilisateurs |
-| **Notifications** | Rappels d'entraînement |
-| **Support** | Système de tickets intégré |
-| **Admin** | Panneau d'administration (utilisateurs, logs, exports) |
-| **PWA** | Installable comme application native sur mobile/desktop |
+| Framework | Next.js **16** (App Router, Turbopack) |
+| UI | React 19 · Tailwind CSS **v4** (@theme CSS-first) · shadcn/ui new-york |
+| Typo | Fraunces (display) · Manrope (body) · JetBrains Mono (data) |
+| i18n | next-intl v3 — **FR** (défaut) / NL / EN |
+| Backend | Supabase (Postgres + RLS + Auth SSR + Realtime + Storage) |
+| Déploiement | Vercel (Fluid Compute, Node 22 LTS) |
+| IA | Vercel AI SDK + AI Gateway (Gemini 2.0 Flash — free tier) |
+| Observability | Sentry + Vercel Analytics |
+| Tests | Playwright + Vitest (à venir) |
+
+**Budget : 0 €** — chaque dépendance utilisée a un free tier durable.
 
 ---
 
-## Stack technique
+## Roadmap v2 (13 PRs)
 
-| Couche | Technologie |
-|---|---|
-| Framework | Next.js 15.5 — App Router |
-| Language | TypeScript strict |
-| UI | React 18 + Tailwind CSS + shadcn/ui |
-| Animations | Framer Motion |
-| Base de données | Supabase (PostgreSQL + RLS) |
-| Authentification | Supabase Auth |
-| IA | OpenAI API (suggestions d'exercices) |
-| Déploiement | Vercel (auto-deploy sur push `main`) |
-| Tests | Jest + Playwright |
+| # | Livrable | Status |
+|---|---|---|
+| 37 | Phase 1 — scaffold Next 16 + design system | ✅ mergé |
+| **38** | **Phase 2a — `[locale]` routing + CI + agents + SEO/GEO baseline** | 🚧 en cours |
+| 39 | Auth (login/signup/reset + OAuth Google + onboarding) | pending |
+| 40 | Exercises (CRUD + Wizard + duplicate detection) | pending |
+| 41 | Workouts (liste + détail + calendar) | pending |
+| 42 | **Session live** ⭐ — écran signature | pending |
+| 43 | Progress / stats / personal records | pending |
+| 44 | Nutrition MVP (Open Food Facts + macros) | pending |
+| 45 | Nutrition + recipes + barcode PWA | pending |
+| 46 | Training partners + realtime | pending |
+| 47 | Profile + settings | pending |
+| 48 | **Admin panel** 🛡️ (santé + tickets bidir + notifs + exports) | pending |
+| 49 | Gamification + notifications | pending |
+| 50 | AI coach + PWA Serwist + cleanup src-legacy | pending |
 
 ---
 
-## Installation
+## Qualité (gates à chaque PR)
 
-```bash
-npm install
-cp .env.example .env.local
-# Remplir .env.local avec vos clés (voir ci-dessous)
-npm run dev
-```
-
-### Variables d'environnement requises
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
-OPENAI_API_KEY=<openai-key>
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
+- **Lighthouse ≥ 95** par catégorie (Performance / A11y / BP / SEO)
+- **WCAG 2.2 AA** sur tout élément interactif
+- **TypeScript strict** + `noUncheckedIndexedAccess`
+- **CI GitHub Actions** : lint · typecheck · build · audit deps
+- **Design review** obligatoire (agent `ui-ux`)
+- **Security review** sur PR touchant auth / RLS / API (`cybersecurity-2026`)
+- **SEO/GEO review** (agent `seo-geo-2026`) — llms.txt, JSON-LD, hreflang
+- **Tests** sur features critiques (auth, session live, admin)
 
 ---
 
 ## Scripts
 
 ```bash
-npm run dev                  # Développement (port 3000)
-npm run build                # Build production
-npm run lint                 # ESLint
-npm run typecheck            # TypeScript
-npm run test                 # Tests unitaires (Jest)
-npm run test:e2e             # Tests end-to-end (Playwright)
-npm run test:contrast        # Tests contraste WCAG
-npm run test:regression      # Tests anti-régression
-npm run db:push              # Push migrations Supabase
-npm run db:refresh-cache     # Rafraîchir cache PostgREST
+npm run dev         # Dev (port 3000, Turbopack)
+npm run build       # Build production
+npm run lint        # ESLint
+npm run typecheck   # TypeScript
+npm run format      # Prettier
+npm run db:types    # Regen types Supabase
+npm run db:push     # Push migrations
+```
+
+---
+
+## Variables d'environnement
+
+Voir `.env.example`. Requises :
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SITE_URL=
+# Ajoutées au fil des PRs : SENTRY_DSN, UPSTASH_REDIS_*, AI_GATEWAY_API_KEY
 ```
 
 ---
@@ -82,43 +90,41 @@ npm run db:refresh-cache     # Rafraîchir cache PostgREST
 
 ```
 src/
-├── app/                    # Routes Next.js (App Router)
-│   ├── (auth)/             # Pages publiques
-│   ├── exercises/          # Gestion exercices
-│   ├── workouts/           # Séances
-│   ├── nutrition/          # Nutrition
-│   ├── progress/           # Progression
-│   ├── calendar/           # Calendrier
-│   ├── training-partners/  # Partenaires
-│   ├── admin/              # Administration
-│   └── api/                # API Routes
-├── components/             # Composants React
-├── hooks/                  # Custom hooks
-├── lib/                    # Utilitaires partagés
-└── utils/supabase/         # Client Supabase
+├── app/
+│   ├── [locale]/          # Toutes les pages localisées
+│   ├── globals.css        # Design tokens Tailwind v4 @theme
+│   ├── icon.svg           # Logo monogramme I
+│   ├── sitemap.ts         # Sitemap multilingue avec hreflang
+│   └── robots.ts          # Robots + whitelist crawlers IA
+├── components/
+│   ├── ui/                # shadcn primitives
+│   └── lang-switcher.tsx  # FR / NL / EN
+├── i18n/
+│   ├── request.ts
+│   └── messages/{fr,nl,en}.json
+├── lib/supabase/          # Clients typés <Database>
+└── middleware.ts          # Routing i18n + session
+
+.claude/agents/            # Agents spécialisés (orchestrator, ui-ux,
+                           # security, seo-geo-2026, supabase-expert,
+                           # observability, nutrition-data, i18n-translator,
+                           # rate-limiting, code-review, performance,
+                           # accessibility, testing, devops, architecture)
+
+src-legacy/                # Ancienne version — référence migration (à retirer en PR #50)
 ```
 
 ---
 
-## Sécurité
+## Principes
 
-- Row Level Security (RLS) activé sur toutes les tables
-- Validation Zod sur toutes les entrées utilisateur
-- Middleware d'authentification sur toutes les routes protégées
-- Protection CSRF intégrée (Next.js)
-- Conformité RGPD (utilisateurs belges)
-
----
-
-## Déploiement
-
-Push sur `main` → déploiement automatique Vercel.
-
-```bash
-# Déploiement manuel si besoin
-npx vercel deploy --prod --token "$VERCEL_TOKEN"
-```
+- Zéro dépendance runtime payante
+- Tutoiement partout (ton d'atelier, pas corporate)
+- Système métrique uniquement (user belge)
+- Dark mode via variables CSS (pas de `dark:bg-*` éparpillé)
+- RLS activé sur **toutes** les tables exposées
+- Pas de `console.log` en prod
 
 ---
 
-**IronTrack** — Belgique 🇧🇪
+🇧🇪 Made in Belgium · MIT

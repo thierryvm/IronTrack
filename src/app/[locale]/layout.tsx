@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Manrope, JetBrains_Mono } from 'next/font/google';
-import './globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import Script from 'next/script';
+
+import { LOCALES, type Locale } from '@/i18n/request';
+import '../globals.css';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -54,11 +60,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Thierry VM' }],
   creator: 'Thierry VM',
   publisher: 'IronTrack',
-  formatDetection: {
-    telephone: false,
-    email: false,
-    address: false,
-  },
+  formatDetection: { telephone: false, email: false, address: false },
   manifest: '/manifest.webmanifest',
   openGraph: {
     type: 'website',
@@ -86,18 +88,54 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }));
+}
+
+type LocaleLayoutProps = {
   children: React.ReactNode;
-}) {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: LocaleLayoutProps) {
+  const { locale } = await params;
+
+  if (!(LOCALES as readonly string[]).includes(locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale as Locale);
+  const messages = await getMessages();
+
   return (
     <html
-      lang="fr"
+      lang={locale}
       suppressHydrationWarning
       className={`${fraunces.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="grain">{children}</body>
+      <body className="grain">
+        {/* JSON-LD SoftwareApplication — SEO + GEO (Generative Engine Optimization) */}
+        <Script id="ld-json-software" type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'IronTrack',
+            description:
+              'Fitness web app for strength training, cardio, nutrition and training partners. Belgian-made, multilingual FR/NL/EN, GDPR-compliant, free forever tier.',
+            applicationCategory: 'HealthApplication',
+            operatingSystem: 'Web, iOS, Android (PWA)',
+            inLanguage: ['fr-BE', 'nl-BE', 'en'],
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+            author: { '@type': 'Person', name: 'Thierry VM' },
+          })}
+        </Script>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }
