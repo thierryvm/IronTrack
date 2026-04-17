@@ -74,9 +74,19 @@
     "login": {
       "metaTitle": "Sign in · IronTrack",
       "metaDescription": "Sign in to IronTrack with a magic link. No password required.",
-      "eyebrow": "ACCESS · MAGIC LINK",
-      "title": "Sign in.",
-      "lede": "No password. We email you a secure link."
+      "eyebrow": "ACCESS · IRONTRACK",
+      "title": "Welcome back.",
+      "lede": "Sign in with Google or get a magic link by email. No password to remember.",
+      "editorialKicker": "MANIFESTO · 01",
+      "editorialQuote": "\"The iron never lies. Neither do your numbers.\"",
+      "editorialAttribution": "A fitness app built like a workshop notebook. No empty gamification, no anxiety-driven notifications. Just your data, your progress, your routine.",
+      "terms": "By continuing, you accept our",
+      "privacy": "Privacy policy",
+      "termsLink": "Terms of service"
+    },
+    "oauth": {
+      "google": "Continue with Google",
+      "or": "OR BY EMAIL"
     },
     "form": {
       "email": {

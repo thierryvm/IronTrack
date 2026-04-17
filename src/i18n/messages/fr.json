@@ -74,9 +74,19 @@
     "login": {
       "metaTitle": "Connexion · IronTrack",
       "metaDescription": "Connecte-toi à IronTrack avec un lien magique. Aucun mot de passe.",
-      "eyebrow": "ACCÈS · MAGIC LINK",
-      "title": "Connecte-toi.",
-      "lede": "Pas de mot de passe. On t'envoie un lien sécurisé par email."
+      "eyebrow": "ACCÈS · IRONTRACK",
+      "title": "Bon retour.",
+      "lede": "Connecte-toi avec Google ou reçois un lien magique par email. Pas de mot de passe à retenir.",
+      "editorialKicker": "MANIFESTE · 01",
+      "editorialQuote": "« L'iron ne ment jamais. Tes chiffres non plus. »",
+      "editorialAttribution": "Une app fitness pensée comme un carnet d'atelier. Pas de gamification creuse, pas de notifications anxiogènes. Juste tes données, tes progrès, ta routine.",
+      "terms": "En continuant, tu acceptes notre",
+      "privacy": "Politique de confidentialité",
+      "termsLink": "Conditions d'utilisation"
+    },
+    "oauth": {
+      "google": "Continuer avec Google",
+      "or": "OU PAR EMAIL"
     },
     "form": {
       "email": {
