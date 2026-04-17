@@ -221,7 +221,8 @@
         "viewAll": "Voir tout l'historique"
       }
     },
-    "historyLink": "Voir tout l'historique"
+    "historyLink": "Voir tout l'historique",
+    "exercisesLink": "Bibliothèque d'exercices"
   },
   "profile": {
     "metaTitle": "Mon profil",
@@ -428,6 +429,53 @@
     },
     "loadMore": "Charger plus",
     "endOfList": "Fin de l'historique."
+  },
+  "exercises": {
+    "eyebrow": "BIBLIOTHÈQUE",
+    "title": "Tes exercices.",
+    "subtitle": "Tes exercices perso + les exercices publics, filtrables.",
+    "back": "Retour au dashboard",
+    "search": {
+      "label": "Rechercher un exercice",
+      "placeholder": "Chercher par nom…",
+      "submit": "Chercher"
+    },
+    "filters": {
+      "label": "FILTRES",
+      "type": {
+        "label": "Type",
+        "all": "Tous",
+        "strength": "Musculation",
+        "cardio": "Cardio"
+      },
+      "ownership": {
+        "label": "Origine",
+        "all": "Tous",
+        "mine": "Mes exercices",
+        "public": "Publics"
+      },
+      "muscle": {
+        "label": "Groupe musculaire",
+        "all": "Tous"
+      },
+      "reset": "Réinitialiser"
+    },
+    "totalCount": "{count, plural, =0 {aucun exercice} one {# exercice} other {# exercices}}",
+    "truncated": "Affichage de {shown} sur {total}. Affine tes filtres pour voir le reste.",
+    "empty": {
+      "label": "RIEN À AFFICHER",
+      "body": "Pas d'exercice pour ces filtres.",
+      "subtext": "Change le type ou le muscle, ou réinitialise les filtres."
+    },
+    "badge": {
+      "mine": "PERSO"
+    },
+    "field": {
+      "muscle": "Muscle",
+      "type": "Type",
+      "equipment": "Équipement",
+      "difficulty": "Difficulté"
+    }
   },
   "workoutDetail": {
     "eyebrow": "SÉANCE",
