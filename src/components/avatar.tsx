@@ -22,6 +22,12 @@ interface AvatarProps {
   size?: Size;
   /** Classe Tailwind additionnelle. */
   className?: string;
+  /**
+   * Si l'avatar est accolé à un texte qui nomme déjà la personne (ex. pseudo
+   * dans un même `<Link>`), passer `decorative` pour éviter la duplication
+   * pour les lecteurs d'écran.
+   */
+  decorative?: boolean;
 }
 
 /**
@@ -36,6 +42,7 @@ export function Avatar({
   displayName,
   size = 'md',
   className = '',
+  decorative = false,
 }: AvatarProps) {
   const px = SIZE_PX[size];
   const initials = initialsFor(displayName);
@@ -51,11 +58,15 @@ export function Avatar({
 
   if (src) {
     return (
-      <span className={`${base} ${className}`.trim()} style={style}>
+      <span
+        className={`${base} ${className}`.trim()}
+        style={style}
+        {...(decorative ? { 'aria-hidden': true } : {})}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
-          alt={displayName}
+          alt={decorative ? '' : displayName}
           width={px}
           height={px}
           loading="lazy"
@@ -70,7 +81,9 @@ export function Avatar({
     <span
       className={`${base} ${SIZE_TEXT[size]} ${className}`.trim()}
       style={style}
-      aria-label={displayName}
+      {...(decorative
+        ? { 'aria-hidden': true }
+        : { 'aria-label': displayName })}
     >
       {initials}
     </span>

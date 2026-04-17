@@ -65,13 +65,14 @@ export function HomeHero({
               {displayName && (
                 <Link
                   href={`/${locale}/profile`}
-                  className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center gap-2 py-2 font-mono text-xs uppercase tracking-widest underline-offset-4 hover:underline"
                   style={{ color: 'var(--color-muted-foreground)' }}
                 >
                   <Avatar
                     src={avatarUrl}
                     displayName={displayName}
                     size="sm"
+                    decorative
                   />
                   {displayName}
                 </Link>

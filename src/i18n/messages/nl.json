@@ -1,6 +1,11 @@
 {
-  "brand": { "name": "IronTrack", "tagline": "Train zwaarder, leef lichter." },
-  "common": { "scrollToTop": "Terug naar boven" },
+  "brand": {
+    "name": "IronTrack",
+    "tagline": "Train zwaarder, leef lichter."
+  },
+  "common": {
+    "scrollToTop": "Terug naar boven"
+  },
   "nav": {
     "home": "Start",
     "workouts": "Sessies",
@@ -21,10 +26,22 @@
     },
     "lede": "Een fitness-app gebouwd als een atelierboek: precies, redactioneel, brutalistisch. Geen confetti. Geen jargon. Enkel jouw lichaam, jouw cijfers, jouw vooruitgang.",
     "meta": {
-      "stack": { "label": "Stack", "value": "Next 16" },
-      "backend": { "label": "Backend", "value": "Supabase" },
-      "budget": { "label": "Budget", "value": "0 €" },
-      "target": { "label": "Doel", "value": "Hevy · Strava · Whoop" }
+      "stack": {
+        "label": "Stack",
+        "value": "Next 16"
+      },
+      "backend": {
+        "label": "Backend",
+        "value": "Supabase"
+      },
+      "budget": {
+        "label": "Budget",
+        "value": "0 €"
+      },
+      "target": {
+        "label": "Doel",
+        "value": "Hevy · Strava · Whoop"
+      }
     },
     "build": {
       "heading": "We bouwen",
@@ -299,6 +316,58 @@
       "title": "Ongeldige of verlopen link.",
       "body": "Deze magic link werkt niet meer. Vraag een nieuwe aan.",
       "cta": "Nieuwe link sturen"
+    }
+  },
+  "legal": {
+    "eyebrow": "JURIDISCH · IRONTRACK",
+    "nav": {
+      "home": "Home",
+      "privacy": "Privacy",
+      "terms": "Voorwaarden"
+    },
+    "draft": {
+      "label": "CONCEPT · v2 ALPHA",
+      "body": "Deze pagina is een werkversie. De definitieve versie wordt gepubliceerd vóór v1.0 en zal voldoen aan de AVG (België, EU)."
+    },
+    "privacy": {
+      "title": "Privacybeleid.",
+      "lede": "Je gegevens blijven van jou. IronTrack wordt in Europa gehost en is AVG-first ontworpen.",
+      "collect": {
+        "title": "Wat we verzamelen",
+        "body": "Strikt het essentiële: je e-mail, je sessies, je metrics. Geen advertentietracking, geen externe analytics. Je avatar staat op onze Supabase Storage in Europa."
+      },
+      "usage": {
+        "title": "Hoe we het gebruiken",
+        "body": "Om je progressie te tonen, je sessies te synchroniseren tussen je toestellen en je account te beveiligen. Nooit verkocht. Nooit gedeeld met derden voor marketing."
+      },
+      "rights": {
+        "title": "Je rechten (AVG)",
+        "body": "Inzage, rectificatie, verwijdering, volledige export, portabiliteit. Je schrijft ons en we antwoorden binnen 30 dagen."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "privacy@irontrack.app — IronTrack, België."
+      }
+    },
+    "terms": {
+      "title": "Gebruiksvoorwaarden.",
+      "lede": "De spelregels. Klare taal, geen dark patterns.",
+      "service": {
+        "title": "De dienst",
+        "body": "IronTrack is een tracker voor training, progressie en voeding. Gratis tijdens de alpha. Betaalde plannen worden transparant aangekondigd, zonder automatische verlenging."
+      },
+      "account": {
+        "title": "Je account",
+        "body": "Jij bent verantwoordelijk voor je wachtwoord. Meld misbruik aan ons. We kunnen een account opschorten bij misbruik (bot, scraping, inbreuk)."
+      },
+      "content": {
+        "title": "Jouw inhoud",
+        "body": "Jij bent eigenaar van je data. Je kan die op elk moment exporteren of verwijderen. We gebruiken ze enkel om het product voor jou te laten werken."
+      },
+      "liability": {
+        "title": "Aansprakelijkheid",
+        "body": "IronTrack is geen medisch advies. Raadpleeg een zorgverlener vóór elk intensief programma. De dienst wordt \"as is\" geleverd tijdens de alpha."
+      }
     }
   }
 }

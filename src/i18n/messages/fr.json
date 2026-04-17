@@ -1,6 +1,11 @@
 {
-  "brand": { "name": "IronTrack", "tagline": "Train heavier, live lighter." },
-  "common": { "scrollToTop": "Retour en haut" },
+  "brand": {
+    "name": "IronTrack",
+    "tagline": "Train heavier, live lighter."
+  },
+  "common": {
+    "scrollToTop": "Retour en haut"
+  },
   "nav": {
     "home": "Accueil",
     "workouts": "Séances",
@@ -14,17 +19,29 @@
     "eyebrow": "IRONTRACK · v2 · 2026",
     "hero": {
       "kicker": "Masterclass redesign",
-      "train": "Train",
-      "heavier": "heavier,",
-      "live": "live",
-      "lighter": "lighter."
+      "train": "Soulève",
+      "heavier": "plus lourd,",
+      "live": "vis",
+      "lighter": "plus léger."
     },
     "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès.",
     "meta": {
-      "stack": { "label": "Stack", "value": "Next 16" },
-      "backend": { "label": "Backend", "value": "Supabase" },
-      "budget": { "label": "Budget", "value": "0 €" },
-      "target": { "label": "Cible", "value": "Hevy · Strava · Whoop" }
+      "stack": {
+        "label": "Stack",
+        "value": "Next 16"
+      },
+      "backend": {
+        "label": "Backend",
+        "value": "Supabase"
+      },
+      "budget": {
+        "label": "Budget",
+        "value": "0 €"
+      },
+      "target": {
+        "label": "Cible",
+        "value": "Hevy · Strava · Whoop"
+      }
     },
     "build": {
       "heading": "On construit",
@@ -58,10 +75,10 @@
     "eyebrow": "IRONTRACK · 2026 · MADE IN BELGIUM",
     "hero": {
       "kicker": "Le carnet d'atelier de ton entraînement",
-      "train": "Train",
-      "heavier": "heavier,",
-      "live": "live",
-      "lighter": "lighter.",
+      "train": "Soulève",
+      "heavier": "plus lourd,",
+      "live": "vis",
+      "lighter": "plus léger.",
       "lede": "Suis chaque rep, chaque watt, chaque calorie. Sans bullshit. Sans pub. Sans gamification creuse. Juste tes chiffres et ta progression.",
       "cta": {
         "start": "Créer mon compte gratuit",
@@ -299,6 +316,58 @@
       "title": "Lien invalide ou expiré.",
       "body": "Ce lien magique ne fonctionne plus. Demande-en un nouveau.",
       "cta": "Renvoyer un lien"
+    }
+  },
+  "legal": {
+    "eyebrow": "LÉGAL · IRONTRACK",
+    "nav": {
+      "home": "Accueil",
+      "privacy": "Vie privée",
+      "terms": "Conditions"
+    },
+    "draft": {
+      "label": "BROUILLON · v2 ALPHA",
+      "body": "Cette page est un brouillon de travail. La version finale sera publiée avant la v1.0 et sera conforme au RGPD (Belgique, UE)."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité.",
+      "lede": "Tes données restent à toi. IronTrack est hébergé en Europe et pensé RGPD-first.",
+      "collect": {
+        "title": "Ce qu'on collecte",
+        "body": "Strictement l'essentiel : ton email, tes séances, tes métriques. Aucun tracking publicitaire, aucune analytique tierce. Ton avatar est stocké sur notre Supabase Storage en Europe."
+      },
+      "usage": {
+        "title": "Comment on l'utilise",
+        "body": "Pour afficher ta progression, synchroniser tes séances entre tes appareils et sécuriser ton compte. Jamais revendu. Jamais partagé avec des tiers à des fins marketing."
+      },
+      "rights": {
+        "title": "Tes droits (RGPD)",
+        "body": "Accès, rectification, effacement, export complet, portabilité. Tu nous écris et on répond sous 30 jours."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "privacy@irontrack.app — IronTrack, Belgique."
+      }
+    },
+    "terms": {
+      "title": "Conditions d'utilisation.",
+      "lede": "Les règles du jeu. Langage clair, pas de dark patterns.",
+      "service": {
+        "title": "Le service",
+        "body": "IronTrack est un suivi d'entraînement, de progression et de nutrition. Gratuit pendant l'alpha. Les formules payantes seront annoncées en toute transparence, sans reconduction automatique."
+      },
+      "account": {
+        "title": "Ton compte",
+        "body": "Tu es responsable de ton mot de passe. Signale-nous tout abus. On peut suspendre un compte en cas d'abus (bot, scraping, violation)."
+      },
+      "content": {
+        "title": "Tes contenus",
+        "body": "Tu es propriétaire de tes données. Tu peux les exporter ou les supprimer à tout moment. On ne les utilise que pour faire fonctionner le produit pour toi."
+      },
+      "liability": {
+        "title": "Responsabilité",
+        "body": "IronTrack n'est pas un avis médical. Consulte un professionnel de santé avant tout programme intensif. Le service est fourni \"en l'état\" pendant la phase alpha."
+      }
     }
   }
 }

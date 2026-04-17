@@ -300,5 +300,57 @@
       "body": "This magic link no longer works. Request a new one.",
       "cta": "Send a new link"
     }
+  },
+  "legal": {
+    "eyebrow": "LEGAL · IRONTRACK",
+    "nav": {
+      "home": "Home",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    },
+    "draft": {
+      "label": "DRAFT · v2 ALPHA",
+      "body": "This page is a working draft. The final version will be published before v1.0 and will comply with the GDPR (Belgium, EU)."
+    },
+    "privacy": {
+      "title": "Privacy policy.",
+      "lede": "Your data stays yours. IronTrack is hosted in Europe and built GDPR-first.",
+      "collect": {
+        "title": "What we collect",
+        "body": "Strictly the essentials: your email, your training sessions, your metrics. No ad tracking, no third-party analytics. Your avatar is stored in our Supabase Storage in Europe."
+      },
+      "usage": {
+        "title": "How we use it",
+        "body": "To display your progress, sync your sessions between your devices, and secure your account. Never sold. Never shared with third parties for marketing purposes."
+      },
+      "rights": {
+        "title": "Your rights (GDPR)",
+        "body": "Access, correction, deletion, full export, portability. Write to us and we reply within 30 days."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "privacy@irontrack.app — IronTrack, Belgium."
+      }
+    },
+    "terms": {
+      "title": "Terms of service.",
+      "lede": "The rules of the game. Plain language, no dark patterns.",
+      "service": {
+        "title": "The service",
+        "body": "IronTrack is a training, progress and nutrition tracker. Free during the alpha. Paid plans will be announced transparently, no auto-enrolment."
+      },
+      "account": {
+        "title": "Your account",
+        "body": "You are responsible for your password. Report any abuse to us. We may suspend an account in case of abuse (bot, scraping, violation)."
+      },
+      "content": {
+        "title": "Your content",
+        "body": "You own your data. You can export or delete it at any time. We only use it to make the product work for you."
+      },
+      "liability": {
+        "title": "Liability",
+        "body": "IronTrack is not medical advice. Consult a healthcare professional before any intensive programme. The service is provided \"as is\" during the alpha phase."
+      }
+    }
   }
 }
