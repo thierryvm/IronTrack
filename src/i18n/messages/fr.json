@@ -185,6 +185,16 @@
     "title": "Toi, en chiffres.",
     "lede": "Connecté en tant que {email}. Tu peux changer ton pseudo et ton nom à tout moment.",
     "logout": "Se déconnecter",
+    "avatar": {
+      "label": "PHOTO",
+      "heading": "Ta photo de profil.",
+      "pick": "Choisir une photo",
+      "replace": "Remplacer la photo",
+      "remove": "Supprimer",
+      "uploading": "Envoi…",
+      "removing": "Suppression…",
+      "help": "JPG, PNG, WebP ou GIF · 5 Mo max · carré conseillé."
+    },
     "section": {
       "label": "IDENTITÉ",
       "heading": "Comment tu veux qu'on t'appelle ?"
@@ -211,6 +221,9 @@
       "pseudoTaken": "Ce pseudo est déjà pris.",
       "fullNameRequired": "Entre un nom ou laisse vide.",
       "fullNameTooLong": "Nom trop long (50 caractères max).",
+      "avatarTooLarge": "Image trop lourde (5 Mo max).",
+      "avatarMimeType": "Format non supporté. JPG, PNG, WebP ou GIF.",
+      "avatarUpload": "Impossible d'envoyer la photo. Réessaie.",
       "rateLimit": "Trop de tentatives. Réessaie dans une minute.",
       "generic": "Une erreur est survenue. Réessaie."
     },

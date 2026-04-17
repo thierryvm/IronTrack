@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { Avatar } from '@/components/avatar';
 import { LOCALES, type Locale } from '@/i18n/request';
 import { requireUser } from '@/lib/auth';
 import { getDisplayName, getProfile, needsProfileOnboarding } from '@/lib/profile';
@@ -34,16 +35,29 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
       <header className="mb-12 flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            {t('eyebrow')}
-          </p>
-          <h1 className="mt-3 font-display text-5xl leading-tight text-foreground">
-            {t('hello', { name: displayName })}
-          </h1>
-          <p className="mt-3 text-base text-muted-foreground">
-            {t('greeting', { email: user.email ?? '' })}
-          </p>
+        <div className="flex items-start gap-5">
+          <Link
+            href={`/${typedLocale}/profile`}
+            aria-label={t('profileLink')}
+            className="mt-1 shrink-0"
+          >
+            <Avatar
+              src={profile?.avatar_url ?? null}
+              displayName={displayName}
+              size="lg"
+            />
+          </Link>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              {t('eyebrow')}
+            </p>
+            <h1 className="mt-3 font-display text-5xl leading-tight text-foreground">
+              {t('hello', { name: displayName })}
+            </h1>
+            <p className="mt-3 text-base text-muted-foreground">
+              {t('greeting', { email: user.email ?? '' })}
+            </p>
+          </div>
         </div>
         <form action={signOut}>
           <input type="hidden" name="locale" value={typedLocale} />
