@@ -69,5 +69,38 @@
     "fr": "FR",
     "nl": "NL",
     "en": "EN"
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Aanmelden · IronTrack",
+      "metaDescription": "Meld je aan bij IronTrack met een magic link. Geen wachtwoord nodig.",
+      "eyebrow": "TOEGANG · MAGIC LINK",
+      "title": "Meld je aan.",
+      "lede": "Geen wachtwoord. We sturen je een beveiligde link per e-mail."
+    },
+    "form": {
+      "email": {
+        "label": "E-mail",
+        "placeholder": "jij@voorbeeld.be"
+      },
+      "submit": "Stuur de link",
+      "submitPending": "Versturen…",
+      "hint": "Door verder te gaan, aanvaard je onze voorwaarden en ons privacybeleid (AVG)."
+    },
+    "checkEmail": {
+      "title": "Check je inbox.",
+      "body": "Als het adres geldig is, ontvang je binnen enkele seconden een link. Vergeet je spam-map niet."
+    },
+    "errors": {
+      "emailRequired": "E-mail is verplicht.",
+      "emailInvalid": "Dit e-mailadres is niet geldig.",
+      "rateLimit": "Te veel pogingen. Probeer het over een minuut opnieuw.",
+      "generic": "Er is iets misgegaan. Probeer opnieuw."
+    },
+    "error": {
+      "title": "Ongeldige of verlopen link.",
+      "body": "Deze magic link werkt niet meer. Vraag een nieuwe aan.",
+      "cta": "Nieuwe link sturen"
+    }
   }
 }
