@@ -14,3 +14,22 @@ export const magicLinkSchema = z.object({
 });
 
 export type MagicLinkInput = z.infer<typeof magicLinkSchema>;
+
+/**
+ * Schéma password : 10 chars min, au moins 1 minuscule + 1 majuscule + 1 chiffre.
+ * Aligné sur la config Supabase (password_min_length=10).
+ */
+export const passwordSchema = z
+  .string()
+  .min(10, { message: 'auth.errors.passwordTooShort' })
+  .max(72, { message: 'auth.errors.passwordTooLong' })
+  .regex(/[a-z]/, { message: 'auth.errors.passwordWeak' })
+  .regex(/[A-Z]/, { message: 'auth.errors.passwordWeak' })
+  .regex(/[0-9]/, { message: 'auth.errors.passwordWeak' });
+
+export const credentialsSchema = z.object({
+  email: magicLinkSchema.shape.email,
+  password: passwordSchema,
+});
+
+export type CredentialsInput = z.infer<typeof credentialsSchema>;

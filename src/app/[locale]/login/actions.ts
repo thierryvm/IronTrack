@@ -3,17 +3,25 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { magicLinkSchema } from '@/lib/auth/schema';
+import { credentialsSchema, magicLinkSchema } from '@/lib/auth/schema';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { createServerClient } from '@/lib/supabase';
 
+export type LoginErrorKey =
+  | 'auth.errors.emailRequired'
+  | 'auth.errors.emailInvalid'
+  | 'auth.errors.passwordTooShort'
+  | 'auth.errors.passwordTooLong'
+  | 'auth.errors.passwordWeak'
+  | 'auth.errors.invalidCredentials'
+  | 'auth.errors.emailTaken'
+  | 'auth.errors.rateLimit'
+  | 'auth.errors.generic';
+
 export interface LoginState {
   status: 'idle' | 'success' | 'error';
-  error?:
-    | 'auth.errors.emailRequired'
-    | 'auth.errors.emailInvalid'
-    | 'auth.errors.rateLimit'
-    | 'auth.errors.generic';
+  error?: LoginErrorKey;
+  field?: 'email' | 'password' | 'form';
 }
 
 /**
@@ -115,4 +123,114 @@ export async function signInWithGoogle(formData: FormData): Promise<void> {
   }
 
   redirect(data.url);
+}
+
+/**
+ * Server Action : sign-in classique email + password.
+ * Sécurité : rate-limit 10/min/IP, message générique en cas d'échec
+ * (pas d'enumération entre "mauvais mdp" et "user inexistant").
+ */
+export async function signInWithPassword(
+  _prev: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
+  const headerList = await headers();
+  const ip = getClientIp(headerList);
+
+  const { ok } = rateLimit(`pwd-in:${ip}`, { limit: 10, windowMs: 60_000 });
+  if (!ok) {
+    return { status: 'error', error: 'auth.errors.rateLimit', field: 'form' };
+  }
+
+  const parsed = credentialsSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const msg = issue?.message as LoginErrorKey | undefined;
+    const field = (issue?.path[0] as 'email' | 'password' | undefined) ?? 'form';
+    return {
+      status: 'error',
+      error: msg ?? 'auth.errors.invalidCredentials',
+      field,
+    };
+  }
+
+  const supabase = await createServerClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+
+  if (error) {
+    return {
+      status: 'error',
+      error: 'auth.errors.invalidCredentials',
+      field: 'form',
+    };
+  }
+
+  const next = formData.get('next');
+  const safeNext =
+    typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')
+      ? next
+      : '/';
+  redirect(safeNext);
+}
+
+/**
+ * Server Action : sign-up email + password.
+ * Avec mailer_autoconfirm=true côté Supabase, le user est connecté direct
+ * sans email de confirmation.
+ */
+export async function signUpWithPassword(
+  _prev: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
+  const headerList = await headers();
+  const ip = getClientIp(headerList);
+
+  const { ok } = rateLimit(`pwd-up:${ip}`, { limit: 5, windowMs: 60_000 });
+  if (!ok) {
+    return { status: 'error', error: 'auth.errors.rateLimit', field: 'form' };
+  }
+
+  const parsed = credentialsSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const msg = issue?.message as LoginErrorKey | undefined;
+    const field = (issue?.path[0] as 'email' | 'password' | undefined) ?? 'form';
+    return {
+      status: 'error',
+      error: msg ?? 'auth.errors.passwordWeak',
+      field,
+    };
+  }
+
+  const supabase = await createServerClient();
+  const { error } = await supabase.auth.signUp({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+
+  if (error) {
+    // Supabase renvoie "User already registered" en clair → on map sur clé i18n.
+    const isTaken = /already|exists|registered/i.test(error.message);
+    return {
+      status: 'error',
+      error: isTaken ? 'auth.errors.emailTaken' : 'auth.errors.generic',
+      field: isTaken ? 'email' : 'form',
+    };
+  }
+
+  const next = formData.get('next');
+  const safeNext =
+    typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')
+      ? next
+      : '/';
+  redirect(safeNext);
 }
