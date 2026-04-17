@@ -208,7 +208,7 @@
       "password": {
         "label": "Wachtwoord",
         "placeholder": "Minstens 10 tekens",
-        "help": "10 tekens min · 1 hoofdletter · 1 cijfer"
+        "help": "10 tekens · 1 hoofdletter · 1 cijfer · 1 speciaal teken (!@#…)"
       },
       "submit": "Stuur de link",
       "signin": "Aanmelden",
@@ -228,7 +228,7 @@
       "emailInvalid": "Dit e-mailadres is niet geldig.",
       "passwordTooShort": "Wachtwoord te kort (minstens 10 tekens).",
       "passwordTooLong": "Wachtwoord te lang (max 72 tekens).",
-      "passwordWeak": "Voeg minstens één hoofdletter, één kleine letter en één cijfer toe.",
+      "passwordWeak": "Voeg minstens één hoofdletter, één kleine letter, één cijfer en één speciaal teken toe (!@#$…).",
       "invalidCredentials": "E-mail of wachtwoord onjuist.",
       "emailTaken": "Er bestaat al een account met dit e-mailadres. Meld je aan.",
       "rateLimit": "Te veel pogingen. Probeer het over een minuut opnieuw.",
