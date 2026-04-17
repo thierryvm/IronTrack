@@ -428,5 +428,20 @@
     },
     "loadMore": "Meer laden",
     "endOfList": "Einde van de geschiedenis."
+  },
+  "notFound": {
+    "eyebrow": "FOUT 404",
+    "title": "Niets hier.",
+    "body": "Deze pagina bestaat (niet meer). Een kapotte link, een verkeerd ingetypte URL, of iets dat we verplaatst hebben.",
+    "home": "Terug naar home",
+    "dashboard": "Naar dashboard"
+  },
+  "error": {
+    "eyebrow": "ER IS IETS STUK",
+    "title": "We hebben een probleem.",
+    "body": "Een onverwachte fout. Probeer het opnieuw of kom later terug.",
+    "retry": "Opnieuw proberen",
+    "home": "Terug naar home",
+    "digest": "Technische code"
   }
 }

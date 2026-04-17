@@ -428,5 +428,20 @@
     },
     "loadMore": "Charger plus",
     "endOfList": "Fin de l'historique."
+  },
+  "notFound": {
+    "eyebrow": "ERREUR 404",
+    "title": "Rien ici.",
+    "body": "Cette page n'existe pas (plus). Un lien cassé, une URL mal tapée, ou quelque chose qu'on a bougé.",
+    "home": "Retour à l'accueil",
+    "dashboard": "Aller au dashboard"
+  },
+  "error": {
+    "eyebrow": "QUELQUE CHOSE A CASSÉ",
+    "title": "On a un souci.",
+    "body": "Une erreur inattendue. Tu peux réessayer, ou revenir plus tard.",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil",
+    "digest": "Code technique"
   }
 }
