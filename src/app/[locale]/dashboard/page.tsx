@@ -303,6 +303,12 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
       <nav className="mt-10 flex flex-wrap gap-6 font-mono text-xs uppercase tracking-widest">
         <Link
+          href={`/${typedLocale}/exercises`}
+          className="inline-flex min-h-11 items-center py-2 underline-offset-4 hover:underline"
+        >
+          {t('exercisesLink')} →
+        </Link>
+        <Link
           href={`/${typedLocale}/profile`}
           className="inline-flex min-h-11 items-center py-2 underline-offset-4 hover:underline"
         >

@@ -221,7 +221,8 @@
         "viewAll": "Volledige geschiedenis"
       }
     },
-    "historyLink": "Volledige geschiedenis"
+    "historyLink": "Volledige geschiedenis",
+    "exercisesLink": "Oefeningenbibliotheek"
   },
   "profile": {
     "metaTitle": "Mijn profiel",
@@ -428,6 +429,53 @@
     },
     "loadMore": "Meer laden",
     "endOfList": "Einde van de geschiedenis."
+  },
+  "exercises": {
+    "eyebrow": "BIBLIOTHEEK",
+    "title": "Je oefeningen.",
+    "subtitle": "Je eigen oefeningen + de publieke, filterbaar.",
+    "back": "Terug naar dashboard",
+    "search": {
+      "label": "Zoek een oefening",
+      "placeholder": "Zoeken op naam…",
+      "submit": "Zoeken"
+    },
+    "filters": {
+      "label": "FILTERS",
+      "type": {
+        "label": "Type",
+        "all": "Alle",
+        "strength": "Krachttraining",
+        "cardio": "Cardio"
+      },
+      "ownership": {
+        "label": "Herkomst",
+        "all": "Alle",
+        "mine": "Mijn oefeningen",
+        "public": "Publiek"
+      },
+      "muscle": {
+        "label": "Spiergroep",
+        "all": "Alle"
+      },
+      "reset": "Herstellen"
+    },
+    "totalCount": "{count, plural, =0 {geen oefening} one {# oefening} other {# oefeningen}}",
+    "truncated": "{shown} van {total} getoond. Verfijn je filters om de rest te zien.",
+    "empty": {
+      "label": "NIETS TE TONEN",
+      "body": "Geen oefening voor deze filters.",
+      "subtext": "Wijzig het type of de spier, of herstel de filters."
+    },
+    "badge": {
+      "mine": "EIGEN"
+    },
+    "field": {
+      "muscle": "Spier",
+      "type": "Type",
+      "equipment": "Materiaal",
+      "difficulty": "Moeilijkheid"
+    }
   },
   "workoutDetail": {
     "eyebrow": "SESSIE",

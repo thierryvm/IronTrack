@@ -221,7 +221,8 @@
         "viewAll": "View full history"
       }
     },
-    "historyLink": "View full history"
+    "historyLink": "View full history",
+    "exercisesLink": "Exercise library"
   },
   "profile": {
     "metaTitle": "My profile",
@@ -428,6 +429,53 @@
     },
     "loadMore": "Load more",
     "endOfList": "End of history."
+  },
+  "exercises": {
+    "eyebrow": "LIBRARY",
+    "title": "Your exercises.",
+    "subtitle": "Your own exercises + public ones, filterable.",
+    "back": "Back to dashboard",
+    "search": {
+      "label": "Search an exercise",
+      "placeholder": "Search by name…",
+      "submit": "Search"
+    },
+    "filters": {
+      "label": "FILTERS",
+      "type": {
+        "label": "Type",
+        "all": "All",
+        "strength": "Strength",
+        "cardio": "Cardio"
+      },
+      "ownership": {
+        "label": "Origin",
+        "all": "All",
+        "mine": "My exercises",
+        "public": "Public"
+      },
+      "muscle": {
+        "label": "Muscle group",
+        "all": "All"
+      },
+      "reset": "Reset"
+    },
+    "totalCount": "{count, plural, =0 {no exercise} one {# exercise} other {# exercises}}",
+    "truncated": "Showing {shown} of {total}. Refine your filters to see more.",
+    "empty": {
+      "label": "NOTHING TO SHOW",
+      "body": "No exercise for these filters.",
+      "subtext": "Change the type or muscle, or reset the filters."
+    },
+    "badge": {
+      "mine": "MINE"
+    },
+    "field": {
+      "muscle": "Muscle",
+      "type": "Type",
+      "equipment": "Equipment",
+      "difficulty": "Difficulty"
+    }
   },
   "workoutDetail": {
     "eyebrow": "WORKOUT",
