@@ -9,6 +9,50 @@
     "login": "Se connecter",
     "signup": "Créer un compte"
   },
+  "index": {
+    "eyebrow": "IRONTRACK · v2 · 2026",
+    "hero": {
+      "kicker": "Masterclass redesign",
+      "train": "Train",
+      "heavier": "heavier,",
+      "live": "live",
+      "lighter": "lighter."
+    },
+    "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès.",
+    "meta": {
+      "stack": { "label": "Stack", "value": "Next 16" },
+      "backend": { "label": "Backend", "value": "Supabase" },
+      "budget": { "label": "Budget", "value": "0 €" },
+      "target": { "label": "Cible", "value": "Hevy · Strava · Whoop" }
+    },
+    "build": {
+      "heading": "On construit",
+      "headingAccent": "quelque chose.",
+      "phase": "PHASE 1 · FOUNDATIONS",
+      "cards": {
+        "stack": {
+          "title": "Stack reset",
+          "desc": "Next 16 · React 19 · Tailwind v4 · shadcn new-york. Legacy archivé.",
+          "status": "DONE"
+        },
+        "design": {
+          "title": "Design system live",
+          "desc": "Tokens CSS-first + Fraunces / Manrope / JetBrains Mono. Orange signature préservé.",
+          "status": "DONE"
+        },
+        "next": {
+          "title": "À venir",
+          "desc": "Auth Supabase · middleware i18n FR/NL/EN · dashboard · session live.",
+          "status": "NEXT"
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© IronTrack 2026",
+      "quote": "\"The iron never lies.\"",
+      "build": "Build · v2.0.0-alpha"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Masterclass redesign",
@@ -19,5 +63,11 @@
       "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès."
     },
     "cta": { "start": "Commencer la séance", "login": "Se connecter" }
+  },
+  "langSwitcher": {
+    "label": "Choisir la langue",
+    "fr": "FR",
+    "nl": "NL",
+    "en": "EN"
   }
 }

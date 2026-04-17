@@ -9,6 +9,50 @@
     "login": "Sign in",
     "signup": "Create account"
   },
+  "index": {
+    "eyebrow": "IRONTRACK · v2 · 2026",
+    "hero": {
+      "kicker": "Masterclass redesign",
+      "train": "Train",
+      "heavier": "heavier,",
+      "live": "live",
+      "lighter": "lighter."
+    },
+    "lede": "A fitness app built like a workshop notebook: precise, editorial, brutalist. No confetti. No jargon. Just your body, your numbers, your progress.",
+    "meta": {
+      "stack": { "label": "Stack", "value": "Next 16" },
+      "backend": { "label": "Backend", "value": "Supabase" },
+      "budget": { "label": "Budget", "value": "€0" },
+      "target": { "label": "Target", "value": "Hevy · Strava · Whoop" }
+    },
+    "build": {
+      "heading": "We're building",
+      "headingAccent": "something real.",
+      "phase": "PHASE 1 · FOUNDATIONS",
+      "cards": {
+        "stack": {
+          "title": "Stack reset",
+          "desc": "Next 16 · React 19 · Tailwind v4 · shadcn new-york. Legacy archived.",
+          "status": "DONE"
+        },
+        "design": {
+          "title": "Design system live",
+          "desc": "CSS-first tokens + Fraunces / Manrope / JetBrains Mono. Signature orange preserved.",
+          "status": "DONE"
+        },
+        "next": {
+          "title": "Up next",
+          "desc": "Supabase auth · i18n middleware FR/NL/EN · dashboard · live session.",
+          "status": "NEXT"
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© IronTrack 2026",
+      "quote": "\"The iron never lies.\"",
+      "build": "Build · v2.0.0-alpha"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Masterclass redesign",
@@ -19,5 +63,11 @@
       "lede": "A fitness app built like a workshop notebook: precise, editorial, brutalist. No confetti. No jargon. Just your body, your numbers, your progress."
     },
     "cta": { "start": "Start the session", "login": "Sign in" }
+  },
+  "langSwitcher": {
+    "label": "Choose language",
+    "fr": "FR",
+    "nl": "NL",
+    "en": "EN"
   }
 }
