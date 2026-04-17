@@ -217,9 +217,11 @@
       "recentWorkouts": {
         "label": "HISTORIEK",
         "heading": "Je laatste sessies.",
-        "empty": "Nog geen voltooide sessies."
+        "empty": "Nog geen voltooide sessies.",
+        "viewAll": "Volledige geschiedenis"
       }
-    }
+    },
+    "historyLink": "Volledige geschiedenis"
   },
   "profile": {
     "metaTitle": "Mijn profiel",
@@ -395,5 +397,36 @@
         "body": "IronTrack is geen medisch advies. Raadpleeg een zorgverlener vóór elk intensief programma. De dienst wordt \"as is\" geleverd tijdens de alpha."
       }
     }
+  },
+  "history": {
+    "eyebrow": "GESCHIEDENIS",
+    "title": "Jouw sessies.",
+    "subtitle": "Al je voltooide sessies, filterbaar.",
+    "back": "Terug naar dashboard",
+    "empty": {
+      "label": "GEEN SESSIES",
+      "body": "Niets te tonen voor deze filters.",
+      "subtext": "Pas de periode of het type aan, of start je eerste sessie."
+    },
+    "totalCount": "{count, plural, =0 {geen sessies} one {# sessie} other {# sessies}}",
+    "filters": {
+      "label": "FILTERS",
+      "period": {
+        "label": "Periode",
+        "7d": "7 dagen",
+        "30d": "30 dagen",
+        "90d": "90 dagen",
+        "all": "Alles"
+      },
+      "type": {
+        "label": "Type",
+        "all": "Alle",
+        "strength": "Krachttraining",
+        "cardio": "Cardio"
+      },
+      "reset": "Resetten"
+    },
+    "loadMore": "Meer laden",
+    "endOfList": "Einde van de geschiedenis."
   }
 }

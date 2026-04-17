@@ -217,9 +217,11 @@
       "recentWorkouts": {
         "label": "HISTORIQUE",
         "heading": "Tes dernières séances.",
-        "empty": "Aucune séance complétée pour l'instant."
+        "empty": "Aucune séance complétée pour l'instant.",
+        "viewAll": "Voir tout l'historique"
       }
-    }
+    },
+    "historyLink": "Voir tout l'historique"
   },
   "profile": {
     "metaTitle": "Mon profil",
@@ -395,5 +397,36 @@
         "body": "IronTrack n'est pas un avis médical. Consulte un professionnel de santé avant tout programme intensif. Le service est fourni \"en l'état\" pendant la phase alpha."
       }
     }
+  },
+  "history": {
+    "eyebrow": "HISTORIQUE",
+    "title": "Tes séances.",
+    "subtitle": "Toutes tes séances complétées, filtrables.",
+    "back": "Retour au dashboard",
+    "empty": {
+      "label": "AUCUNE SÉANCE",
+      "body": "Rien à afficher pour ces filtres.",
+      "subtext": "Change la période ou le type, ou lance ta première séance."
+    },
+    "totalCount": "{count, plural, =0 {aucune séance} one {# séance} other {# séances}}",
+    "filters": {
+      "label": "FILTRES",
+      "period": {
+        "label": "Période",
+        "7d": "7 jours",
+        "30d": "30 jours",
+        "90d": "90 jours",
+        "all": "Tout"
+      },
+      "type": {
+        "label": "Type",
+        "all": "Tous",
+        "strength": "Musculation",
+        "cardio": "Cardio"
+      },
+      "reset": "Réinitialiser"
+    },
+    "loadMore": "Charger plus",
+    "endOfList": "Fin de l'historique."
   }
 }

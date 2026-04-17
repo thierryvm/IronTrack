@@ -245,12 +245,24 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
       {/* Dernières séances */}
       <section className="mb-10 border-2 border-foreground p-6">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          {t('stats.recentWorkouts.label')}
-        </p>
-        <h2 className="mt-3 mb-6 font-display text-2xl leading-snug text-foreground">
-          {t('stats.recentWorkouts.heading')}
-        </h2>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              {t('stats.recentWorkouts.label')}
+            </p>
+            <h2 className="mt-3 font-display text-2xl leading-snug text-foreground">
+              {t('stats.recentWorkouts.heading')}
+            </h2>
+          </div>
+          {stats.recentWorkouts.length > 0 && (
+            <Link
+              href={`/${typedLocale}/history`}
+              className="mt-1 shrink-0 inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-widest underline-offset-4 hover:underline"
+            >
+              {t('stats.recentWorkouts.viewAll')} →
+            </Link>
+          )}
+        </div>
 
         {stats.recentWorkouts.length === 0 ? (
           <p className="text-base text-muted-foreground">
