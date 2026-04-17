@@ -1,6 +1,11 @@
 {
-  "brand": { "name": "IronTrack", "tagline": "Train heavier, live lighter." },
-  "common": { "scrollToTop": "Back to top" },
+  "brand": {
+    "name": "IronTrack",
+    "tagline": "Train heavier, live lighter."
+  },
+  "common": {
+    "scrollToTop": "Back to top"
+  },
   "nav": {
     "home": "Home",
     "workouts": "Sessions",
@@ -21,10 +26,22 @@
     },
     "lede": "A fitness app built like a workshop notebook: precise, editorial, brutalist. No confetti. No jargon. Just your body, your numbers, your progress.",
     "meta": {
-      "stack": { "label": "Stack", "value": "Next 16" },
-      "backend": { "label": "Backend", "value": "Supabase" },
-      "budget": { "label": "Budget", "value": "€0" },
-      "target": { "label": "Target", "value": "Hevy · Strava · Whoop" }
+      "stack": {
+        "label": "Stack",
+        "value": "Next 16"
+      },
+      "backend": {
+        "label": "Backend",
+        "value": "Supabase"
+      },
+      "budget": {
+        "label": "Budget",
+        "value": "€0"
+      },
+      "target": {
+        "label": "Target",
+        "value": "Hevy · Strava · Whoop"
+      }
     },
     "build": {
       "heading": "We're building",
@@ -200,9 +217,11 @@
       "recentWorkouts": {
         "label": "HISTORY",
         "heading": "Your latest sessions.",
-        "empty": "No completed sessions yet."
+        "empty": "No completed sessions yet.",
+        "viewAll": "View full history"
       }
-    }
+    },
+    "historyLink": "View full history"
   },
   "profile": {
     "metaTitle": "My profile",
@@ -378,5 +397,36 @@
         "body": "IronTrack is not medical advice. Consult a healthcare professional before any intensive programme. The service is provided \"as is\" during the alpha phase."
       }
     }
+  },
+  "history": {
+    "eyebrow": "HISTORY",
+    "title": "Your sessions.",
+    "subtitle": "All your completed workouts, filterable.",
+    "back": "Back to dashboard",
+    "empty": {
+      "label": "NO SESSIONS",
+      "body": "Nothing to show for these filters.",
+      "subtext": "Change the period or type, or start your first workout."
+    },
+    "totalCount": "{count, plural, =0 {no workouts} one {# workout} other {# workouts}}",
+    "filters": {
+      "label": "FILTERS",
+      "period": {
+        "label": "Period",
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days",
+        "all": "All"
+      },
+      "type": {
+        "label": "Type",
+        "all": "All",
+        "strength": "Strength",
+        "cardio": "Cardio"
+      },
+      "reset": "Reset"
+    },
+    "loadMore": "Load more",
+    "endOfList": "End of history."
   }
 }
