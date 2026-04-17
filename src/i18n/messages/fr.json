@@ -1,5 +1,6 @@
 {
   "brand": { "name": "IronTrack", "tagline": "Train heavier, live lighter." },
+  "common": { "scrollToTop": "Retour en haut" },
   "nav": {
     "home": "Accueil",
     "workouts": "Séances",

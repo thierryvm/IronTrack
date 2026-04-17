@@ -1,5 +1,6 @@
 {
   "brand": { "name": "IronTrack", "tagline": "Train zwaarder, leef lichter." },
+  "common": { "scrollToTop": "Terug naar boven" },
   "nav": {
     "home": "Start",
     "workouts": "Sessies",
