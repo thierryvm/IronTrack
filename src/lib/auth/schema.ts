@@ -25,7 +25,10 @@ export const passwordSchema = z
   .max(72, { message: 'auth.errors.passwordTooLong' })
   .regex(/[a-z]/, { message: 'auth.errors.passwordWeak' })
   .regex(/[A-Z]/, { message: 'auth.errors.passwordWeak' })
-  .regex(/[0-9]/, { message: 'auth.errors.passwordWeak' });
+  .regex(/[0-9]/, { message: 'auth.errors.passwordWeak' })
+  .regex(/[!@#$%^&*()_+\-=[\]{};':"|<>?,./`~\\]/, {
+    message: 'auth.errors.passwordWeak',
+  });
 
 export const credentialsSchema = z.object({
   email: magicLinkSchema.shape.email,
