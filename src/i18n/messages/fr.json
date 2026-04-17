@@ -163,12 +163,60 @@
   "dashboard": {
     "eyebrow": "TABLEAU DE BORD",
     "title": "Bienvenue.",
+    "hello": "Bienvenue, {name}.",
     "greeting": "Connecté en tant que {email}.",
     "logout": "Se déconnecter",
     "back": "Retour à l'accueil",
+    "profileLink": "Mon profil",
+    "onboarding": {
+      "label": "PROFIL À COMPLÉTER",
+      "body": "Choisis un pseudo pour personnaliser ton espace et, plus tard, t'entraîner avec des partenaires.",
+      "cta": "Compléter mon profil"
+    },
     "placeholder": {
       "label": "PROCHAINE ÉTAPE",
       "body": "Le vrai tableau de bord arrive : ta dernière séance, tes records, tes prochaines sessions, tes graphes de progression."
+    }
+  },
+  "profile": {
+    "metaTitle": "Mon profil",
+    "metaDescription": "Gère ton pseudo et ton nom public IronTrack.",
+    "eyebrow": "PROFIL",
+    "title": "Toi, en chiffres.",
+    "lede": "Connecté en tant que {email}. Tu peux changer ton pseudo et ton nom à tout moment.",
+    "logout": "Se déconnecter",
+    "section": {
+      "label": "IDENTITÉ",
+      "heading": "Comment tu veux qu'on t'appelle ?"
+    },
+    "form": {
+      "pseudo": {
+        "label": "Pseudo",
+        "placeholder": "mon_pseudo",
+        "help": "3-30 caractères · minuscules, chiffres, underscore · utilisé pour te retrouver entre partenaires."
+      },
+      "fullName": {
+        "label": "Nom affiché",
+        "placeholder": "Thierry V.",
+        "help": "Jusqu'à 50 caractères · affiché sur ton tableau de bord."
+      },
+      "submit": "Enregistrer",
+      "submitPending": "Enregistrement…",
+      "saved": "Profil mis à jour."
+    },
+    "errors": {
+      "pseudoTooShort": "Pseudo trop court (3 caractères min).",
+      "pseudoTooLong": "Pseudo trop long (30 caractères max).",
+      "pseudoFormat": "Seuls minuscules, chiffres et underscore sont autorisés.",
+      "pseudoTaken": "Ce pseudo est déjà pris.",
+      "fullNameRequired": "Entre un nom ou laisse vide.",
+      "fullNameTooLong": "Nom trop long (50 caractères max).",
+      "rateLimit": "Trop de tentatives. Réessaie dans une minute.",
+      "generic": "Une erreur est survenue. Réessaie."
+    },
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "home": "Accueil"
     }
   },
   "langSwitcher": {

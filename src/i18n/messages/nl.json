@@ -163,12 +163,60 @@
   "dashboard": {
     "eyebrow": "DASHBOARD",
     "title": "Welkom.",
+    "hello": "Welkom, {name}.",
     "greeting": "Aangemeld als {email}.",
     "logout": "Afmelden",
     "back": "Terug naar start",
+    "profileLink": "Mijn profiel",
+    "onboarding": {
+      "label": "PROFIEL AANVULLEN",
+      "body": "Kies een pseudoniem om je ruimte te personaliseren en later met trainingspartners te kunnen trainen.",
+      "cta": "Profiel aanvullen"
+    },
     "placeholder": {
       "label": "VOLGENDE STAP",
       "body": "Het echte dashboard komt eraan: je laatste sessie, je records, je volgende sessies, je voortgangsgrafieken."
+    }
+  },
+  "profile": {
+    "metaTitle": "Mijn profiel",
+    "metaDescription": "Beheer je pseudoniem en je publieke naam op IronTrack.",
+    "eyebrow": "PROFIEL",
+    "title": "Jij, in cijfers.",
+    "lede": "Aangemeld als {email}. Je kunt je pseudoniem en je naam op elk moment wijzigen.",
+    "logout": "Afmelden",
+    "section": {
+      "label": "IDENTITEIT",
+      "heading": "Hoe moeten we je noemen?"
+    },
+    "form": {
+      "pseudo": {
+        "label": "Pseudoniem",
+        "placeholder": "mijn_pseudo",
+        "help": "3-30 tekens · kleine letters, cijfers, underscore · om je tussen partners te vinden."
+      },
+      "fullName": {
+        "label": "Weergavenaam",
+        "placeholder": "Thierry V.",
+        "help": "Tot 50 tekens · getoond op je dashboard."
+      },
+      "submit": "Opslaan",
+      "submitPending": "Opslaan…",
+      "saved": "Profiel bijgewerkt."
+    },
+    "errors": {
+      "pseudoTooShort": "Pseudoniem te kort (minstens 3 tekens).",
+      "pseudoTooLong": "Pseudoniem te lang (max 30 tekens).",
+      "pseudoFormat": "Alleen kleine letters, cijfers en underscore zijn toegestaan.",
+      "pseudoTaken": "Dit pseudoniem is al in gebruik.",
+      "fullNameRequired": "Vul een naam in of laat leeg.",
+      "fullNameTooLong": "Naam te lang (max 50 tekens).",
+      "rateLimit": "Te veel pogingen. Probeer het over een minuut opnieuw.",
+      "generic": "Er is iets misgegaan. Probeer opnieuw."
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "home": "Start"
     }
   },
   "langSwitcher": {

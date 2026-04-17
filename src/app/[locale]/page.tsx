@@ -4,6 +4,7 @@ import { LangSwitcher } from '@/components/lang-switcher';
 import { ScrollToTop } from '@/components/scroll-to-top';
 import { LOCALES, type Locale } from '@/i18n/request';
 import { getUser } from '@/lib/auth';
+import { getDisplayName, getProfile } from '@/lib/profile';
 
 import { signOut } from './actions';
 import { HomeFeatures } from './_home/features';
@@ -25,6 +26,8 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const t = await getTranslations('home');
   const user = await getUser();
+  const profile = user ? await getProfile() : null;
+  const displayName = user ? getDisplayName(profile, user) : null;
 
   return (
     <>
@@ -59,7 +62,7 @@ export default async function HomePage({ params }: HomePageProps) {
           <HomeHero
             locale={typedLocale}
             isAuthenticated={Boolean(user)}
-            userEmail={user?.email}
+            displayName={displayName}
           />
         </div>
 
