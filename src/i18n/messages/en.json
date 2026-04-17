@@ -163,12 +163,60 @@
   "dashboard": {
     "eyebrow": "DASHBOARD",
     "title": "Welcome.",
+    "hello": "Welcome, {name}.",
     "greeting": "Signed in as {email}.",
     "logout": "Sign out",
     "back": "Back to home",
+    "profileLink": "My profile",
+    "onboarding": {
+      "label": "COMPLETE YOUR PROFILE",
+      "body": "Pick a username to personalise your space — and, later, train alongside partners.",
+      "cta": "Complete my profile"
+    },
     "placeholder": {
       "label": "COMING NEXT",
       "body": "The real dashboard is on its way: your last session, your records, your upcoming sessions, your progress graphs."
+    }
+  },
+  "profile": {
+    "metaTitle": "My profile",
+    "metaDescription": "Manage your IronTrack username and display name.",
+    "eyebrow": "PROFILE",
+    "title": "You, in numbers.",
+    "lede": "Signed in as {email}. You can change your username and display name at any time.",
+    "logout": "Sign out",
+    "section": {
+      "label": "IDENTITY",
+      "heading": "How should we call you?"
+    },
+    "form": {
+      "pseudo": {
+        "label": "Username",
+        "placeholder": "my_handle",
+        "help": "3-30 chars · lowercase, digits, underscore · used to find you between partners."
+      },
+      "fullName": {
+        "label": "Display name",
+        "placeholder": "Thierry V.",
+        "help": "Up to 50 chars · shown on your dashboard."
+      },
+      "submit": "Save",
+      "submitPending": "Saving…",
+      "saved": "Profile updated."
+    },
+    "errors": {
+      "pseudoTooShort": "Username too short (3 chars min).",
+      "pseudoTooLong": "Username too long (30 chars max).",
+      "pseudoFormat": "Only lowercase letters, digits and underscore allowed.",
+      "pseudoTaken": "This username is already taken.",
+      "fullNameRequired": "Enter a name or leave empty.",
+      "fullNameTooLong": "Name too long (50 chars max).",
+      "rateLimit": "Too many attempts. Try again in a minute.",
+      "generic": "Something went wrong. Try again."
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "home": "Home"
     }
   },
   "langSwitcher": {
