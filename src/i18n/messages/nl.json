@@ -195,12 +195,26 @@
       "google": "Doorgaan met Google",
       "or": "OF MET E-MAIL"
     },
+    "tabs": {
+      "label": "Aanmeldmethode",
+      "password": "E-mail + wachtwoord",
+      "magic": "Magische link"
+    },
     "form": {
       "email": {
         "label": "E-mail",
         "placeholder": "jij@voorbeeld.be"
       },
+      "password": {
+        "label": "Wachtwoord",
+        "placeholder": "Minstens 10 tekens",
+        "help": "10 tekens min · 1 hoofdletter · 1 cijfer"
+      },
       "submit": "Stuur de link",
+      "signin": "Aanmelden",
+      "signup": "Account aanmaken",
+      "toSignup": "Nog geen account? Maak er een",
+      "toSignin": "Al een account? Aanmelden",
       "submitPending": "Versturen…",
       "hint": "Door verder te gaan, aanvaard je onze voorwaarden en ons privacybeleid (AVG)."
     },
@@ -212,6 +226,11 @@
     "errors": {
       "emailRequired": "E-mail is verplicht.",
       "emailInvalid": "Dit e-mailadres is niet geldig.",
+      "passwordTooShort": "Wachtwoord te kort (minstens 10 tekens).",
+      "passwordTooLong": "Wachtwoord te lang (max 72 tekens).",
+      "passwordWeak": "Voeg minstens één hoofdletter, één kleine letter en één cijfer toe.",
+      "invalidCredentials": "E-mail of wachtwoord onjuist.",
+      "emailTaken": "Er bestaat al een account met dit e-mailadres. Meld je aan.",
       "rateLimit": "Te veel pogingen. Probeer het over een minuut opnieuw.",
       "generic": "Er is iets misgegaan. Probeer opnieuw."
     },

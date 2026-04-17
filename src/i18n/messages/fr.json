@@ -195,12 +195,26 @@
       "google": "Continuer avec Google",
       "or": "OU PAR EMAIL"
     },
+    "tabs": {
+      "label": "Méthode de connexion",
+      "password": "Email + mot de passe",
+      "magic": "Lien magique"
+    },
     "form": {
       "email": {
         "label": "Email",
         "placeholder": "tu@exemple.be"
       },
+      "password": {
+        "label": "Mot de passe",
+        "placeholder": "Au moins 10 caractères",
+        "help": "10 caractères min · 1 majuscule · 1 chiffre"
+      },
       "submit": "Recevoir le lien",
+      "signin": "Se connecter",
+      "signup": "Créer mon compte",
+      "toSignup": "Pas encore de compte ? Créer un compte",
+      "toSignin": "Déjà un compte ? Se connecter",
       "submitPending": "Envoi en cours…",
       "hint": "En continuant, tu acceptes nos conditions et notre politique de confidentialité (RGPD)."
     },
@@ -212,6 +226,11 @@
     "errors": {
       "emailRequired": "L'email est obligatoire.",
       "emailInvalid": "Cette adresse email n'est pas valide.",
+      "passwordTooShort": "Mot de passe trop court (10 caractères min).",
+      "passwordTooLong": "Mot de passe trop long (72 caractères max).",
+      "passwordWeak": "Ajoute au moins une majuscule, une minuscule et un chiffre.",
+      "invalidCredentials": "Email ou mot de passe incorrect.",
+      "emailTaken": "Un compte existe déjà avec cet email. Connecte-toi.",
       "rateLimit": "Trop de tentatives. Réessaie dans une minute.",
       "generic": "Une erreur est survenue. Réessaie."
     },
