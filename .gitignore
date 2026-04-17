@@ -42,6 +42,7 @@ lighthouse-*.json
 # Tout le dossier supabase/ est local (migrations sensibles)
 supabase/
 !src/utils/supabase/
+!src/lib/supabase/
 
 # ─── PWA / Service Worker (générés) ─────────────────────────
 public/sw.js
