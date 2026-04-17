@@ -6,10 +6,10 @@ import type { Locale } from '@/i18n/request';
 interface HeroProps {
   locale: Locale;
   isAuthenticated: boolean;
-  userEmail?: string | null;
+  displayName?: string | null;
 }
 
-export function HomeHero({ locale, isAuthenticated, userEmail }: HeroProps) {
+export function HomeHero({ locale, isAuthenticated, displayName }: HeroProps) {
   const t = useTranslations('home.hero');
 
   return (
@@ -55,12 +55,12 @@ export function HomeHero({ locale, isAuthenticated, userEmail }: HeroProps) {
                   →
                 </span>
               </Link>
-              {userEmail && (
+              {displayName && (
                 <span
                   className="font-mono text-xs uppercase tracking-widest"
                   style={{ color: 'var(--color-muted-foreground)' }}
                 >
-                  · {userEmail}
+                  · {displayName}
                 </span>
               )}
             </>
