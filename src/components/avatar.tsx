@@ -31,7 +31,8 @@ interface AvatarProps {
 }
 
 /**
- * Avatar carré à coins droits (cohérent avec la direction brutaliste du v2).
+ * Avatar circulaire avec bordure "ink" épaisse (clin d'œil brutaliste mais
+ * forme ronde demandée par l'utilisateur).
  * Fallback initiales sur fond "paper" + bordure "ink" si pas d'image.
  *
  * Pour une image optimisée Next.js, on utilisera `<Image />` plus tard ;
@@ -47,7 +48,7 @@ export function Avatar({
   const px = SIZE_PX[size];
   const initials = initialsFor(displayName);
   const base =
-    'inline-flex shrink-0 items-center justify-center overflow-hidden border-2 font-mono uppercase tracking-widest';
+    'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 font-mono uppercase tracking-widest';
   const style: React.CSSProperties = {
     width: px,
     height: px,
