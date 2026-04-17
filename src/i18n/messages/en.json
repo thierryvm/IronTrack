@@ -195,12 +195,26 @@
       "google": "Continue with Google",
       "or": "OR BY EMAIL"
     },
+    "tabs": {
+      "label": "Sign-in method",
+      "password": "Email + password",
+      "magic": "Magic link"
+    },
     "form": {
       "email": {
         "label": "Email",
         "placeholder": "you@example.com"
       },
+      "password": {
+        "label": "Password",
+        "placeholder": "At least 10 characters",
+        "help": "10 chars min · 1 uppercase · 1 digit"
+      },
       "submit": "Send the link",
+      "signin": "Sign in",
+      "signup": "Create account",
+      "toSignup": "No account yet? Create one",
+      "toSignin": "Already have an account? Sign in",
       "submitPending": "Sending…",
       "hint": "By continuing, you accept our terms and privacy policy (GDPR)."
     },
@@ -212,6 +226,11 @@
     "errors": {
       "emailRequired": "Email is required.",
       "emailInvalid": "This email address is not valid.",
+      "passwordTooShort": "Password too short (10 characters min).",
+      "passwordTooLong": "Password too long (72 characters max).",
+      "passwordWeak": "Add at least one uppercase, one lowercase and one digit.",
+      "invalidCredentials": "Wrong email or password.",
+      "emailTaken": "An account already exists with this email. Sign in.",
       "rateLimit": "Too many attempts. Try again in a minute.",
       "generic": "Something went wrong. Try again."
     },
