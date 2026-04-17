@@ -190,9 +190,35 @@
       "body": "Kies een pseudoniem om je ruimte te personaliseren en later met trainingspartners te kunnen trainen.",
       "cta": "Profiel aanvullen"
     },
-    "placeholder": {
-      "label": "VOLGENDE STAP",
-      "body": "Het echte dashboard komt eraan: je laatste sessie, je records, je volgende sessies, je voortgangsgrafieken."
+    "empty": {
+      "label": "EERSTE SESSIE",
+      "body": "Nog geen gegevens. Start je eerste sessie om je cijfers hier te zien.",
+      "subtext": "Je streak, records en historiek verschijnen zodra je eerste sessie voltooid is."
+    },
+    "stats": {
+      "heading": "Statistieken",
+      "streak": {
+        "label": "STREAK",
+        "days": "{count, plural, =0 {dag} one {dag op rij} other {dagen op rij}}",
+        "record": "Record: {count, plural, one {# dag} other {# dagen}}"
+      },
+      "sevenDays": {
+        "label": "LAATSTE 7 DAGEN",
+        "workouts": "{count, plural, =0 {sessie} one {sessie} other {sessies}}",
+        "subtext": "Sessies voltooid deze week"
+      },
+      "lastPerformance": {
+        "label": "LAATSTE PRESTATIE",
+        "weight": "Gewicht",
+        "reps": "Reps",
+        "distance": "Afstand",
+        "duration": "Duur"
+      },
+      "recentWorkouts": {
+        "label": "HISTORIEK",
+        "heading": "Je laatste sessies.",
+        "empty": "Nog geen voltooide sessies."
+      }
     }
   },
   "profile": {

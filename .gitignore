@@ -159,3 +159,7 @@ kill-port.ps1
 restart-dev.bat
 .jest-worker-patched
 node_modules/.cache
+
+# ─── Artefacts tests/screenshots locaux ──────────────────────
+.playwright-mcp/
+/*.png

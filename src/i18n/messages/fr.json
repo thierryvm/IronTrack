@@ -190,9 +190,35 @@
       "body": "Choisis un pseudo pour personnaliser ton espace et, plus tard, t'entraîner avec des partenaires.",
       "cta": "Compléter mon profil"
     },
-    "placeholder": {
-      "label": "PROCHAINE ÉTAPE",
-      "body": "Le vrai tableau de bord arrive : ta dernière séance, tes records, tes prochaines sessions, tes graphes de progression."
+    "empty": {
+      "label": "PREMIÈRE SÉANCE",
+      "body": "Pas encore de données. Lance ta première séance pour voir tes chiffres ici.",
+      "subtext": "Ton streak, tes records et ton historique apparaîtront dès ta première session complétée."
+    },
+    "stats": {
+      "heading": "Statistiques",
+      "streak": {
+        "label": "STREAK",
+        "days": "{count, plural, =0 {jour} one {jour d'affilée} other {jours d'affilée}}",
+        "record": "Record : {count, plural, one {# jour} other {# jours}}"
+      },
+      "sevenDays": {
+        "label": "7 DERNIERS JOURS",
+        "workouts": "{count, plural, =0 {séance} one {séance} other {séances}}",
+        "subtext": "Séances complétées cette semaine"
+      },
+      "lastPerformance": {
+        "label": "DERNIÈRE PERFORMANCE",
+        "weight": "Charge",
+        "reps": "Reps",
+        "distance": "Distance",
+        "duration": "Durée"
+      },
+      "recentWorkouts": {
+        "label": "HISTORIQUE",
+        "heading": "Tes dernières séances.",
+        "empty": "Aucune séance complétée pour l'instant."
+      }
     }
   },
   "profile": {
