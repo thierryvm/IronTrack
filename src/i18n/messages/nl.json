@@ -62,7 +62,24 @@
       "lighter": "lichter.",
       "lede": "Een fitness-app gebouwd als een atelierboek: precies, redactioneel, brutalistisch. Geen confetti. Geen jargon. Enkel jouw lichaam, jouw cijfers, jouw vooruitgang."
     },
-    "cta": { "start": "Sessie starten", "login": "Aanmelden" }
+    "cta": {
+      "start": "Sessie starten",
+      "login": "Aanmelden",
+      "dashboard": "Mijn dashboard",
+      "logout": "Afmelden"
+    },
+    "greeting": "Aangemeld als {email}"
+  },
+  "dashboard": {
+    "eyebrow": "DASHBOARD",
+    "title": "Welkom.",
+    "greeting": "Aangemeld als {email}.",
+    "logout": "Afmelden",
+    "back": "Terug naar start",
+    "placeholder": {
+      "label": "VOLGENDE STAP",
+      "body": "Het echte dashboard komt eraan: je laatste sessie, je records, je volgende sessies, je voortgangsgrafieken."
+    }
   },
   "langSwitcher": {
     "label": "Taal kiezen",
