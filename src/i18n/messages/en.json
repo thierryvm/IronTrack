@@ -428,5 +428,20 @@
     },
     "loadMore": "Load more",
     "endOfList": "End of history."
+  },
+  "notFound": {
+    "eyebrow": "ERROR 404",
+    "title": "Nothing here.",
+    "body": "This page doesn't (or no longer) exist. A broken link, a mistyped URL, or something we moved.",
+    "home": "Back home",
+    "dashboard": "Go to dashboard"
+  },
+  "error": {
+    "eyebrow": "SOMETHING BROKE",
+    "title": "We have a problem.",
+    "body": "Unexpected error. You can retry, or come back later.",
+    "retry": "Retry",
+    "home": "Back home",
+    "digest": "Technical code"
   }
 }
