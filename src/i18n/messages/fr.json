@@ -429,6 +429,32 @@
     "loadMore": "Charger plus",
     "endOfList": "Fin de l'historique."
   },
+  "workoutDetail": {
+    "eyebrow": "SÉANCE",
+    "stats": {
+      "duration": "Durée",
+      "exercises": "Exercices",
+      "sets": "Sets"
+    },
+    "notes": {
+      "label": "NOTES"
+    },
+    "exercises": {
+      "heading": "EXERCICES"
+    },
+    "set": {
+      "label": "Set"
+    },
+    "empty": {
+      "label": "AUCUN EXERCICE",
+      "body": "Rien à afficher.",
+      "subtext": "Cette séance ne contient pas encore de set enregistré."
+    },
+    "back": {
+      "history": "Retour à l'historique",
+      "dashboard": "Tableau de bord"
+    }
+  },
   "notFound": {
     "eyebrow": "ERREUR 404",
     "title": "Rien ici.",

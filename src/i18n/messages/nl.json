@@ -429,6 +429,32 @@
     "loadMore": "Meer laden",
     "endOfList": "Einde van de geschiedenis."
   },
+  "workoutDetail": {
+    "eyebrow": "SESSIE",
+    "stats": {
+      "duration": "Duur",
+      "exercises": "Oefeningen",
+      "sets": "Sets"
+    },
+    "notes": {
+      "label": "NOTITIES"
+    },
+    "exercises": {
+      "heading": "OEFENINGEN"
+    },
+    "set": {
+      "label": "Set"
+    },
+    "empty": {
+      "label": "GEEN OEFENING",
+      "body": "Niets te tonen.",
+      "subtext": "Deze sessie bevat nog geen geregistreerde set."
+    },
+    "back": {
+      "history": "Terug naar geschiedenis",
+      "dashboard": "Dashboard"
+    }
+  },
   "notFound": {
     "eyebrow": "FOUT 404",
     "title": "Niets hier.",
