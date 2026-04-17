@@ -185,6 +185,16 @@
     "title": "You, in numbers.",
     "lede": "Signed in as {email}. You can change your username and display name at any time.",
     "logout": "Sign out",
+    "avatar": {
+      "label": "PHOTO",
+      "heading": "Your profile picture.",
+      "pick": "Pick a photo",
+      "replace": "Replace photo",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "removing": "Removing…",
+      "help": "JPG, PNG, WebP or GIF · 5 MB max · square recommended."
+    },
     "section": {
       "label": "IDENTITY",
       "heading": "How should we call you?"
@@ -211,6 +221,9 @@
       "pseudoTaken": "This username is already taken.",
       "fullNameRequired": "Enter a name or leave empty.",
       "fullNameTooLong": "Name too long (50 chars max).",
+      "avatarTooLarge": "Image too large (5 MB max).",
+      "avatarMimeType": "Unsupported format. JPG, PNG, WebP or GIF.",
+      "avatarUpload": "Upload failed. Try again.",
       "rateLimit": "Too many attempts. Try again in a minute.",
       "generic": "Something went wrong. Try again."
     },

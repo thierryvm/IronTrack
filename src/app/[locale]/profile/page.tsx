@@ -4,9 +4,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { LOCALES, type Locale } from '@/i18n/request';
 import { requireUser } from '@/lib/auth';
-import { getProfile } from '@/lib/profile';
+import { getDisplayName, getProfile } from '@/lib/profile';
 
 import { signOut } from '../actions';
+import { AvatarUploader } from './avatar-uploader';
 import { ProfileForm } from './profile-form';
 
 interface ProfilePageProps {
@@ -37,6 +38,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const user = await requireUser(typedLocale);
   const profile = await getProfile();
+  const displayName = getDisplayName(profile, user);
   const t = await getTranslations({ locale: typedLocale, namespace: 'profile' });
 
   return (
@@ -63,6 +65,21 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </button>
         </form>
       </header>
+
+      <section className="mb-8 border-2 border-foreground p-8">
+        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          {t('avatar.label')}
+        </p>
+        <h2 className="mt-3 mb-6 font-display text-2xl leading-snug text-foreground">
+          {t('avatar.heading')}
+        </h2>
+
+        <AvatarUploader
+          locale={typedLocale}
+          displayName={displayName}
+          initialAvatarUrl={profile?.avatar_url ?? null}
+        />
+      </section>
 
       <section className="border-2 border-foreground p-8">
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
