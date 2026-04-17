@@ -54,19 +54,108 @@
     }
   },
   "home": {
+    "eyebrow": "IRONTRACK · 2026 · MADE IN BELGIUM",
     "hero": {
-      "eyebrow": "Masterclass redesign",
+      "kicker": "Het atelierboek van je training",
       "train": "Train",
       "heavier": "zwaarder,",
       "live": "leef",
       "lighter": "lichter.",
-      "lede": "Een fitness-app gebouwd als een atelierboek: precies, redactioneel, brutalistisch. Geen confetti. Geen jargon. Enkel jouw lichaam, jouw cijfers, jouw vooruitgang."
+      "lede": "Volg elke rep, elke watt, elke calorie. Zonder onzin. Zonder reclame. Zonder lege gamification. Enkel je cijfers en je vooruitgang.",
+      "cta": {
+        "start": "Maak mijn gratis account",
+        "discover": "Ontdekken",
+        "dashboard": "Mijn dashboard"
+      }
+    },
+    "features": {
+      "eyebrow": "WAT JE KRIJGT",
+      "heading": "Alles wat nodig is.",
+      "headingAccent": "Niets overbodig.",
+      "logging": {
+        "tag": "01 · SESSIES",
+        "title": "Log elke rep, elke set.",
+        "body": "Krachttraining en cardio in één app. Sets, reps, gewicht, RPE. Voor de roeier: SPM, watts. Voor het lopen: tempo, hoogtemeters. Live-modus met rusttimer.",
+        "bullet1": "Dynamische sets",
+        "bullet2": "Geavanceerde cardio",
+        "bullet3": "Live-modus"
+      },
+      "progress": {
+        "tag": "02 · VOORUITGANG",
+        "title": "Zie waar je heen gaat.",
+        "body": "Grafieken van geschatte 1RM, weekvolume, frequentie per spiergroep. Vergelijk je cycli. Spot je plateaus voor ze zich vestigen.",
+        "bullet1": "Geschatte 1RM",
+        "bullet2": "Weekvolume",
+        "bullet3": "Persoonlijke records"
+      },
+      "nutrition": {
+        "tag": "03 · VOEDING BE",
+        "title": "Tel je macro's. In het Belgisch.",
+        "body": "Scan de barcode van je Colruyt, Delhaize of Carrefour-product. Nutri-Score, macro's, ingrediënten. Open Food Facts (3M+ producten) als basis.",
+        "bullet1": "Barcode scan",
+        "bullet2": "Nutri-Score",
+        "bullet3": "BE-producten"
+      },
+      "coach": {
+        "tag": "04 · AI COACH",
+        "title": "Een coach die luistert.",
+        "body": "Plannen aangepast aan je materiaal, je tijd, je doelen. Tips bij plateaus. Zonder schuldgevoel, zonder stresserende meldingen.",
+        "bullet1": "Aangepaste plannen",
+        "bullet2": "Anti-plateau",
+        "bullet3": "Geen druk"
+      }
+    },
+    "how": {
+      "eyebrow": "IN 3 STAPPEN",
+      "heading": "Hoe het werkt.",
+      "log": {
+        "title": "Je logt je sessie.",
+        "body": "Tijdens of erna, het maakt niet uit. Enkele taps en klaar. De app onthoudt alles: je laatste gewicht, je laatste reps, je records."
+      },
+      "track": {
+        "title": "De app onthoudt alles.",
+        "body": "Je data blijft van jou (AVG-first, hosting in Europa). Sync over toestellen. Volledige export wanneer je wilt."
+      },
+      "progress": {
+        "title": "Je ziet je vooruitgang.",
+        "body": "Geen vanity metrics. Enkel wat telt: volume, intensiteit, frequentie, slaap, voeding. Jij beslist wat te veranderen."
+      }
+    },
+    "vs": {
+      "eyebrow": "POSITIONERING",
+      "heading": "Waarom geen",
+      "headingAccent": "Hevy, Strava of Whoop ?",
+      "lede": "Elke app blinkt uit in haar baan. IronTrack maakt de brug: serieuze krachttraining, precieze cardio, Belgische voeding, zonder verplicht abonnement of reclame.",
+      "feature": "Functie",
+      "rows": {
+        "logging": "Gedetailleerde krachttraining",
+        "cardio": "Cardio (roeier, fiets, lopen)",
+        "nutrition": "Voeding + barcode scan",
+        "belgian": "Belgische producten native",
+        "noads": "Zonder reclame",
+        "opensource": "Open broncode"
+      },
+      "disclaimer": "* Vergelijking gebaseerd op publieke gratis versies in april 2026"
+    },
+    "manifesto": {
+      "eyebrow": "MANIFEST",
+      "quote": "« IJzer liegt nooit. Je cijfers ook niet. »",
+      "body": "We hebben te veel fitness-apps gezien die je training in een videogame veranderen, je schuld doen voelen als je een sessie overslaat, of je data verkopen. IronTrack doet het tegenovergestelde: een sober, precies werktuig dat je respecteert.",
+      "cta": {
+        "start": "Maak mijn gratis account",
+        "dashboard": "Mijn dashboard"
+      }
     },
     "cta": {
-      "start": "Sessie starten",
+      "start": "Maak mijn gratis account",
       "login": "Aanmelden",
       "dashboard": "Mijn dashboard",
       "logout": "Afmelden"
+    },
+    "footer": {
+      "copyright": "© IronTrack 2026 · Made in Belgium",
+      "quote": "\"The iron never lies.\"",
+      "build": "Build · v2.0.0-alpha"
     },
     "greeting": "Aangemeld als {email}"
   },
@@ -116,7 +205,8 @@
     },
     "checkEmail": {
       "title": "Check je inbox.",
-      "body": "Als het adres geldig is, ontvang je binnen enkele seconden een link. Vergeet je spam-map niet."
+      "body": "Als het adres geldig is, ontvang je binnen enkele seconden een link. Vergeet je spam-map niet.",
+      "hint": "De link opent mogelijk in een nieuw tabblad (Gmail, Outlook). Geen zorgen: dit tabblad wordt automatisch bijgewerkt zodra je bent aangemeld."
     },
     "errors": {
       "emailRequired": "E-mail is verplicht.",

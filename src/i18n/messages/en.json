@@ -54,19 +54,108 @@
     }
   },
   "home": {
+    "eyebrow": "IRONTRACK · 2026 · MADE IN BELGIUM",
     "hero": {
-      "eyebrow": "Masterclass redesign",
+      "kicker": "The workshop notebook for your training",
       "train": "Train",
       "heavier": "heavier,",
       "live": "live",
       "lighter": "lighter.",
-      "lede": "A fitness app built like a workshop notebook: precise, editorial, brutalist. No confetti. No jargon. Just your body, your numbers, your progress."
+      "lede": "Track every rep, every watt, every calorie. No bullshit. No ads. No empty gamification. Just your numbers and your progress.",
+      "cta": {
+        "start": "Create my free account",
+        "discover": "Discover",
+        "dashboard": "My dashboard"
+      }
+    },
+    "features": {
+      "eyebrow": "WHAT YOU GET",
+      "heading": "Everything needed.",
+      "headingAccent": "Nothing extra.",
+      "logging": {
+        "tag": "01 · SESSIONS",
+        "title": "Log every rep, every set.",
+        "body": "Strength and cardio in a single app. Sets, reps, weight, RPE. For the rower: SPM, watts. For running: pace, elevation. Live mode with rest timer.",
+        "bullet1": "Dynamic sets",
+        "bullet2": "Advanced cardio",
+        "bullet3": "Live mode"
+      },
+      "progress": {
+        "tag": "02 · PROGRESS",
+        "title": "See where you're going.",
+        "body": "Charts of estimated 1RM, weekly volume, frequency per muscle group. Compare your cycles. Spot plateaus before they settle in.",
+        "bullet1": "Estimated 1RM",
+        "bullet2": "Weekly volume",
+        "bullet3": "Personal records"
+      },
+      "nutrition": {
+        "tag": "03 · BE NUTRITION",
+        "title": "Count macros. The Belgian way.",
+        "body": "Scan the barcode of your Colruyt, Delhaize or Carrefour product. Nutri-Score, macros, ingredients. Open Food Facts (3M+ products) at the core.",
+        "bullet1": "Barcode scan",
+        "bullet2": "Nutri-Score",
+        "bullet3": "BE products"
+      },
+      "coach": {
+        "tag": "04 · AI COACH",
+        "title": "A coach that listens.",
+        "body": "Plans adapted to your equipment, your time, your goals. Tips on plateaus. No guilt-tripping, no anxiety-inducing alerts.",
+        "bullet1": "Adapted plans",
+        "bullet2": "Anti-plateau",
+        "bullet3": "Zero pressure"
+      }
+    },
+    "how": {
+      "eyebrow": "IN 3 STEPS",
+      "heading": "How it works.",
+      "log": {
+        "title": "You log your session.",
+        "body": "During or after, doesn't matter. A few taps and it's done. The app remembers everything: your last weight, your last reps, your records."
+      },
+      "track": {
+        "title": "The app remembers everything.",
+        "body": "Your data stays yours (GDPR-first, hosted in Europe). Multi-device sync. Full export whenever you want."
+      },
+      "progress": {
+        "title": "You see your progress.",
+        "body": "No vanity metrics. Just what matters: volume, intensity, frequency, sleep, nutrition. You decide what to change."
+      }
+    },
+    "vs": {
+      "eyebrow": "POSITIONING",
+      "heading": "Why not",
+      "headingAccent": "Hevy, Strava or Whoop ?",
+      "lede": "Each app excels in its lane. IronTrack bridges them: serious strength training, precise cardio, Belgian nutrition — without forced subscription or ads.",
+      "feature": "Feature",
+      "rows": {
+        "logging": "Detailed strength training",
+        "cardio": "Cardio (rower, bike, running)",
+        "nutrition": "Nutrition + barcode scan",
+        "belgian": "Belgian products natively",
+        "noads": "Ad-free",
+        "opensource": "Open source"
+      },
+      "disclaimer": "* Comparison based on public free tiers as of April 2026"
+    },
+    "manifesto": {
+      "eyebrow": "MANIFESTO",
+      "quote": "\"The iron never lies. Neither do your numbers.\"",
+      "body": "We've seen too many fitness apps that turn training into a video game, guilt-trip you for missing a session, or sell your data. IronTrack does the opposite: a sober, precise tool that respects you.",
+      "cta": {
+        "start": "Create my free account",
+        "dashboard": "My dashboard"
+      }
     },
     "cta": {
-      "start": "Start the session",
+      "start": "Create my free account",
       "login": "Sign in",
       "dashboard": "My dashboard",
       "logout": "Sign out"
+    },
+    "footer": {
+      "copyright": "© IronTrack 2026 · Made in Belgium",
+      "quote": "\"The iron never lies.\"",
+      "build": "Build · v2.0.0-alpha"
     },
     "greeting": "Signed in as {email}"
   },
@@ -116,7 +205,8 @@
     },
     "checkEmail": {
       "title": "Check your inbox.",
-      "body": "If the address is valid, you'll receive a link in a few seconds. Don't forget to check spam."
+      "body": "If the address is valid, you'll receive a link in a few seconds. Don't forget to check spam.",
+      "hint": "The link may open in a new tab (Gmail, Outlook). No worries: this tab will update automatically as soon as you're signed in."
     },
     "errors": {
       "emailRequired": "Email is required.",

@@ -1,13 +1,14 @@
 'use client';
 
-import { useActionState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useActionState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { GoogleIcon } from '@/components/icons/google';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { createClient } from '@/lib/supabase/client';
 
 import { sendMagicLink, signInWithGoogle, type LoginState } from './actions';
 
@@ -15,9 +16,26 @@ const initial: LoginState = { status: 'idle' };
 
 export function LoginForm() {
   const t = useTranslations('auth');
+  const router = useRouter();
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const next = searchParams.get('next') ?? '/';
   const [state, action, pending] = useActionState(sendMagicLink, initial);
+
+  // Cross-tab auth: si l'utilisateur clique le magic link dans un nouvel onglet,
+  // Supabase synchronise la session via BroadcastChannel — on redirige cet onglet aussi.
+  useEffect(() => {
+    const supabase = createClient();
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/';
+        const target = safeNext === '/' ? `/${locale}/dashboard` : safeNext;
+        router.replace(target);
+        router.refresh();
+      }
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router, locale, next]);
 
   if (state.status === 'success') {
     return (
@@ -31,6 +49,9 @@ export function LoginForm() {
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {t('checkEmail.body')}
+        </p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {t('checkEmail.hint')}
         </p>
       </div>
     );

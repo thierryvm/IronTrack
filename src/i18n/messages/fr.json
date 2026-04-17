@@ -54,19 +54,108 @@
     }
   },
   "home": {
+    "eyebrow": "IRONTRACK · 2026 · MADE IN BELGIUM",
     "hero": {
-      "eyebrow": "Masterclass redesign",
+      "kicker": "Le carnet d'atelier de ton entraînement",
       "train": "Train",
       "heavier": "heavier,",
       "live": "live",
       "lighter": "lighter.",
-      "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès."
+      "lede": "Suis chaque rep, chaque watt, chaque calorie. Sans bullshit. Sans pub. Sans gamification creuse. Juste tes chiffres et ta progression.",
+      "cta": {
+        "start": "Créer mon compte gratuit",
+        "discover": "Découvrir",
+        "dashboard": "Mon tableau de bord"
+      }
+    },
+    "features": {
+      "eyebrow": "CE QUE TU OBTIENS",
+      "heading": "Tout ce qu'il faut.",
+      "headingAccent": "Rien de superflu.",
+      "logging": {
+        "tag": "01 · SÉANCES",
+        "title": "Logue chaque rep, chaque set.",
+        "body": "Musculation et cardio dans une seule app. Sets, reps, poids, RPE. Pour le rameur : SPM, watts. Pour la course : pace, dénivelé. Mode live avec timer de repos.",
+        "bullet1": "Sets dynamiques",
+        "bullet2": "Métriques cardio avancées",
+        "bullet3": "Mode live"
+      },
+      "progress": {
+        "tag": "02 · PROGRESSION",
+        "title": "Vois où tu vas. Vraiment.",
+        "body": "Graphes de 1RM estimé, volume hebdo, fréquence par groupe musculaire. Compare tes cycles. Identifie tes plateaux avant qu'ils s'installent.",
+        "bullet1": "1RM estimé",
+        "bullet2": "Volume hebdo",
+        "bullet3": "Records perso"
+      },
+      "nutrition": {
+        "tag": "03 · NUTRITION BE",
+        "title": "Compte tes macros. En belge.",
+        "body": "Scanne le code-barres de ton produit Colruyt, Delhaize ou Carrefour. Nutri-Score, macros, ingrédients. Open Food Facts (3M+ produits) en base.",
+        "bullet1": "Scan code-barres",
+        "bullet2": "Nutri-Score",
+        "bullet3": "Produits BE"
+      },
+      "coach": {
+        "tag": "04 · COACH IA",
+        "title": "Un coach qui t'écoute.",
+        "body": "Plans adaptés à ton équipement, ton temps, tes objectifs. Conseils sur tes plateaux. Sans culpabilisation, sans alertes anxiogènes.",
+        "bullet1": "Plans adaptés",
+        "bullet2": "Anti-plateau",
+        "bullet3": "Zéro pression"
+      }
+    },
+    "how": {
+      "eyebrow": "EN 3 ÉTAPES",
+      "heading": "Comment ça marche.",
+      "log": {
+        "title": "Tu logues ta séance.",
+        "body": "Pendant ou après, peu importe. Quelques tap, c'est fait. L'app retient tout : ton dernier poids, tes derniers reps, tes records."
+      },
+      "track": {
+        "title": "L'app retient tout.",
+        "body": "Tes données restent à toi (RGPD-first, hébergement Europe). Synchro multi-appareils. Export complet quand tu veux."
+      },
+      "progress": {
+        "title": "Tu vois ta progression.",
+        "body": "Pas de vanity metrics. Juste ce qui compte : volume, intensité, fréquence, sommeil, alimentation. Tu décides quoi changer."
+      }
+    },
+    "vs": {
+      "eyebrow": "POSITIONNEMENT",
+      "heading": "Pourquoi pas",
+      "headingAccent": "Hevy, Strava ou Whoop ?",
+      "lede": "Chaque app excelle dans son couloir. IronTrack fait le pont : musculation sérieuse, cardio précis, nutrition belge, le tout sans abonnement obligatoire ni publicité.",
+      "feature": "Fonctionnalité",
+      "rows": {
+        "logging": "Musculation détaillée",
+        "cardio": "Cardio (rameur, vélo, course)",
+        "nutrition": "Nutrition + scan code-barres",
+        "belgian": "Produits belges natifs",
+        "noads": "Sans pub",
+        "opensource": "Code ouvert"
+      },
+      "disclaimer": "* Comparatif basé sur les versions gratuites publiques en avril 2026"
+    },
+    "manifesto": {
+      "eyebrow": "MANIFESTE",
+      "quote": "« Le fer ne ment jamais. Tes chiffres non plus. »",
+      "body": "On a vu trop d'apps fitness qui transforment ton entraînement en jeu vidéo, te culpabilisent quand tu sautes une séance, ou vendent tes données. IronTrack fait l'inverse : un outil sobre, précis, qui te respecte.",
+      "cta": {
+        "start": "Créer mon compte gratuit",
+        "dashboard": "Mon tableau de bord"
+      }
     },
     "cta": {
-      "start": "Commencer la séance",
+      "start": "Créer mon compte gratuit",
       "login": "Se connecter",
       "dashboard": "Mon tableau de bord",
       "logout": "Se déconnecter"
+    },
+    "footer": {
+      "copyright": "© IronTrack 2026 · Made in Belgium",
+      "quote": "\"The iron never lies.\"",
+      "build": "Build · v2.0.0-alpha"
     },
     "greeting": "Connecté en tant que {email}"
   },
@@ -116,7 +205,8 @@
     },
     "checkEmail": {
       "title": "Vérifie ta boîte mail.",
-      "body": "Si l'adresse est valide, tu recevras un lien dans quelques secondes. Pense à regarder dans les spams."
+      "body": "Si l'adresse est valide, tu recevras un lien dans quelques secondes. Pense à regarder dans les spams.",
+      "hint": "Le lien peut s'ouvrir dans un nouvel onglet (Gmail, Outlook). Pas grave : cet onglet-ci se mettra à jour automatiquement dès que tu seras connecté."
     },
     "errors": {
       "emailRequired": "L'email est obligatoire.",
