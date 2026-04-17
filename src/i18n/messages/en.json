@@ -62,7 +62,24 @@
       "lighter": "lighter.",
       "lede": "A fitness app built like a workshop notebook: precise, editorial, brutalist. No confetti. No jargon. Just your body, your numbers, your progress."
     },
-    "cta": { "start": "Start the session", "login": "Sign in" }
+    "cta": {
+      "start": "Start the session",
+      "login": "Sign in",
+      "dashboard": "My dashboard",
+      "logout": "Sign out"
+    },
+    "greeting": "Signed in as {email}"
+  },
+  "dashboard": {
+    "eyebrow": "DASHBOARD",
+    "title": "Welcome.",
+    "greeting": "Signed in as {email}.",
+    "logout": "Sign out",
+    "back": "Back to home",
+    "placeholder": {
+      "label": "COMING NEXT",
+      "body": "The real dashboard is on its way: your last session, your records, your upcoming sessions, your progress graphs."
+    }
   },
   "langSwitcher": {
     "label": "Choose language",

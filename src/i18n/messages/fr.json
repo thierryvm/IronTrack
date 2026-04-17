@@ -62,7 +62,24 @@
       "lighter": "lighter.",
       "lede": "Une app fitness pensée comme un carnet d'atelier : précise, éditoriale, brutaliste. Pas de confettis. Pas de jargon. Juste ton corps, tes chiffres, ton progrès."
     },
-    "cta": { "start": "Commencer la séance", "login": "Se connecter" }
+    "cta": {
+      "start": "Commencer la séance",
+      "login": "Se connecter",
+      "dashboard": "Mon tableau de bord",
+      "logout": "Se déconnecter"
+    },
+    "greeting": "Connecté en tant que {email}"
+  },
+  "dashboard": {
+    "eyebrow": "TABLEAU DE BORD",
+    "title": "Bienvenue.",
+    "greeting": "Connecté en tant que {email}.",
+    "logout": "Se déconnecter",
+    "back": "Retour à l'accueil",
+    "placeholder": {
+      "label": "PROCHAINE ÉTAPE",
+      "body": "Le vrai tableau de bord arrive : ta dernière séance, tes records, tes prochaines sessions, tes graphes de progression."
+    }
   },
   "langSwitcher": {
     "label": "Choisir la langue",

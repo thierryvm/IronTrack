@@ -3,6 +3,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { LangSwitcher } from '@/components/lang-switcher';
 import { LOCALES, type Locale } from '@/i18n/request';
+import { getUser } from '@/lib/auth';
+
+import { signOut } from './actions';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -17,6 +20,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const t = await getTranslations('index');
   const tHome = await getTranslations('home');
+  const user = await getUser();
 
   return (
     <main className="mx-auto max-w-7xl px-8 pb-40 pt-16">
@@ -27,7 +31,29 @@ export default async function HomePage({ params }: HomePageProps) {
         <span className="eyebrow inline-flex items-center">
           <BrandDot /> {t('eyebrow')}
         </span>
-        <LangSwitcher />
+        <div className="flex items-center gap-4">
+          {user && (
+            <div className="hidden items-center gap-3 sm:flex">
+              <span
+                className="font-mono text-xs uppercase tracking-widest"
+                style={{ color: 'var(--color-muted-foreground)' }}
+              >
+                {user.email}
+              </span>
+              <form action={signOut}>
+                <input type="hidden" name="locale" value={typedLocale} />
+                <button
+                  type="submit"
+                  className="font-mono text-xs uppercase tracking-widest underline-offset-4 hover:underline"
+                  style={{ color: 'var(--color-foreground)' }}
+                >
+                  {tHome('cta.logout')}
+                </button>
+              </form>
+            </div>
+          )}
+          <LangSwitcher />
+        </div>
       </header>
 
       <section
@@ -127,27 +153,54 @@ export default async function HomePage({ params }: HomePageProps) {
         </div>
 
         <div className="mt-12 flex flex-wrap items-center gap-4">
-          <Link
-            href={`/${typedLocale}/login`}
-            className="group inline-flex min-h-12 items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform hover:-translate-y-[1px]"
-            style={{
-              background: 'var(--color-brand)',
-              color: 'var(--color-primary-foreground)',
-              boxShadow: 'var(--shadow-glow)',
-            }}
-          >
-            {tHome('cta.start')}
-            <span className="transition-transform group-hover:translate-x-0.5">
-              →
-            </span>
-          </Link>
-          <Link
-            href={`/${typedLocale}/login`}
-            className="inline-flex min-h-12 items-center gap-2 rounded-full border px-6 py-3 font-semibold transition-colors hover:bg-[var(--color-muted)]"
-            style={{ borderColor: 'var(--color-border)' }}
-          >
-            {tHome('cta.login')}
-          </Link>
+          {user ? (
+            <>
+              <span
+                className="eyebrow"
+                style={{ color: 'var(--color-muted-foreground)' }}
+              >
+                {tHome('greeting', { email: user.email ?? '' })}
+              </span>
+              <Link
+                href={`/${typedLocale}/dashboard`}
+                className="group inline-flex min-h-12 items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform hover:-translate-y-[1px]"
+                style={{
+                  background: 'var(--color-brand)',
+                  color: 'var(--color-primary-foreground)',
+                  boxShadow: 'var(--shadow-glow)',
+                }}
+              >
+                {tHome('cta.dashboard')}
+                <span className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href={`/${typedLocale}/login`}
+                className="group inline-flex min-h-12 items-center gap-2 rounded-full px-6 py-3 font-semibold transition-transform hover:-translate-y-[1px]"
+                style={{
+                  background: 'var(--color-brand)',
+                  color: 'var(--color-primary-foreground)',
+                  boxShadow: 'var(--shadow-glow)',
+                }}
+              >
+                {tHome('cta.start')}
+                <span className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </Link>
+              <Link
+                href={`/${typedLocale}/login`}
+                className="inline-flex min-h-12 items-center gap-2 rounded-full border px-6 py-3 font-semibold transition-colors hover:bg-[var(--color-muted)]"
+                style={{ borderColor: 'var(--color-border)' }}
+              >
+                {tHome('cta.login')}
+              </Link>
+            </>
+          )}
         </div>
       </section>
 
