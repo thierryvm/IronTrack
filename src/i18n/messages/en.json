@@ -69,5 +69,38 @@
     "fr": "FR",
     "nl": "NL",
     "en": "EN"
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Sign in · IronTrack",
+      "metaDescription": "Sign in to IronTrack with a magic link. No password required.",
+      "eyebrow": "ACCESS · MAGIC LINK",
+      "title": "Sign in.",
+      "lede": "No password. We email you a secure link."
+    },
+    "form": {
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com"
+      },
+      "submit": "Send the link",
+      "submitPending": "Sending…",
+      "hint": "By continuing, you accept our terms and privacy policy (GDPR)."
+    },
+    "checkEmail": {
+      "title": "Check your inbox.",
+      "body": "If the address is valid, you'll receive a link in a few seconds. Don't forget to check spam."
+    },
+    "errors": {
+      "emailRequired": "Email is required.",
+      "emailInvalid": "This email address is not valid.",
+      "rateLimit": "Too many attempts. Try again in a minute.",
+      "generic": "Something went wrong. Try again."
+    },
+    "error": {
+      "title": "Invalid or expired link.",
+      "body": "This magic link no longer works. Request a new one.",
+      "cta": "Send a new link"
+    }
   }
 }
