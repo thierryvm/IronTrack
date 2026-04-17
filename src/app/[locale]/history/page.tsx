@@ -169,28 +169,30 @@ export default async function HistoryPage({
         <section className="border-2 border-foreground p-6">
           <ul className="divide-y divide-border">
             {pageData.items.map((w) => (
-              <li
-                key={w.id}
-                className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-              >
-                <div className="min-w-0">
-                  <p className="font-display text-lg leading-snug text-foreground break-words">
-                    {w.name}
-                  </p>
-                  {w.type && (
-                    <p className="mt-0.5 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                      {w.type}
+              <li key={w.id}>
+                <Link
+                  href={`/${typedLocale}/workouts/${w.id}`}
+                  className="-mx-3 flex flex-col gap-1 rounded-sm px-3 py-4 transition hover:bg-muted focus-visible:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+                >
+                  <div className="min-w-0">
+                    <p className="font-display text-lg leading-snug text-foreground break-words">
+                      {w.name}
                     </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-0.5 font-mono text-xs uppercase tracking-widest text-muted-foreground sm:text-right">
-                  <span>{formatRelativeDate(w.endTime, typedLocale)}</span>
-                  {w.durationSeconds !== null && w.durationSeconds > 0 && (
-                    <span>
-                      {formatDuration(w.durationSeconds, typedLocale)}
-                    </span>
-                  )}
-                </div>
+                    {w.type && (
+                      <p className="mt-0.5 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                        {w.type}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-0.5 font-mono text-xs uppercase tracking-widest text-muted-foreground sm:text-right">
+                    <span>{formatRelativeDate(w.endTime, typedLocale)}</span>
+                    {w.durationSeconds !== null && w.durationSeconds > 0 && (
+                      <span>
+                        {formatDuration(w.durationSeconds, typedLocale)}
+                      </span>
+                    )}
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
