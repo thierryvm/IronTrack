@@ -69,10 +69,18 @@ export function AvatarUploader({
       <Avatar src={previewUrl} displayName={displayName} size="xl" />
 
       <div className="flex flex-col gap-3">
+        {/*
+          Deux <form> frères (non imbriqués) — le bouton "Choisir/Remplacer"
+          appartient au form d'upload via l'attribut `form`, le bouton
+          "Supprimer" appartient au form de suppression. HTML valide, pas
+          de soumission croisée possible. Le file input déclenche
+          `requestSubmit()` sur le form d'upload après validation client.
+        */}
         <form
           ref={formRef}
+          id="avatar-upload-form"
           action={uploadAction}
-          className="flex flex-col gap-2"
+          className="contents"
         >
           <input type="hidden" name="locale" value={locale} />
           <input
@@ -101,37 +109,43 @@ export function AvatarUploader({
               formRef.current?.requestSubmit();
             }}
           />
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={uploadPending || removePending}
-              onClick={() => fileRef.current?.click()}
-              className="min-h-[44px] border-2 border-foreground px-5 font-mono text-xs uppercase tracking-widest"
-            >
-              {uploadPending
-                ? t('avatar.uploading')
-                : previewUrl
-                  ? t('avatar.replace')
-                  : t('avatar.pick')}
-            </Button>
-
-            {previewUrl && (
-              <form action={removeAction}>
-                <input type="hidden" name="locale" value={locale} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  disabled={uploadPending || removePending}
-                  className="min-h-[44px] px-3 font-mono text-xs uppercase tracking-widest"
-                >
-                  {removePending ? t('avatar.removing') : t('avatar.remove')}
-                </Button>
-              </form>
-            )}
-          </div>
         </form>
+
+        <form
+          id="avatar-remove-form"
+          action={removeAction}
+          className="contents"
+        >
+          <input type="hidden" name="locale" value={locale} />
+        </form>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploadPending || removePending}
+            onClick={() => fileRef.current?.click()}
+            className="min-h-[44px] border-2 border-foreground px-5 font-mono text-xs uppercase tracking-widest"
+          >
+            {uploadPending
+              ? t('avatar.uploading')
+              : previewUrl
+                ? t('avatar.replace')
+                : t('avatar.pick')}
+          </Button>
+
+          {previewUrl && (
+            <Button
+              type="submit"
+              form="avatar-remove-form"
+              variant="ghost"
+              disabled={uploadPending || removePending}
+              className="min-h-[44px] px-3 font-mono text-xs uppercase tracking-widest"
+            >
+              {removePending ? t('avatar.removing') : t('avatar.remove')}
+            </Button>
+          )}
+        </div>
 
         <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
           {t('avatar.help')}
