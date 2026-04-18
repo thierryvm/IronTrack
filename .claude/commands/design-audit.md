@@ -26,7 +26,7 @@ Sinon, analyse le fichier actif dans l'éditeur.
 - [ ] Un seul bouton "primary" (orange plein) par section/écran
 - [ ] Boutons secondaires en `variant="outline"` ou `variant="ghost"`
 - [ ] Tous les boutons utilisent `<Button>` de `@/components/ui/button` (pas de `<button>` custom)
-- [ ] Taille minimale 44px (touch target WCAG)
+- [ ] Taille minimale ≥ 44px (56px pour actions critiques — touch target WCAG)
 
 ### 📐 Espacements & Cohérence
 - [ ] Espacements en multiples de 4px (Tailwind: p-1=4px, p-2=8px, p-4=16px...)

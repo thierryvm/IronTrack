@@ -16,6 +16,8 @@ Tu es l'agent orchestrateur d'IronTrack. Tu coordonnes les autres agents selon l
 | Agent Performance | `.claude/agents/performance.md` | Référence performance |
 | Agent Accessibilité | `.claude/agents/accessibility.md` | Référence a11y |
 | Agent Sécurité | `.claude/agents/security.md` | Référence sécurité |
+| Agent Testing | `.claude/agents/testing.md` | Référence tests (Vitest, Playwright, jest-axe) |
+| Agent DevOps | `.claude/agents/devops.md` | Référence CI/CD, Vercel, env vars |
 
 ## DÉTECTION AUTOMATIQUE DE LA DEMANDE
 
@@ -47,3 +49,5 @@ Pour "améliore toute la page X" :
 6. **Touch targets** — minimum 44px pour tout élément cliquable
 7. **Composant < 200 lignes** — sinon diviser en sous-composants
 8. **Hooks avant tout** — early returns APRÈS les hooks React
+9. **Auth check avant Supabase** — toujours `auth.getUser()` puis RLS, aucune exception
+10. **Pas de `console.log` en production** — logger structuré uniquement
