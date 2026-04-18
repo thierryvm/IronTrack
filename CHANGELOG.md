@@ -17,6 +17,22 @@ Les règles projet vivent dans `CLAUDE.md`. La stack technique dans `docs/stack-
 
 ---
 
+## 2026-04-18 — Audit dette code (inventaire 69bb518)
+
+Mesures réelles sur `src/**` vs chiffres historiquement annoncés dans ce CHANGELOG :
+
+| Item | Annoncé | Mesuré | État |
+|---|---|---|---|
+| `console.log` en production | 121 | **0** (16 `console.error` légitimes en handlers d'erreur serveur) | ✅ résolu |
+| `any` (`: any`, `as any`, `<any>`) | 36 | **0** | ✅ résolu |
+| `bg-[#…]` / `text-[#…]` / `border-[#…]` hardcodés | 15 | **0** | ✅ résolu |
+
+Aucun code modifié dans cette entrée — il s'agit de la correction du CHANGELOG lui-même pour refléter la réalité du repo. Détails dans `docs/irontrack-inventory.md` §8.1.
+
+Divergences doc ↔ réalité corrigées en parallèle dans le même commit : `docs/stack-and-cli.md` synchronisé avec `package.json` (Next ^16, React ^19, retrait Framer Motion, PWA service worker marqué absent).
+
+---
+
 ## 2025-01-21 — Système d'administration
 
 Structure admin finale :
@@ -92,9 +108,8 @@ src/app/admin/
 
 ## 📋 Prochaines améliorations possibles
 
-- [ ] Nettoyer les 121 `console.log` en production (règle d'or #10)
-- [ ] Éliminer les 36 occurrences de `any` (règle TS strict)
-- [ ] Remplacer les 15 `bg-[#...]` hardcodés par des tokens CSS (règle d'or #2)
+> Les 3 items dette tech (`console.log`, `any`, `bg-[#…]`) initialement listés ici ont été vérifiés le 2026-04-18 : 0/0/0 mesuré. Retirés de la liste ci-dessous. Voir entrée `2026-04-18` plus haut.
+
 - [ ] Graphiques de progression pour les métriques cardio
 - [ ] Export des données de performance
 - [ ] Programmes d'entraînement personnalisés
