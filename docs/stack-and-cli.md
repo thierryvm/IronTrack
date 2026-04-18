@@ -1,20 +1,27 @@
 # Stack & CLI IronTrack — Référence technique
 
 > Doc de référence matérielle : versions exactes, schéma DB, commandes CLI autonomes. Règles projet → `CLAUDE.md`.
+>
+> **Synchronisé avec `package.json` le 2026-04-18** (commit `chore/docs-sync-reality`). Toute divergence constatée entre ce document et `package.json` doit être corrigée ici, pas l'inverse.
 
 ## 🧱 Stack (versions réelles, source: `package.json`)
 
 | Couche | Techno | Version |
 |---|---|---|
-| Framework | Next.js | 15.5.12 (App Router, Turbopack) |
-| UI runtime | React | 18.3.1 |
-| Langage | TypeScript | strict: true, zéro `any` |
-| Styling | Tailwind CSS | v4 (CSS-first, `@theme inline`) |
-| Composants | shadcn/ui | style `new-york` |
-| Animation | Framer Motion | activé sur transitions principales |
-| Backend | Supabase | Auth + PostgreSQL + Storage + RLS |
+| Framework | Next.js | `^16.0.0` (App Router, Turbopack) |
+| UI runtime | React | `^19.0.0` (React DOM `^19.0.0`) |
+| Langage | TypeScript | `^5.9.3`, strict: true, zéro `any` |
+| Styling | Tailwind CSS | `^4.1.11` (CSS-first, `@theme inline`, plugin `@tailwindcss/postcss`) |
+| Composants | shadcn/ui | style `new-york` (Radix UI primitives + `class-variance-authority`) |
+| Animation | CSS natif | keyframes `@keyframes rise`, transitions Tailwind, custom easing tokens (`--ease-standard`, `--ease-out`). **Pas de `framer-motion`** dans les dépendances. |
+| i18n | `next-intl` | `^4.9.1` (FR/NL/EN, routing `localePrefix: 'as-needed'`) |
+| Validation | Zod | `^3.25.76` |
+| Formulaires | React Hook Form | `^7.72.0` + `@hookform/resolvers` `^5.2.1` |
+| Icônes | Lucide | `lucide-react ^0.469.0` |
+| Backend | Supabase | `@supabase/ssr ^0.9.0` + `@supabase/supabase-js ^2.100.1` (Auth + PostgreSQL + Storage + RLS) |
 | Déploiement | Vercel | auto-deploy depuis `main` |
-| Format | PWA | manifest + service worker |
+| Format | PWA | manifest `public/manifest.webmanifest` uniquement — **pas de service worker** implémenté à date (offline non supporté) |
+| Runtime | Node | `>=20.0.0` (engines) |
 | Pays / locale | Belgique FR-BE | système métrique, virgule décimale |
 
 **Fonts officielles** (ne pas dévier) :
@@ -126,13 +133,18 @@ claude mcp add <nom> npx <package> # ajouter un serveur
 ## 📜 Scripts npm
 
 ```bash
-npm run dev          # Lancer en développement (Turbopack)
+npm run dev          # Lancer en développement (Turbopack, port 3000)
 npm run build        # Build de production
-npm run lint         # ESLint
+npm run start        # Serveur de production (port 3000)
+npm run lint         # ESLint (src/**/*.{ts,tsx})
 npm run typecheck    # TypeScript --noEmit
-npm run test         # Vitest
-npm run test:coverage # Avec couverture
+npm run format       # Prettier (src/**/*.{ts,tsx,css})
+npm run db:types     # Régénérer src/lib/supabase/types.ts
+npm run db:push      # supabase db push
+npm run db:migration # supabase migration new
 ```
+
+> ⚠️ **Tests** : `playwright.config.ts` et `jest.config.js` existent dans le repo, mais ni `@playwright/test` ni `vitest`/`jest` ne sont déclarés dans `package.json`. Aucun script `test` n'est exposé. Les fichiers sous `tests/e2e/` ne peuvent pas s'exécuter sans installer Playwright séparément. Cf. inventaire `docs/irontrack-inventory.md` §8.5.
 
 ## 🚀 Workflow déploiement standard
 
@@ -155,3 +167,15 @@ Déclencheurs dans le prompt :
 - Next.js : https://nextjs.org/docs
 - Tailwind v4 : https://tailwindcss.com/docs/v4-beta
 - shadcn/ui : https://ui.shadcn.com
+
+## 🪜 Migration notes — Next.js 15 → 16 / React 18 → 19
+
+Le repo a été mis à niveau vers **Next 16 + React 19** (package.json pin `^16.0.0` / `^19.0.0`). Points d'attention pour les agents qui modifient du code :
+
+- **Server Components async** : `params` et `searchParams` sont des `Promise<T>` dans Next 15+ App Router. Toutes les `page.tsx` actuelles font déjà `const { locale } = await params;` — conserver ce pattern.
+- **React 19 APIs** : `useActionState` (remplace `useFormState`), `useFormStatus`, `useOptimistic` sont utilisables et déjà exploités (`src/app/[locale]/profile/profile-form.tsx`, `login-form.tsx`).
+- **`next/font`** : configuration actuelle (`Fraunces`, `Manrope`, `JetBrains_Mono` via `next/font/google`) reste stable en Next 16.
+- **Turbopack** : activé en dev (`--turbo`). Le build prod reste sur webpack par défaut.
+- **Métadonnées** : `export const metadata` + `generateMetadata` async supportés normalement.
+
+En cas de doute sur une API dépréciée, vérifier d'abord `package.json` puis la documentation Next.js avant de présumer d'un comportement Next 14/15.
